@@ -1,0 +1,141 @@
+checking for -Werror=unknown-warning-option... yes
+checking for -arch x86_64... yes
+x264 configure script
+Command line options: "--prefix=/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/thirdparty/x264//../../lib/x264" "--disable-asm" "--enable-static" "--enable-debug" "--enable-pic"
+
+checking whether gcc works... yes
+checking whether gcc supports for( int i = 0; i < 9; i++ ); with -std=gnu99... yes
+checking for -mpreferred-stack-boundary=6... no
+Failed commandline was:
+--------------------------------------------------
+gcc conftest.c -m64  -Wall -I. -I$(SRCPATH) -arch x86_64 -std=gnu99 -D_GNU_SOURCE  -Werror=unknown-warning-option -mpreferred-stack-boundary=6  -m64  -lm -arch x86_64 -o conftest
+clang: error: unknown argument: '-mpreferred-stack-boundary=6'
+--------------------------------------------------
+Failed program was:
+--------------------------------------------------
+int main (void) {  return 0; }
+--------------------------------------------------
+checking for -mpreferred-stack-boundary=5... no
+Failed commandline was:
+--------------------------------------------------
+gcc conftest.c -m64  -Wall -I. -I$(SRCPATH) -arch x86_64 -std=gnu99 -D_GNU_SOURCE  -Werror=unknown-warning-option -mpreferred-stack-boundary=5  -m64  -lm -arch x86_64 -o conftest
+clang: error: unknown argument: '-mpreferred-stack-boundary=5'
+--------------------------------------------------
+Failed program was:
+--------------------------------------------------
+int main (void) {  return 0; }
+--------------------------------------------------
+checking for pthread_create(0,0,0,0); in pthread.h... yes
+checking for return log2f(2); in math.h... yes
+checking whether defined(MAP_PRIVATE) is true... yes
+checking for sws_init_context(0,0,0); in libswscale/swscale.h... yes
+checking whether defined(AV_PIX_FMT_FLAG_RGB) is true... yes
+checking for av_frame_free(0); in libavformat/avformat.h... yes
+checking for FFMS_DestroyVideoSource(0); in ffms.h... no
+Failed commandline was:
+--------------------------------------------------
+gcc conftest.c -m64  -Wall -I. -I$(SRCPATH) -arch x86_64 -std=gnu99 -D_GNU_SOURCE  -Werror=unknown-warning-option  -lffms2  -m64  -lm -arch x86_64 -lpthread -o conftest
+conftest.c:1:10: fatal error: 'ffms.h' file not found
+#include <ffms.h>
+         ^
+1 error generated.
+--------------------------------------------------
+Failed program was:
+--------------------------------------------------
+#include <ffms.h>
+int main (void) { FFMS_DestroyVideoSource(0); return 0; }
+--------------------------------------------------
+checking for FFMS_DestroyVideoSource(0); in ffms.h... no
+Failed commandline was:
+--------------------------------------------------
+gcc conftest.c -m64  -Wall -I. -I$(SRCPATH) -arch x86_64 -std=gnu99 -D_GNU_SOURCE  -Werror=unknown-warning-option  -lffms2 -lstdc++ -L.  -L/usr/local/Cellar/ffmpeg/3.2.1/lib -lavformat -lavcodec -lavutil -lswscale  -m64  -lm -arch x86_64 -lpthread -o conftest
+conftest.c:1:10: fatal error: 'ffms.h' file not found
+#include <ffms.h>
+         ^
+1 error generated.
+--------------------------------------------------
+Failed program was:
+--------------------------------------------------
+#include <ffms.h>
+int main (void) { FFMS_DestroyVideoSource(0); return 0; }
+--------------------------------------------------
+checking for lsmash.h... no
+Failed commandline was:
+--------------------------------------------------
+gcc conftest.c -m64  -Wall -I. -I$(SRCPATH) -arch x86_64 -std=gnu99 -D_GNU_SOURCE  -I/usr/local/Cellar/ffmpeg/3.2.1/include  -I/usr/local/Cellar/ffmpeg/3.2.1/include  -Werror=unknown-warning-option  -llsmash -L.  -L/usr/local/Cellar/ffmpeg/3.2.1/lib -lavformat -lavcodec -lavutil -lswscale  -L/usr/local/Cellar/ffmpeg/3.2.1/lib -lswscale -lavutil  -m64  -lm -arch x86_64 -lpthread -o conftest
+conftest.c:1:10: fatal error: 'lsmash.h' file not found
+#include <lsmash.h>
+         ^
+1 error generated.
+--------------------------------------------------
+Failed program was:
+--------------------------------------------------
+#include <lsmash.h>
+int main (void) {  return 0; }
+--------------------------------------------------
+checking for -lz... yes
+checking for gpac/isomedia.h... no
+Failed commandline was:
+--------------------------------------------------
+gcc conftest.c -m64  -Wall -I. -I$(SRCPATH) -arch x86_64 -std=gnu99 -D_GNU_SOURCE  -I/usr/local/Cellar/ffmpeg/3.2.1/include  -I/usr/local/Cellar/ffmpeg/3.2.1/include  -Werror=unknown-warning-option -lgpac_static -lz -L.  -L/usr/local/Cellar/ffmpeg/3.2.1/lib -lavformat -lavcodec -lavutil -lswscale  -L/usr/local/Cellar/ffmpeg/3.2.1/lib -lswscale -lavutil  -m64  -lm -arch x86_64 -lpthread -o conftest
+conftest.c:1:10: fatal error: 'gpac/isomedia.h' file not found
+#include <gpac/isomedia.h>
+         ^
+1 error generated.
+--------------------------------------------------
+Failed program was:
+--------------------------------------------------
+#include <gpac/isomedia.h>
+int main (void) {  return 0; }
+--------------------------------------------------
+checking for uint32_t test_vec __attribute__ ((vector_size (16))) = {0,1,2,3}; in stdint.h... yes
+checking for stdio.h... no
+Failed commandline was:
+--------------------------------------------------
+gcc conftest.c -m64  -Wall -I. -I$(SRCPATH) -arch x86_64 -std=gnu99 -D_GNU_SOURCE  -I/usr/local/Cellar/ffmpeg/3.2.1/include  -I/usr/local/Cellar/ffmpeg/3.2.1/include -fPIC  -Werror=unknown-warning-option -shared -Wl,-Bsymbolic -ldl -L.  -L/usr/local/Cellar/ffmpeg/3.2.1/lib -lavformat -lavcodec -lavutil -lswscale  -L/usr/local/Cellar/ffmpeg/3.2.1/lib -lswscale -lavutil  -m64  -lm -arch x86_64 -lpthread -o conftest
+ld: unknown option: -Bsymbolic
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+--------------------------------------------------
+Failed program was:
+--------------------------------------------------
+#include <stdio.h>
+int main (void) {  return 0; }
+--------------------------------------------------
+checking for -fno-tree-vectorize... yes
+checking for fseeko(stdin,0,0); in stdio.h... yes
+checking for -Wshadow... yes
+checking for -Wmaybe-uninitialized... no
+Failed commandline was:
+--------------------------------------------------
+gcc conftest.c -Wshadow -O1 -g -m64  -Wall -I. -I$(SRCPATH) -arch x86_64 -std=gnu99 -D_GNU_SOURCE  -I/usr/local/Cellar/ffmpeg/3.2.1/include  -I/usr/local/Cellar/ffmpeg/3.2.1/include -fPIC -fno-tree-vectorize  -Werror=unknown-warning-option -Wmaybe-uninitialized -ldl -L.  -L/usr/local/Cellar/ffmpeg/3.2.1/lib -lavformat -lavcodec -lavutil -lswscale  -L/usr/local/Cellar/ffmpeg/3.2.1/lib -lswscale -lavutil  -m64  -lm -arch x86_64 -lpthread -o conftest
+error: unknown warning option '-Wmaybe-uninitialized'; did you mean '-Wuninitialized'? [-Werror,-Wunknown-warning-option]
+--------------------------------------------------
+Failed program was:
+--------------------------------------------------
+int main (void) {  return 0; }
+--------------------------------------------------
+
+platform:      X86_64
+byte order:    little-endian
+system:        MACOSX
+cli:           yes
+libx264:       internal
+shared:        no
+static:        yes
+asm:           no
+interlaced:    yes
+avs:           avxsynth
+lavf:          yes
+ffms:          no
+mp4:           no
+gpl:           yes
+thread:        posix
+opencl:        yes
+filters:       resize crop select_every 
+lto:           no
+debug:         yes
+gprof:         no
+strip:         no
+PIC:           yes
+bit depth:     8
+chroma format: all

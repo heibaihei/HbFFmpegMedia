@@ -1,0 +1,41 @@
+---- av_dup_packet Matches (9 in 8 files) ----
+APIchanges (doc):253
+  xxxxxx - Deprecate av_dup_packet(), it is a no-op for most cases.
+           Use av_packet_ref() to make a non-refcounted AVPacket refcounted.
+  xxxxxx - Add av_packet_alloc(), av_packet_clone(), av_packet_free().
+Avcodec.h (libavcodec):4449
+int av_dup_packet(AVPacket *pkt);
+/**
+ * Copy packet, including contents
+Avformat.h (libavformat):180
+ * requires a longer lifetime, av_dup_packet() will make an av_malloc()ed copy
+ * of it.
+ * In both cases, the packet must be freed with av_packet_unref() when it is no
+Avpacket.c (libavcodec):253
+int av_dup_packet(AVPacket *pkt)
+{
+    AVPacket tmp_pkt;
+Decklink_dec.cpp (libavdevice):124
+    if (av_dup_packet(pkt) < 0) {
+        return -1;
+    }
+Frame_thread_encoder.c (libavcodec):92
+            int ret2 = av_dup_packet(pkt);
+            if (ret >= 0 && ret2 < 0)
+                ret = ret2;
+Img2enc.c (libavformat):163
+            (ret = av_dup_packet(&pkt2))                                  < 0 ||
+            (ret = avcodec_parameters_copy(st->codecpar, s->streams[0]->codecpar)) < 0 ||
+            (ret = avformat_write_header(fmt, NULL))                      < 0 ||
+Utils.c (libavcodec):1943
+            if (av_dup_packet(avpkt) < 0) {
+                ret = AVERROR(ENOMEM);
+            }
+Utils.c (libavcodec):2045
+            if (av_dup_packet(avpkt) < 0) {
+                ret = AVERROR(ENOMEM);
+            }
+---- av_dup_packet Search Errors Encountered (2) ----
+The following 2 files could not be processed:
+\\Mac\Home\work\code\study\ffmpeg\ffmpeg-3.2\ffmpeg_3_2.IAB : File could not be opened.
+\\Mac\Home\work\code\study\ffmpeg\ffmpeg-3.2\ffmpeg_3_2.IMB : File could not be opened.
