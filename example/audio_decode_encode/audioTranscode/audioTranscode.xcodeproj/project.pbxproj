@@ -1,0 +1,351 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4CC153671F1D82A300513FED /* ringbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CC153651F1D82A300513FED /* ringbuffer.c */; };
+		643C5ED81F1C4BD80007ED4B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 643C5ED71F1C4BD80007ED4B /* main.cpp */; };
+		643C5EE01F1C50B50007ED4B /* AudioDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 643C5EDE1F1C50B50007ED4B /* AudioDecoder.cpp */; };
+		643C5EEA1F1C55960007ED4B /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 643C5EE21F1C55960007ED4B /* libavcodec.a */; };
+		643C5EEB1F1C55960007ED4B /* libavresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 643C5EE31F1C55960007ED4B /* libavresample.a */; };
+		643C5EEC1F1C55960007ED4B /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 643C5EE41F1C55960007ED4B /* libavutil.a */; };
+		643C5EED1F1C55960007ED4B /* libpostproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 643C5EE51F1C55960007ED4B /* libpostproc.a */; };
+		643C5EEE1F1C55960007ED4B /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 643C5EE61F1C55960007ED4B /* libswresample.a */; };
+		643C5EEF1F1C55960007ED4B /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 643C5EE71F1C55960007ED4B /* libavfilter.a */; };
+		643C5EF01F1C55960007ED4B /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 643C5EE81F1C55960007ED4B /* libavformat.a */; };
+		643C5EF11F1C55960007ED4B /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 643C5EE91F1C55960007ED4B /* libfdk-aac.a */; };
+		643C5EF61F1C58410007ED4B /* InFileContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 643C5EF41F1C58410007ED4B /* InFileContext.cpp */; };
+		643C5EF91F1C99E30007ED4B /* AudioEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 643C5EF71F1C99E30007ED4B /* AudioEncoder.cpp */; };
+		643C5EFC1F1C9A7D0007ED4B /* OutFileContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 643C5EFA1F1C9A7D0007ED4B /* OutFileContext.cpp */; };
+		643C5F081F1DB6220007ED4B /* AudioResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 643C5F061F1DB6220007ED4B /* AudioResampler.cpp */; };
+		643C5F0B1F1DE9A80007ED4B /* AudioFifo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 643C5F091F1DE9A80007ED4B /* AudioFifo.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		643C5ED21F1C4BD80007ED4B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		4CC153651F1D82A300513FED /* ringbuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ringbuffer.c; path = ../../src/ringbuffer.c; sourceTree = "<group>"; };
+		4CC153661F1D82A300513FED /* ringbuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ringbuffer.h; path = ../../src/ringbuffer.h; sourceTree = "<group>"; };
+		643C5ED41F1C4BD80007ED4B /* audioTranscode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = audioTranscode; sourceTree = BUILT_PRODUCTS_DIR; };
+		643C5ED71F1C4BD80007ED4B /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		643C5EDE1F1C50B50007ED4B /* AudioDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDecoder.cpp; path = ../../src/AudioDecoder.cpp; sourceTree = "<group>"; };
+		643C5EDF1F1C50B50007ED4B /* AudioDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AudioDecoder.hpp; path = ../../src/AudioDecoder.hpp; sourceTree = "<group>"; };
+		643C5EE21F1C55960007ED4B /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = ../../../../../../usr/local/lib/libavcodec.a; sourceTree = "<group>"; };
+		643C5EE31F1C55960007ED4B /* libavresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavresample.a; path = ../../../../../../usr/local/lib/libavresample.a; sourceTree = "<group>"; };
+		643C5EE41F1C55960007ED4B /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavutil.a; path = ../../../../../../usr/local/lib/libavutil.a; sourceTree = "<group>"; };
+		643C5EE51F1C55960007ED4B /* libpostproc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpostproc.a; path = ../../../../../../usr/local/lib/libpostproc.a; sourceTree = "<group>"; };
+		643C5EE61F1C55960007ED4B /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswresample.a; path = ../../../../../../usr/local/lib/libswresample.a; sourceTree = "<group>"; };
+		643C5EE71F1C55960007ED4B /* libavfilter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavfilter.a; path = ../../../../../../usr/local/lib/libavfilter.a; sourceTree = "<group>"; };
+		643C5EE81F1C55960007ED4B /* libavformat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavformat.a; path = ../../../../../../usr/local/lib/libavformat.a; sourceTree = "<group>"; };
+		643C5EE91F1C55960007ED4B /* libfdk-aac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfdk-aac.a"; path = "../../../../../../usr/local/lib/libfdk-aac.a"; sourceTree = "<group>"; };
+		643C5EF21F1C561D0007ED4B /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Common.h; path = ../../src/Common.h; sourceTree = "<group>"; };
+		643C5EF31F1C561D0007ED4B /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Error.h; path = ../../src/Error.h; sourceTree = "<group>"; };
+		643C5EF41F1C58410007ED4B /* InFileContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InFileContext.cpp; path = ../../src/InFileContext.cpp; sourceTree = "<group>"; };
+		643C5EF51F1C58410007ED4B /* InFileContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = InFileContext.hpp; path = ../../src/InFileContext.hpp; sourceTree = "<group>"; };
+		643C5EF71F1C99E30007ED4B /* AudioEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioEncoder.cpp; path = ../../src/AudioEncoder.cpp; sourceTree = "<group>"; };
+		643C5EF81F1C99E30007ED4B /* AudioEncoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AudioEncoder.hpp; path = ../../src/AudioEncoder.hpp; sourceTree = "<group>"; };
+		643C5EFA1F1C9A7D0007ED4B /* OutFileContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OutFileContext.cpp; path = ../../src/OutFileContext.cpp; sourceTree = "<group>"; };
+		643C5EFB1F1C9A7D0007ED4B /* OutFileContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = OutFileContext.hpp; path = ../../src/OutFileContext.hpp; sourceTree = "<group>"; };
+		643C5F061F1DB6220007ED4B /* AudioResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioResampler.cpp; path = ../../src/AudioResampler.cpp; sourceTree = "<group>"; };
+		643C5F071F1DB6220007ED4B /* AudioResampler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AudioResampler.hpp; path = ../../src/AudioResampler.hpp; sourceTree = "<group>"; };
+		643C5F091F1DE9A80007ED4B /* AudioFifo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioFifo.cpp; path = ../../src/AudioFifo.cpp; sourceTree = "<group>"; };
+		643C5F0A1F1DE9A80007ED4B /* AudioFifo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AudioFifo.hpp; path = ../../src/AudioFifo.hpp; sourceTree = "<group>"; };
+		643C5F0C1F1F077A0007ED4B /* AudioParam.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioParam.h; path = ../../src/AudioParam.h; sourceTree = "<group>"; };
+		643C5F581F1F28A20007ED4B /* Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = ../../src/Utils.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		643C5ED11F1C4BD80007ED4B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				643C5EEA1F1C55960007ED4B /* libavcodec.a in Frameworks */,
+				643C5EEB1F1C55960007ED4B /* libavresample.a in Frameworks */,
+				643C5EEC1F1C55960007ED4B /* libavutil.a in Frameworks */,
+				643C5EED1F1C55960007ED4B /* libpostproc.a in Frameworks */,
+				643C5EEE1F1C55960007ED4B /* libswresample.a in Frameworks */,
+				643C5EEF1F1C55960007ED4B /* libavfilter.a in Frameworks */,
+				643C5EF01F1C55960007ED4B /* libavformat.a in Frameworks */,
+				643C5EF11F1C55960007ED4B /* libfdk-aac.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		643C5ECB1F1C4BD80007ED4B = {
+			isa = PBXGroup;
+			children = (
+				643C5ED61F1C4BD80007ED4B /* audioTranscode */,
+				643C5ED51F1C4BD80007ED4B /* Products */,
+				643C5EE11F1C55960007ED4B /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		643C5ED51F1C4BD80007ED4B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				643C5ED41F1C4BD80007ED4B /* audioTranscode */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		643C5ED61F1C4BD80007ED4B /* audioTranscode */ = {
+			isa = PBXGroup;
+			children = (
+				4CC153651F1D82A300513FED /* ringbuffer.c */,
+				4CC153661F1D82A300513FED /* ringbuffer.h */,
+				643C5EFA1F1C9A7D0007ED4B /* OutFileContext.cpp */,
+				643C5EFB1F1C9A7D0007ED4B /* OutFileContext.hpp */,
+				643C5EF71F1C99E30007ED4B /* AudioEncoder.cpp */,
+				643C5EF81F1C99E30007ED4B /* AudioEncoder.hpp */,
+				643C5EF41F1C58410007ED4B /* InFileContext.cpp */,
+				643C5EF51F1C58410007ED4B /* InFileContext.hpp */,
+				643C5EF21F1C561D0007ED4B /* Common.h */,
+				643C5EF31F1C561D0007ED4B /* Error.h */,
+				643C5EDE1F1C50B50007ED4B /* AudioDecoder.cpp */,
+				643C5EDF1F1C50B50007ED4B /* AudioDecoder.hpp */,
+				643C5ED71F1C4BD80007ED4B /* main.cpp */,
+				643C5F061F1DB6220007ED4B /* AudioResampler.cpp */,
+				643C5F071F1DB6220007ED4B /* AudioResampler.hpp */,
+				643C5F091F1DE9A80007ED4B /* AudioFifo.cpp */,
+				643C5F0A1F1DE9A80007ED4B /* AudioFifo.hpp */,
+				643C5F0C1F1F077A0007ED4B /* AudioParam.h */,
+				643C5F581F1F28A20007ED4B /* Utils.h */,
+			);
+			path = audioTranscode;
+			sourceTree = "<group>";
+		};
+		643C5EE11F1C55960007ED4B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				643C5EE21F1C55960007ED4B /* libavcodec.a */,
+				643C5EE31F1C55960007ED4B /* libavresample.a */,
+				643C5EE41F1C55960007ED4B /* libavutil.a */,
+				643C5EE51F1C55960007ED4B /* libpostproc.a */,
+				643C5EE61F1C55960007ED4B /* libswresample.a */,
+				643C5EE71F1C55960007ED4B /* libavfilter.a */,
+				643C5EE81F1C55960007ED4B /* libavformat.a */,
+				643C5EE91F1C55960007ED4B /* libfdk-aac.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		643C5ED31F1C4BD80007ED4B /* audioTranscode */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 643C5EDB1F1C4BD80007ED4B /* Build configuration list for PBXNativeTarget "audioTranscode" */;
+			buildPhases = (
+				643C5ED01F1C4BD80007ED4B /* Sources */,
+				643C5ED11F1C4BD80007ED4B /* Frameworks */,
+				643C5ED21F1C4BD80007ED4B /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = audioTranscode;
+			productName = audioTranscode;
+			productReference = 643C5ED41F1C4BD80007ED4B /* audioTranscode */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		643C5ECC1F1C4BD80007ED4B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = meitu;
+				TargetAttributes = {
+					643C5ED31F1C4BD80007ED4B = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = P28LTLTLWD;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 643C5ECF1F1C4BD80007ED4B /* Build configuration list for PBXProject "audioTranscode" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 643C5ECB1F1C4BD80007ED4B;
+			productRefGroup = 643C5ED51F1C4BD80007ED4B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				643C5ED31F1C4BD80007ED4B /* audioTranscode */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		643C5ED01F1C4BD80007ED4B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				643C5EF61F1C58410007ED4B /* InFileContext.cpp in Sources */,
+				643C5ED81F1C4BD80007ED4B /* main.cpp in Sources */,
+				643C5EE01F1C50B50007ED4B /* AudioDecoder.cpp in Sources */,
+				643C5EF91F1C99E30007ED4B /* AudioEncoder.cpp in Sources */,
+				643C5F0B1F1DE9A80007ED4B /* AudioFifo.cpp in Sources */,
+				643C5EFC1F1C9A7D0007ED4B /* OutFileContext.cpp in Sources */,
+				643C5F081F1DB6220007ED4B /* AudioResampler.cpp in Sources */,
+				4CC153671F1D82A300513FED /* ringbuffer.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		643C5ED91F1C4BD80007ED4B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		643C5EDA1F1C4BD80007ED4B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		643C5EDC1F1C4BD80007ED4B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = P28LTLTLWD;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		643C5EDD1F1C4BD80007ED4B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = P28LTLTLWD;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		643C5ECF1F1C4BD80007ED4B /* Build configuration list for PBXProject "audioTranscode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				643C5ED91F1C4BD80007ED4B /* Debug */,
+				643C5EDA1F1C4BD80007ED4B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		643C5EDB1F1C4BD80007ED4B /* Build configuration list for PBXNativeTarget "audioTranscode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				643C5EDC1F1C4BD80007ED4B /* Debug */,
+				643C5EDD1F1C4BD80007ED4B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 643C5ECC1F1C4BD80007ED4B /* Project object */;
+}
