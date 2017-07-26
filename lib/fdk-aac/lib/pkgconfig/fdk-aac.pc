@@ -1,4 +1,4 @@
-prefix=/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/thirdparty/fdk-aac//../../lib/fdk-aac
+prefix=/Users/zj-db0519/work/code/github/HbFFmpegMedia/thirdparty/fdk-aac//../../lib/fdk-aac
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

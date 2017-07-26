@@ -1,5 +1,5 @@
 SRCPATH=.
-prefix=/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/thirdparty/x264//../../lib/x264
+prefix=/Users/zj-db0519/work/code/github/HbFFmpegMedia/thirdparty/x264//../../lib/x264
 exec_prefix=${prefix}
 bindir=${exec_prefix}/bin
 libdir=${exec_prefix}/lib

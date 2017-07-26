@@ -1,7 +1,7 @@
 checking for -Werror=unknown-warning-option... yes
 checking for -arch x86_64... yes
 x264 configure script
-Command line options: "--prefix=/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/thirdparty/x264//../../lib/x264" "--disable-asm" "--enable-static" "--enable-debug" "--enable-pic"
+Command line options: "--prefix=/Users/zj-db0519/work/code/github/HbFFmpegMedia/thirdparty/x264//../../lib/x264" "--disable-asm" "--enable-static" "--enable-debug" "--enable-pic"
 
 checking whether gcc works... yes
 checking whether gcc supports for( int i = 0; i < 9; i++ ); with -std=gnu99... yes
