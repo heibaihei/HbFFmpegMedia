@@ -9,6 +9,7 @@ FAT="FFmpeg-iOS"
 
 CUR_WORK_ROOT_DIR=$(pwd)
 TARGET_LIBRARY_DIR=$CUR_WORK_ROOT_DIR/../lib
+DEPEND_THIRDPARTY_LIBRARY_DIR=$CUR_WORK_ROOT_DIR/../lib
 FFMPEG_OUTPUT_TARGET_DIR=$TARGET_LIBRARY_DIR/ffmpeg
 
 SCRATCH="scratch"
@@ -25,8 +26,8 @@ SCRATCH="scratch"
 # --enable-debug  就是gcc 中添加-g选项， 3是-g的级别
 # CONFIGURE_FLAGS="--enable-shared --disable-optimizations --disable-asm --disable-stripping --enable-debug --extra-cflags=-g --extra-ldflags=-g --enable-debug=3 --disable-doc --enable-pic"
 CONFIGURE_FLAGS="--enable-static --disable-shared --disable-optimizations --disable-asm --disable-stripping --enable-debug=3 --disable-doc --enable-pic"
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-cflags=-I/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/lib/fdk-aac/include --extra-cflags=-I/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/lib/x264/include"
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-ldflags=-L/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/lib/fdk-aac/lib --extra-ldflags=-L/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/lib/x264/lib"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/fdk-aac/include --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/x264/include"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/fdk-aac/lib --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/x264/lib"
 ## =====================================>>>
 
 # if [ "$X264" ]
