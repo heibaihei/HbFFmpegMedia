@@ -13,40 +13,28 @@ DEPEND_THIRDPARTY_LIBRARY_DIR=$CUR_WORK_ROOT_DIR/../lib
 FFMPEG_OUTPUT_TARGET_DIR=$TARGET_LIBRARY_DIR/ffmpeg
 
 SCRATCH="scratch"
+ARCHS="MacOS"
 
-# must be an absolute path
-# THIN=`pwd`/"thin"
-## =====================================>>>
-
-# absolute path to x264 library
-# X264=$TARGET_LIBRARY_DIR/x264
-
-#FDK_AAC=`pwd`/fdk-aac/fdk-aac-ios
-
-# --enable-debug  就是gcc 中添加-g选项， 3是-g的级别
-# CONFIGURE_FLAGS="--enable-shared --disable-optimizations --disable-asm --disable-stripping --enable-debug --extra-cflags=-g --extra-ldflags=-g --enable-debug=3 --disable-doc --enable-pic"
 CONFIGURE_FLAGS="--enable-static --disable-shared --disable-optimizations --disable-asm --disable-stripping --enable-debug=3 --disable-doc --enable-pic"
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/fdk-aac/include --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/x264/include"
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/fdk-aac/lib --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/x264/lib"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/fdk-aac/include --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/x264/include --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/lame/include"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/fdk-aac/lib --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/x264/lib --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/lame/lib"
 ## =====================================>>>
 
-# if [ "$X264" ]
-# then
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-gpl --enable-libx264"
-# fi
+# X264
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-gpl --enable-libx264"
 
-# if [ "$FDK_AAC" ]
-# then
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libfdk-aac --enable-nonfree --enable-encoder=aac"
-# fi
+# FDK_AAC
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libfdk-aac --enable-nonfree --enable-encoder=aac"
 
-# avresample
+# libmp3lame
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libmp3lame"
+
+# 模块
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-avresample"
 ## =====================================>>>
 
 
 #ARCHS="arm64 armv7 x86_64 i386"
-ARCHS="MacOS"
 
 echo "building $ARCH..."
 mkdir -p "$FFMPEG_OUTPUT_TARGET_DIR/$ARCH"
