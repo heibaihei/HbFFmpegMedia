@@ -159,9 +159,6 @@ int HBAudioEncoder(char *strInputFileName, char*strOutputFileName, AudioDataType
                 return HB_ERROR;
             }
             
-            /** 此处可以添加一些重采样的操作 */
-            
-            /** TODO: huangcl:音频帧的 pts 时间计算这么简单 ? */
             pOutputFrame->pts = i * wantOutputSamplePerChannelOfFrame;
             
             ret = avcodec_send_frame(pOutputCodecCtx, pOutputFrame);
@@ -170,24 +167,22 @@ int HBAudioEncoder(char *strInputFileName, char*strOutputFileName, AudioDataType
                 LOGE("Send packet failed: %s!\n", makeErrorStr(ret));
                 return HB_ERROR;
             }
+            
             av_frame_unref(pOutputFrame);
             
             while (true) {
                 ret = avcodec_receive_packet(pOutputCodecCtx, &outputPacket);
-                if (ret == 0)
-                {
+                if (ret == 0) {
                     av_packet_rescale_ts(&outputPacket, pOutputCodecCtx->time_base, audioOutputStream->time_base);
                     
                     outputPacket.stream_index = audioOutputStream->index;
                     av_write_frame(pOutputFormatCtx, &outputPacket);
                     av_packet_unref(&outputPacket);
                 }
-                if (ret == AVERROR(EAGAIN))
+                else if (ret == AVERROR(EAGAIN))
                     break;
-                else if (ret<0 && ret!=AVERROR_EOF) {
-                    av_packet_unref(&outputPacket);
+                else if (ret<0 && ret!=AVERROR_EOF)
                     return HB_ERROR;
-                }
             }
         }
     }
