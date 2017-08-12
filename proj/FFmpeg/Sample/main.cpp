@@ -17,7 +17,7 @@
 
 #include <unistd.h>
 
-#define PROJ_ROOT_PATH "/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/"
+#define PROJ_ROOT_PATH "/Users/zj-db0519/work/code/github/HbFFmpegMedia/"
 
 int gMtmvLogLevel = LOG_LEVEL_DEBUG;
 
@@ -36,25 +36,26 @@ int main(int argc, const char * argv[]) {
 //        char *strInputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioDecoder/skycity1.mp3";
 //        char *strOutputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioDecoder/skycity1_output.pcm";
 //        AudioParams outputAudioParams;
-//        outputAudioParams.fmt = AV_SAMPLE_FMT_S16;
-//        outputAudioParams.channel_layout = AV_CH_LAYOUT_STEREO;
+//        outputAudioParams.fmt = AV_SAMPLE_FMT_FLTP;
+//        outputAudioParams.channel_layout = AV_CH_LAYOUT_MONO;
 //        outputAudioParams.channels = av_get_channel_layout_nb_channels(outputAudioParams.channel_layout);
 //        outputAudioParams.freq = 44100;
+//        outputAudioParams.freq = 64000;
 //        
 //        HBAudioDecoder(strInputAudioFile, strOutputAudioFile, AUDIO_DATA_TYPE_OF_PCM, outputAudioParams);
 //    }
     
     { /** Audio decode */
-        char *strInputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioEncoder/tdjm.pcm";
-        char *strOutputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioEncoder/tdjm.aac";
+        char *strInputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioEncoder/skycity1_output.pcm";
+        char *strOutputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioEncoder/skycity1.aac";
         AudioParams outputAudioParams;
-        outputAudioParams.fmt = AV_SAMPLE_FMT_FLTP;
-        outputAudioParams.channel_layout = AV_CH_LAYOUT_STEREO;
-        outputAudioParams.channels = av_get_channel_layout_nb_channels(outputAudioParams.channel_layout);
+        outputAudioParams.fmt = AV_SAMPLE_FMT_FLTP;//
+        outputAudioParams.channels = 1;
+        outputAudioParams.channel_layout = av_get_default_channel_layout(outputAudioParams.channels);
         outputAudioParams.freq = 44100;
         outputAudioParams.mbitRate = 64000;
         
-        HBAudioEncoder(strInputAudioFile, strOutputAudioFile, AUDIO_DATA_TYPE_OF_AAC, outputAudioParams);
+        HBAudioEncoder(strInputAudioFile, strOutputAudioFile, AUDIO_DATA_TYPE_OF_AAC, &outputAudioParams);
     }
 /** ################################# <<< */
     

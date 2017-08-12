@@ -3,6 +3,6 @@
 
 #include "HBAudio.h"
 
-int HBAudioEncoder(char *strInputFileName, char*strOutputFileName, AudioDataType dataType, AudioParams &outputAudioParams);
+int HBAudioEncoder(char *strInputFileName, char*strOutputFileName, AudioDataType dataType, AudioParams *outputAudioParams);
 
 #endif

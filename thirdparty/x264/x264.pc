@@ -1,4 +1,4 @@
-prefix=/Users/zj-db0519/work/code/github/HbFFmpegMedia/thirdparty/x264//../../lib/x264
+prefix=/usr/local
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

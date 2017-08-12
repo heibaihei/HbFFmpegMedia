@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A10B26DB1EC9BD94006D24C6 /* filtering_video.c in Sources */ = {isa = PBXBuildFile; fileRef = A10B26DA1EC9BD94006D24C6 /* filtering_video.c */; };
+		A13A69751F3ED3F900FC6376 /* HBAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A13A69741F3ED3F900FC6376 /* HBAudio.cpp */; };
 		A156FEF31EA25C7000258C1E /* FFmpegSwscale.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A156FEF11EA25C7000258C1E /* FFmpegSwscale.cpp */; };
 		A181BC2D1EA1F4CF004861DA /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A181BC2C1EA1F4CF004861DA /* main.c */; };
 		A181BC351EA1F682004861DA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC341EA1F682004861DA /* main.cpp */; };
@@ -2796,6 +2797,7 @@
 /* Begin PBXFileReference section */
 		A10B26DA1EC9BD94006D24C6 /* filtering_video.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = filtering_video.c; path = "../../../ffmpeg-3.2/doc/examples/filtering_video.c"; sourceTree = "<group>"; };
 		A12912111EC756E7008847CE /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		A13A69741F3ED3F900FC6376 /* HBAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HBAudio.cpp; sourceTree = "<group>"; };
 		A156FEF11EA25C7000258C1E /* FFmpegSwscale.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFmpegSwscale.cpp; sourceTree = "<group>"; };
 		A156FEF21EA25C7000258C1E /* FFmpegSwscale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegSwscale.h; sourceTree = "<group>"; };
 		A181BC2C1EA1F4CF004861DA /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../../src/main.c; sourceTree = "<group>"; };
@@ -2830,7 +2832,6 @@
 		A183E2E91F1F0028003700C3 /* AudioEncoderPure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioEncoderPure.cpp; sourceTree = "<group>"; };
 		A183E2EA1F1F0028003700C3 /* simplest_ffmpeg_audio_encoder.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = simplest_ffmpeg_audio_encoder.jpg; sourceTree = "<group>"; };
 		A183E2EB1F1F0028003700C3 /* tdjm.aac */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = tdjm.aac; sourceTree = "<group>"; };
-		A183E2EC1F1F0028003700C3 /* tdjm.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = tdjm.pcm; sourceTree = "<group>"; };
 		A19A67B91EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_grabdesktop.cpp; sourceTree = "<group>"; };
 		A19A67BB1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_readcamera.cpp; sourceTree = "<group>"; };
 		A19A67C21EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_demuxer_simple.cpp; sourceTree = "<group>"; };
@@ -9346,7 +9347,6 @@
 				A183E2E91F1F0028003700C3 /* AudioEncoderPure.cpp */,
 				A183E2EA1F1F0028003700C3 /* simplest_ffmpeg_audio_encoder.jpg */,
 				A183E2EB1F1F0028003700C3 /* tdjm.aac */,
-				A183E2EC1F1F0028003700C3 /* tdjm.pcm */,
 			);
 			path = AudioEncoder;
 			sourceTree = "<group>";
@@ -16511,6 +16511,7 @@
 		A1FB662E1F19EBDC001B08F0 /* audio */ = {
 			isa = PBXGroup;
 			children = (
+				A13A69741F3ED3F900FC6376 /* HBAudio.cpp */,
 				A1FB66421F19EC4C001B08F0 /* HBAudio.h */,
 				A183E2E61F1F0028003700C3 /* AudioEncoder */,
 				A1FB662F1F19EBDC001B08F0 /* AudioDecoder */,
@@ -16725,6 +16726,7 @@
 				A181BC6A1EA21788004861DA /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,
 				A181BC5F1EA21756004861DA /* HBSeperateFormat.c in Sources */,
 				A181BC581EA2172B004861DA /* audio_format_convert.cpp in Sources */,
+				A13A69751F3ED3F900FC6376 /* HBAudio.cpp in Sources */,
 				A19A67E41EB3460100DE8F11 /* simplest_ffmpeg_swscale.cpp in Sources */,
 				A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */,
 				A19A67D91EB3445600DE8F11 /* simplest_ffmpeg_video_filter_pure.cpp in Sources */,

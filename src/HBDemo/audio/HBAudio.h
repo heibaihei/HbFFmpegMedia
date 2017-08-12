@@ -10,6 +10,7 @@ extern "C" {
 #include "libswresample/swresample.h"
 #include "libavutil/samplefmt.h"
 #include "libavutil/error.h"
+#include "libavutil/audio_fifo.h"
     
 #ifdef __cplusplus
 };
@@ -39,6 +40,7 @@ typedef struct _AudioParams {
     long mbitRate;
 } AudioParams;
 
+int audioGlobalInitial();
 
 #include "HBCommon.h"
 
