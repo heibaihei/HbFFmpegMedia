@@ -125,118 +125,83 @@ int HBAudioEncoder(char *strInputFileName, char*strOutputFileName, AudioDataType
     AVAudioFifo *audioFifo = av_audio_fifo_alloc(pOutputCodecCtx->sample_fmt, pOutputCodecCtx->channels, pOutputCodecCtx->frame_size);
     
     FILE * inputFileHandle = fopen(strInputFileName, "rb");
-    for (i=0; i < NUMS_OF_FRAME; i++)
-    {
-        int audioFrameDataLineSize[AV_NUM_DATA_POINTERS] = {0, 0,0, 0,0, 0,0, 0};
-        uint8_t *audioFrameData[AV_NUM_DATA_POINTERS] = {NULL};
-        
-        int realAudioReadSize = (int)fread(outputFrameBuffer, 1, outputFrameBufferSize, inputFileHandle);
-        if (realAudioReadSize <= 0 || feof(inputFileHandle)) {
-            LOGE("Read audio media abort !\n");
-            goto ENCODE_END_LABLE;
-        }
     
-        int realAudioReadSample = realAudioReadSize / (av_get_bytes_per_sample(pOutputCodecCtx->sample_fmt) * pOutputCodecCtx->channels);
-        
-        ret = av_samples_fill_arrays(audioFrameData, audioFrameDataLineSize, outputFrameBuffer, pOutputCodecCtx->channels, realAudioReadSample, pOutputCodecCtx->sample_fmt, 1);
-        
-        if ((ret =av_audio_fifo_write(audioFifo, (void **)audioFrameData, realAudioReadSample)) < realAudioReadSample) {
-            LOGE("Audio fifo write sample:%d failed !", realAudioReadSample);
-            return HB_ERROR;
+    int realAudioReadSize = 0;
+    bool bAudioDataEof = false;
+    while (!bAudioDataEof)
+    {
+        if (realAudioReadSize <= 0) {
+            realAudioReadSize = (int)fread(outputFrameBuffer, 1, outputFrameBufferSize, inputFileHandle);
+            if (realAudioReadSize <= 0) {
+                LOGF("Read audio media abort !\n");
+                bAudioDataEof = true;
+            }
         }
         
-        while ((av_audio_fifo_size(audioFifo)) >= wantOutputSamplePerChannelOfFrame)
-        {
-            ret = initialOutputFrame(&pOutputFrame, outputAudioParams, wantOutputSamplePerChannelOfFrame);
-            if (ret != HB_OK) {
-                LOGE("initial output frame failed !");
+        if (realAudioReadSize > 0) {
+            int audioFrameDataLineSize[AV_NUM_DATA_POINTERS] = {0, 0, 0, 0, 0, 0, 0, 0};
+            uint8_t *audioFrameData[AV_NUM_DATA_POINTERS] = {NULL};
+            
+            int realAudioReadSample = realAudioReadSize / (av_get_bytes_per_sample(pOutputCodecCtx->sample_fmt) * pOutputCodecCtx->channels);
+            ret = av_samples_fill_arrays(audioFrameData, audioFrameDataLineSize, outputFrameBuffer, pOutputCodecCtx->channels, realAudioReadSample, pOutputCodecCtx->sample_fmt, 1);
+            if (ret < 0) {
+                LOGE("Audio samples fill arrays failed <%s>!", makeErrorStr(ret));
                 return HB_ERROR;
             }
             
-            ret = av_audio_fifo_read(audioFifo, (void **)pOutputFrame->data, wantOutputSamplePerChannelOfFrame);
-            if (ret < wantOutputSamplePerChannelOfFrame) {
-                LOGE("Audio fifo read data failed !");
+            ret =av_audio_fifo_write(audioFifo, (void **)audioFrameData, realAudioReadSample);
+            if ((ret < 0) || (ret < realAudioReadSample)) {
+                LOGE("Audio fifo write sample:%d failed !", realAudioReadSample);
                 return HB_ERROR;
             }
             
-            pOutputFrame->pts = i * wantOutputSamplePerChannelOfFrame;
-            
-            ret = avcodec_send_frame(pOutputCodecCtx, pOutputFrame);
-            if (ret<0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF) {
-                av_frame_unref(pOutputFrame);
-                LOGE("Send packet failed: %s!\n", makeErrorStr(ret));
-                return HB_ERROR;
-            }
-            
-            av_frame_unref(pOutputFrame);
-            
-            while (true) {
-                ret = avcodec_receive_packet(pOutputCodecCtx, &outputPacket);
-                if (ret == 0) {
-                    av_packet_rescale_ts(&outputPacket, pOutputCodecCtx->time_base, audioOutputStream->time_base);
-                    
-                    outputPacket.stream_index = audioOutputStream->index;
-                    av_write_frame(pOutputFormatCtx, &outputPacket);
-                    av_packet_unref(&outputPacket);
-                }
-                else if (ret == AVERROR(EAGAIN))
-                    break;
-                else if (ret<0 && ret!=AVERROR_EOF)
+            realAudioReadSize -= (ret * (av_get_bytes_per_sample(pOutputCodecCtx->sample_fmt) * pOutputCodecCtx->channels));
+            while ((av_audio_fifo_size(audioFifo)) >= wantOutputSamplePerChannelOfFrame || (bAudioDataEof && av_audio_fifo_size(audioFifo) > 0))
+            {
+                static int64_t lastAudioFramePts = 0;
+                ret = initialOutputFrame(&pOutputFrame, outputAudioParams, wantOutputSamplePerChannelOfFrame);
+                if (ret != HB_OK) {
+                    LOGE("initial output frame failed !");
                     return HB_ERROR;
+                }
+                
+                ret = av_audio_fifo_read(audioFifo, (void **)pOutputFrame->data, wantOutputSamplePerChannelOfFrame);
+                if (ret < 0) {
+                    LOGE("Audio fifo read data failed !");
+                    return HB_ERROR;
+                }
+                
+                lastAudioFramePts += ret;
+                pOutputFrame->pts = lastAudioFramePts;
+                
+                ret = avcodec_send_frame(pOutputCodecCtx, pOutputFrame);
+                if (ret<0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF) {
+                    av_frame_unref(pOutputFrame);
+                    LOGE("Send packet failed: %s!\n", makeErrorStr(ret));
+                    return HB_ERROR;
+                }
+                
+                av_frame_unref(pOutputFrame);
+                
+                while (true) {
+                    ret = avcodec_receive_packet(pOutputCodecCtx, &outputPacket);
+                    if (ret == 0) {
+                        av_packet_rescale_ts(&outputPacket, pOutputCodecCtx->time_base, audioOutputStream->time_base);
+                        
+                        outputPacket.stream_index = audioOutputStream->index;
+                        av_write_frame(pOutputFormatCtx, &outputPacket);
+                        av_packet_unref(&outputPacket);
+                    }
+                    else if (ret == AVERROR(EAGAIN))
+                        break;
+                    else if (ret<0 && ret!=AVERROR_EOF)
+                        return HB_ERROR;
+                }
             }
         }
     }
 
 ENCODE_END_LABLE:
-    while (av_audio_fifo_size(audioFifo) > 0) {
-        if (av_audio_fifo_size(audioFifo) < wantOutputSamplePerChannelOfFrame)
-            wantOutputSamplePerChannelOfFrame = av_audio_fifo_size(audioFifo);
-        
-        ret = initialOutputFrame(&pOutputFrame, outputAudioParams, wantOutputSamplePerChannelOfFrame);
-        if (ret != HB_OK) {
-            LOGE("initial output frame failed !");
-            return HB_ERROR;
-        }
-        
-        ret = av_audio_fifo_read(audioFifo, (void **)pOutputFrame->data, wantOutputSamplePerChannelOfFrame);
-        if (ret < wantOutputSamplePerChannelOfFrame) {
-            LOGE("Audio fifo read data failed !");
-            return HB_ERROR;
-        }
-        
-        /** 此处可以添加一些重采样的操作 */
-        
-        /** TODO: huangcl:音频帧的 pts 时间计算这么简单 ? */
-        pOutputFrame->pts = i * wantOutputSamplePerChannelOfFrame;
-        
-        ret = avcodec_send_frame(pOutputCodecCtx, pOutputFrame);
-        if (ret<0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF) {
-            av_frame_unref(pOutputFrame);
-            LOGE("Send packet failed: %s!\n", makeErrorStr(ret));
-            return HB_ERROR;
-        }
-        av_frame_unref(pOutputFrame);
-        
-        while (true) {
-            ret = avcodec_receive_packet(pOutputCodecCtx, &outputPacket);
-            if (ret == 0)
-            {
-                av_packet_rescale_ts(&outputPacket, pOutputCodecCtx->time_base, audioOutputStream->time_base);
-                
-                outputPacket.stream_index = audioOutputStream->index;
-                av_write_frame(pOutputFormatCtx, &outputPacket);
-                av_packet_unref(&outputPacket);
-            }
-            if (ret == AVERROR(EAGAIN))
-                break;
-            else if (ret<0 && ret!=AVERROR_EOF) {
-                av_packet_unref(&outputPacket);
-                return HB_ERROR;
-            }
-        }
-        
-    }
-    
     flushAudioDecodeCache(pOutputCodecCtx, audioOutputStream, pOutputFormatCtx, audioFifo);
     
 	//Write Trailer
