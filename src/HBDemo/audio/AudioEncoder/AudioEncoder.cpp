@@ -8,7 +8,7 @@
 #define TARGET_AUDIO_ENCODE_FORMAT  AV_CODEC_ID_AAC
 #define NUMS_OF_FRAME   100
 
-int flushAudioDecodeCache(AVCodecContext* pOutputCodecCtx, AVStream* audioOutputStream, AVFormatContext* pOutputFormatCtx, AVAudioFifo *audioFifo);
+int flushAudioDecodeCache(AVCodecContext* pOutputCodecCtx, AVStream* audioOutputStream, AVFormatContext* pOutputFormatCtx);
 
 int initialOutputFrame(AVFrame** frame, AudioParams *pAudioParam, int AudioSamples) {
     if (!frame)
@@ -118,7 +118,6 @@ int HBAudioEncoder(char *strInputFileName, char*strOutputFileName, AudioDataType
         return HB_ERROR;
     }
 
-    int i=0;
     int wantOutputSamplePerChannelOfFrame = pOutputCodecCtx->frame_size;
     int outputFrameBufferSize = av_get_bytes_per_sample(pOutputCodecCtx->sample_fmt) * wantOutputSamplePerChannelOfFrame * pOutputCodecCtx->channels;
     uint8_t* outputFrameBuffer = (uint8_t *)av_malloc(outputFrameBufferSize);
@@ -202,12 +201,13 @@ int HBAudioEncoder(char *strInputFileName, char*strOutputFileName, AudioDataType
     }
 
 ENCODE_END_LABLE:
-    flushAudioDecodeCache(pOutputCodecCtx, audioOutputStream, pOutputFormatCtx, audioFifo);
+    flushAudioDecodeCache(pOutputCodecCtx, audioOutputStream, pOutputFormatCtx);
     
-	//Write Trailer
-	av_write_trailer(pOutputFormatCtx);
+    if (0 != av_write_trailer(pOutputFormatCtx)) {
+        LOGE("Audio write tailer failed !");
+        return HB_ERROR;
+    }
 
-	//Clean
 	if (audioOutputStream){
 		avcodec_close(pOutputCodecCtx);
 		av_free(pOutputFrame);
@@ -222,19 +222,18 @@ ENCODE_END_LABLE:
 	return HB_OK;
 }
 
-int flushAudioDecodeCache(AVCodecContext* pOutputCodecCtx, AVStream* audioOutputStream, AVFormatContext* pOutputFormatCtx, AVAudioFifo *audioFifo)
+int flushAudioDecodeCache(AVCodecContext* pOutputCodecCtx, AVStream* audioOutputStream, AVFormatContext* pOutputFormatCtx)
 {
     /**
      *  结束编解码： 排水模式
      */
-    int ret=0;
-    AVPacket outputPacket;
-    av_init_packet(&outputPacket);
-    
-    if ((ret = avcodec_send_frame(pOutputCodecCtx, NULL)) == 0) {
+    if (avcodec_send_frame(pOutputCodecCtx, NULL) == 0)
+    {
+        AVPacket outputPacket;
+        av_init_packet(&outputPacket);
         
         while (true) {
-            ret = avcodec_receive_packet(pOutputCodecCtx, &outputPacket);
+            int ret = avcodec_receive_packet(pOutputCodecCtx, &outputPacket);
             if (ret == 0) {
                 outputPacket.stream_index = audioOutputStream->index;
                 
@@ -257,7 +256,7 @@ int flushAudioDecodeCache(AVCodecContext* pOutputCodecCtx, AVStream* audioOutput
         }
     }
     else
-        LOGE("Flush audio decode failed <%d>!", ret);
+        LOGE("Flush audio decode failed !");
 
     return HB_OK;
 }
