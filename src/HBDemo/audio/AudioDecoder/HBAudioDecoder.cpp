@@ -117,7 +117,7 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
     
     /** Swr Initial */
     struct SwrContext* audioConvertCtx = swr_alloc();
-    audioConvertCtx=swr_alloc_set_opts(audioConvertCtx, outputAudioParams.channel_layout, outputAudioParams.fmt, outputAudioParams.freq,
+    audioConvertCtx=swr_alloc_set_opts(audioConvertCtx, outputAudioParams.channel_layout, outputAudioParams.sample_fmt, outputAudioParams.sample_rate,
                                        av_get_default_channel_layout(pInputAudioCodecCtx->channels), pInputAudioCodecCtx->sample_fmt, pInputAudioCodecCtx->sample_rate, 0, NULL);
     swr_init(audioConvertCtx);
     
@@ -137,8 +137,8 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
             switch (hbError) {
                 case 0:
                     {
-                        int outputAudioSamplePerChannle = ((pFrame->nb_samples * outputAudioParams.freq) / pFrame->sample_rate + 256);
-                        int outputAudioSampleSize = av_samples_get_buffer_size(NULL, outputAudioParams.channels, outputAudioSamplePerChannle, outputAudioParams.fmt, 0);
+                        int outputAudioSamplePerChannle = ((pFrame->nb_samples * outputAudioParams.sample_rate) / pFrame->sample_rate + 256);
+                        int outputAudioSampleSize = av_samples_get_buffer_size(NULL, outputAudioParams.channels, outputAudioSamplePerChannle, outputAudioParams.sample_fmt, 0);
                         if (outputAudioSampleSize < 0) {
                             LOGE("Calculate ouput sample size failed !");
                             return HB_ERROR;
@@ -156,7 +156,7 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
                         }
                         else {
                             /** 输出转换后的音频数据到输出文件中 */
-                            unsigned int resampled_data_size = audioSwrPerChannelSamples * outputAudioParams.channels * av_get_bytes_per_sample(outputAudioParams.fmt);
+                            unsigned int resampled_data_size = audioSwrPerChannelSamples * outputAudioParams.channels * av_get_bytes_per_sample(outputAudioParams.sample_fmt);
                             
                             fwrite(swrOutputAudioBuffer, 1, resampled_data_size, pAudioOutputFileHandle);
                         }

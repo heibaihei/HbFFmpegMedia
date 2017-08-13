@@ -31,10 +31,10 @@ typedef enum _AudioDataType {
 } AudioDataType;
 
 typedef struct _AudioParams {
-    int freq;
+    int sample_rate;
     int channels;
     int64_t channel_layout;
-    AVSampleFormat fmt;
+    AVSampleFormat sample_fmt;
     int frame_size;
     int bytes_per_sec;
     long mbitRate;

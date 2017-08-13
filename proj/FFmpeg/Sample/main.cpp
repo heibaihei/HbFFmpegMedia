@@ -49,10 +49,10 @@ int main(int argc, const char * argv[]) {
         char *strInputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioEncoder/skycity1_output.pcm";
         char *strOutputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioEncoder/skycity1.aac";
         AudioParams outputAudioParams;
-        outputAudioParams.fmt = AV_SAMPLE_FMT_FLTP;//
+        outputAudioParams.sample_fmt = AV_SAMPLE_FMT_FLTP;//
         outputAudioParams.channels = 1;
         outputAudioParams.channel_layout = av_get_default_channel_layout(outputAudioParams.channels);
-        outputAudioParams.freq = 44100;
+        outputAudioParams.sample_rate = 44100;
         outputAudioParams.mbitRate = 64000;
         
         HBAudioEncoder(strInputAudioFile, strOutputAudioFile, AUDIO_DATA_TYPE_OF_AAC, &outputAudioParams);
