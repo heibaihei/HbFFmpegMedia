@@ -6,7 +6,6 @@
 
 
 #define TARGET_AUDIO_ENCODE_FORMAT  AV_CODEC_ID_AAC
-#define NUMS_OF_FRAME   100
 
 int flushAudioDecodeCache(AVCodecContext* pOutputCodecCtx, AVStream* audioOutputStream, AVFormatContext* pOutputFormatCtx);
 
@@ -62,13 +61,13 @@ int audioComponentInitial(AVFormatContext** pOutputFormatCtx, AVStream** pOutput
     
     AVCodec* audioCodec = avcodec_find_encoder(TARGET_AUDIO_ENCODE_FORMAT);
     if (audioCodec == NULL) {
-        LOGE("Can not find audio encoder! %d\n", TARGET_AUDIO_ENCODE_FORMAT);
+        LOGE("Can not find audio encoder! %d\n", audioCodec->id);
         return HB_ERROR;
     }
     
     /** media codecCtx */
     AVCodecContext* audioCodecCtx = avcodec_alloc_context3(audioCodec);
-    audioCodecCtx->codec_id = TARGET_AUDIO_ENCODE_FORMAT;
+    audioCodecCtx->codec_id = audioCodec->id;
     audioCodecCtx->codec_type = AVMEDIA_TYPE_AUDIO;
     audioCodecCtx->sample_fmt = targetAudioParam->sample_fmt;
     audioCodecCtx->sample_rate = targetAudioParam->sample_rate;
