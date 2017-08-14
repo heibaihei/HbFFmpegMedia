@@ -22,7 +22,7 @@
 
 #define __STDC_CONSTANT_MACROS
 
-#include "HBAudioDecoder.h"
+#include "AudioDecoder.h"
 
 /** 1 second of 48khz 32bit audio: 48000*4=192000 */
 #define MAX_AUDIO_FRAME_SIZE 192000

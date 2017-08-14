@@ -2729,7 +2729,7 @@
 		A1F14AD41EA12B0600939FF3 /* yuvcmp.c in Sources */ = {isa = PBXBuildFile; fileRef = A1F140891EA12AFE00939FF3 /* yuvcmp.c */; };
 		A1F14AD51EA12B0600939FF3 /* zmqsend.c in Sources */ = {isa = PBXBuildFile; fileRef = A1F1408A1EA12AFE00939FF3 /* zmqsend.c */; };
 		A1FB66411F19EBDC001B08F0 /* audio_player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1FB66391F19EBDC001B08F0 /* audio_player.cpp */; };
-		A1FB66451F19F18B001B08F0 /* HBAudioDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1FB66431F19F18B001B08F0 /* HBAudioDecoder.cpp */; };
+		A1FB66451F19F18B001B08F0 /* AudioDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1FB66431F19F18B001B08F0 /* AudioDecoder.cpp */; };
 		A1FC23B81F277BC800024371 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FC23B71F277BC800024371 /* libz.tbd */; };
 		A1FC23BA1F277BD200024371 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FC23B91F277BD200024371 /* libbz2.tbd */; };
 		A1FC23BD1F277D1000024371 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E5CBA71F276C8500A02704 /* AudioToolbox.framework */; };
@@ -9067,8 +9067,8 @@
 		A1FB663C1F19EBDC001B08F0 /* WavinFlag.aac */ = {isa = PBXFileReference; lastKnownFileType = file; path = WavinFlag.aac; sourceTree = "<group>"; };
 		A1FB663D1F19EBDC001B08F0 /* xiaoqingge.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = xiaoqingge.mp3; sourceTree = "<group>"; };
 		A1FB66421F19EC4C001B08F0 /* HBAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HBAudio.h; sourceTree = "<group>"; };
-		A1FB66431F19F18B001B08F0 /* HBAudioDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HBAudioDecoder.cpp; sourceTree = "<group>"; };
-		A1FB66441F19F18B001B08F0 /* HBAudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HBAudioDecoder.h; sourceTree = "<group>"; };
+		A1FB66431F19F18B001B08F0 /* AudioDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDecoder.cpp; sourceTree = "<group>"; };
+		A1FB66441F19F18B001B08F0 /* AudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDecoder.h; sourceTree = "<group>"; };
 		A1FB66461F19F6D2001B08F0 /* HBLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBLog.h; path = ../../../src/HBDemo/HBLog.h; sourceTree = "<group>"; };
 		A1FB66471F19F721001B08F0 /* HBSampleDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBSampleDefine.h; path = ../../../src/HBDemo/HBSampleDefine.h; sourceTree = "<group>"; };
 		A1FC23B71F277BC800024371 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -16519,8 +16519,8 @@
 		A1FB662F1F19EBDC001B08F0 /* AudioDecoder */ = {
 			isa = PBXGroup;
 			children = (
-				A1FB66431F19F18B001B08F0 /* HBAudioDecoder.cpp */,
-				A1FB66441F19F18B001B08F0 /* HBAudioDecoder.h */,
+				A1FB66431F19F18B001B08F0 /* AudioDecoder.cpp */,
+				A1FB66441F19F18B001B08F0 /* AudioDecoder.h */,
 				A1FB66311F19EBDC001B08F0 /* skycity1.mp3 */,
 			);
 			path = AudioDecoder;
@@ -16715,7 +16715,7 @@
 				A181BC351EA1F682004861DA /* main.cpp in Sources */,
 				A1B7FE331F0DDD52003C6D0F /* HBPickPicture.cpp in Sources */,
 				A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */,
-				A1FB66451F19F18B001B08F0 /* HBAudioDecoder.cpp in Sources */,
+				A1FB66451F19F18B001B08F0 /* AudioDecoder.cpp in Sources */,
 				A181BC691EA21788004861DA /* simplest_ffmpeg_video_encoder.cpp in Sources */,
 				A19A67D21EB3434200DE8F11 /* simplest_ffmpeg_remuxer.cpp in Sources */,
 				A181BC6A1EA21788004861DA /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,

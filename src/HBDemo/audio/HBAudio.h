@@ -44,7 +44,7 @@ int audioGlobalInitial();
 
 #include "HBCommon.h"
 
-#include "AudioDecoder/HBAudioDecoder.h"
+#include "AudioDecoder/AudioDecoder.h"
 #include "AudioEncoder/AudioEncoder.h"
 
 #endif
