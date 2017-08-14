@@ -27,107 +27,127 @@
 /** 1 second of 48khz 32bit audio: 48000*4=192000 */
 #define MAX_AUDIO_FRAME_SIZE 192000
 
-static int _audioDecoderInitial()
-{
-    av_register_all();
-    avformat_network_init();
+static int audioSwrConvertComponentInitial(struct SwrContext** pAudioConvertCtx, AVCodecContext *audioCodeCtx, AudioParams *targetAudioParams) {
+    
+    if (!pAudioConvertCtx || !targetAudioParams || !audioCodeCtx) {
+        LOGE("Audio swreample convert args invalid !");
+        return HB_ERROR;
+    }
+    
+    struct SwrContext* audioConvertCtx = swr_alloc();
+    audioConvertCtx = swr_alloc_set_opts(audioConvertCtx, targetAudioParams->channel_layout, targetAudioParams->sample_fmt, targetAudioParams->sample_rate,
+                                       av_get_default_channel_layout(audioCodeCtx->channels), audioCodeCtx->sample_fmt, audioCodeCtx->sample_rate, 0, NULL);
+
+    swr_init(audioConvertCtx);
+    *pAudioConvertCtx = audioConvertCtx;
     
     return HB_OK;
 }
+static int audioDecoderComponentInitial(AudioParams *targetAudioParams, AVFormatContext	**inputAudioFormatCtx, AVCodecContext** inputAudioCodecCtx, AVCodec** inputAudioCodec, char *strInputFileName, char*strOutputFileName, int& streamIndex) {
 
-static int _audioCheckParamsIsValid(AudioParams &outputAudioParams) {
-
-    if (outputAudioParams.channels != av_get_channel_layout_nb_channels(outputAudioParams.channel_layout)) {
+    int hbError = 0;
+    if (!strInputFileName || !strOutputFileName ) {
+        LOGE("Audio decoder args file is Null, invalid !  InputFile: %s | OutputFile:%s ", strInputFileName, strOutputFileName);
+        return HB_ERROR;
+    }
+    
+    if (targetAudioParams && targetAudioParams->channels != av_get_channel_layout_nb_channels(targetAudioParams->channel_layout)) {
         LOGE("Check audio param failed !");
         return HB_ERROR;
     }
     
+    AVFormatContext	*audioFormatCtx = avformat_alloc_context();
+    if((hbError = avformat_open_input(&audioFormatCtx, strInputFileName, NULL, NULL)) != 0){
+        LOGE("Audio decoder couldn't open input file. <%d> <%s>", hbError, av_err2str(hbError));
+        return HB_ERROR;
+    }
+    if((hbError = avformat_find_stream_info(audioFormatCtx, NULL)) < 0){
+        LOGE("Audio decoder couldn't find stream information. <%s>", av_err2str(hbError));
+        return HB_ERROR;
+    }
+    
+    streamIndex = -1;
+    for(int i=0; i<audioFormatCtx->nb_streams; i++) {
+        if (audioFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
+            streamIndex = i;
+            break;
+        }
+    }
+    
+    if(streamIndex == -1){
+        LOGW("Audio decoder counldn't find valid audio stream !");
+        return HB_ERROR;
+    }
+    
+    AVCodecContext* audioCodecCtx = avcodec_alloc_context3(avcodec_find_decoder(audioFormatCtx->streams[streamIndex]->codecpar->codec_id));
+    avcodec_parameters_to_context(audioCodecCtx, audioFormatCtx->streams[streamIndex]->codecpar);
+    
+    AVCodec* audioCodec=avcodec_find_decoder(audioCodecCtx->codec_id);
+    if(audioCodec == NULL){
+        LOGE("Codec <%d> not found !", audioCodecCtx->codec_id);
+        return HB_ERROR;
+    }
+    
+    *inputAudioFormatCtx = audioFormatCtx;
+    *inputAudioCodecCtx = audioCodecCtx;
+    *inputAudioCodec = audioCodec;
+    
+    av_dump_format(audioFormatCtx, 0, strInputFileName, false);
+    
     return HB_OK;
 }
 
-int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType dataType, AudioParams &outputAudioParams)
+int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType dataType, AudioParams *outputAudioParams)
 {
     int hbError = 0;
-	int	iAudioStream = -1;
+	int	iAudioStreamIndex = -1;
 
     if (!strInputFileName || !strOutputFileName || dataType >= AUDIO_DATA_TYPE_OF_MAX || dataType <= AUDIO_DATA_TYPE_OF_UNKNOWN) {
         LOGE("Audio decoder args file is Null, invalid ! type:%d | InputFile: %s | OutputFile:%s ", dataType, strInputFileName, strOutputFileName);
         return HB_ERROR;
     }
     
-    if (_audioCheckParamsIsValid(outputAudioParams)) {
-        LOGF("Audio decoder params is invalid !");
+    if (audioGlobalInitial() != HB_OK) {
+        LOGE("Audio global initial failed !");
         return HB_ERROR;
     }
     
-	FILE *pAudioOutputFileHandle=fopen(strOutputFileName, "wb");
-    if (!pAudioOutputFileHandle) {
-        LOGE("Audio decoder couldn't open output file.");
+    AVFormatContext	*pInputAudioFormatCtx = nullptr;
+    AVCodecContext  *pInputAudioCodecCtx = nullptr;
+    AVCodec         *pInputAudioCodec = nullptr;
+    if (audioDecoderComponentInitial(outputAudioParams, &pInputAudioFormatCtx, &pInputAudioCodecCtx, &pInputAudioCodec, strInputFileName, strOutputFileName, iAudioStreamIndex) != HB_OK) {
+        LOGE("Audio decoder component initial failed !");
         return HB_ERROR;
     }
-	
-    _audioDecoderInitial();
     
-	AVFormatContext	*pInputAudioFormatCtx = avformat_alloc_context();
-	if((hbError = avformat_open_input(&pInputAudioFormatCtx, strInputFileName, NULL, NULL)) != 0){
-		LOGE("Audio decoder couldn't open input file. <%d> <%s>", hbError, av_err2str(hbError));
-		return HB_ERROR;
-	}
-	if((hbError = avformat_find_stream_info(pInputAudioFormatCtx, NULL)) < 0){
-		LOGE("Audio decoder couldn't find stream information. <%s>", av_err2str(hbError));
-		return HB_ERROR;
-	}
-
-	av_dump_format(pInputAudioFormatCtx, 0, strInputFileName, false);
-
-    
-    for(int i=0; i<pInputAudioFormatCtx->nb_streams; i++) {
-		if (pInputAudioFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
-			iAudioStream = i;
-			break;
-		}
+    struct SwrContext* audioConvertCtx = nullptr;
+    if (audioSwrConvertComponentInitial(&audioConvertCtx, pInputAudioCodecCtx, outputAudioParams) != HB_OK) {
+        LOGE("Audio swreample component initial failed !");
+        return HB_ERROR;
     }
     
-	if(iAudioStream == -1){
-		LOGW("Audio decoder counldn't find valid audio stream !");
-		return HB_ERROR;
-	}
-
-    AVCodecContext* pInputAudioCodecCtx = avcodec_alloc_context3(avcodec_find_decoder(pInputAudioFormatCtx->streams[iAudioStream]->codecpar->codec_id));
-    avcodec_parameters_to_context(pInputAudioCodecCtx, pInputAudioFormatCtx->streams[iAudioStream]->codecpar);
-	AVCodec* pInputAudioCodec=avcodec_find_decoder(pInputAudioCodecCtx->codec_id);
-	if(pInputAudioCodec == NULL){
-		LOGE("Codec <%d> not found !", pInputAudioCodecCtx->codec_id);
-		return HB_ERROR;
-	}
-
 	if((hbError = avcodec_open2(pInputAudioCodecCtx, pInputAudioCodec,NULL))<0){
 		LOGE("Could not open codec. <%s>", av_err2str(hbError));
 		return HB_ERROR;
 	}
 
-	AVPacket* packet=(AVPacket *)av_malloc(sizeof(AVPacket));
-    if (!packet) {
-        LOGE("Create avpacket failed !");
+    FILE *pAudioOutputFileHandle=fopen(strOutputFileName, "wb");
+    if (!pAudioOutputFileHandle) {
+        LOGE("Audio decoder couldn't open output file.");
         return HB_ERROR;
     }
     
-    av_init_packet(packet);
+    AVPacket packet;
+    av_init_packet(&packet);
     AVFrame* pFrame=av_frame_alloc();
-    
-    /** Swr Initial */
-    struct SwrContext* audioConvertCtx = swr_alloc();
-    audioConvertCtx=swr_alloc_set_opts(audioConvertCtx, outputAudioParams.channel_layout, outputAudioParams.sample_fmt, outputAudioParams.sample_rate,
-                                       av_get_default_channel_layout(pInputAudioCodecCtx->channels), pInputAudioCodecCtx->sample_fmt, pInputAudioCodecCtx->sample_rate, 0, NULL);
-    swr_init(audioConvertCtx);
     
     uint8_t* swrOutputAudioBuffer = NULL;
     unsigned int swrOutputAudioBufferSize = 0;
-    while(av_read_frame(pInputAudioFormatCtx, packet) >= 0)
+    while(av_read_frame(pInputAudioFormatCtx, &packet) >= 0)
     {
-        if(packet->stream_index == iAudioStream)
+        if(packet.stream_index == iAudioStreamIndex)
         {
-            hbError = avcodec_send_packet(pInputAudioCodecCtx, packet);
+            hbError = avcodec_send_packet(pInputAudioCodecCtx, &packet);
             if (hbError < 0 && hbError != AVERROR(EAGAIN) && hbError != AVERROR_EOF) {
                 LOGE("Avcodec send packet failed <%d> !\n", hbError);
                 return HB_ERROR;
@@ -137,8 +157,8 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
             switch (hbError) {
                 case 0:
                     {
-                        int outputAudioSamplePerChannle = ((pFrame->nb_samples * outputAudioParams.sample_rate) / pFrame->sample_rate + 256);
-                        int outputAudioSampleSize = av_samples_get_buffer_size(NULL, outputAudioParams.channels, outputAudioSamplePerChannle, outputAudioParams.sample_fmt, 0);
+                        int outputAudioSamplePerChannle = ((pFrame->nb_samples * outputAudioParams->sample_rate) / pFrame->sample_rate + 256);
+                        int outputAudioSampleSize = av_samples_get_buffer_size(NULL, outputAudioParams->channels, outputAudioSamplePerChannle, outputAudioParams->sample_fmt, 0);
                         if (outputAudioSampleSize < 0) {
                             LOGE("Calculate ouput sample size failed !");
                             return HB_ERROR;
@@ -156,7 +176,7 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
                         }
                         else {
                             /** 输出转换后的音频数据到输出文件中 */
-                            unsigned int resampled_data_size = audioSwrPerChannelSamples * outputAudioParams.channels * av_get_bytes_per_sample(outputAudioParams.sample_fmt);
+                            unsigned int resampled_data_size = audioSwrPerChannelSamples * outputAudioParams->channels * av_get_bytes_per_sample(outputAudioParams->sample_fmt);
                             
                             fwrite(swrOutputAudioBuffer, 1, resampled_data_size, pAudioOutputFileHandle);
                         }
@@ -181,7 +201,7 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
             }
         }
         
-        av_packet_unref(packet);
+        av_packet_unref(&packet);
     }
     
     av_free(swrOutputAudioBuffer);

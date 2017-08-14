@@ -42,7 +42,7 @@ int main(int argc, const char * argv[]) {
 //        outputAudioParams.freq = 44100;
 //        outputAudioParams.freq = 64000;
 //        
-//        HBAudioDecoder(strInputAudioFile, strOutputAudioFile, AUDIO_DATA_TYPE_OF_PCM, outputAudioParams);
+//        HBAudioDecoder(strInputAudioFile, strOutputAudioFile, AUDIO_DATA_TYPE_OF_PCM, &outputAudioParams);
 //    }
     
     { /** Audio decode */

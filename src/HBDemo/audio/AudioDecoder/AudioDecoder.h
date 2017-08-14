@@ -12,6 +12,6 @@
  *  @param outputAudioParams 输出音频参数信息
  *  @return >=0 正常； <0  表示发生异常
  */
-int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType dataType, AudioParams &outputAudioParams);
+int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType dataType, AudioParams *outputAudioParams);
 
 #endif
