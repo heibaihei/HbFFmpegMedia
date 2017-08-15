@@ -53,4 +53,6 @@ int audioGlobalInitial();
 #include "AudioEncoder/AudioEncoder.h"
 #include "HBPacketQueue.h"
 
+#include "CSAudioResample.h"
+
 #endif

@@ -25,8 +25,8 @@ CSAudioDecoder::CSAudioDecoder(AudioParams* targetAudioParam)
     mPInputAudioCodecCtx = nullptr;
     mPInputAudioCodec = nullptr;
     mAudioOutputFileHandle = nullptr;
-    mPAudioSwrCtx = nullptr;
     mAudioFifo = nullptr;
+    mAudioResample = nullptr;
     mDecodeStateFlag = 0x00;
     mPKTSerial = 0;
 }
@@ -45,8 +45,8 @@ CSAudioDecoder::~CSAudioDecoder()
         av_audio_fifo_free(mAudioFifo);
         mAudioFifo = nullptr;
     }
-    if (mPAudioSwrCtx)
-        swr_free(&mPAudioSwrCtx);
+    if (mAudioResample)
+        SAFE_DELETE(mAudioResample);
 }
 
 int  CSAudioDecoder::audioDecoderInitial()
@@ -106,6 +106,11 @@ int  CSAudioDecoder::audioDecoderInitial()
     
     avcodec_parameters_to_context(mPInputAudioCodecCtx, pAudioStream->codecpar);
     
+    /** 初始化音频转码器 */
+    mAudioResample = new CSAudioResample(&mTargetAudioParams);
+    mAudioResample->audioSetSourceParams(mPInputAudioCodecCtx->channels, mPInputAudioCodecCtx->sample_fmt, mPInputAudioCodecCtx->sample_rate);
+    mAudioResample->audioSetDestParams(mTargetAudioParams.channels, mTargetAudioParams.sample_fmt, mTargetAudioParams.sample_rate);
+    
     /** 初始化包的缓冲队列 */
     packet_queue_init(&mPacketCacheList);
     packet_queue_start(&mPacketCacheList);
@@ -134,6 +139,8 @@ int  CSAudioDecoder::audioDecoderOpen()
         }
     }
     
+    mAudioResample->audioResampleOpen();
+    
     packet_queue_flush(&mPacketCacheList);
     packet_queue_put_flush_pkt(&mPacketCacheList);
     return HB_OK;
@@ -141,37 +148,12 @@ int  CSAudioDecoder::audioDecoderOpen()
     
 int  CSAudioDecoder::audioDecoderClose()
 {
+    mAudioResample->audioResampleClose();
+    
     return HB_OK;
 }
 
 int  CSAudioDecoder::audioDecoderRelease()
-{
-    return HB_OK;
-}
-    
-int  CSAudioDecoder::audioDecoderSwrConvertInitial()
-{
-    mPAudioSwrCtx = swr_alloc();
-    if (!mPAudioSwrCtx) {
-        LOGE("Alloc audio swr failed !");
-        return HB_ERROR;
-    }
-    
-    mPAudioSwrCtx = swr_alloc_set_opts(mPAudioSwrCtx, mTargetAudioParams.channel_layout, mTargetAudioParams.sample_fmt, mTargetAudioParams.sample_rate, av_get_default_channel_layout(mPInputAudioCodecCtx->channels), mPInputAudioCodecCtx->sample_fmt, mPInputAudioCodecCtx->sample_rate, 0, NULL);
-    
-    swr_init(mPAudioSwrCtx);
-    return HB_OK;
-}
-
-int  CSAudioDecoder::audioDecoderSwrConvertClose()
-{
-    if (mPAudioSwrCtx)
-        swr_free(&mPAudioSwrCtx);
-
-    return HB_OK;
-}
-    
-int  CSAudioDecoder::audioDecoderSwrConvertRelease()
 {
     return HB_OK;
 }
@@ -264,9 +246,12 @@ int  CSAudioDecoder::selectAudieoFrame()
             {
                 HBError = avcodec_receive_frame(mPInputAudioCodecCtx, pNewFrame);
                 if (HBError == 0) {
-                    int samplesOfConvert = doSampleSwrConvert(pNewFrame, &mTargetAudioSampleBuffer, &mTargetAudioSampleBufferSize);
-                    if (samplesOfConvert > 0)
-                        CSIOPushDataBuffer(mTargetAudioSampleBuffer, samplesOfConvert);
+                    uint8_t* pAudioResampleBuffer = nullptr;
+                    int samplesOfConvert = mAudioResample->doResample(&pAudioResampleBuffer, pNewFrame->data, pNewFrame->nb_samples);
+                    if (samplesOfConvert > 0) /** 将转码后数据写入缓冲区 */
+                        CSIOPushDataBuffer(pAudioResampleBuffer, samplesOfConvert);
+                    if (pAudioResampleBuffer)
+                        av_freep(pAudioResampleBuffer);
                 }
                 else if (HBError == AVERROR(EAGAIN))
                     break;
@@ -319,27 +304,6 @@ int  CSAudioDecoder::CSIOPushDataBuffer(uint8_t* data, int samples)
 //    }
     
     return HB_OK;
-}
-
-int  CSAudioDecoder::doSampleSwrConvert(AVFrame* frame, uint8_t** pOutputSamplebuffer, int* OutputSamplebufferSize)
-{
-    int outputSamplesPerChannel = ((frame->nb_samples * mTargetAudioParams.sample_rate) / frame->sample_rate + 256);
-    int outputSampleBufferSize = av_samples_get_buffer_size(NULL, mTargetAudioParams.channels, outputSamplesPerChannel, mTargetAudioParams.sample_fmt, 1);
-    if (outputSampleBufferSize < 0) {
-        LOGE("Calculate ouput sample size failed !");
-        return HB_ERROR;
-    }
-    
-    av_fast_malloc(pOutputSamplebuffer, (unsigned int *)OutputSamplebufferSize, *OutputSamplebufferSize);
-    if (!(*pOutputSamplebuffer)) {
-        LOGE("Fast malloc output sample buffer failed !");
-        return HB_ERROR;
-    }
-
-    if (mPAudioSwrCtx)
-        return swr_convert(mPAudioSwrCtx, pOutputSamplebuffer, outputSamplesPerChannel, (const uint8_t **)frame->data, frame->nb_samples);
-    
-    return HB_ERROR;
 }
     
 int  CSAudioDecoder::_checkAudioParamValid()

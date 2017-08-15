@@ -59,13 +59,6 @@ public:
     int  audioDecoderRelease();
     
     /**
-     *  转码器的初始化、关闭、释放
-     */
-    int  audioDecoderSwrConvertInitial();
-    int  audioDecoderSwrConvertClose();
-    int  audioDecoderSwrConvertRelease();
-    
-    /**
      *  音频读包
      *  @return HB_OK 执行正常
      *          HB_ERROR 执行发生异常
@@ -76,12 +69,6 @@ public:
      *  音频解帧
      */
     int  selectAudieoFrame();
-    
-    /**
-     *  音频数据格式转换
-     *  @return HB_ERROR 发生异常; >=0 表示转换后返回的音频数据大小
-     */
-    int  doSampleSwrConvert(AVFrame* frame, uint8_t** pOutputSamplebuffer, int* OutputSamplebufferSize);
     
     /**
      *  将音频数据写入音频缓冲区
@@ -104,8 +91,9 @@ protected:
     AVFormatContext* mPInputAudioFormatCtx;
     AVCodecContext* mPInputAudioCodecCtx;
     AVCodec* mPInputAudioCodec;
-    struct SwrContext *mPAudioSwrCtx;
 
+    CSAudioResample *mAudioResample;
+    
     PacketQueue mPacketCacheList;
     
     /** 输出文件，只是针对不做编码的情况下，将音频数据以裸流PCM格数的方式输出 */
@@ -113,8 +101,6 @@ protected:
     FILE *mAudioOutputFileHandle;
     
     int64_t mDecodeStateFlag;
-    uint8_t* mTargetAudioSampleBuffer;
-    int mTargetAudioSampleBufferSize;
     
 private:
     
