@@ -170,6 +170,7 @@ int  CSAudioDecoder::audioDecoderSwrConvertClose()
 
     return HB_OK;
 }
+    
 int  CSAudioDecoder::audioDecoderSwrConvertRelease()
 {
     return HB_OK;
