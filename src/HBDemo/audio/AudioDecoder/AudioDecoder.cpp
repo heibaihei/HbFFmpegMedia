@@ -43,6 +43,17 @@ static int audioSwrConvertComponentInitial(struct SwrContext** pAudioConvertCtx,
     
     return HB_OK;
 }
+
+static int audioSwrConvertComponentClose(struct SwrContext** pAudioConvertCtx) {
+    
+    if (pAudioConvertCtx) {
+        if (*pAudioConvertCtx)
+            swr_free(pAudioConvertCtx);
+        *pAudioConvertCtx = NULL;
+    }
+    return HB_OK;
+}
+
 static int audioDecoderComponentInitial(AudioParams *targetAudioParams, AVFormatContext	**inputAudioFormatCtx, AVCodecContext** inputAudioCodecCtx, AVCodec** inputAudioCodec, char *strInputFileName, char*strOutputFileName, int& streamIndex) {
 
     int hbError = 0;
@@ -137,80 +148,79 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
         return HB_ERROR;
     }
     
-    AVPacket packet;
-    av_init_packet(&packet);
-    AVFrame* pFrame=av_frame_alloc();
+    AVPacket* pPacket = av_packet_alloc();
+    AVFrame* pFrame = av_frame_alloc();
     
     uint8_t* swrOutputAudioBuffer = NULL;
     unsigned int swrOutputAudioBufferSize = 0;
-    while(av_read_frame(pInputAudioFormatCtx, &packet) >= 0)
+    while(av_read_frame(pInputAudioFormatCtx, pPacket) >= 0)
     {
-        if(packet.stream_index == iAudioStreamIndex)
+        if(pPacket->stream_index == iAudioStreamIndex)
         {
-            hbError = avcodec_send_packet(pInputAudioCodecCtx, &packet);
+            hbError = avcodec_send_packet(pInputAudioCodecCtx, pPacket);
             if (hbError < 0 && hbError != AVERROR(EAGAIN) && hbError != AVERROR_EOF) {
                 LOGE("Avcodec send packet failed <%d> !\n", hbError);
-                return HB_ERROR;
+                goto DECODE_END_LABLE;
             }
             
-            hbError = avcodec_receive_frame(pInputAudioCodecCtx, pFrame);
-            switch (hbError) {
-                case 0:
-                    {
-                        int outputAudioSamplePerChannle = ((pFrame->nb_samples * outputAudioParams->sample_rate) / pFrame->sample_rate + 256);
-                        int outputAudioSampleSize = av_samples_get_buffer_size(NULL, outputAudioParams->channels, outputAudioSamplePerChannle, outputAudioParams->sample_fmt, 0);
-                        if (outputAudioSampleSize < 0) {
-                            LOGE("Calculate ouput sample size failed !");
-                            return HB_ERROR;
-                        }
-                        
-                        av_fast_malloc(&swrOutputAudioBuffer, &swrOutputAudioBufferSize, outputAudioSampleSize);
-                        if (!swrOutputAudioBuffer)
-                            return AVERROR(ENOMEM);
-                        
-                        
-                        int audioSwrPerChannelSamples = swr_convert(audioConvertCtx, &swrOutputAudioBuffer, outputAudioSamplePerChannle, (const uint8_t **)pFrame->data, pFrame->nb_samples);
-                        if (audioSwrPerChannelSamples < 0) {
-                            LOGE("Swr convert audio sample failed !");
-                            return HB_ERROR;
-                        }
-                        else {
-                            /** 输出转换后的音频数据到输出文件中 */
-                            unsigned int resampled_data_size = audioSwrPerChannelSamples * outputAudioParams->channels * av_get_bytes_per_sample(outputAudioParams->sample_fmt);
-                            
-                            fwrite(swrOutputAudioBuffer, 1, resampled_data_size, pAudioOutputFileHandle);
-                        }
-                        av_frame_unref(pFrame);
-                    }
-                    break;
             
-                case AVERROR_EOF:
-                    printf("the decoder has been fully flushed,\
-                           and there will be no more output frames.\n");
-                    break;
+            while (true) {
+                hbError = avcodec_receive_frame(pInputAudioCodecCtx, pFrame);
+                if (hbError == 0) {
+                    int outputAudioSamplePerChannle = ((pFrame->nb_samples * outputAudioParams->sample_rate) / pFrame->sample_rate + 256);
+                    int outputAudioSampleSize = av_samples_get_buffer_size(NULL, outputAudioParams->channels, outputAudioSamplePerChannle, outputAudioParams->sample_fmt, 0);
+                    if (outputAudioSampleSize < 0) {
+                        LOGE("Calculate ouput sample size failed !");
+                        return HB_ERROR;
+                    }
                     
-                case AVERROR(EAGAIN):
-                    printf("Resource temporarily unavailable\n");
-                    break;
+                    av_fast_malloc(&swrOutputAudioBuffer, &swrOutputAudioBufferSize, outputAudioSampleSize);
+                    if (!swrOutputAudioBuffer)
+                        return AVERROR(ENOMEM);
                     
-                case AVERROR(EINVAL):
-                    printf("Invalid argument\n");
+                    
+                    int audioSwrPerChannelSamples = swr_convert(audioConvertCtx, &swrOutputAudioBuffer, outputAudioSamplePerChannle, (const uint8_t **)pFrame->data, pFrame->nb_samples);
+                    if (audioSwrPerChannelSamples < 0) {
+                        LOGE("Swr convert audio sample failed !");
+                        return HB_ERROR;
+                    }
+                    else {
+                        /** 输出转换后的音频数据到输出文件中 */
+                        unsigned int resampled_data_size = audioSwrPerChannelSamples * outputAudioParams->channels * av_get_bytes_per_sample(outputAudioParams->sample_fmt);
+                        
+                        fwrite(swrOutputAudioBuffer, 1, resampled_data_size, pAudioOutputFileHandle);
+                    }
+                    av_frame_unref(pFrame);
+                }
+                else if (hbError == AVERROR(EAGAIN))
                     break;
-                default:
-                    break;
+                else
+                    goto DECODE_END_LABLE;
             }
         }
         
-        av_packet_unref(&packet);
+        av_packet_unref(pPacket);
+    }
+	
+DECODE_END_LABLE:
+    audioSwrConvertComponentClose(&audioConvertCtx);
+    
+    av_packet_free(&pPacket);
+    av_frame_free(&pFrame);
+    
+    if (pInputAudioCodecCtx && avcodec_is_open(pInputAudioCodecCtx)) {
+        avcodec_close(pInputAudioCodecCtx);
+        avcodec_free_context(&pInputAudioCodecCtx);
     }
     
-    av_free(swrOutputAudioBuffer);
-	fclose(pAudioOutputFileHandle);
-
-	swr_free(&audioConvertCtx);
-	avcodec_close(pInputAudioCodecCtx);
-	avformat_close_input(&pInputAudioFormatCtx);
-
+    avformat_close_input(&pInputAudioFormatCtx);
+    
+    if (pAudioOutputFileHandle)
+        fclose(pAudioOutputFileHandle);
+    
+    if (swrOutputAudioBuffer)
+        av_free(swrOutputAudioBuffer);
+    
 	return HB_OK;
 }
 
