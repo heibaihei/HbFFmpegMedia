@@ -14,4 +14,7 @@
  */
 int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType dataType, AudioParams *outputAudioParams);
 
+
+
+
 #endif

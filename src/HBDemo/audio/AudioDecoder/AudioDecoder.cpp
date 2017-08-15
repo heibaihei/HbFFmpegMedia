@@ -153,7 +153,7 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
     
     uint8_t* swrOutputAudioBuffer = NULL;
     unsigned int swrOutputAudioBufferSize = 0;
-    while(av_read_frame(pInputAudioFormatCtx, pPacket) >= 0)
+    while(av_read_frame(pInputAudioFormatCtx, pPacket) == 0)
     {
         if(pPacket->stream_index == iAudioStreamIndex)
         {

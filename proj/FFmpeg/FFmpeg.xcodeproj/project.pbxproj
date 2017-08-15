@@ -10,6 +10,8 @@
 		A10B26DB1EC9BD94006D24C6 /* filtering_video.c in Sources */ = {isa = PBXBuildFile; fileRef = A10B26DA1EC9BD94006D24C6 /* filtering_video.c */; };
 		A13A69751F3ED3F900FC6376 /* HBAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A13A69741F3ED3F900FC6376 /* HBAudio.cpp */; };
 		A156FEF31EA25C7000258C1E /* FFmpegSwscale.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A156FEF11EA25C7000258C1E /* FFmpegSwscale.cpp */; };
+		A15BB0E81F42912400AFE839 /* CSAudioDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0E61F42912400AFE839 /* CSAudioDecoder.cpp */; };
+		A15BB0EE1F42C2DA00AFE839 /* HBPacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0EC1F42C2DA00AFE839 /* HBPacketQueue.cpp */; };
 		A181BC2D1EA1F4CF004861DA /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A181BC2C1EA1F4CF004861DA /* main.c */; };
 		A181BC351EA1F682004861DA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC341EA1F682004861DA /* main.cpp */; };
 		A181BC421EA21430004861DA /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC411EA21430004861DA /* libSDL2.a */; };
@@ -2799,6 +2801,10 @@
 		A13A69741F3ED3F900FC6376 /* HBAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HBAudio.cpp; sourceTree = "<group>"; };
 		A156FEF11EA25C7000258C1E /* FFmpegSwscale.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFmpegSwscale.cpp; sourceTree = "<group>"; };
 		A156FEF21EA25C7000258C1E /* FFmpegSwscale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegSwscale.h; sourceTree = "<group>"; };
+		A15BB0E61F42912400AFE839 /* CSAudioDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioDecoder.cpp; sourceTree = "<group>"; };
+		A15BB0E71F42912400AFE839 /* CSAudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioDecoder.h; sourceTree = "<group>"; };
+		A15BB0EC1F42C2DA00AFE839 /* HBPacketQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HBPacketQueue.cpp; path = ../../../src/HBDemo/HBPacketQueue.cpp; sourceTree = "<group>"; };
+		A15BB0ED1F42C2DA00AFE839 /* HBPacketQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBPacketQueue.h; path = ../../../src/HBDemo/HBPacketQueue.h; sourceTree = "<group>"; };
 		A181BC2C1EA1F4CF004861DA /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../../src/main.c; sourceTree = "<group>"; };
 		A181BC321EA1F682004861DA /* Sample */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Sample; sourceTree = BUILT_PRODUCTS_DIR; };
 		A181BC341EA1F682004861DA /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -9223,6 +9229,8 @@
 				A181BC5D1EA21756004861DA /* HBSeperateFormat.h */,
 				A1FB66461F19F6D2001B08F0 /* HBLog.h */,
 				A181BC341EA1F682004861DA /* main.cpp */,
+				A15BB0EC1F42C2DA00AFE839 /* HBPacketQueue.cpp */,
+				A15BB0ED1F42C2DA00AFE839 /* HBPacketQueue.h */,
 			);
 			path = Sample;
 			sourceTree = "<group>";
@@ -16521,6 +16529,8 @@
 			children = (
 				A1FB66431F19F18B001B08F0 /* AudioDecoder.cpp */,
 				A1FB66441F19F18B001B08F0 /* AudioDecoder.h */,
+				A15BB0E61F42912400AFE839 /* CSAudioDecoder.cpp */,
+				A15BB0E71F42912400AFE839 /* CSAudioDecoder.h */,
 				A1FB66311F19EBDC001B08F0 /* skycity1.mp3 */,
 			);
 			path = AudioDecoder;
@@ -16723,6 +16733,7 @@
 				A181BC581EA2172B004861DA /* audio_format_convert.cpp in Sources */,
 				A13A69751F3ED3F900FC6376 /* HBAudio.cpp in Sources */,
 				A19A67E41EB3460100DE8F11 /* simplest_ffmpeg_swscale.cpp in Sources */,
+				A15BB0EE1F42C2DA00AFE839 /* HBPacketQueue.cpp in Sources */,
 				A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */,
 				A19A67D91EB3445600DE8F11 /* simplest_ffmpeg_video_filter_pure.cpp in Sources */,
 				A1FC872A1F1D9BFA004D8A63 /* HBCommon.cpp in Sources */,
@@ -16732,6 +16743,7 @@
 				A183E2ED1F1F0028003700C3 /* AudioEncoder.cpp in Sources */,
 				A1FB66411F19EBDC001B08F0 /* audio_player.cpp in Sources */,
 				A19A67EA1EB3465D00DE8F11 /* simplest_ffmpeg_mem_player.cpp in Sources */,
+				A15BB0E81F42912400AFE839 /* CSAudioDecoder.cpp in Sources */,
 				A156FEF31EA25C7000258C1E /* FFmpegSwscale.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -19425,6 +19437,7 @@
 		A181BC371EA1F682004861DA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../lib/ffmpeg/include\"",
@@ -19445,6 +19458,7 @@
 		A181BC381EA1F682004861DA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../lib/ffmpeg/include\"",

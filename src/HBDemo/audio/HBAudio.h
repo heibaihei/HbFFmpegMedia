@@ -10,6 +10,7 @@ extern "C" {
 #include "libswresample/swresample.h"
 #include "libavutil/samplefmt.h"
 #include "libavutil/error.h"
+#include "libavutil/mem.h"
 #include "libavutil/audio_fifo.h"
     
 #ifdef __cplusplus
@@ -17,6 +18,10 @@ extern "C" {
 #endif
 
 #include "HBSampleDefine.h"
+
+#define SAFE_DELETE(p)           do { if(p) { delete (p); (p) = nullptr;} } while(0)
+#define SAFE_DELETE_ARRAY(p)     do { if(p) { delete[] (p); (p) = nullptr; } } while(0)
+#define SAFE_FREE(p)             do { if(p) { free(p); (p) = nullptr; } } while(0)
 
 #ifndef makeErrorStr
 static char errorStr[AV_ERROR_MAX_STRING_SIZE];
@@ -46,5 +51,6 @@ int audioGlobalInitial();
 
 #include "AudioDecoder/AudioDecoder.h"
 #include "AudioEncoder/AudioEncoder.h"
+#include "HBPacketQueue.h"
 
 #endif
