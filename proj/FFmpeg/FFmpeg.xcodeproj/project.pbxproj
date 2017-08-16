@@ -33,6 +33,7 @@
 		A181BC6A1EA21788004861DA /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC671EA21788004861DA /* simplest_ffmpeg_video_encoder_pure.cpp */; };
 		A181BC711EA219C6004861DA /* picture_encoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC701EA219C6004861DA /* picture_encoder.cpp */; };
 		A183E2ED1F1F0028003700C3 /* AudioEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A183E2E71F1F0028003700C3 /* AudioEncoder.cpp */; };
+		A18EC5851F442B67002964C4 /* CSPicture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A18EC5831F442B67002964C4 /* CSPicture.cpp */; };
 		A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67B91EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp */; };
 		A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67BB1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp */; };
 		A19A67C31EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67C21EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp */; };
@@ -2841,6 +2842,8 @@
 		A183E2E71F1F0028003700C3 /* AudioEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioEncoder.cpp; sourceTree = "<group>"; };
 		A183E2E81F1F0028003700C3 /* AudioEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioEncoder.h; sourceTree = "<group>"; };
 		A183E2EA1F1F0028003700C3 /* simplest_ffmpeg_audio_encoder.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = simplest_ffmpeg_audio_encoder.jpg; sourceTree = "<group>"; };
+		A18EC5831F442B67002964C4 /* CSPicture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSPicture.cpp; sourceTree = "<group>"; };
+		A18EC5841F442B67002964C4 /* CSPicture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPicture.h; sourceTree = "<group>"; };
 		A19A67B91EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_grabdesktop.cpp; sourceTree = "<group>"; };
 		A19A67BB1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_readcamera.cpp; sourceTree = "<group>"; };
 		A19A67C21EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_demuxer_simple.cpp; sourceTree = "<group>"; };
@@ -9345,6 +9348,8 @@
 			children = (
 				A1B7FE301F0DDD20003C6D0F /* pickPicture */,
 				A181BC6E1EA21935004861DA /* encoder */,
+				A18EC5831F442B67002964C4 /* CSPicture.cpp */,
+				A18EC5841F442B67002964C4 /* CSPicture.h */,
 			);
 			name = Picture;
 			path = ../../../src/HBDemo/Picture;
@@ -16740,6 +16745,7 @@
 				A181BC711EA219C6004861DA /* picture_encoder.cpp in Sources */,
 				A19A67C31EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp in Sources */,
 				A19A67E01EB3457500DE8F11 /* simplest_ffmpeg_video_encoder.cpp in Sources */,
+				A18EC5851F442B67002964C4 /* CSPicture.cpp in Sources */,
 				A19A67EB1EB3465D00DE8F11 /* simplest_ffmpeg_mem_transcoder.cpp in Sources */,
 				A181BC351EA1F682004861DA /* main.cpp in Sources */,
 				A1B7FE331F0DDD52003C6D0F /* HBPickPicture.cpp in Sources */,
