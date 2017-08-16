@@ -16,8 +16,6 @@
 #include "HBAudio.h"
 
 namespace HBMedia {
-    
-#define INVALID_STREAM_INDEX  (-1)
 
 #define DECODE_MODE_SEPERATE_AUDIO_WITH_VIDEO  0
     

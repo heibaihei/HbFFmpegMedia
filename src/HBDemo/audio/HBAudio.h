@@ -19,6 +19,8 @@ extern "C" {
 
 #include "HBSampleDefine.h"
 
+#define INVALID_STREAM_INDEX  (-1)
+
 #define SAFE_DELETE(p)           do { if(p) { delete (p); (p) = nullptr;} } while(0)
 #define SAFE_DELETE_ARRAY(p)     do { if(p) { delete[] (p); (p) = nullptr; } } while(0)
 #define SAFE_FREE(p)             do { if(p) { free(p); (p) = nullptr; } } while(0)

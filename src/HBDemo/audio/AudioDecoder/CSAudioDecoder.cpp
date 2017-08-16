@@ -45,6 +45,10 @@ CSAudioDecoder::~CSAudioDecoder()
         av_audio_fifo_free(mAudioFifo);
         mAudioFifo = nullptr;
     }
+    if (mPInputAudioFormatCtx) {
+        avformat_free_context(mPInputAudioFormatCtx);
+        mPInputAudioFormatCtx = nullptr;
+    }
     if (mAudioResample)
         SAFE_DELETE(mAudioResample);
 }

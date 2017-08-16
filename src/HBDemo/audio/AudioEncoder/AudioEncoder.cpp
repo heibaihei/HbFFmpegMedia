@@ -118,8 +118,11 @@ int HBAudioEncoder(char *strInputFileName, char*strOutputFileName, AudioDataType
     }
 
     int wantOutputSamplePerChannelOfFrame = pOutputCodecCtx->frame_size;
+    
     int outputFrameBufferSize = av_get_bytes_per_sample(pOutputCodecCtx->sample_fmt) * wantOutputSamplePerChannelOfFrame * pOutputCodecCtx->channels;
+    
     uint8_t* outputFrameBuffer = (uint8_t *)av_malloc(outputFrameBufferSize);
+    
     AVAudioFifo *audioFifo = av_audio_fifo_alloc(pOutputCodecCtx->sample_fmt, pOutputCodecCtx->channels, pOutputCodecCtx->frame_size);
     
     FILE * inputFileHandle = fopen(strInputFileName, "rb");
