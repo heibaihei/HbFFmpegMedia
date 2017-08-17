@@ -16,18 +16,27 @@ SCRATCH="scratch"
 ARCHS="MacOS"
 
 CONFIGURE_FLAGS="--enable-static --disable-shared --disable-optimizations --disable-asm --disable-stripping --enable-debug=3 --disable-doc --enable-pic"
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/fdk-aac/include --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/x264/include --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/lame/include"
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/fdk-aac/lib --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/x264/lib --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/lame/lib"
 ## =====================================>>>
 
 # X264
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-gpl --enable-libx264"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/x264/include"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/x264/lib"
 
 # FDK_AAC
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libfdk-aac --enable-nonfree --enable-encoder=aac"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/fdk-aac/include"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/fdk-aac/lib"
 
 # libmp3lame
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libmp3lame"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/lame/include"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/lame/lib"
+
+# openjpeg
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libopenjpeg"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-cflags=-I${DEPEND_THIRDPARTY_LIBRARY_DIR}/openjpeg/include"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --extra-ldflags=-L${DEPEND_THIRDPARTY_LIBRARY_DIR}/openjpeg/lib"
 
 # 模块
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-avresample"
