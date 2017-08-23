@@ -99,7 +99,7 @@ int HBAudioEncoder(char *strInputFileName, char*strOutputFileName, AudioDataType
     AVCodecContext* pOutputCodecCtx = nullptr;
     AVCodec* pOutputCodec = nullptr;
 
-    audioGlobalInitial();
+    globalInitial();
 
     if (HB_OK != audioComponentInitial(&pOutputFormatCtx, &audioOutputStream, &pOutputCodecCtx, &pOutputCodec, outputAudioParams, strInputFileName, strOutputFileName)) {
         LOGE("Audio component initial failed !\n");

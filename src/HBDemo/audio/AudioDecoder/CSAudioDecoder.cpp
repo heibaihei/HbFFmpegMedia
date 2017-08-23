@@ -56,7 +56,7 @@ CSAudioDecoder::~CSAudioDecoder()
 int  CSAudioDecoder::audioDecoderInitial()
 {
     mDecodeStateFlag = 0x00;
-    audioGlobalInitial();
+    globalInitial();
     
     int HBError = -1;
     if (!mInputAudioMediaFile) {

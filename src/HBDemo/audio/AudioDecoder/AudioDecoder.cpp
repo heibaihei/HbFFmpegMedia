@@ -118,7 +118,7 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
         return HB_ERROR;
     }
     
-    if (audioGlobalInitial() != HB_OK) {
+    if (globalInitial() != HB_OK) {
         LOGE("Audio global initial failed !");
         return HB_ERROR;
     }

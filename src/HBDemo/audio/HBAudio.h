@@ -1,34 +1,9 @@
 #ifndef  _HBAUDIO_H_
 #define  _HBAUDIO_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-    
-#include "libavcodec/avcodec.h"
-#include "libavformat/avformat.h"
-#include "libswresample/swresample.h"
-#include "libavutil/samplefmt.h"
-#include "libavutil/error.h"
-#include "libavutil/mem.h"
-#include "libavutil/audio_fifo.h"
-    
-#ifdef __cplusplus
-};
-#endif
 
+#include "HBCommon.h"
 #include "HBSampleDefine.h"
-
-#define INVALID_STREAM_INDEX  (-1)
-
-#define SAFE_DELETE(p)           do { if(p) { delete (p); (p) = nullptr;} } while(0)
-#define SAFE_DELETE_ARRAY(p)     do { if(p) { delete[] (p); (p) = nullptr; } } while(0)
-#define SAFE_FREE(p)             do { if(p) { free(p); (p) = nullptr; } } while(0)
-
-#ifndef makeErrorStr
-static char errorStr[AV_ERROR_MAX_STRING_SIZE];
-#define makeErrorStr(errorCode) av_make_error_string(errorStr, AV_ERROR_MAX_STRING_SIZE, errorCode)
-#endif
 
 typedef enum _AudioDataType {
     AUDIO_DATA_TYPE_OF_UNKNOWN = -1,
@@ -46,8 +21,6 @@ typedef struct _AudioParams {
     int bytes_per_sec;
     long mbitRate;
 } AudioParams;
-
-int audioGlobalInitial();
 
 #include "HBCommon.h"
 

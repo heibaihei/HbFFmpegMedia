@@ -35,7 +35,7 @@ CSAudioEncoder::~CSAudioEncoder()
 
 int  CSAudioEncoder::audioEncoderInitial()
 {
-    audioGlobalInitial();
+    globalInitial();
     mPOutputAudioFormatCtx = avformat_alloc_context();
     mPOutputAudioFormatCtx->oformat = av_guess_format(NULL, mOutputAudioMediaFile, NULL);
     if (avio_open(&mPOutputAudioFormatCtx->pb, mOutputAudioMediaFile, AVIO_FLAG_READ_WRITE) < 0) {
