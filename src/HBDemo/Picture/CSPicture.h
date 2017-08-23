@@ -65,13 +65,18 @@ public:
     char *getOutputPicMediaFile();
     
     /**
-     *  对图像进行编解码操作，都要调用该接口进行初始化
+     *  图片基础组建初始化，比如ffmpeg、等基础组件初始化
+     *  [备注] 不管进行怎么样类型的转换，这个都是必须要被调用的，
+     *  内部会对即将进行编解码的参数进行校验以及基础组件的初始化
+     *  @return HB_ERROR 初始化异常; HB_OK 正常初始化
      */
-    int  picCommonInitial();
+    int  picBaseInitial();
     
     /** ================================================= >>> Encode **/
+    /** 图像编码器初始化、启动、关闭、释放 **/
     /**
-     *  图像编码器初始化、启动、关闭、释放
+     *   图像编码初始化, 主要对编码需要用到的一些内部对象创建空间等必要的初始化操作
+     *   @return HB_ERROR 初始化异常; HB_OK 正常初始化
      */
     int  picEncoderInitial();
     int  picEncoderOpen();
@@ -110,28 +115,36 @@ public:
 private:
     
 protected:
+    /**
+     *  检查当前 CSPicture 对象中相关属性是否支持进行编解码操作，相关参数是否有效
+     *  @return HB_ERROR 编解码参数异常; HB_OK 编解码参数正常
+     */
     int _checkPicMediaValid();
     
 private:
-    FILE*  mSrcFileHandle;
+    /**
+     *  媒体数据输入相关信息
+     */
+    char            *mSrcPicMediaFile;
+    FILE            *mSrcPicFileHandle;
+    /** 输入数据类型，裸数据还是压缩数据 */
     PIC_MEDIA_DATA_TYPE mSrcPicDataType;
-    PictureParams mSrcPicParam;
-    
-    FILE*  mTargetFileHandle;
-    PIC_MEDIA_DATA_TYPE mTargetPicDataType;
-    PictureParams mTargetPicParam;
+    PictureParams    mSrcPicParam;
 
-    AVFormatContext* mOutputPicFormat;
-    AVStream*  mOutputPicStream;
-    AVCodecContext* mOutputPicCodecCtx;
-    AVCodec* mOutputPicCodec;
-    
-    char *mInputPicMediaFile;
-    char *mOutputPicMediaFile;
+    /**
+     *  媒体数据输出相关信息
+     */
+    char            *mTargetPicMediaFile;
+    FILE            *mTargetPicFileHandle;
+    PIC_MEDIA_DATA_TYPE mTargetPicDataType;
+    PictureParams    mTargetPicParam;
+    AVCodec         *mOutputPicCodec;
+    AVCodecContext  *mOutputPicCodecCtx;
+    AVStream        *mOutputPicStream;
+    AVFormatContext *mOutputPicFormat;
 
 } CSPicture;
-    
-} /** HBMedia */
 
+} /** HBMedia */
 
 #endif /* CSPicture_hpp */

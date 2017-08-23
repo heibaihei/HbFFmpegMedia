@@ -10,40 +10,51 @@
 
 namespace HBMedia {
 
-CSPicture::CSPicture()
-{
-    mInputPicMediaFile = nullptr;
-    mOutputPicMediaFile = nullptr;
-    
-    mSrcFileHandle = nullptr;
+CSPicture::CSPicture() {
+    /**
+     * 输入媒体信息
+     */
+    mSrcPicMediaFile = nullptr;
+    mSrcPicFileHandle = nullptr;
     mSrcPicDataType = PIC_D_TYPE_UNKNOWN;
     memset(&mSrcPicParam, 0x00, sizeof(PictureParams));
     
-    mTargetFileHandle = nullptr;
+    /**
+     * 输出媒体信息
+     */
+    mTargetPicMediaFile = nullptr;
+    mTargetPicFileHandle = nullptr;
     mTargetPicDataType = PIC_D_TYPE_UNKNOWN;
     memset(&mTargetPicParam, 0x00, sizeof(PictureParams));
     
-    mOutputPicFormat = nullptr;
-    mOutputPicStream = nullptr;
-    mOutputPicCodecCtx = nullptr;
     mOutputPicCodec = nullptr;
+    mOutputPicCodecCtx = nullptr;
+    mOutputPicStream = nullptr;
+    mOutputPicFormat = nullptr;
 }
 
-CSPicture::~CSPicture()
-{
-    if (mInputPicMediaFile)
-        av_freep(mInputPicMediaFile);
-    if (mOutputPicMediaFile)
-        av_freep(mOutputPicMediaFile);
+CSPicture::~CSPicture() {
+    if (mSrcPicMediaFile)
+        av_freep(mSrcPicMediaFile);
+    if (mTargetPicMediaFile)
+        av_freep(mTargetPicMediaFile);
 }
 
-int CSPicture::_checkPicMediaValid()
-{
+int CSPicture::_checkPicMediaValid() {
+    if (mTargetPicDataType == PIC_D_TYPE_UNKNOWN || mSrcPicDataType == PIC_D_TYPE_UNKNOWN) {
+        LOGE("Picture data type is invalid !");
+        return HB_ERROR;
+    }
     return HB_OK;
 }
 
-int  CSPicture::picCommonInitial()
-{
+int  CSPicture::picBaseInitial() {
+    
+    if (HB_OK != _checkPicMediaValid()) {
+        LOGE("Picture check picture value invalid !");
+        return HB_ERROR;
+    }
+    
     if (HB_OK != globalInitial()) {
         LOGF("Picture common initial faile !");
         return HB_ERROR;
@@ -51,67 +62,58 @@ int  CSPicture::picCommonInitial()
     return HB_OK;
 }
     
-int  CSPicture::picEncoderInitial()
-{
-    if (mTargetPicDataType != PIC_D_TYPE_COMPRESS \
-        || mSrcPicDataType == PIC_D_TYPE_UNKNOWN) {
-        LOGE("Picture encoder initial failed, pciture data is invalid!");
-        return HB_ERROR;
-    }
-    {
-        /**
-         * 针对输出文件
-         */
-        if (mTargetPicDataType == PIC_D_TYPE_COMPRESS) {
-            if (!mOutputPicMediaFile) {
-                LOGE("Pictue encoder initial, can't use the output media file !");
-                return HB_ERROR;
-            }
-            
-            mOutputPicFormat = avformat_alloc_context();
-            if (!mOutputPicFormat) {
-                LOGE("Picture encoder initial, alloc avformat context failed !");
-                return HB_ERROR;
-            }
-            mOutputPicFormat->oformat = av_guess_format(NULL, mOutputPicMediaFile, NULL);
-            mOutputPicStream = avformat_new_stream(mOutputPicFormat, NULL);
-            if (!mOutputPicStream) {
-                LOGE("Pic encoder initial failed, new stream failed !");
-                return HB_ERROR;
-            }
-            
-            mOutputPicCodec = avcodec_find_encoder(mOutputPicFormat->oformat->video_codec);
-            if (!mOutputPicCodec) {
-                LOGE("Picture encoder initial, find avcodec encoder failed !");
-                return HB_ERROR;
-            }
-            
-            mOutputPicCodecCtx = avcodec_alloc_context3(mOutputPicCodec);
-            mOutputPicCodecCtx->codec_id = mOutputPicFormat->oformat->video_codec;
-            mOutputPicCodecCtx->codec_type = AVMEDIA_TYPE_VIDEO;
-            mOutputPicCodecCtx->pix_fmt = mTargetPicParam.mPixFmt;
-            mOutputPicCodecCtx->width = mTargetPicParam.mWidth;
-            mOutputPicCodecCtx->height = mTargetPicParam.mHeight;
-            
-            avcodec_parameters_from_context(mOutputPicStream->codecpar, mOutputPicCodecCtx);
-            av_dump_format(mOutputPicFormat, 0, mOutputPicMediaFile, 1);
+int  CSPicture::picEncoderInitial() {
+    /**
+     * 针对输出文件
+     */
+    if (mTargetPicDataType == PIC_D_TYPE_COMPRESS) {
+        if (!mTargetPicMediaFile) {
+            LOGE("Pictue encoder initial, can't use the output media file !");
+            return HB_ERROR;
         }
+        
+        mOutputPicFormat = avformat_alloc_context();
+        if (!mOutputPicFormat) {
+            LOGE("Picture encoder initial, alloc avformat context failed !");
+            return HB_ERROR;
+        }
+        mOutputPicFormat->oformat = av_guess_format(NULL, mTargetPicMediaFile, NULL);
+        mOutputPicStream = avformat_new_stream(mOutputPicFormat, NULL);
+        if (!mOutputPicStream) {
+            LOGE("Pic encoder initial failed, new stream failed !");
+            return HB_ERROR;
+        }
+        
+        mOutputPicCodec = avcodec_find_encoder(mOutputPicFormat->oformat->video_codec);
+        if (!mOutputPicCodec) {
+            LOGE("Picture encoder initial, find avcodec encoder failed !");
+            return HB_ERROR;
+        }
+        
+        mOutputPicCodecCtx = avcodec_alloc_context3(mOutputPicCodec);
+        mOutputPicCodecCtx->codec_id = mOutputPicFormat->oformat->video_codec;
+        mOutputPicCodecCtx->codec_type = AVMEDIA_TYPE_VIDEO;
+        mOutputPicCodecCtx->pix_fmt = mTargetPicParam.mPixFmt;
+        mOutputPicCodecCtx->width = mTargetPicParam.mWidth;
+        mOutputPicCodecCtx->height = mTargetPicParam.mHeight;
+        
+        avcodec_parameters_from_context(mOutputPicStream->codecpar, mOutputPicCodecCtx);
+        av_dump_format(mOutputPicFormat, 0, mTargetPicMediaFile, 1);
     }
     return HB_OK;
 }
     
-int  CSPicture::picEncoderOpen()
-{
+int  CSPicture::picEncoderOpen() {
     /** ############################################## **/
     {
         /**
          * 如果输入文件是裸流，则需要打开文件，获取文件句柄
          */
         if (mSrcPicDataType != PIC_D_TYPE_COMPRESS) {
-            if (mInputPicMediaFile && !mSrcFileHandle) {
+            if (mSrcPicMediaFile && !mSrcPicFileHandle) {
                 /** 说明数据是以存放有裸数据的方式传入 */
-                mSrcFileHandle = fopen(mInputPicMediaFile, "rb");
-                if (!mSrcFileHandle) {
+                mSrcPicFileHandle = fopen(mSrcPicMediaFile, "rb");
+                if (!mSrcPicFileHandle) {
                     LOGE("Picture encoder open failed !");
                     return HB_ERROR;
                 }
@@ -128,7 +130,7 @@ int  CSPicture::picEncoderOpen()
          * 针对输出文件
          */
         if (mTargetPicDataType == PIC_D_TYPE_COMPRESS) {
-            if (avio_open(&mOutputPicFormat->pb, mOutputPicMediaFile, AVIO_FLAG_READ_WRITE) < 0) {
+            if (avio_open(&mOutputPicFormat->pb, mTargetPicMediaFile, AVIO_FLAG_READ_WRITE) < 0) {
                 LOGE("Could't open output file !");
                 return HB_ERROR;
             }
@@ -148,8 +150,7 @@ int  CSPicture::picEncoderOpen()
     return HB_OK;
 }
 
-int  CSPicture::picEncoderClose()
-{
+int  CSPicture::picEncoderClose() {
     /** 写入图片的尾部格式 */
     av_write_trailer(mOutputPicFormat);
     
@@ -161,9 +162,9 @@ int  CSPicture::picEncoderClose()
     avio_close(mOutputPicFormat->pb);
     
     /** 如果是非压缩数据，需要关闭文件 */
-    if (mSrcPicDataType != PIC_D_TYPE_COMPRESS && mSrcFileHandle) {
-        fclose(mSrcFileHandle);
-        mSrcFileHandle = nullptr;
+    if (mSrcPicDataType != PIC_D_TYPE_COMPRESS && mSrcPicFileHandle) {
+        fclose(mSrcPicFileHandle);
+        mSrcPicFileHandle = nullptr;
     }
     return HB_OK;
 }
@@ -187,7 +188,7 @@ int  CSPicture::getPicRawData(uint8_t** pData, int* dataSizes) {
     int  pictureDataBufferSize = 0;
     
     if (mSrcPicDataType != PIC_D_TYPE_COMPRESS) {
-        if (mInputPicMediaFile && mSrcFileHandle) {
+        if (mSrcPicMediaFile && mSrcPicFileHandle) {
             pictureDataBufferSize = av_image_get_buffer_size(mSrcPicParam.mPixFmt, mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
             pictureDataBuffer = (uint8_t *)av_malloc(pictureDataBufferSize);
             if (!pictureDataBuffer) {
@@ -195,7 +196,7 @@ int  CSPicture::getPicRawData(uint8_t** pData, int* dataSizes) {
                 return HB_ERROR;
             }
 
-            if (fread(pictureDataBuffer, 1, pictureDataBufferSize, mSrcFileHandle) <= 0) {
+            if (fread(pictureDataBuffer, 1, pictureDataBufferSize, mSrcPicFileHandle) <= 0) {
                 LOGE("Read picture raw data failed !");
                 goto READ_PIC_DATA_END_LABEL;
             }
@@ -221,8 +222,7 @@ READ_PIC_DATA_END_LABEL:
     return HB_ERROR;
 }
     
-int  CSPicture::pictureEncode(uint8_t* pData, int dataSizes)
-{
+int  CSPicture::pictureEncode(uint8_t* pData, int dataSizes) {
     if (!pData || dataSizes <= 0) {
         LOGE("picture encoder the args is invalid !");
         return HB_ERROR;
@@ -340,8 +340,7 @@ int  CSPicture::pictureSwscale(uint8_t** pData, int* dataSizes, PictureParams* s
     return HB_OK;
 }
     
-int  CSPicture::picDecoderInitial()
-{
+int  CSPicture::picDecoderInitial() {
     if (mTargetPicDataType == PIC_D_TYPE_UNKNOWN \
         || mSrcPicDataType == PIC_D_TYPE_UNKNOWN) {
         LOGE("Picture encoder initial failed, pciture data is invalid!");
@@ -362,29 +361,24 @@ int  CSPicture::picDecoderInitial()
     return HB_OK;
 }
 
-int  CSPicture::picDecoderOpen()
-{
+int  CSPicture::picDecoderOpen() {
     return HB_OK;
 }
 
-int  CSPicture::picDecoderClose()
-{
+int  CSPicture::picDecoderClose() {
     return HB_OK;
 }
 
-int  CSPicture::picDecoderRelease()
-{
+int  CSPicture::picDecoderRelease() {
     return HB_OK;
 }
 
-int CSPicture::setSrcPicDataType(PIC_MEDIA_DATA_TYPE type)
-{
+int CSPicture::setSrcPicDataType(PIC_MEDIA_DATA_TYPE type) {
     mSrcPicDataType = type;
     return HB_OK;
 }
 
-int CSPicture::setTargetPicDataType(PIC_MEDIA_DATA_TYPE type)
-{
+int CSPicture::setTargetPicDataType(PIC_MEDIA_DATA_TYPE type) {
     mTargetPicDataType = type;
     return HB_OK;
 }
@@ -392,41 +386,43 @@ int CSPicture::setTargetPicDataType(PIC_MEDIA_DATA_TYPE type)
 /**
  *  配置输入的音频文件
  */
-void CSPicture::setInputPicMediaFile(char *file)
-{
-    if (mInputPicMediaFile)
-        av_freep(mInputPicMediaFile);
-    mInputPicMediaFile = av_strdup(file);
+void CSPicture::setInputPicMediaFile(char *file) {
+    if (mSrcPicMediaFile)
+        av_freep(mSrcPicMediaFile);
+    mSrcPicMediaFile = av_strdup(file);
 }
 
-char *CSPicture::getInputPicMediaFile()
-{
-    return mInputPicMediaFile;
+char *CSPicture::getInputPicMediaFile() {
+    return mSrcPicMediaFile;
 }
 
 /**
  *  配置输出的音频文件
  */
-void CSPicture::setOutputPicMediaFile(char *file)
-{
-    if (mOutputPicMediaFile)
-        av_freep(mOutputPicMediaFile);
-    mOutputPicMediaFile = av_strdup(file);
+void CSPicture::setOutputPicMediaFile(char *file) {
+    if (mTargetPicMediaFile)
+        av_freep(mTargetPicMediaFile);
+    mTargetPicMediaFile = av_strdup(file);
 }
 
-char *CSPicture::getOutputPicMediaFile()
-{
-    return mOutputPicMediaFile;
+char *CSPicture::getOutputPicMediaFile() {
+    return mTargetPicMediaFile;
 }
 
-int CSPicture::setSrcPictureParam(PictureParams* param)
-{
+int CSPicture::setSrcPictureParam(PictureParams* param) {
+    if (!param) {
+        LOGE("CSPicture set source picture param failed, arg invalid !");
+        return HB_ERROR;
+    }
     memcpy(&mSrcPicParam, param, sizeof(PictureParams));
     return HB_OK;
 }
 
-int CSPicture::setTargetPictureParam(PictureParams* param)
-{
+int CSPicture::setTargetPictureParam(PictureParams* param) {
+    if (!param) {
+        LOGE("CSPicture set target picture param failed, arg invalid !");
+        return HB_ERROR;
+    }
     memcpy(&mTargetPicParam, param, sizeof(PictureParams));
     return HB_OK;
 }
