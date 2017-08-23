@@ -77,7 +77,11 @@ int  CSPicture::picEncoderInitial() {
             LOGE("Picture encoder initial, alloc avformat context failed !");
             return HB_ERROR;
         }
-        mOutputPicFormat->oformat = av_guess_format(NULL, mTargetPicMediaFile, NULL);
+        mOutputPicFormat->oformat = av_guess_format(mTargetPicParam.mCodecType, NULL, NULL);
+        if (!mOutputPicFormat->oformat) {
+            LOGE("Picture can't find the valid muxer !");
+            return HB_ERROR;
+        }
         mOutputPicStream = avformat_new_stream(mOutputPicFormat, NULL);
         if (!mOutputPicStream) {
             LOGE("Pic encoder initial failed, new stream failed !");

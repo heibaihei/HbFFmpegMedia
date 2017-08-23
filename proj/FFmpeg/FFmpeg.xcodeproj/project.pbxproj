@@ -2884,6 +2884,7 @@
 		A1BE859C1EB75E8E004B839C /* ffserver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ffserver.c; path = ../../../src/HBFfserver/ffserver.c; sourceTree = "<group>"; };
 		A1BE85A71EB75F29004B839C /* ffserver_config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ffserver_config.c; path = "../../ffmpeg-3.2/ffserver_config.c"; sourceTree = "<group>"; };
 		A1BE85A81EB75F29004B839C /* ffserver_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ffserver_config.h; path = "../../ffmpeg-3.2/ffserver_config.h"; sourceTree = "<group>"; };
+		A1C142DC1F4DC2D400B2C5C5 /* ReadMe */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ReadMe; path = ../../../ReadMe; sourceTree = "<group>"; };
 		A1E5CB9F1F274AE100A02704 /* libfdk-aac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfdk-aac.a"; path = "../../lib/fdk-aac/lib/libfdk-aac.a"; sourceTree = "<group>"; };
 		A1E5CBA11F276AA500A02704 /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libx264.a; path = ../../lib/x264/lib/libx264.a; sourceTree = "<group>"; };
 		A1E5CBA31F276BCB00A02704 /* VideoDecodeAcceleration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoDecodeAcceleration.framework; path = System/Library/Frameworks/VideoDecodeAcceleration.framework; sourceTree = SDKROOT; };
@@ -9255,6 +9256,7 @@
 				A181BC6D1EA21935004861DA /* Picture */,
 				A181BC601EA21788004861DA /* Format */,
 				A181BC591EA21756004861DA /* HBCommon.h */,
+				A1C142DC1F4DC2D400B2C5C5 /* ReadMe */,
 				A1FC87291F1D9BFA004D8A63 /* HBCommon.cpp */,
 				A181BC5A1EA21756004861DA /* HBFilterWater.c */,
 				A1FB66471F19F721001B08F0 /* HBSampleDefine.h */,

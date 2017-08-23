@@ -31,6 +31,7 @@ typedef struct _PictureParams {
     enum AVPixelFormat mPixFmt;
     float mWidth;
     float mHeight;
+    char *mCodecType;
     int   mAlign;
 } PictureParams;
 

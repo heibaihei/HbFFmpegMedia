@@ -72,12 +72,12 @@ int PictureCSpictureDemo()
     HBMedia::CSPicture objPicture;
     objPicture.setSrcPicDataType(HBMedia::PIC_D_TYPE_RAW_YUV);
     objPicture.setInputPicMediaFile((char *)(PROJ_ROOT_PATH"/Picture/encoder/1080_1080_JYUV420P.yuv"));
-    PictureParams srcPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, 0 };
+    PictureParams srcPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, NULL, 0 };
     objPicture.setSrcPictureParam(&srcPictureParam);
     
     objPicture.setTargetPicDataType(HBMedia::PIC_D_TYPE_COMPRESS);
     objPicture.setOutputPicMediaFile((char *)(PROJ_ROOT_PATH"/Picture/encoder/1080_1080_JYUV420P_HB_encoder.jpg"));
-    PictureParams targetPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, 0 };
+    PictureParams targetPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, (char *)"mjpeg", 0 };
     objPicture.setTargetPictureParam(&targetPictureParam);
     
     objPicture.picBaseInitial();

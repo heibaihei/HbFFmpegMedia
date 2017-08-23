@@ -43,6 +43,4 @@ double mt_gettime_monotonic();
  */
 int globalInitial();
 
-
-
 #endif
