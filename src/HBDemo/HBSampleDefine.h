@@ -10,7 +10,8 @@
 
 #define MT_TARGET_PLATFORM         MT_PLATFORM_MAC
 
-#define HB_OK     0
-#define HB_ERROR    -1
+#define HB_OK     (0)
+#define HB_ERROR  (-1)
+#define HB_EOF    (-2)
 
 #endif

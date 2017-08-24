@@ -70,28 +70,34 @@ int main(int argc, const char * argv[]) {
 int PictureCSpictureDemo()
 {
     HBMedia::CSPicture objPicture;
-    objPicture.setSrcPicDataType(HBMedia::PIC_D_TYPE_RAW_YUV);
+    objPicture.setSrcPicDataType(HBMedia::PIC_D_TYPE_RAW_BY_FILE);
     objPicture.setInputPicMediaFile((char *)(PROJ_ROOT_PATH"/Picture/encoder/1080_1080_JYUV420P.yuv"));
-    PictureParams srcPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, NULL, 0 };
+    PictureParams srcPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, NULL, 1 };
     objPicture.setSrcPictureParam(&srcPictureParam);
     
     objPicture.setTargetPicDataType(HBMedia::PIC_D_TYPE_COMPRESS);
     objPicture.setOutputPicMediaFile((char *)(PROJ_ROOT_PATH"/Picture/encoder/1080_1080_JYUV420P_HB_encoder.jpg"));
-    PictureParams targetPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, (char *)"mjpeg", 0 };
+    PictureParams targetPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, (char *)"mjpeg", 1 };
     objPicture.setTargetPictureParam(&targetPictureParam);
     
     objPicture.picBaseInitial();
     objPicture.picEncoderInitial();
     objPicture.picEncoderOpen();
     
-    uint8_t* pictureData = NULL;
+    uint8_t *pictureData = NULL;
     int      pictureDataSizes = 0;
-    int HbErr = HB_OK;
+    int      HbErr = HB_OK;
     while (HbErr == HB_OK) {
-        HbErr = objPicture.getPicRawData(&pictureData, &pictureDataSizes);
-        if (HbErr != HB_OK) {
-            LOGW("Can't get picture data !");
-            break;
+        {
+            HbErr = objPicture.getPicRawData(&pictureData, &pictureDataSizes);
+            if (HbErr == HB_EOF) {
+                LOGW("Picture reach raw data EOF !");
+                goto ENCODE_LOOP_END_LABEL;
+            }
+            else if (HbErr != HB_OK) {
+                LOGW("Picture get raw data failed <%d> !", HbErr);
+                break;
+            }
         }
         
         HbErr = objPicture.pictureEncode(pictureData, pictureDataSizes);
@@ -100,7 +106,7 @@ int PictureCSpictureDemo()
             break;
         }
     }
-    
+ENCODE_LOOP_END_LABEL:
     objPicture.pictureFlushEncode();
     objPicture.picEncoderClose();
     objPicture.picEncoderRelease();

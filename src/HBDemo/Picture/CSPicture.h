@@ -35,8 +35,9 @@ namespace HBMedia {
 
 typedef enum PIC_MEDIA_DATA_TYPE {
     PIC_D_TYPE_UNKNOWN = 0,
-    PIC_D_TYPE_RAW_YUV = 1,
-    PIC_D_TYPE_RAW_RGB = 2,
+    PIC_D_TYPE_RAW_BY_FILE = 1,
+    PIC_D_TYPE_RAW_BY_MEMORY = 2,
+    PIC_D_TYPE_RAW_BY_PROTOCOL = 2,
     PIC_D_TYPE_COMPRESS = 3,
 } PIC_MEDIA_DATA_TYPE;
     
@@ -79,27 +80,41 @@ public:
      *   @return HB_ERROR 初始化异常; HB_OK 正常初始化
      */
     int  picEncoderInitial();
+    
+    /**
+     *   打开编码器，开始编码前的准备，解码器打开之类的操作
+     *   @return HB_ERROR 打开失败; HB_OK 打开正常
+     */
     int  picEncoderOpen();
     int  picEncoderClose();
     int  picEncoderRelease();
     
     /**
      *  获取图片像素数据，返回对应的数据缓冲区以及像素大小
+     *  外部传入指针，内部拿到数据后，将传入的指针指向得到的数据空间，以及标识得到的数据大小
+     *  @param pData : 传入指针的指针，内部得到数据，则将该地址指向得到的数据空间
+     *  @param pDataSizes : 指向数据大小的指针，标识得到的数据大小
+     *  @return HB_ERROR 获取数据失败; HB_OK 成功得到有效数据; 如果无数据可读，返回HB_EOF;
      */
-    int  getPicRawData(uint8_t** pData, int* dataSizes);
+    int  getPicRawData(uint8_t** pData, int* pDataSizes);
     
     /**
      *  对图片像素进行编码
+     *  如果用户传入图像数据，就以这么大的数据作为一个像素帧进行编码
+     *  @param pData : 传入指向像素数据的指针
+     *  @param pDataSizes : 传入的数据大小
+     *  @return HB_ERROR 获取数据失败; HB_OK 成功得到有效数据
      */
-    int  pictureEncode(uint8_t* pData, int dataSizes);
+    int  pictureEncode(uint8_t* pData, int pDataSizes);
     
     /**
      *  刷新编码器，清空编码器种的缓存
+     *  @return HB_ERROR 刷解码器失败; HB_OK 正常完成解码器刷新;
      */
     int  pictureFlushEncode();
     /** ================================================= <<< **/
 
-    int  pictureSwscale(uint8_t** pData, int* dataSizes, PictureParams* srcParam, PictureParams* dstParam);
+    int  pictureSwscale(uint8_t** pData, int* pDataSizes, PictureParams* srcParam, PictureParams* dstParam);
     
     /** ================================================= >>> Decode **/
     /**
