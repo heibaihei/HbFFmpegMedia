@@ -55,6 +55,34 @@ int CSPicture::_checkPicMediaValid() {
     return HB_OK;
 }
 
+int CSPicture::picPrepare() {
+
+    if (HB_OK == picBaseInitial()) {
+        return HB_ERROR;
+    }
+    
+    if (HB_OK == picEncoderInitial()) {
+        return HB_ERROR;
+    }
+    
+    if (HB_OK == picEncoderOpen()) {
+        return HB_ERROR;
+    }
+    
+    return HB_OK;
+}
+
+int CSPicture::picDispose() {
+    if (HB_OK == picEncoderClose()) {
+        return HB_ERROR;
+    }
+    
+    if (HB_OK == picEncoderRelease()) {
+        return HB_ERROR;
+    }
+    return HB_ERROR;
+}
+    
 int  CSPicture::picBaseInitial() {
     
     if (HB_OK != _checkPicMediaValid()) {

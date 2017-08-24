@@ -80,9 +80,7 @@ int PictureCSpictureDemo()
     PictureParams targetPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, (char *)"mjpeg", 1 };
     objPicture.setTargetPictureParam(&targetPictureParam);
     
-    objPicture.picBaseInitial();
-    objPicture.picEncoderInitial();
-    objPicture.picEncoderOpen();
+    objPicture.picPrepare();
     
     uint8_t *pictureData = NULL;
     int      pictureDataSizes = 0;
@@ -108,8 +106,7 @@ int PictureCSpictureDemo()
     }
 ENCODE_LOOP_END_LABEL:
     objPicture.pictureFlushEncode();
-    objPicture.picEncoderClose();
-    objPicture.picEncoderRelease();
+    objPicture.picDispose();
     
     return 0;
 }

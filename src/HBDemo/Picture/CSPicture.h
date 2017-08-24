@@ -66,6 +66,18 @@ public:
     char *getOutputPicMediaFile();
     
     /**
+     *  图片对象的准备，完成所有的参数设置后，调用该接口完成对应的参数初始化、打开等操作；
+     *  @return HB_ERROR 初始化异常; HB_OK 正常初始化
+     */
+    int picPrepare();
+    
+    /**
+     *  释放对象prepare 操作期间创建的资源；
+     *  @return HB_ERROR 初始化异常; HB_OK 正常初始化
+     */
+    int picDispose();
+    
+    /**
      *  图片基础组建初始化，比如ffmpeg、等基础组件初始化
      *  [备注] 不管进行怎么样类型的转换，这个都是必须要被调用的，
      *  内部会对即将进行编解码的参数进行校验以及基础组件的初始化
