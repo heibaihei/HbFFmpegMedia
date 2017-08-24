@@ -78,30 +78,6 @@ public:
     int picDispose();
     
     /**
-     *  图片基础组建初始化，比如ffmpeg、等基础组件初始化
-     *  [备注] 不管进行怎么样类型的转换，这个都是必须要被调用的，
-     *  内部会对即将进行编解码的参数进行校验以及基础组件的初始化
-     *  @return HB_ERROR 初始化异常; HB_OK 正常初始化
-     */
-    int  picBaseInitial();
-    
-    /** ================================================= >>> Encode **/
-    /** 图像编码器初始化、启动、关闭、释放 **/
-    /**
-     *   图像编码初始化, 主要对编码需要用到的一些内部对象创建空间等必要的初始化操作
-     *   @return HB_ERROR 初始化异常; HB_OK 正常初始化
-     */
-    int  picEncoderInitial();
-    
-    /**
-     *   打开编码器，开始编码前的准备，解码器打开之类的操作
-     *   @return HB_ERROR 打开失败; HB_OK 打开正常
-     */
-    int  picEncoderOpen();
-    int  picEncoderClose();
-    int  picEncoderRelease();
-    
-    /**
      *  获取图片像素数据，返回对应的数据缓冲区以及像素大小
      *  外部传入指针，内部拿到数据后，将传入的指针指向得到的数据空间，以及标识得到的数据大小
      *  @param pData : 传入指针的指针，内部得到数据，则将该地址指向得到的数据空间
@@ -125,8 +101,6 @@ public:
      */
     int  pictureFlushEncode();
     /** ================================================= <<< **/
-
-    int  pictureSwscale(uint8_t** pData, int* pDataSizes, PictureParams* srcParam, PictureParams* dstParam);
     
     /** ================================================= >>> Decode **/
     /**
@@ -147,6 +121,32 @@ protected:
      *  @return HB_ERROR 编解码参数异常; HB_OK 编解码参数正常
      */
     int _checkPicMediaValid();
+    
+    int  pictureSwscale(uint8_t** pData, int* pDataSizes, PictureParams* srcParam, PictureParams* dstParam);
+    
+    /**
+     *  图片基础组建初始化，比如ffmpeg、等基础组件初始化
+     *  [备注] 不管进行怎么样类型的转换，这个都是必须要被调用的，
+     *  内部会对即将进行编解码的参数进行校验以及基础组件的初始化
+     *  @return HB_ERROR 初始化异常; HB_OK 正常初始化
+     */
+    int  picBaseInitial();
+    
+    /** ================================================= >>> Encode **/
+    /** 图像编码器初始化、启动、关闭、释放 **/
+    /**
+     *   图像编码初始化, 主要对编码需要用到的一些内部对象创建空间等必要的初始化操作
+     *   @return HB_ERROR 初始化异常; HB_OK 正常初始化
+     */
+    int  picEncoderInitial();
+    
+    /**
+     *   打开编码器，开始编码前的准备，解码器打开之类的操作
+     *   @return HB_ERROR 打开失败; HB_OK 打开正常
+     */
+    int  picEncoderOpen();
+    int  picEncoderClose();
+    int  picEncoderRelease();
     
 private:
     /**

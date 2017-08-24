@@ -57,15 +57,15 @@ int CSPicture::_checkPicMediaValid() {
 
 int CSPicture::picPrepare() {
 
-    if (HB_OK == picBaseInitial()) {
+    if (HB_OK != picBaseInitial()) {
         return HB_ERROR;
     }
     
-    if (HB_OK == picEncoderInitial()) {
+    if (HB_OK != picEncoderInitial()) {
         return HB_ERROR;
     }
     
-    if (HB_OK == picEncoderOpen()) {
+    if (HB_OK != picEncoderOpen()) {
         return HB_ERROR;
     }
     
@@ -73,11 +73,11 @@ int CSPicture::picPrepare() {
 }
 
 int CSPicture::picDispose() {
-    if (HB_OK == picEncoderClose()) {
+    if (HB_OK != picEncoderClose()) {
         return HB_ERROR;
     }
     
-    if (HB_OK == picEncoderRelease()) {
+    if (HB_OK != picEncoderRelease()) {
         return HB_ERROR;
     }
     return HB_ERROR;
