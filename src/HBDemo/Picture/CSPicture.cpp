@@ -140,6 +140,15 @@ int  CSPicture::picEncoderInitial() {
             return HB_ERROR;
         }
         
+#if 0
+        /** 直接通过文件名，开辟封装格式空间 */
+        int HbErr = avformat_alloc_output_context2(&mOutputPicFormat, NULL, NULL, mTargetPicMediaFile);
+        if (HbErr < 0){
+            LOGE("Picture allock output format failed, <%s>!", makeErrorStr(HbErr));
+            return HB_ERROR;
+        }
+#else
+        /** 外部进行初始化，分两步进行 */
         mOutputPicFormat = avformat_alloc_context();
         if (!mOutputPicFormat) {
             LOGE("Picture encoder initial, alloc avformat context failed !");
@@ -150,6 +159,7 @@ int  CSPicture::picEncoderInitial() {
             LOGE("Picture can't find the valid muxer !");
             return HB_ERROR;
         }
+#endif
         mOutputPicStream = avformat_new_stream(mOutputPicFormat, NULL);
         if (!mOutputPicStream) {
             LOGE("Pic encoder initial failed, new stream failed !");
