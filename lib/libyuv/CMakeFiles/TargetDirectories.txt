@@ -1,0 +1,8 @@
+/Users/zj-db0519/work/code/github/HbFFmpegMedia/lib/libyuv/CMakeFiles/install/local.dir
+/Users/zj-db0519/work/code/github/HbFFmpegMedia/lib/libyuv/CMakeFiles/install/strip.dir
+/Users/zj-db0519/work/code/github/HbFFmpegMedia/lib/libyuv/CMakeFiles/install.dir
+/Users/zj-db0519/work/code/github/HbFFmpegMedia/lib/libyuv/CMakeFiles/list_install_components.dir
+/Users/zj-db0519/work/code/github/HbFFmpegMedia/lib/libyuv/CMakeFiles/edit_cache.dir
+/Users/zj-db0519/work/code/github/HbFFmpegMedia/lib/libyuv/CMakeFiles/convert.dir
+/Users/zj-db0519/work/code/github/HbFFmpegMedia/lib/libyuv/CMakeFiles/rebuild_cache.dir
+/Users/zj-db0519/work/code/github/HbFFmpegMedia/lib/libyuv/CMakeFiles/yuv.dir
