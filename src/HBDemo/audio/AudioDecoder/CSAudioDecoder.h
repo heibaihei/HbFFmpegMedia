@@ -16,14 +16,6 @@
 #include "HBAudio.h"
 
 namespace HBMedia {
-
-#define DECODE_MODE_SEPERATE_AUDIO_WITH_VIDEO  0
-    
-#define DECODE_STATE_READPKT_END     0X0001
-#define DECODE_STATE_DECODE_END      0X0002
-#define DECODE_STATE_READPKT_ABORT   0X0004
-#define DECODE_STATE_DECODE_ABORT    0X0008
-#define DECODE_STATE_FLUSH_MODE      0X0010
     
 /**
  *  1、解码包含有音视频流的媒体文件

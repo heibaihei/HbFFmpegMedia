@@ -24,7 +24,7 @@ extern "C" {
 };
 #endif
 
-#include "HBSampleDefine.h"
+#include "HBCSDefine.h"
 #include "HBCommon.h"
 
 typedef struct _PictureParams {

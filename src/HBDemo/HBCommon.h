@@ -28,9 +28,10 @@ static char errorStr[AV_ERROR_MAX_STRING_SIZE];
 #define makeErrorStr(errorCode) av_make_error_string(errorStr, AV_ERROR_MAX_STRING_SIZE, errorCode)
 #endif
 
-#include "HBSampleDefine.h"
+#include "HBCSDefine.h"
 #include "HBLog.h"
 #include "HBPickPicture.h"
+#include "HBPacketQueue.h"
 
 /**
  *  获取当前时间

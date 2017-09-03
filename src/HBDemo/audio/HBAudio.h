@@ -3,7 +3,7 @@
 
 
 #include "HBCommon.h"
-#include "HBSampleDefine.h"
+#include "HBCSDefine.h"
 
 typedef enum _AudioDataType {
     AUDIO_DATA_TYPE_OF_UNKNOWN = -1,

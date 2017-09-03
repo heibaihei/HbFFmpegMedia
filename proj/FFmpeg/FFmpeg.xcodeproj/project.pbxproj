@@ -2809,7 +2809,7 @@
 		A1091CE61F595BC200565177 /* CSVideoEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoEncoder.cpp; sourceTree = "<group>"; };
 		A1091CE71F595BC200565177 /* CSVideoEncoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSVideoEncoder.hpp; sourceTree = "<group>"; };
 		A1091CE91F595BD900565177 /* CSVideoDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoDecoder.cpp; sourceTree = "<group>"; };
-		A1091CEA1F595BD900565177 /* CSVideoDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSVideoDecoder.hpp; sourceTree = "<group>"; };
+		A1091CEA1F595BD900565177 /* CSVideoDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVideoDecoder.h; sourceTree = "<group>"; };
 		A1091CEC1F595BF500565177 /* CSVideoScale.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoScale.cpp; sourceTree = "<group>"; };
 		A1091CED1F595BF500565177 /* CSVideoScale.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSVideoScale.hpp; sourceTree = "<group>"; };
 		A10B26DA1EC9BD94006D24C6 /* filtering_video.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = filtering_video.c; path = "../../../ffmpeg-3.2/doc/examples/filtering_video.c"; sourceTree = "<group>"; };
@@ -9103,7 +9103,7 @@
 		A1FB66431F19F18B001B08F0 /* AudioDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDecoder.cpp; sourceTree = "<group>"; };
 		A1FB66441F19F18B001B08F0 /* AudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDecoder.h; sourceTree = "<group>"; };
 		A1FB66461F19F6D2001B08F0 /* HBLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBLog.h; path = ../../../src/HBDemo/HBLog.h; sourceTree = "<group>"; };
-		A1FB66471F19F721001B08F0 /* HBSampleDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBSampleDefine.h; path = ../../../src/HBDemo/HBSampleDefine.h; sourceTree = "<group>"; };
+		A1FB66471F19F721001B08F0 /* HBCSDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBCSDefine.h; path = ../../../src/HBDemo/HBCSDefine.h; sourceTree = "<group>"; };
 		A1FC23B71F277BC800024371 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		A1FC23B91F277BD200024371 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		A1FC23BB1F277BEB00024371 /* libobjc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libobjc.tbd; path = usr/lib/libobjc.tbd; sourceTree = SDKROOT; };
@@ -9224,7 +9224,7 @@
 			isa = PBXGroup;
 			children = (
 				A1091CE91F595BD900565177 /* CSVideoDecoder.cpp */,
-				A1091CEA1F595BD900565177 /* CSVideoDecoder.hpp */,
+				A1091CEA1F595BD900565177 /* CSVideoDecoder.h */,
 			);
 			path = VideoDecoder;
 			sourceTree = "<group>";
@@ -9312,7 +9312,7 @@
 				A1C142DC1F4DC2D400B2C5C5 /* ReadMe */,
 				A1FC87291F1D9BFA004D8A63 /* HBCommon.cpp */,
 				A181BC5A1EA21756004861DA /* HBFilterWater.c */,
-				A1FB66471F19F721001B08F0 /* HBSampleDefine.h */,
+				A1FB66471F19F721001B08F0 /* HBCSDefine.h */,
 				A181BC5B1EA21756004861DA /* HBFilterWater.h */,
 				A181BC5C1EA21756004861DA /* HBSeperateFormat.c */,
 				A181BC5D1EA21756004861DA /* HBSeperateFormat.h */,
