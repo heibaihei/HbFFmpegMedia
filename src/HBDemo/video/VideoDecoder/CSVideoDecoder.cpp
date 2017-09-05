@@ -10,13 +10,13 @@
 
 namespace HBMedia {
 
-CSVideoDecoder::CSVideoDecoder(VideoParams& params) {
+CSVideoDecoder::CSVideoDecoder(ImageParams& params) {
     mVideoOutputFile = nullptr;
     mVideoOutputFileHandle = nullptr;
     mVideoInputFile = nullptr;
     mVideoInputFileHandle = nullptr;
     memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
-    memset(&mSrcVideoParams, 0x00, sizeof(VideoParams));
+    memset(&mSrcVideoParams, 0x00, sizeof(ImageParams));
     mTargetVideoParams = params;
     mVideoStreamIndex = INVALID_STREAM_INDEX;
     mPKTSerial = 0;

@@ -20,7 +20,7 @@ namespace HBMedia {
 typedef class CSVideoDecoder
 {
 public:
-    CSVideoDecoder(VideoParams& params);
+    CSVideoDecoder(ImageParams& params);
     ~CSVideoDecoder();
     
     /**
@@ -82,8 +82,8 @@ private:
 private:
     int mPKTSerial;
     int mVideoStreamIndex;
-    VideoParams mTargetVideoParams;
-    VideoParams mSrcVideoParams;
+    ImageParams mTargetVideoParams;
+    ImageParams mSrcVideoParams;
     AVFormatContext* mPInputVideoFormatCtx;
     AVCodecContext* mPInputVideoCodecCtx;
     AVCodec* mPInputVideoCodec;

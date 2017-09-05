@@ -49,14 +49,14 @@ typedef enum VIDEO_PIX_FORMAT {
     MT_PIX_FMT_NV21     = 4,
 } VIDEO_PIX_FORMAT;
 
-typedef struct _VideoParams {
+typedef struct _ImageParams {
     enum AVPixelFormat mPixFmt;
     float mWidth;
     float mHeight;
     char *mCodecType;
     int   mAlign;
     int   mDataSize; /** 当前媒体格式下，每个帧的大小 */
-} VideoParams;
+} ImageParams;
 
 typedef enum MEDIA_DATA_TYPE {
     PIC_D_TYPE_UNKNOWN = 0,
