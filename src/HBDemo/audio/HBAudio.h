@@ -26,7 +26,7 @@ typedef struct _AudioParams {
 
 #include "AudioDecoder/AudioDecoder.h"
 #include "AudioEncoder/AudioEncoder.h"
-#include "HBPacketQueue.h"
+#include "CSPacketQueue.h"
 
 #include "CSAudioResample.h"
 

@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "HBLog.h"
+#include "CSLog.h"
 #include "CSCommon.h"
 #include "HBAudio.h"
 #include "Picture/encoder/picture_encoder.h"

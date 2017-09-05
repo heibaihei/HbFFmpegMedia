@@ -6,7 +6,7 @@
 //  Copyright © 2017年 meitu. All rights reserved.
 //
 
-#include "HBPacketQueue.h"
+#include "CSPacketQueue.h"
 
 // Make below global variable private.
 static AVPacket flush_pkt;
