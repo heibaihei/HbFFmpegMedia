@@ -1,20 +1,7 @@
 #ifndef __HBDEFINE_H__
 #define __HBDEFINE_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-    
-#include "libavcodec/avcodec.h"
-#include "libavformat/avformat.h"
-#include "libavutil/mem.h"
-#include "libavutil/imgutils.h"
-#include "libswscale/swscale.h"
-    
-    
-#ifdef __cplusplus
-};
-#endif
+#include "CSUtil.h"
 
 #define MT_PLATFORM_UNKNOWN            0
 #define MT_PLATFORM_IOS                1

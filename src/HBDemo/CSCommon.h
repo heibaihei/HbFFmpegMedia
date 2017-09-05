@@ -1,36 +1,14 @@
 #ifndef __HB_DEMO_COMMON_H__
 #define __HB_DEMO_COMMON_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-    
-#include "libavcodec/avcodec.h"
-#include "libavformat/avformat.h"
-#include "libswresample/swresample.h"
-#include "libavutil/samplefmt.h"
-#include "libavutil/error.h"
-#include "libavutil/mem.h"
-#include "libavutil/audio_fifo.h"
-#include "libavutil/imgutils.h"
-#include "libswscale/swscale.h"
-    
-#ifdef __cplusplus
-};
-#endif
-
 #define INVALID_STREAM_INDEX  (-1)
 
 #define SAFE_DELETE(p)           do { if(p) { delete (p); (p) = nullptr;} } while(0)
 #define SAFE_DELETE_ARRAY(p)     do { if(p) { delete[] (p); (p) = nullptr; } } while(0)
 #define SAFE_FREE(p)             do { if(p) { free(p); (p) = nullptr; } } while(0)
 
-#ifndef makeErrorStr
-static char errorStr[AV_ERROR_MAX_STRING_SIZE];
-#define makeErrorStr(errorCode) av_make_error_string(errorStr, AV_ERROR_MAX_STRING_SIZE, errorCode)
-#endif
-
 #include "CSDefine.h"
+#include "CSUtil.h"
 #include "HBLog.h"
 #include "HBPickPicture.h"
 #include "HBPacketQueue.h"

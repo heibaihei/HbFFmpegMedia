@@ -2879,6 +2879,7 @@
 		A19A67FA1EB3483900DE8F11 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		A1B7FE311F0DDD52003C6D0F /* HBPickPicture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HBPickPicture.cpp; sourceTree = "<group>"; };
 		A1B7FE321F0DDD52003C6D0F /* HBPickPicture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HBPickPicture.h; sourceTree = "<group>"; };
+		A1BAF0141F5EF79000C3062C /* CSUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSUtil.h; path = ../../../include/CSUtil.h; sourceTree = "<group>"; };
 		A1BE85621EB743C7004B839C /* cmdutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cmdutils.c; path = "../../ffmpeg-3.2/cmdutils.c"; sourceTree = "<group>"; };
 		A1BE85631EB743C7004B839C /* cmdutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cmdutils.h; path = "../../ffmpeg-3.2/cmdutils.h"; sourceTree = "<group>"; };
 		A1BE85651EB749E1004B839C /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../lib/ffmpeg/config.h; sourceTree = "<group>"; };
@@ -9310,6 +9311,7 @@
 				A181BC601EA21788004861DA /* Format */,
 				A181BC591EA21756004861DA /* CSCommon.h */,
 				A1C142DC1F4DC2D400B2C5C5 /* ReadMe */,
+				A1BAF0141F5EF79000C3062C /* CSUtil.h */,
 				A1FC87291F1D9BFA004D8A63 /* HBCommon.cpp */,
 				A181BC5A1EA21756004861DA /* HBFilterWater.c */,
 				A1FB66471F19F721001B08F0 /* CSDefine.h */,
