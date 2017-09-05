@@ -2,8 +2,8 @@
 #define  _HBAUDIO_H_
 
 
-#include "HBCommon.h"
-#include "HBCSDefine.h"
+#include "CSCommon.h"
+#include "CSDefine.h"
 
 typedef enum _AudioDataType {
     AUDIO_DATA_TYPE_OF_UNKNOWN = -1,
@@ -22,7 +22,7 @@ typedef struct _AudioParams {
     long mbitRate;
 } AudioParams;
 
-#include "HBCommon.h"
+#include "CSCommon.h"
 
 #include "AudioDecoder/AudioDecoder.h"
 #include "AudioEncoder/AudioEncoder.h"

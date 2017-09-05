@@ -8,7 +8,7 @@
 
 #include "HBPickPicture.h"
 
-#include "HBCommon.h"
+#include "CSCommon.h"
 
 #ifdef __cplusplus
 extern "C" {

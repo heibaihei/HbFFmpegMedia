@@ -71,4 +71,12 @@ typedef struct _VideoParams {
     int   mDataSize; /** 当前媒体格式下，每个帧的大小 */
 } VideoParams;
 
+typedef enum MEDIA_DATA_TYPE {
+    PIC_D_TYPE_UNKNOWN = 0,
+    PIC_D_TYPE_RAW_BY_FILE = 1,
+    PIC_D_TYPE_RAW_BY_MEMORY = 2,
+    PIC_D_TYPE_RAW_BY_PROTOCOL = 2,
+    PIC_D_TYPE_COMPRESS = 3,
+} MEDIA_DATA_TYPE;
+
 #endif

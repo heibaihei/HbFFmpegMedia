@@ -475,12 +475,12 @@ int  CSPicture::picDecoderRelease() {
     return HB_OK;
 }
 
-int CSPicture::setSrcPicDataType(PIC_MEDIA_DATA_TYPE type) {
+int CSPicture::setSrcPicDataType(MEDIA_DATA_TYPE type) {
     mSrcPicDataType = type;
     return HB_OK;
 }
 
-int CSPicture::setTargetPicDataType(PIC_MEDIA_DATA_TYPE type) {
+int CSPicture::setTargetPicDataType(MEDIA_DATA_TYPE type) {
     mTargetPicDataType = type;
     return HB_OK;
 }

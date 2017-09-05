@@ -2842,7 +2842,7 @@
 		A181BC531EA21474004861DA /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = ../../lib/ffmpeg/lib/libswscale.a; sourceTree = "<group>"; };
 		A181BC561EA2172B004861DA /* audio_format_convert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audio_format_convert.cpp; sourceTree = "<group>"; };
 		A181BC571EA2172B004861DA /* audio_format_convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audio_format_convert.h; sourceTree = "<group>"; };
-		A181BC591EA21756004861DA /* HBCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBCommon.h; path = ../../../src/HBDemo/HBCommon.h; sourceTree = "<group>"; };
+		A181BC591EA21756004861DA /* CSCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSCommon.h; path = ../../../src/HBDemo/CSCommon.h; sourceTree = "<group>"; };
 		A181BC5A1EA21756004861DA /* HBFilterWater.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HBFilterWater.c; path = ../../../src/HBDemo/HBFilterWater.c; sourceTree = "<group>"; };
 		A181BC5B1EA21756004861DA /* HBFilterWater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBFilterWater.h; path = ../../../src/HBDemo/HBFilterWater.h; sourceTree = "<group>"; };
 		A181BC5C1EA21756004861DA /* HBSeperateFormat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HBSeperateFormat.c; path = ../../../src/HBDemo/HBSeperateFormat.c; sourceTree = "<group>"; };
@@ -9103,7 +9103,7 @@
 		A1FB66431F19F18B001B08F0 /* AudioDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDecoder.cpp; sourceTree = "<group>"; };
 		A1FB66441F19F18B001B08F0 /* AudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDecoder.h; sourceTree = "<group>"; };
 		A1FB66461F19F6D2001B08F0 /* HBLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBLog.h; path = ../../../src/HBDemo/HBLog.h; sourceTree = "<group>"; };
-		A1FB66471F19F721001B08F0 /* HBCSDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBCSDefine.h; path = ../../../src/HBDemo/HBCSDefine.h; sourceTree = "<group>"; };
+		A1FB66471F19F721001B08F0 /* CSDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSDefine.h; path = ../../../src/HBDemo/CSDefine.h; sourceTree = "<group>"; };
 		A1FC23B71F277BC800024371 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		A1FC23B91F277BD200024371 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		A1FC23BB1F277BEB00024371 /* libobjc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libobjc.tbd; path = usr/lib/libobjc.tbd; sourceTree = SDKROOT; };
@@ -9308,11 +9308,11 @@
 				A181BC551EA2172B004861DA /* FormatConvert */,
 				A181BC6D1EA21935004861DA /* Picture */,
 				A181BC601EA21788004861DA /* Format */,
-				A181BC591EA21756004861DA /* HBCommon.h */,
+				A181BC591EA21756004861DA /* CSCommon.h */,
 				A1C142DC1F4DC2D400B2C5C5 /* ReadMe */,
 				A1FC87291F1D9BFA004D8A63 /* HBCommon.cpp */,
 				A181BC5A1EA21756004861DA /* HBFilterWater.c */,
-				A1FB66471F19F721001B08F0 /* HBCSDefine.h */,
+				A1FB66471F19F721001B08F0 /* CSDefine.h */,
 				A181BC5B1EA21756004861DA /* HBFilterWater.h */,
 				A181BC5C1EA21756004861DA /* HBSeperateFormat.c */,
 				A181BC5D1EA21756004861DA /* HBSeperateFormat.h */,

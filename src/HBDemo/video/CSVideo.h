@@ -10,8 +10,8 @@
 #define CSVideo_h
 
 #include <stdio.h>
-#include "HBCSDefine.h"
-#include "HBCommon.h"
+#include "CSDefine.h"
+#include "CSCommon.h"
 
 
 #endif /* CSVideo_h */

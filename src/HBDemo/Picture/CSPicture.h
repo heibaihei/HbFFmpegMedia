@@ -32,14 +32,6 @@
  */
 
 namespace HBMedia {
-
-typedef enum PIC_MEDIA_DATA_TYPE {
-    PIC_D_TYPE_UNKNOWN = 0,
-    PIC_D_TYPE_RAW_BY_FILE = 1,
-    PIC_D_TYPE_RAW_BY_MEMORY = 2,
-    PIC_D_TYPE_RAW_BY_PROTOCOL = 2,
-    PIC_D_TYPE_COMPRESS = 3,
-} PIC_MEDIA_DATA_TYPE;
     
 typedef class CSPicture
 {
@@ -50,8 +42,8 @@ public:
     int setSrcPictureParam(VideoParams* param);
     int setTargetPictureParam(VideoParams* param);
 
-    int setSrcPicDataType(PIC_MEDIA_DATA_TYPE type);
-    int setTargetPicDataType(PIC_MEDIA_DATA_TYPE type);
+    int setSrcPicDataType(MEDIA_DATA_TYPE type);
+    int setTargetPicDataType(MEDIA_DATA_TYPE type);
     
     /**
      *  配置输入的音频文件
@@ -155,7 +147,7 @@ private:
     char            *mSrcPicMediaFile;
     FILE            *mSrcPicFileHandle;
     /** 输入数据类型，裸数据还是压缩数据 */
-    PIC_MEDIA_DATA_TYPE mSrcPicDataType;
+    MEDIA_DATA_TYPE mSrcPicDataType;
     VideoParams    mSrcPicParam;
 
     /**
@@ -163,7 +155,7 @@ private:
      */
     char            *mTargetPicMediaFile;
     FILE            *mTargetPicFileHandle;
-    PIC_MEDIA_DATA_TYPE mTargetPicDataType;
+    MEDIA_DATA_TYPE mTargetPicDataType;
     VideoParams    mTargetPicParam;
     AVCodec         *mOutputPicCodec;
     AVCodecContext  *mOutputPicCodecCtx;

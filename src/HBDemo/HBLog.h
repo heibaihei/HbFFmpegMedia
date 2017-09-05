@@ -1,7 +1,7 @@
 #ifndef __HBLOG_H__
 #define __HBLOG_H__
 
-#include "HBCSDefine.h"
+#include "CSDefine.h"
 
 enum{
     LOG_LEVEL_ALL     = 0,

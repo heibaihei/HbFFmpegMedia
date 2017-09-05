@@ -24,7 +24,7 @@ extern "C" {
 };
 #endif
 
-#include "HBCSDefine.h"
-#include "HBCommon.h"
+#include "CSDefine.h"
+#include "CSCommon.h"
 
 #endif /* _HBPICTURE_H_ */
