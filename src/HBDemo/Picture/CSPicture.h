@@ -40,10 +40,10 @@ public:
     ~CSPicture();
     
     int setSrcPictureParam(ImageParams* param);
-    int setTargetPictureParam(ImageParams* param);
+    int setTrgPictureParam(ImageParams* param);
 
     int setSrcPicDataType(MEDIA_DATA_TYPE type);
-    int setTargetPicDataType(MEDIA_DATA_TYPE type);
+    int setTrgPicDataType(MEDIA_DATA_TYPE type);
     
     /**
      *  配置输入的音频文件
@@ -142,26 +142,22 @@ protected:
     
 private:
     /**
-     *  媒体数据输入相关信息
+     *  媒体数据输入／输出相关信息
      */
     char            *mSrcPicMediaFile;
     FILE            *mSrcPicFileHandle;
-    /** 输入数据类型，裸数据还是压缩数据 */
     MEDIA_DATA_TYPE mSrcPicDataType;
-    ImageParams    mSrcPicParam;
+    ImageParams     mSrcPicParam;
 
-    /**
-     *  媒体数据输出相关信息
-     */
-    char            *mTargetPicMediaFile;
-    FILE            *mTargetPicFileHandle;
-    MEDIA_DATA_TYPE mTargetPicDataType;
-    ImageParams    mTargetPicParam;
+    char            *mTrgPicMediaFile;
+    FILE            *mTrgPicFileHandle;
+    MEDIA_DATA_TYPE mTrgPicDataType;
+    ImageParams     mTrgPicParam;
+
     AVCodec         *mOutputPicCodec;
     AVCodecContext  *mOutputPicCodecCtx;
     AVStream        *mOutputPicStream;
     AVFormatContext *mOutputPicFormat;
-
 } CSPicture;
 
 } /** HBMedia */

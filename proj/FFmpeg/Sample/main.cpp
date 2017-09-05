@@ -75,10 +75,10 @@ int PictureCSpictureDemo()
     ImageParams srcPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, NULL, 1 };
     objPicture.setSrcPictureParam(&srcPictureParam);
     
-    objPicture.setTargetPicDataType(PIC_D_TYPE_COMPRESS);
+    objPicture.setTrgPicDataType(PIC_D_TYPE_COMPRESS);
     objPicture.setOutputPicMediaFile((char *)(PROJ_ROOT_PATH"/Picture/encoder/1080_1080_JYUV420P_HB_encoder.jpg"));
     ImageParams targetPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, (char *)"mjpeg", 1 };
-    objPicture.setTargetPictureParam(&targetPictureParam);
+    objPicture.setTrgPictureParam(&targetPictureParam);
     
     objPicture.picPrepare();
     

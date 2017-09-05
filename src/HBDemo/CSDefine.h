@@ -58,6 +58,7 @@ typedef struct _ImageParams {
     int   mDataSize; /** 当前媒体格式下，每个帧的大小 */
 } ImageParams;
 
+/** 输入数据类型，裸数据还是压缩数据 */
 typedef enum MEDIA_DATA_TYPE {
     PIC_D_TYPE_UNKNOWN = 0,
     PIC_D_TYPE_RAW_BY_FILE = 1,
