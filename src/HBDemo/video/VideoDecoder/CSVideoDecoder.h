@@ -40,15 +40,7 @@ public:
      */
     int prepare();
     
-    int videoBaseInitial();
-    
-    /**
-     *  解码器初始化、启动、关闭、释放
-     */
-    int  videoDecoderInitial();
-    int  videoDecoderOpen();
-    int  videoDecoderClose();
-    int  videoDecoderRelease();
+    int stop();
     
     /**
      *  音频读包
@@ -66,22 +58,39 @@ public:
      *  将音频数据写入音频缓冲区
      */
     int  CSIOPushDataBuffer(uint8_t* data, int samples);
+
+protected:
+    int videoBaseInitial();
+    
+    /**
+     *  解码器初始化、启动、关闭、释放
+     */
+    int  videoDecoderInitial();
+    int  videoDecoderOpen();
+    int  videoSwscalePrepare();
+    int  videoDecoderClose();
+    int  videoDecoderRelease();
+    
+    int  videoDoSwscale(uint8_t** inData, int*inDataSize);
     
 private:
     /**
      *  检验音频参数的有效性
      */
     int  _checkVideoParamValid();
-    
-private:
-    
+
 private:
     int mPKTSerial;
     int mVideoStreamIndex;
     VideoParams mTargetVideoParams;
+    VideoParams mSrcVideoParams;
     AVFormatContext* mPInputVideoFormatCtx;
     AVCodecContext* mPInputVideoCodecCtx;
     AVCodec* mPInputVideoCodec;
+    SwsContext *mPVideoConvertCtx;
+    int mTargetVideoFrameBufferSize;
+    uint8_t *mTargetVideoFrameBuffer;
+    
     
     PacketQueue mPacketCacheList;
     PacketQueue mFrameCacheList;

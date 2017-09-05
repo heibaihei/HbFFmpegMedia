@@ -12,6 +12,8 @@ extern "C" {
 #include "libavutil/error.h"
 #include "libavutil/mem.h"
 #include "libavutil/audio_fifo.h"
+#include "libavutil/imgutils.h"
+#include "libswscale/swscale.h"
     
 #ifdef __cplusplus
 };

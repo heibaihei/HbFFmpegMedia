@@ -16,12 +16,16 @@ CSVideoDecoder::CSVideoDecoder(VideoParams& params) {
     mVideoInputFile = nullptr;
     mVideoInputFileHandle = nullptr;
     memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
+    memset(&mSrcVideoParams, 0x00, sizeof(VideoParams));
     mTargetVideoParams = params;
     mVideoStreamIndex = INVALID_STREAM_INDEX;
     mPKTSerial = 0;
     mPInputVideoFormatCtx = nullptr;
     mPInputVideoCodecCtx = nullptr;
     mPInputVideoCodec = nullptr;
+    mPVideoConvertCtx = nullptr;
+    mTargetVideoFrameBufferSize = 0;
+    mTargetVideoFrameBuffer = nullptr;
 }
 
 CSVideoDecoder::~CSVideoDecoder() {
@@ -31,13 +35,14 @@ CSVideoDecoder::~CSVideoDecoder() {
         av_freep(&mVideoOutputFile);
 }
 
-int  CSVideoDecoder::videoBaseInitial() {
+int CSVideoDecoder::videoBaseInitial() {
     if (globalInitial() != HB_OK) {
         LOGE("global initial failed !");
         return HB_ERROR;
     }
     return HB_OK;
 }
+
 int CSVideoDecoder::prepare() {
     if (videoBaseInitial() != HB_OK) {
         LOGE("Video base initial failed !");
@@ -54,35 +59,51 @@ int CSVideoDecoder::prepare() {
         return HB_ERROR;
     }
     
-    return HB_OK;
-}
-    
-int  CSVideoDecoder::videoDecoderOpen() {
-    int HBError = -1;
-    
-    packet_queue_start(&mPacketCacheList);
-    packet_queue_start(&mFrameCacheList);
-    
-    HBError = avcodec_open2(mPInputVideoCodecCtx, mPInputVideoCodec, NULL);
-    if (HBError < 0) {
-        LOGE("Could not open codec. <%s>", av_err2str(HBError));
+    if (videoDecoderOpen() != HB_OK) {
+        LOGE("Video decoder open failed !");
         return HB_ERROR;
     }
     
-    packet_queue_flush(&mPacketCacheList);
-    packet_queue_put_flush_pkt(&mPacketCacheList);
-    packet_queue_flush(&mFrameCacheList);
-    packet_queue_put_flush_pkt(&mFrameCacheList);
-    return HB_OK;
-}
-
-int  CSVideoDecoder::videoDecoderClose() {
-    return HB_OK;
-}
-int  CSVideoDecoder::videoDecoderRelease() {
+    if (videoSwscalePrepare() != HB_OK) {
+        LOGE("Video swscale initail failed !");
+        return HB_ERROR;
+    }
+    
     return HB_OK;
 }
     
+int CSVideoDecoder::stop() {
+    if (videoDecoderClose() != HB_OK) {
+        LOGE("Video decoder close failed !");
+        return HB_ERROR;
+    }
+    
+    if (videoDecoderRelease() !=HB_OK) {
+        LOGE("Video decoder release failed !");
+        return HB_ERROR;
+    }
+    
+    return HB_OK;
+}
+
+int  CSVideoDecoder::videoDoSwscale(uint8_t** inData, int*inDataSize) {
+    int pictureSrcDataLineSize[4] = {0, 0, 0, 0};
+    int pictureDstDataLineSize[4] = {0, 0, 0, 0};
+    uint8_t *pictureSrcData[4] = {NULL};
+    uint8_t *pictureDstData[4] = {NULL};
+    
+    av_image_fill_arrays(pictureSrcData, pictureSrcDataLineSize, *inData, mSrcVideoParams.mPixFmt, mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, mSrcVideoParams.mAlign);
+    
+    av_image_fill_arrays(pictureDstData, pictureDstDataLineSize, mTargetVideoFrameBuffer, mTargetVideoParams.mPixFmt, mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
+    
+    if (sws_scale(mPVideoConvertCtx, (const uint8_t* const*)pictureSrcData, pictureSrcDataLineSize, 0, mSrcVideoParams.mHeight, pictureDstData, pictureDstDataLineSize) <= 0) {
+        LOGE("Picture sws scale failed !");
+        return HB_ERROR;
+    }
+    
+    return HB_OK;
+}
+
 int  CSVideoDecoder::readVideoPacket() {
     int HBError = -1;
     
@@ -100,7 +121,7 @@ int  CSVideoDecoder::readVideoPacket() {
                 packet_queue_put(&mPacketCacheList, pNewPacket);
             }
             av_packet_unref(pNewPacket);
-#if DECODE_MODE_SEPERATE_AUDIO_WITH_VIDEO
+#if DECODE_WITH_MULTI_THREAD_MODE
             goto READ_PKT_END_LABEL;
 #endif
         }
@@ -129,14 +150,14 @@ int  CSVideoDecoder::selectVideoFrame() {
     
     while (true) {
         
-        if ((mDecodeStateFlag & DECODE_STATE_FLUSH_MODE) || (mDecodeStateFlag & DECODE_STATE_DECODE_END) \
-            || (mDecodeStateFlag & DECODE_STATE_DECODE_ABORT)){
+        if ((mDecodeStateFlag & DECODE_STATE_FLUSH_MODE) \
+            || (mDecodeStateFlag & DECODE_STATE_DECODE_END) \
+            || (mDecodeStateFlag & DECODE_STATE_DECODE_ABORT)) {
             /** 音频解码模块状态检测 */
             break;
         }
         
         if (mPacketCacheList.nb_packets > 0) {
-            /** 队列中存在音频包，则取包 */
             packet_queue_get(&mPacketCacheList, pNewPacket, QUEUE_NOT_BLOCK, &mPKTSerial);
             if (pNewPacket->stream_index != mVideoStreamIndex) {
                 av_packet_unref(pNewPacket);
@@ -153,7 +174,7 @@ int  CSVideoDecoder::selectVideoFrame() {
                 mDecodeStateFlag |= DECODE_STATE_FLUSH_MODE;
             }
             else {
-#if DECODE_MODE_SEPERATE_AUDIO_WITH_VIDEO
+#if DECODE_WITH_MULTI_THREAD_MODE
                 continue;
 #else
                 break;
@@ -169,13 +190,32 @@ int  CSVideoDecoder::selectVideoFrame() {
             {
                 HBError = avcodec_receive_frame(mPInputVideoCodecCtx, pNewFrame);
                 if (HBError == 0) {
-                    /** TODO: huangcl 得到数据，则将数据存入到缓冲区中 */
-//                    uint8_t* pAudioResampleBuffer = nullptr;
-//                    int samplesOfConvert = mAudioResample->doResample(&pAudioResampleBuffer, pNewFrame->data, pNewFrame->nb_samples);
-//                    if (samplesOfConvert > 0) /** 将转码后数据写入缓冲区 */
-//                        CSIOPushDataBuffer(pAudioResampleBuffer, samplesOfConvert);
-//                    if (pAudioResampleBuffer)
-//                        av_freep(pAudioResampleBuffer);
+                    
+                    if (videoDoSwscale(pNewFrame->data, &(mSrcVideoParams.mDataSize)) != HB_OK) {
+                        LOGE("Video do swscale failed !");
+                        av_frame_unref(pNewFrame);
+                        return HB_ERROR;
+                    }
+                    else {
+                        /** 此处得到转换后的视频数据：mTargetVideoFrameBuffer */
+                        if (mVideoOutputFileHandle) {
+                            /** 说明以视频裸文件的数据方式输出 */
+                        }
+                        else {
+                            /** 进行数据拷贝 */
+                            AVFrame* pTmpFrame = av_frame_alloc();
+                            uint8_t* pTargetData = (uint8_t *)av_mallocz(mTargetVideoFrameBufferSize);
+                            memcpy(pTargetData, mTargetVideoFrameBuffer, mTargetVideoFrameBufferSize);
+                            
+                            av_image_fill_arrays(pTmpFrame->data, pTmpFrame->linesize, pTargetData, mTargetVideoParams.mPixFmt, mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
+                            pTmpFrame->width = mTargetVideoParams.mWidth;
+                            pTmpFrame->height = mTargetVideoParams.mHeight;
+                            pTmpFrame->format = mTargetVideoParams.mPixFmt;
+                            
+                            /** TODO: Huangcl 将帧插入帧缓冲区 */
+                        }
+                        av_frame_unref(pNewFrame);
+                    }
                 }
                 else if (HBError == AVERROR(EAGAIN))
                     break;
@@ -255,6 +295,60 @@ int  CSVideoDecoder::videoDecoderInitial() {
     packet_queue_init(&mFrameCacheList);
     
     av_dump_format(mPInputVideoFormatCtx, mVideoStreamIndex, mVideoInputFile, false);
+    return HB_OK;
+}
+
+int  CSVideoDecoder::videoDecoderClose() {
+    return HB_OK;
+}
+
+int  CSVideoDecoder::videoDecoderRelease() {
+    return HB_OK;
+}
+
+int CSVideoDecoder::videoDecoderOpen() {
+    int HBError = -1;
+    
+    packet_queue_start(&mPacketCacheList);
+    packet_queue_start(&mFrameCacheList);
+    
+    HBError = avcodec_open2(mPInputVideoCodecCtx, mPInputVideoCodec, NULL);
+    if (HBError < 0) {
+        LOGE("Could not open codec. <%s>", av_err2str(HBError));
+        return HB_ERROR;
+    }
+    
+    packet_queue_flush(&mPacketCacheList);
+    packet_queue_put_flush_pkt(&mPacketCacheList);
+    packet_queue_flush(&mFrameCacheList);
+    packet_queue_put_flush_pkt(&mFrameCacheList);
+    
+    /** 初始化原视频参数 : mSrcVideoParams */
+    mSrcVideoParams.mDataSize = av_image_get_buffer_size(mSrcVideoParams.mPixFmt, \
+                                                         mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, mSrcVideoParams.mAlign);
+    return HB_OK;
+}
+
+int CSVideoDecoder::videoSwscalePrepare() {
+    mPVideoConvertCtx = sws_getContext(mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, mSrcVideoParams.mPixFmt, mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mPixFmt, SWS_BICUBIC, NULL, NULL, NULL);
+    if (!mPVideoConvertCtx) {
+        LOGE("Create video sws context failed !");
+        return HB_ERROR;
+    }
+    
+    mTargetVideoFrameBufferSize = av_image_get_buffer_size(mTargetVideoParams.mPixFmt, \
+        mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
+    if (!mTargetVideoFrameBufferSize) {
+        LOGE("Video get Sws target frame buffer size failed<%d> !", mTargetVideoFrameBufferSize);
+        return HB_ERROR;
+    }
+    
+    mTargetVideoFrameBuffer = (uint8_t *)av_mallocz(mTargetVideoFrameBufferSize);
+    if (!mTargetVideoFrameBuffer) {
+        LOGE("Video get Sws target frame buffer failed !");
+        return HB_ERROR;
+    }
+    
     return HB_OK;
 }
 

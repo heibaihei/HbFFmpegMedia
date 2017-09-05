@@ -27,12 +27,4 @@ extern "C" {
 #include "HBCSDefine.h"
 #include "HBCommon.h"
 
-typedef struct _PictureParams {
-    enum AVPixelFormat mPixFmt;
-    float mWidth;
-    float mHeight;
-    char *mCodecType;
-    int   mAlign;
-} PictureParams;
-
 #endif /* _HBPICTURE_H_ */

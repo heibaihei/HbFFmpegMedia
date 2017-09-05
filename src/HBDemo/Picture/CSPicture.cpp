@@ -17,7 +17,7 @@ CSPicture::CSPicture() {
     mSrcPicMediaFile = nullptr;
     mSrcPicFileHandle = nullptr;
     mSrcPicDataType = PIC_D_TYPE_UNKNOWN;
-    memset(&mSrcPicParam, 0x00, sizeof(PictureParams));
+    memset(&mSrcPicParam, 0x00, sizeof(VideoParams));
     
     /**
      * 输出媒体信息
@@ -25,7 +25,7 @@ CSPicture::CSPicture() {
     mTargetPicMediaFile = nullptr;
     mTargetPicFileHandle = nullptr;
     mTargetPicDataType = PIC_D_TYPE_UNKNOWN;
-    memset(&mTargetPicParam, 0x00, sizeof(PictureParams));
+    memset(&mTargetPicParam, 0x00, sizeof(VideoParams));
     
     mOutputPicCodec = nullptr;
     mOutputPicCodecCtx = nullptr;
@@ -377,7 +377,7 @@ int  CSPicture::pictureFlushEncode() {
     return HB_OK;
 }
     
-int  CSPicture::pictureSwscale(uint8_t** pData, int* pDataSizes, PictureParams* srcParam, PictureParams* dstParam) {
+int  CSPicture::pictureSwscale(uint8_t** pData, int* pDataSizes, VideoParams* srcParam, VideoParams* dstParam) {
 
     int pictureDataBufferSize = 0;
     uint8_t *pictureDataBuffer = NULL;
@@ -511,21 +511,21 @@ char *CSPicture::getOutputPicMediaFile() {
     return mTargetPicMediaFile;
 }
 
-int CSPicture::setSrcPictureParam(PictureParams* param) {
+int CSPicture::setSrcPictureParam(VideoParams* param) {
     if (!param) {
         LOGE("CSPicture set source picture param failed, arg invalid !");
         return HB_ERROR;
     }
-    memcpy(&mSrcPicParam, param, sizeof(PictureParams));
+    memcpy(&mSrcPicParam, param, sizeof(VideoParams));
     return HB_OK;
 }
 
-int CSPicture::setTargetPictureParam(PictureParams* param) {
+int CSPicture::setTargetPictureParam(VideoParams* param) {
     if (!param) {
         LOGE("CSPicture set target picture param failed, arg invalid !");
         return HB_ERROR;
     }
-    memcpy(&mTargetPicParam, param, sizeof(PictureParams));
+    memcpy(&mTargetPicParam, param, sizeof(VideoParams));
     return HB_OK;
 }
     

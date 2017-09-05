@@ -1,6 +1,21 @@
 #ifndef __HBDEFINE_H__
 #define __HBDEFINE_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+    
+#include "libavcodec/avcodec.h"
+#include "libavformat/avformat.h"
+#include "libavutil/mem.h"
+#include "libavutil/imgutils.h"
+#include "libswscale/swscale.h"
+    
+    
+#ifdef __cplusplus
+};
+#endif
+
 #define MT_PLATFORM_UNKNOWN            0
 #define MT_PLATFORM_IOS                1
 #define MT_PLATFORM_ANDROID            2
@@ -14,7 +29,7 @@
 #define HB_ERROR  (-1)
 #define HB_EOF    (-2)
 
-#define DECODE_MODE_SEPERATE_AUDIO_WITH_VIDEO  0
+#define DECODE_WITH_MULTI_THREAD_MODE  0
 
 #define DECODE_STATE_READPKT_END     0X0001
 #define DECODE_STATE_DECODE_END      0X0002
@@ -46,5 +61,14 @@ typedef enum VIDEO_PIX_FORMAT {
     MT_PIX_FMT_NV12     = 3,
     MT_PIX_FMT_NV21     = 4,
 } VIDEO_PIX_FORMAT;
+
+typedef struct _VideoParams {
+    enum AVPixelFormat mPixFmt;
+    float mWidth;
+    float mHeight;
+    char *mCodecType;
+    int   mAlign;
+    int   mDataSize; /** 当前媒体格式下，每个帧的大小 */
+} VideoParams;
 
 #endif

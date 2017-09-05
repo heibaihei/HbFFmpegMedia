@@ -47,8 +47,8 @@ public:
     CSPicture();
     ~CSPicture();
     
-    int setSrcPictureParam(PictureParams* param);
-    int setTargetPictureParam(PictureParams* param);
+    int setSrcPictureParam(VideoParams* param);
+    int setTargetPictureParam(VideoParams* param);
 
     int setSrcPicDataType(PIC_MEDIA_DATA_TYPE type);
     int setTargetPicDataType(PIC_MEDIA_DATA_TYPE type);
@@ -122,7 +122,7 @@ protected:
      */
     int _checkPicMediaValid();
     
-    int  pictureSwscale(uint8_t** pData, int* pDataSizes, PictureParams* srcParam, PictureParams* dstParam);
+    int  pictureSwscale(uint8_t** pData, int* pDataSizes, VideoParams* srcParam, VideoParams* dstParam);
     
     /**
      *  图片基础组建初始化，比如ffmpeg、等基础组件初始化
@@ -156,7 +156,7 @@ private:
     FILE            *mSrcPicFileHandle;
     /** 输入数据类型，裸数据还是压缩数据 */
     PIC_MEDIA_DATA_TYPE mSrcPicDataType;
-    PictureParams    mSrcPicParam;
+    VideoParams    mSrcPicParam;
 
     /**
      *  媒体数据输出相关信息
@@ -164,7 +164,7 @@ private:
     char            *mTargetPicMediaFile;
     FILE            *mTargetPicFileHandle;
     PIC_MEDIA_DATA_TYPE mTargetPicDataType;
-    PictureParams    mTargetPicParam;
+    VideoParams    mTargetPicParam;
     AVCodec         *mOutputPicCodec;
     AVCodecContext  *mOutputPicCodecCtx;
     AVStream        *mOutputPicStream;

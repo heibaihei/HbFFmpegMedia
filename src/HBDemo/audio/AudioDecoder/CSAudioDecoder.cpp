@@ -180,7 +180,7 @@ int  CSAudioDecoder::readAudioPacket()
                 packet_queue_put(&mPacketCacheList, pNewPacket);
             }
             av_packet_unref(pNewPacket);
-#if DECODE_MODE_SEPERATE_AUDIO_WITH_VIDEO
+#if DECODE_WITH_MULTI_THREAD_MODE
             goto READ_PKT_END_LABEL;
 #endif
         }
@@ -234,7 +234,7 @@ int  CSAudioDecoder::selectAudieoFrame()
                 mDecodeStateFlag |= DECODE_STATE_FLUSH_MODE;
             }
             else {
-#if DECODE_MODE_SEPERATE_AUDIO_WITH_VIDEO
+#if DECODE_WITH_MULTI_THREAD_MODE
                 continue;
 #else
                 break;
