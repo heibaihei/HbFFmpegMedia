@@ -20,7 +20,7 @@ namespace HBMedia {
 typedef class CSVideoDecoder
 {
 public:
-    CSVideoDecoder();
+    CSVideoDecoder(VideoParams& params);
     ~CSVideoDecoder();
     
     /**
@@ -34,6 +34,13 @@ public:
      */
     void setOutputVideoMediaFile(char *file);
     char *getOutputVideoMediaFile();
+    
+    /**
+     *  准备工作，对外接口
+     */
+    int prepare();
+    
+    int videoBaseInitial();
     
     /**
      *  解码器初始化、启动、关闭、释放
@@ -77,6 +84,7 @@ private:
     AVCodec* mPInputVideoCodec;
     
     PacketQueue mPacketCacheList;
+    PacketQueue mFrameCacheList;
     
     char *mVideoOutputFile;
     FILE *mVideoOutputFileHandle;

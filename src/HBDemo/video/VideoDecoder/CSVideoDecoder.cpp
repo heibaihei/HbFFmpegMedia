@@ -10,109 +10,69 @@
 
 namespace HBMedia {
 
-CSVideoDecoder::CSVideoDecoder() {
+CSVideoDecoder::CSVideoDecoder(VideoParams& params) {
     mVideoOutputFile = nullptr;
     mVideoOutputFileHandle = nullptr;
     mVideoInputFile = nullptr;
     mVideoInputFileHandle = nullptr;
     memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
+    mTargetVideoParams = params;
+    mVideoStreamIndex = INVALID_STREAM_INDEX;
+    mPKTSerial = 0;
+    mPInputVideoFormatCtx = nullptr;
+    mPInputVideoCodecCtx = nullptr;
+    mPInputVideoCodec = nullptr;
 }
 
 CSVideoDecoder::~CSVideoDecoder() {
     if (mVideoInputFile)
-        av_freep(mVideoInputFile);
+        av_freep(&mVideoInputFile);
     if (mVideoOutputFile)
-        av_freep(mVideoOutputFile);
+        av_freep(&mVideoOutputFile);
 }
 
-int  CSVideoDecoder::videoDecoderInitial() {
-    memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
-    globalInitial();
-    
-    int HBError = -1;
-    if (!mVideoInputFile) {
-        LOGE("Audio decoder args file is invalid !");
+int  CSVideoDecoder::videoBaseInitial() {
+    if (globalInitial() != HB_OK) {
+        LOGE("global initial failed !");
+        return HB_ERROR;
+    }
+    return HB_OK;
+}
+int CSVideoDecoder::prepare() {
+    if (videoBaseInitial() != HB_OK) {
+        LOGE("Video base initial failed !");
         return HB_ERROR;
     }
     
     if (_checkVideoParamValid() != HB_OK) {
-        LOGE("Audio decoder param failed !");
+        LOGE("Check Video decoder param failed !");
         return HB_ERROR;
     }
     
-    mPInputVideoFormatCtx = avformat_alloc_context();
-    HBError = avformat_open_input(&mPInputVideoFormatCtx, mVideoInputFile, NULL, NULL);
-    if (HBError != 0) {
-        LOGE("Audio decoder couldn't open input file. <%d> <%s>", HBError, av_err2str(HBError));
+    if (videoDecoderInitial() != HB_OK) {
+        LOGE("Video decoder initial failed !");
         return HB_ERROR;
     }
     
-    HBError = avformat_find_stream_info(mPInputVideoFormatCtx, NULL);
-    if (HBError < 0) {
-        LOGE("Audio decoder couldn't find stream information. <%s>", av_err2str(HBError));
-        return HB_ERROR;
-    }
-    
-    mVideoStreamIndex = INVALID_STREAM_INDEX;
-    for (int i=0; i<mPInputVideoFormatCtx->nb_streams; i++) {
-        if (mPInputVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-            mVideoStreamIndex = i;
-            break;
-        }
-    }
-    if (mVideoStreamIndex == INVALID_STREAM_INDEX) {
-        LOGW("Audio decoder counldn't find valid audio stream !");
-        return HB_ERROR;
-    }
-    
-    AVStream* pVideoStream = mPInputVideoFormatCtx->streams[mVideoStreamIndex];
-    
-    mPInputVideoCodec = avcodec_find_decoder(pVideoStream->codecpar->codec_id);
-    if (!mPInputVideoCodec) {
-        LOGE("Codec <%d> not found !", pVideoStream->codecpar->codec_id);
-        return HB_ERROR;
-    }
-    
-    mPInputVideoCodecCtx = avcodec_alloc_context3(mPInputVideoCodec);
-    if (!mPInputVideoCodecCtx) {
-        LOGE("Codec ctx <%d> not found !", pVideoStream->codecpar->codec_id);
-        return HB_ERROR;
-    }
-    
-    avcodec_parameters_to_context(mPInputVideoCodecCtx, pVideoStream->codecpar);
-    
-    /** 初始化视频转码器 */
-    /** 初始化数据缓冲区： TODO: huangcl */
-    
-    /** 初始化包的缓冲队列 */
-    packet_queue_init(&mPacketCacheList);
-    packet_queue_start(&mPacketCacheList);
-    
-    /** 初始化音频数据缓冲管道 */
-    /** 初始化数据缓冲区： TODO: huangcl */
-    
-    av_dump_format(mPInputVideoFormatCtx, mVideoStreamIndex, mVideoInputFile, false);
     return HB_OK;
 }
     
 int  CSVideoDecoder::videoDecoderOpen() {
     int HBError = -1;
+    
+    packet_queue_start(&mPacketCacheList);
+    packet_queue_start(&mFrameCacheList);
+    
     HBError = avcodec_open2(mPInputVideoCodecCtx, mPInputVideoCodec, NULL);
     if (HBError < 0) {
         LOGE("Could not open codec. <%s>", av_err2str(HBError));
         return HB_ERROR;
     }
     
-    if (mVideoOutputFile) {
-        mVideoOutputFileHandle = fopen(mVideoOutputFile, "wb");
-        if (!mVideoOutputFileHandle) {
-            LOGE("Audio decoder couldn't open output file.");
-            return HB_ERROR;
-        }
-    }
-    
     packet_queue_flush(&mPacketCacheList);
     packet_queue_put_flush_pkt(&mPacketCacheList);
+    packet_queue_flush(&mFrameCacheList);
+    packet_queue_put_flush_pkt(&mFrameCacheList);
     return HB_OK;
 }
 
@@ -243,13 +203,81 @@ DECODE_END_LABEL:
 int  CSVideoDecoder::CSIOPushDataBuffer(uint8_t* data, int samples) {
     return HB_OK;
 }
+    
+int  CSVideoDecoder::videoDecoderInitial() {
+    int HBError = -1;
+    
+    memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
+    
+    mPInputVideoFormatCtx = avformat_alloc_context();
+    HBError = avformat_open_input(&mPInputVideoFormatCtx, mVideoInputFile, NULL, NULL);
+    if (HBError != 0) {
+        LOGE("Video decoder couldn't open input file. <%d> <%s>", HBError, av_err2str(HBError));
+        return HB_ERROR;
+    }
+    
+    HBError = avformat_find_stream_info(mPInputVideoFormatCtx, NULL);
+    if (HBError < 0) {
+        LOGE("Video decoder couldn't find stream information. <%s>", av_err2str(HBError));
+        return HB_ERROR;
+    }
+    
+    mVideoStreamIndex = INVALID_STREAM_INDEX;
+    for (int i=0; i<mPInputVideoFormatCtx->nb_streams; i++) {
+        if (mPInputVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+            mVideoStreamIndex = i;
+            break;
+        }
+    }
+    if (mVideoStreamIndex == INVALID_STREAM_INDEX) {
+        LOGW("Video decoder counldn't find valid audio stream !");
+        return HB_ERROR;
+    }
+    
+    AVStream* pVideoStream = mPInputVideoFormatCtx->streams[mVideoStreamIndex];
+    mPInputVideoCodec = avcodec_find_decoder(pVideoStream->codecpar->codec_id);
+    if (!mPInputVideoCodec) {
+        LOGE("Codec <%d> not found !", pVideoStream->codecpar->codec_id);
+        return HB_ERROR;
+    }
+    
+    mPInputVideoCodecCtx = avcodec_alloc_context3(mPInputVideoCodec);
+    if (!mPInputVideoCodecCtx) {
+        LOGE("Codec ctx <%d> not found !", pVideoStream->codecpar->codec_id);
+        return HB_ERROR;
+    }
+    avcodec_parameters_to_context(mPInputVideoCodecCtx, pVideoStream->codecpar);
+    
+    /** 初始化包的缓冲队列 */
+    packet_queue_init(&mPacketCacheList);
+    
+    /** 初始化音频数据缓冲管道 */
+    packet_queue_init(&mFrameCacheList);
+    
+    av_dump_format(mPInputVideoFormatCtx, mVideoStreamIndex, mVideoInputFile, false);
+    return HB_OK;
+}
+
 int  CSVideoDecoder::_checkVideoParamValid() {
+    
+    if (!mVideoInputFile) {
+        LOGE("Audio decoder input file is invalid !");
+        return HB_ERROR;
+    }
+    
+    if (mVideoOutputFile) {
+        mVideoOutputFileHandle = fopen(mVideoOutputFile, "wb");
+        if (!mVideoOutputFileHandle) {
+            LOGE("Audio decoder couldn't open output file.");
+            return HB_ERROR;
+        }
+    }
     return HB_OK;
 }
     
 void CSVideoDecoder::setInputVideoMediaFile(char *file) {
     if (mVideoInputFile)
-        av_freep(mVideoInputFile);
+        av_freep(&mVideoInputFile);
     mVideoInputFile = av_strdup(file);
 }
 char *CSVideoDecoder::getInputVideoMediaFile() {
@@ -257,7 +285,7 @@ char *CSVideoDecoder::getInputVideoMediaFile() {
 }
 void CSVideoDecoder::setOutputVideoMediaFile(char *file) {
     if (mVideoOutputFile)
-        av_freep(mVideoOutputFile);
+        av_freep(&mVideoOutputFile);
     mVideoOutputFile = av_strdup(file);
 }
 

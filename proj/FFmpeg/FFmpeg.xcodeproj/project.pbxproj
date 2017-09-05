@@ -2807,7 +2807,7 @@
 		A1091CE01F5958AF00565177 /* CSVideo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideo.cpp; sourceTree = "<group>"; };
 		A1091CE11F5958AF00565177 /* CSVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVideo.h; sourceTree = "<group>"; };
 		A1091CE61F595BC200565177 /* CSVideoEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoEncoder.cpp; sourceTree = "<group>"; };
-		A1091CE71F595BC200565177 /* CSVideoEncoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSVideoEncoder.hpp; sourceTree = "<group>"; };
+		A1091CE71F595BC200565177 /* CSVideoEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVideoEncoder.h; sourceTree = "<group>"; };
 		A1091CE91F595BD900565177 /* CSVideoDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoDecoder.cpp; sourceTree = "<group>"; };
 		A1091CEA1F595BD900565177 /* CSVideoDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVideoDecoder.h; sourceTree = "<group>"; };
 		A1091CEC1F595BF500565177 /* CSVideoScale.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoScale.cpp; sourceTree = "<group>"; };
@@ -9233,7 +9233,7 @@
 			isa = PBXGroup;
 			children = (
 				A1091CE61F595BC200565177 /* CSVideoEncoder.cpp */,
-				A1091CE71F595BC200565177 /* CSVideoEncoder.hpp */,
+				A1091CE71F595BC200565177 /* CSVideoEncoder.h */,
 			);
 			path = VideoEncoder;
 			sourceTree = "<group>";

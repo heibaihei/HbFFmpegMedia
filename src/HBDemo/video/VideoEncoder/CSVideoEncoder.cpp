@@ -6,4 +6,4 @@
 //  Copyright © 2017年 meitu. All rights reserved.
 //
 
-#include "CSVideoEncoder.hpp"
+#include "CSVideoEncoder.h"
