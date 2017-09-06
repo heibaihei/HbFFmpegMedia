@@ -33,4 +33,20 @@ static char errorStr[AV_ERROR_MAX_STRING_SIZE];
 #define makeErrorStr(errorCode) av_make_error_string(errorStr, AV_ERROR_MAX_STRING_SIZE, errorCode)
 #endif
 
+typedef struct CSMediaCodec {
+public:
+    CSMediaCodec() {
+        mCodec = nullptr;
+        mCodecCtx = nullptr;
+        mStream = nullptr;
+        mFormat = nullptr;
+    };
+    ~CSMediaCodec() {};
+    
+    AVCodec         *mCodec;
+    AVCodecContext  *mCodecCtx;
+    AVStream        *mStream;
+    AVFormatContext *mFormat;
+} CSCodec;
+
 #endif /* _CSUTIL_H_ */

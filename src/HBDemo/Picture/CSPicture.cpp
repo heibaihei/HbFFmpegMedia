@@ -11,26 +11,15 @@
 namespace HBMedia {
 
 CSPicture::CSPicture() {
-    /**
-     * 输入媒体信息
-     */
     mSrcPicMediaFile = nullptr;
     mSrcPicFileHandle = nullptr;
-    mSrcPicDataType = PIC_D_TYPE_UNKNOWN;
+    mSrcPicDataType = MD_TYPE_UNKNOWN;
     memset(&mSrcPicParam, 0x00, sizeof(ImageParams));
     
-    /**
-     * 输出媒体信息
-     */
     mTrgPicMediaFile = nullptr;
     mTrgPicFileHandle = nullptr;
-    mTrgPicDataType = PIC_D_TYPE_UNKNOWN;
+    mTrgPicDataType = MD_TYPE_UNKNOWN;
     memset(&mTrgPicParam, 0x00, sizeof(ImageParams));
-    
-    mOutputPicCodec = nullptr;
-    mOutputPicCodecCtx = nullptr;
-    mOutputPicStream = nullptr;
-    mOutputPicFormat = nullptr;
 }
 
 CSPicture::~CSPicture() {
@@ -41,7 +30,7 @@ CSPicture::~CSPicture() {
 }
 
 int CSPicture::_checkPicMediaValid() {
-    if (mTrgPicDataType == PIC_D_TYPE_UNKNOWN || mSrcPicDataType == PIC_D_TYPE_UNKNOWN) {
+    if (mTrgPicDataType == MD_TYPE_UNKNOWN || mSrcPicDataType == MD_TYPE_UNKNOWN) {
         LOGE("Picture data type is invalid !");
         return HB_ERROR;
     }
@@ -95,7 +84,7 @@ int  CSPicture::picBaseInitial() {
         return HB_ERROR;
     }
     
-    if (mTrgPicDataType != PIC_D_TYPE_COMPRESS) {
+    if (mTrgPicDataType != MD_TYPE_COMPRESS) {
         if (mTrgPicMediaFile && !mTrgPicFileHandle) {
             /**
              * 如果输入文件是裸流，则需要打开文件，获取文件句柄
@@ -111,7 +100,7 @@ int  CSPicture::picBaseInitial() {
         }
     }
     
-    if (mSrcPicDataType != PIC_D_TYPE_COMPRESS) {
+    if (mSrcPicDataType != MD_TYPE_COMPRESS) {
         if (mSrcPicMediaFile && !mSrcPicFileHandle) {
             /**
              * 如果输入文件是裸流，则需要打开文件，获取文件句柄
@@ -134,7 +123,7 @@ int  CSPicture::picEncoderInitial() {
     /**
      * 针对输出文件
      */
-    if (mTrgPicDataType == PIC_D_TYPE_COMPRESS) {
+    if (mTrgPicDataType == MD_TYPE_COMPRESS) {
         if (!mTrgPicMediaFile) {
             LOGE("Pictue encoder initial, can't use the output media file !");
             return HB_ERROR;
@@ -149,41 +138,41 @@ int  CSPicture::picEncoderInitial() {
         }
 #else
         /** 外部进行初始化，分两步进行 */
-        mOutputPicFormat = avformat_alloc_context();
-        if (!mOutputPicFormat) {
+        mOutMCodec.mFormat = avformat_alloc_context();
+        if (!mOutMCodec.mFormat) {
             LOGE("Picture encoder initial, alloc avformat context failed !");
             return HB_ERROR;
         }
-        mOutputPicFormat->oformat = av_guess_format(mTrgPicParam.mCodecType, NULL, NULL);
-        if (!mOutputPicFormat->oformat) {
+        mOutMCodec.mFormat->oformat = av_guess_format(mTrgPicParam.mCodecType, NULL, NULL);
+        if (!mOutMCodec.mFormat->oformat) {
             LOGE("Picture can't find the valid muxer !");
             return HB_ERROR;
         }
 #endif
-        mOutputPicStream = avformat_new_stream(mOutputPicFormat, NULL);
-        if (!mOutputPicStream) {
+        mOutMCodec.mStream = avformat_new_stream(mOutMCodec.mFormat, NULL);
+        if (!mOutMCodec.mStream) {
             LOGE("Pic encoder initial failed, new stream failed !");
             return HB_ERROR;
         }
         
-        mOutputPicCodec = avcodec_find_encoder(mOutputPicFormat->oformat->video_codec);
-        if (!mOutputPicCodec) {
+        mOutMCodec.mCodec = avcodec_find_encoder(mOutMCodec.mFormat->oformat->video_codec);
+        if (!mOutMCodec.mCodec) {
             LOGE("Picture encoder initial, find avcodec encoder failed !");
             return HB_ERROR;
         }
         
-        mOutputPicCodecCtx = avcodec_alloc_context3(mOutputPicCodec);
-        mOutputPicCodecCtx->codec_id = mOutputPicFormat->oformat->video_codec;
-        mOutputPicCodecCtx->codec_type = AVMEDIA_TYPE_VIDEO;
-        mOutputPicCodecCtx->pix_fmt = mTrgPicParam.mPixFmt;
-        mOutputPicCodecCtx->width = mTrgPicParam.mWidth;
-        mOutputPicCodecCtx->height = mTrgPicParam.mHeight;
+        mOutMCodec.mCodecCtx = avcodec_alloc_context3(mOutMCodec.mCodec);
+        mOutMCodec.mCodecCtx->codec_id = mOutMCodec.mFormat->oformat->video_codec;
+        mOutMCodec.mCodecCtx->codec_type = AVMEDIA_TYPE_VIDEO;
+        mOutMCodec.mCodecCtx->pix_fmt = mTrgPicParam.mPixFmt;
+        mOutMCodec.mCodecCtx->width = mTrgPicParam.mWidth;
+        mOutMCodec.mCodecCtx->height = mTrgPicParam.mHeight;
 
-        mOutputPicCodecCtx->time_base.num = 1;
-        mOutputPicCodecCtx->time_base.den = 30;
+        mOutMCodec.mCodecCtx->time_base.num = 1;
+        mOutMCodec.mCodecCtx->time_base.den = 30;
         
-        avcodec_parameters_from_context(mOutputPicStream->codecpar, mOutputPicCodecCtx);
-        av_dump_format(mOutputPicFormat, 0, mTrgPicMediaFile, 1);
+        avcodec_parameters_from_context(mOutMCodec.mStream->codecpar, mOutMCodec.mCodecCtx);
+        av_dump_format(mOutMCodec.mFormat, 0, mTrgPicMediaFile, 1);
     }
     return HB_OK;
 }
@@ -192,19 +181,19 @@ int  CSPicture::picEncoderOpen() {
     /**
      * 针对输出文件
      */
-    if (mTrgPicDataType == PIC_D_TYPE_COMPRESS) {
+    if (mTrgPicDataType == MD_TYPE_COMPRESS) {
         int HbErr = 0;
-        if ((HbErr = avio_open(&mOutputPicFormat->pb, mTrgPicMediaFile, AVIO_FLAG_READ_WRITE)) < 0) {
+        if ((HbErr = avio_open(&(mOutMCodec.mFormat->pb), mTrgPicMediaFile, AVIO_FLAG_READ_WRITE)) < 0) {
             LOGE("Could't open output file, %s !", makeErrorStr(HbErr));
             return HB_ERROR;
         }
         
-        if ((HbErr = avcodec_open2(mOutputPicCodecCtx, mOutputPicCodec, NULL)) < 0) {
+        if ((HbErr = avcodec_open2(mOutMCodec.mCodecCtx, mOutMCodec.mCodec, NULL)) < 0) {
             LOGE("Picture encoder open failed, %s!", makeErrorStr(HbErr));
             return HB_ERROR;
         }
         
-        if ((HbErr = avformat_write_header(mOutputPicFormat, NULL)) < 0) {
+        if ((HbErr = avformat_write_header(mOutMCodec.mFormat, NULL)) < 0) {
             LOGE("Avformat write header failed, %s!", makeErrorStr(HbErr));
             return HB_ERROR;
         }
@@ -215,17 +204,17 @@ int  CSPicture::picEncoderOpen() {
 
 int  CSPicture::picEncoderClose() {
     /** 写入图片的尾部格式 */
-    av_write_trailer(mOutputPicFormat);
+    av_write_trailer(mOutMCodec.mFormat);
     
     /** 关闭编解码器 */
-    if (mOutputPicCodecCtx)
-        avcodec_close(mOutputPicCodecCtx);
+    if (mOutMCodec.mCodecCtx)
+        avcodec_close(mOutMCodec.mCodecCtx);
     
     /** 关闭文件IO */
-    avio_close(mOutputPicFormat->pb);
+    avio_close(mOutMCodec.mFormat->pb);
     
     /** 如果是非压缩数据，需要关闭文件 */
-    if (mSrcPicDataType != PIC_D_TYPE_COMPRESS && mSrcPicFileHandle) {
+    if (mSrcPicDataType != MD_TYPE_COMPRESS && mSrcPicFileHandle) {
         fclose(mSrcPicFileHandle);
         mSrcPicFileHandle = nullptr;
     }
@@ -234,8 +223,8 @@ int  CSPicture::picEncoderClose() {
 
 int  CSPicture::picEncoderRelease() {
 
-    avcodec_free_context(&mOutputPicCodecCtx);
-    avformat_free_context(mOutputPicFormat);
+    avcodec_free_context(&(mOutMCodec.mCodecCtx));
+    avformat_free_context(mOutMCodec.mFormat);
     
     return HB_OK;
 }
@@ -254,7 +243,7 @@ int  CSPicture::getPicRawData(uint8_t** pData, int* pDataSizes) {
     uint8_t* pictureDataBuffer = nullptr;
     int  pictureDataBufferSize = 0;
     
-    if (mSrcPicDataType != PIC_D_TYPE_COMPRESS) {
+    if (mSrcPicDataType != MD_TYPE_COMPRESS) {
         if (mSrcPicMediaFile && mSrcPicFileHandle) {
             pictureDataBufferSize = av_image_get_buffer_size(mSrcPicParam.mPixFmt, mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
             if (!pictureDataBufferSize) {
@@ -322,7 +311,7 @@ int  CSPicture::pictureEncode(uint8_t* pData, int pDataSizes) {
         pNewFrame->height = mTrgPicParam.mHeight;
         pNewFrame->format = mTrgPicParam.mPixFmt;
         
-        int HbError = avcodec_send_frame(mOutputPicCodecCtx, pNewFrame);
+        int HbError = avcodec_send_frame(mOutMCodec.mCodecCtx, pNewFrame);
         if (HbError<0 && HbError != AVERROR(EAGAIN) && HbError != AVERROR_EOF) {
             av_frame_unref(pNewFrame);
             LOGE("Send packet failed !\n");
@@ -332,10 +321,10 @@ int  CSPicture::pictureEncode(uint8_t* pData, int pDataSizes) {
         av_frame_unref(pNewFrame);
     
         while(true) {
-            HbError = avcodec_receive_packet(mOutputPicCodecCtx, pNewPacket);
+            HbError = avcodec_receive_packet(mOutMCodec.mCodecCtx, pNewPacket);
             if (HbError == 0) {
-                pNewPacket->stream_index = mOutputPicStream->index;
-                HbError = av_write_frame(mOutputPicFormat, pNewPacket);
+                pNewPacket->stream_index = mOutMCodec.mStream->index;
+                HbError = av_write_frame(mOutMCodec.mFormat, pNewPacket);
                 av_packet_unref(pNewPacket);
             }
             else if (HbError == AVERROR(EAGAIN))
@@ -354,17 +343,17 @@ int  CSPicture::pictureFlushEncode() {
     
     AVPacket* pNewPacket = av_packet_alloc();
     
-    int HbError = avcodec_send_frame(mOutputPicCodecCtx, NULL);
+    int HbError = avcodec_send_frame(mOutMCodec.mCodecCtx, NULL);
     if (HbError<0 && HbError != AVERROR(EAGAIN) && HbError != AVERROR_EOF) {
         LOGE("Picture flush encoder, send frame failed <%s> !\n", makeErrorStr(HbError));
         return HB_ERROR;
     }
     
     while(true) {
-        HbError = avcodec_receive_packet(mOutputPicCodecCtx, pNewPacket);
+        HbError = avcodec_receive_packet(mOutMCodec.mCodecCtx, pNewPacket);
         if (HbError == 0) {
-            pNewPacket->stream_index = mOutputPicStream->index;
-            HbError = av_write_frame(mOutputPicFormat, pNewPacket);
+            pNewPacket->stream_index = mOutMCodec.mStream->index;
+            HbError = av_write_frame(mOutMCodec.mFormat, pNewPacket);
             av_packet_unref(pNewPacket);
         }
         else if (HbError == AVERROR(EAGAIN))
@@ -443,8 +432,8 @@ SWS_PIC_DATA_END_LABEL:
 }
     
 int  CSPicture::picDecoderInitial() {
-    if (mTrgPicDataType == PIC_D_TYPE_UNKNOWN \
-        || mSrcPicDataType == PIC_D_TYPE_UNKNOWN) {
+    if (mTrgPicDataType == MD_TYPE_UNKNOWN \
+        || mSrcPicDataType == MD_TYPE_UNKNOWN) {
         LOGE("Picture encoder initial failed, pciture data is invalid!");
         return HB_ERROR;
     }
@@ -452,7 +441,7 @@ int  CSPicture::picDecoderInitial() {
         /**
          * 针对输入文件
          */
-        if (mSrcPicDataType == PIC_D_TYPE_COMPRESS) {
+        if (mSrcPicDataType == MD_TYPE_COMPRESS) {
             
         }
         else {

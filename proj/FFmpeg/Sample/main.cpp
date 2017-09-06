@@ -70,12 +70,12 @@ int main(int argc, const char * argv[]) {
 int PictureCSpictureDemo()
 {
     HBMedia::CSPicture objPicture;
-    objPicture.setSrcPicDataType(PIC_D_TYPE_RAW_BY_FILE);
+    objPicture.setSrcPicDataType(MD_TYPE_RAW_BY_FILE);
     objPicture.setInputPicMediaFile((char *)(PROJ_ROOT_PATH"/Picture/encoder/1080_1080_JYUV420P.yuv"));
     ImageParams srcPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, NULL, 1 };
     objPicture.setSrcPictureParam(&srcPictureParam);
     
-    objPicture.setTrgPicDataType(PIC_D_TYPE_COMPRESS);
+    objPicture.setTrgPicDataType(MD_TYPE_COMPRESS);
     objPicture.setOutputPicMediaFile((char *)(PROJ_ROOT_PATH"/Picture/encoder/1080_1080_JYUV420P_HB_encoder.jpg"));
     ImageParams targetPictureParam = { AV_PIX_FMT_YUVJ420P, 1080, 1080, (char *)"mjpeg", 1 };
     objPicture.setTrgPictureParam(&targetPictureParam);

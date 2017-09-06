@@ -1,4 +1,3 @@
-
 #include <mach/mach_time.h>
 #include "CSCommon.h"
 
@@ -17,4 +16,23 @@ int globalInitial()
     avformat_network_init();
     
     return HB_OK;
+}
+
+enum AVPixelFormat getImageInnerFormat(IMAGE_PIX_FORMAT pixFormat)
+{
+    switch (pixFormat) {
+        case CS_PIX_FMT_YUV420P:
+            return AV_PIX_FMT_YUV420P;
+        case CS_PIX_FMT_YUV422P:
+            return AV_PIX_FMT_YUV422P;
+        case CS_PIX_FMT_YUV444P:
+            return AV_PIX_FMT_YUV444P;
+        case CS_PIX_FMT_NV12:
+            return AV_PIX_FMT_NV12;
+        case CS_PIX_FMT_NV21:
+            return AV_PIX_FMT_NV21;
+        default:
+            LOGE("Get image inner format failed !");
+            return AV_PIX_FMT_NONE;
+    }
 }

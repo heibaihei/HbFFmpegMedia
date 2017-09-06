@@ -142,22 +142,22 @@ protected:
     
 private:
     /**
-     *  媒体数据输入／输出相关信息
+     *  媒体数据输入信息
      */
     char            *mSrcPicMediaFile;
     FILE            *mSrcPicFileHandle;
-    MEDIA_DATA_TYPE mSrcPicDataType;
     ImageParams     mSrcPicParam;
-
+    MEDIA_DATA_TYPE mSrcPicDataType;
+    CSMediaCodec    mInMCodec;
+    
+    /**
+     *  媒体数据输出信息
+     */
     char            *mTrgPicMediaFile;
     FILE            *mTrgPicFileHandle;
-    MEDIA_DATA_TYPE mTrgPicDataType;
     ImageParams     mTrgPicParam;
-
-    AVCodec         *mOutputPicCodec;
-    AVCodecContext  *mOutputPicCodecCtx;
-    AVStream        *mOutputPicStream;
-    AVFormatContext *mOutputPicFormat;
+    MEDIA_DATA_TYPE mTrgPicDataType;
+    CSMediaCodec    mOutMCodec;
 } CSPicture;
 
 } /** HBMedia */

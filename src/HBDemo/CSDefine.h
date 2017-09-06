@@ -40,14 +40,14 @@ typedef enum AUDIO_SAMPLE_FORMAT {
     MT_SAMPLE_FMT_NB           ///< Number of sample formats. DO NOT USE if linking dynamically
 } AUDIO_SAMPLE_FORMAT;
 
-typedef enum VIDEO_PIX_FORMAT {
-    MT_PIX_FMT_NONE     = -1,
-    MT_PIX_FMT_YUV420P = 0,
-    MT_PIX_FMT_YUV422P  = 1,
-    MT_PIX_FMT_YUV444P  = 2,
-    MT_PIX_FMT_NV12     = 3,
-    MT_PIX_FMT_NV21     = 4,
-} VIDEO_PIX_FORMAT;
+typedef enum IMAGE_PIX_FORMAT {
+    CS_PIX_FMT_NONE     = -1,
+    CS_PIX_FMT_YUV420P = 0,
+    CS_PIX_FMT_YUV422P  = 1,
+    CS_PIX_FMT_YUV444P  = 2,
+    CS_PIX_FMT_NV12     = 3,
+    CS_PIX_FMT_NV21     = 4,
+} IMAGE_PIX_FORMAT;
 
 typedef struct _ImageParams {
     enum AVPixelFormat mPixFmt;
@@ -60,11 +60,11 @@ typedef struct _ImageParams {
 
 /** 输入数据类型，裸数据还是压缩数据 */
 typedef enum MEDIA_DATA_TYPE {
-    PIC_D_TYPE_UNKNOWN = 0,
-    PIC_D_TYPE_RAW_BY_FILE = 1,
-    PIC_D_TYPE_RAW_BY_MEMORY = 2,
-    PIC_D_TYPE_RAW_BY_PROTOCOL = 2,
-    PIC_D_TYPE_COMPRESS = 3,
+    MD_TYPE_UNKNOWN = 0,
+    MD_TYPE_RAW_BY_FILE = 1,
+    MD_TYPE_RAW_BY_MEMORY = 2,
+    MD_TYPE_RAW_BY_PROTOCOL = 2,
+    MD_TYPE_COMPRESS = 3,
 } MEDIA_DATA_TYPE;
 
 #endif
