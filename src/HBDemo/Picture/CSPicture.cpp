@@ -31,12 +31,25 @@ CSPicture::~CSPicture() {
 
 int CSPicture::_checkPicMediaValid() {
     if (mTrgPicDataType == MD_TYPE_UNKNOWN || mSrcPicDataType == MD_TYPE_UNKNOWN) {
-        LOGE("Picture data type is invalid !");
+        LOGE("Unknown picture data type !");
         return HB_ERROR;
     }
     
-    if ((mSrcPicParam.mPixFmt == AV_PIX_FMT_YUVJ420P && mSrcPicParam.mAlign == 0) \
-        || (mTrgPicParam.mPixFmt == AV_PIX_FMT_YUVJ420P && mTrgPicParam.mAlign == 0)) {
+    if (MD_TYPE_RAW_BY_MEMORY != mTrgPicDataType) {
+        if (!mTrgPicMediaFile) {
+            LOGE("Please input valid target picture file url !");
+            return HB_ERROR;
+        }
+    }
+    if (MD_TYPE_RAW_BY_MEMORY != mSrcPicDataType) {
+        if (!mSrcPicMediaFile) {
+            LOGE("Please input valid source picture file url !");
+            return HB_ERROR;
+        }
+    }
+    
+    if ((getImageInnerFormat(mSrcPicParam.mPixFmt) == AV_PIX_FMT_YUVJ420P && mSrcPicParam.mAlign == 0) \
+        || (getImageInnerFormat(mTrgPicParam.mPixFmt)  == AV_PIX_FMT_YUVJ420P && mTrgPicParam.mAlign == 0)) {
         LOGE("Picture check valid: AV_PIX_FMT_YUVJ420P format not support (0) valud of align !");
         return HB_ERROR;
     }
@@ -54,10 +67,19 @@ int CSPicture::picPrepare() {
         return HB_ERROR;
     }
     
+    if (HB_OK != picDecoderInitial()) {
+        return HB_ERROR;
+    }
+    
     if (HB_OK != picEncoderOpen()) {
         return HB_ERROR;
     }
     
+    if (HB_OK != picDecoderOpen()) {
+        return HB_ERROR;
+    }
+    
+    _EchoPictureMediaInfo();
     return HB_OK;
 }
 
@@ -73,82 +95,81 @@ int CSPicture::picDispose() {
 }
     
 int  CSPicture::picBaseInitial() {
+    if (HB_OK != globalInitial()) {
+        LOGF("global initial failed !");
+        return HB_ERROR;
+    }
     
     if (HB_OK != _checkPicMediaValid()) {
-        LOGE("Picture check picture value invalid !");
+        LOGE("Check pic media args failed !");
         return HB_ERROR;
     }
     
-    if (HB_OK != globalInitial()) {
-        LOGF("Picture common initial faile !");
-        return HB_ERROR;
+    switch (mTrgPicDataType) {
+        case MD_TYPE_RAW_BY_MEMORY:
+            break;
+        case MD_TYPE_RAW_BY_FILE:
+        {
+            if (mTrgPicMediaFile && !mTrgPicFileHandle) {
+                mTrgPicFileHandle = fopen(mTrgPicMediaFile, "rb");
+                if (!mTrgPicFileHandle) {
+                    LOGE("Picture encoder open failed !");
+                    return HB_ERROR;
+                }
+            }
+
+        }
+            break;
+        case MD_TYPE_RAW_BY_PROTOCOL:
+            break;
+        case MD_TYPE_COMPRESS:
+            /** 在后面编码模块中进行初始化 */
+            break;
+        default:
+            break;
     }
     
-    if (mTrgPicDataType != MD_TYPE_COMPRESS) {
-        if (mTrgPicMediaFile && !mTrgPicFileHandle) {
-            /**
-             * 如果输入文件是裸流，则需要打开文件，获取文件句柄
-             */
-            mTrgPicFileHandle = fopen(mTrgPicMediaFile, "rb");
-            if (!mTrgPicFileHandle) {
-                LOGE("Picture encoder open failed !");
-                return HB_ERROR;
+    switch (mSrcPicDataType) {
+        case MD_TYPE_RAW_BY_MEMORY:
+            break;
+        case MD_TYPE_RAW_BY_FILE:
+        {
+            if (mSrcPicMediaFile && !mSrcPicFileHandle) {
+                mSrcPicFileHandle = fopen(mSrcPicMediaFile, "rb");
+                if (!mSrcPicFileHandle) {
+                    LOGE("Picture encoder open failed !");
+                    return HB_ERROR;
+                }
             }
         }
-        else {
-            /** 说明文件是以内存数据或者别的方式传入 */
-        }
-    }
-    
-    if (mSrcPicDataType != MD_TYPE_COMPRESS) {
-        if (mSrcPicMediaFile && !mSrcPicFileHandle) {
-            /**
-             * 如果输入文件是裸流，则需要打开文件，获取文件句柄
-             */
-            mSrcPicFileHandle = fopen(mSrcPicMediaFile, "rb");
-            if (!mSrcPicFileHandle) {
-                LOGE("Picture encoder open failed !");
-                return HB_ERROR;
-            }
-        }
-        else {
-            /** 说明文件是以内存数据或者别的方式传入 */
-        }
+            break;
+        case MD_TYPE_RAW_BY_PROTOCOL:
+            break;
+        case MD_TYPE_COMPRESS:
+            /** 在后面解码模块中进行初始化 */
+            break;
+        default:
+            break;
     }
     
     return HB_OK;
 }
     
 int  CSPicture::picEncoderInitial() {
-    /**
-     * 针对输出文件
-     */
+
     if (mTrgPicDataType == MD_TYPE_COMPRESS) {
-        if (!mTrgPicMediaFile) {
-            LOGE("Pictue encoder initial, can't use the output media file !");
-            return HB_ERROR;
-        }
-        
-#if 0
-        /** 直接通过文件名，开辟封装格式空间 */
-        int HbErr = avformat_alloc_output_context2(&mOutputPicFormat, NULL, NULL, mTrgPicMediaFile);
-        if (HbErr < 0){
-            LOGE("Picture allock output format failed, <%s>!", makeErrorStr(HbErr));
-            return HB_ERROR;
-        }
-#else
-        /** 外部进行初始化，分两步进行 */
+
         mOutMCodec.mFormat = avformat_alloc_context();
         if (!mOutMCodec.mFormat) {
             LOGE("Picture encoder initial, alloc avformat context failed !");
             return HB_ERROR;
         }
-        mOutMCodec.mFormat->oformat = av_guess_format(mTrgPicParam.mCodecType, NULL, NULL);
+        mOutMCodec.mFormat->oformat = av_guess_format(mTrgPicParam.mFormatType, NULL, NULL);
         if (!mOutMCodec.mFormat->oformat) {
             LOGE("Picture can't find the valid muxer !");
             return HB_ERROR;
         }
-#endif
+        
         mOutMCodec.mStream = avformat_new_stream(mOutMCodec.mFormat, NULL);
         if (!mOutMCodec.mStream) {
             LOGE("Pic encoder initial failed, new stream failed !");
@@ -162,12 +183,11 @@ int  CSPicture::picEncoderInitial() {
         }
         
         mOutMCodec.mCodecCtx = avcodec_alloc_context3(mOutMCodec.mCodec);
-        mOutMCodec.mCodecCtx->codec_id = mOutMCodec.mFormat->oformat->video_codec;
-        mOutMCodec.mCodecCtx->codec_type = AVMEDIA_TYPE_VIDEO;
-        mOutMCodec.mCodecCtx->pix_fmt = mTrgPicParam.mPixFmt;
+        mOutMCodec.mCodecCtx->codec_id = mOutMCodec.mCodec->id;
+        mOutMCodec.mCodecCtx->codec_type = mOutMCodec.mCodec->type;
+        mOutMCodec.mCodecCtx->pix_fmt = getImageInnerFormat(mTrgPicParam.mPixFmt);
         mOutMCodec.mCodecCtx->width = mTrgPicParam.mWidth;
         mOutMCodec.mCodecCtx->height = mTrgPicParam.mHeight;
-
         mOutMCodec.mCodecCtx->time_base.num = 1;
         mOutMCodec.mCodecCtx->time_base.den = 30;
         
@@ -178,17 +198,17 @@ int  CSPicture::picEncoderInitial() {
 }
     
 int  CSPicture::picEncoderOpen() {
-    /**
-     * 针对输出文件
-     */
     if (mTrgPicDataType == MD_TYPE_COMPRESS) {
         int HbErr = 0;
+        AVDictionary *opts = NULL;
+        av_dict_set(&opts, "threads", "auto", 0);
+        
         if ((HbErr = avio_open(&(mOutMCodec.mFormat->pb), mTrgPicMediaFile, AVIO_FLAG_READ_WRITE)) < 0) {
             LOGE("Could't open output file, %s !", makeErrorStr(HbErr));
             return HB_ERROR;
         }
         
-        if ((HbErr = avcodec_open2(mOutMCodec.mCodecCtx, mOutMCodec.mCodec, NULL)) < 0) {
+        if ((HbErr = avcodec_open2(mOutMCodec.mCodecCtx, mOutMCodec.mCodec, &opts)) < 0) {
             LOGE("Picture encoder open failed, %s!", makeErrorStr(HbErr));
             return HB_ERROR;
         }
@@ -245,7 +265,7 @@ int  CSPicture::getPicRawData(uint8_t** pData, int* pDataSizes) {
     
     if (mSrcPicDataType != MD_TYPE_COMPRESS) {
         if (mSrcPicMediaFile && mSrcPicFileHandle) {
-            pictureDataBufferSize = av_image_get_buffer_size(mSrcPicParam.mPixFmt, mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
+            pictureDataBufferSize = av_image_get_buffer_size(getImageInnerFormat(mSrcPicParam.mPixFmt), mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
             if (!pictureDataBufferSize) {
                 LOGE("Picture get buffer size failed<%d> ! ", pictureDataBufferSize);
                 goto READ_PIC_DATA_END_LABEL;
@@ -306,7 +326,7 @@ int  CSPicture::pictureEncode(uint8_t* pData, int pDataSizes) {
      *   如果传入的数据量比较大，是否需要进行循环 send 帧数据
      */
 //    while (true) {
-        av_image_fill_arrays(pNewFrame->data, pNewFrame->linesize, pData, mTrgPicParam.mPixFmt, mTrgPicParam.mWidth, mTrgPicParam.mHeight, mTrgPicParam.mAlign);
+        av_image_fill_arrays(pNewFrame->data, pNewFrame->linesize, pData, getImageInnerFormat(mTrgPicParam.mPixFmt), mTrgPicParam.mWidth, mTrgPicParam.mHeight, mTrgPicParam.mAlign);
         pNewFrame->width = mTrgPicParam.mWidth;
         pNewFrame->height = mTrgPicParam.mHeight;
         pNewFrame->format = mTrgPicParam.mPixFmt;
@@ -380,8 +400,8 @@ int  CSPicture::pictureSwscale(uint8_t** pData, int* pDataSizes, ImageParams* sr
         return HB_ERROR;
     }
     
-    SwsContext *pictureConvertCtx = sws_getContext(srcParam->mWidth, srcParam->mHeight, srcParam->mPixFmt, \
-                                                   dstParam->mWidth, dstParam->mHeight, dstParam->mPixFmt, \
+    SwsContext *pictureConvertCtx = sws_getContext(srcParam->mWidth, srcParam->mHeight, getImageInnerFormat(srcParam->mPixFmt), \
+                                                   dstParam->mWidth, dstParam->mHeight, getImageInnerFormat(dstParam->mPixFmt), \
                                                    SWS_BICUBIC, NULL, NULL, NULL \
                                                    );
     if (!pictureConvertCtx) {
@@ -389,7 +409,7 @@ int  CSPicture::pictureSwscale(uint8_t** pData, int* pDataSizes, ImageParams* sr
         return HB_ERROR;
     }
     
-    pictureDataBufferSize = av_image_get_buffer_size(dstParam->mPixFmt, dstParam->mWidth, dstParam->mHeight, dstParam->mAlign);
+    pictureDataBufferSize = av_image_get_buffer_size(getImageInnerFormat(dstParam->mPixFmt), dstParam->mWidth, dstParam->mHeight, dstParam->mAlign);
     if (!pictureDataBufferSize) {
         LOGE("Picture get buffer size failed<%d> ! ", pictureDataBufferSize);
         goto SWS_PIC_DATA_END_LABEL;
@@ -401,8 +421,8 @@ int  CSPicture::pictureSwscale(uint8_t** pData, int* pDataSizes, ImageParams* sr
         goto SWS_PIC_DATA_END_LABEL;
     }
     
-    av_image_fill_arrays(pictureSrcData, pictureSrcDataLineSize, *pData, srcParam->mPixFmt, srcParam->mWidth, srcParam->mHeight, srcParam->mAlign);
-    av_image_fill_arrays(pictureDstData, pictureDstDataLineSize, pictureDataBuffer, dstParam->mPixFmt, dstParam->mWidth, dstParam->mHeight, dstParam->mAlign);
+    av_image_fill_arrays(pictureSrcData, pictureSrcDataLineSize, *pData, getImageInnerFormat(srcParam->mPixFmt), srcParam->mWidth, srcParam->mHeight, srcParam->mAlign);
+    av_image_fill_arrays(pictureDstData, pictureDstDataLineSize, pictureDataBuffer, getImageInnerFormat(dstParam->mPixFmt), dstParam->mWidth, dstParam->mHeight, dstParam->mAlign);
     
     if (sws_scale(pictureConvertCtx, (const uint8_t* const*)pictureSrcData, pictureSrcDataLineSize, 0, srcParam->mHeight, pictureDstData, pictureDstDataLineSize) <= 0) {
         LOGE("Picture sws scale failed !");
@@ -432,23 +452,9 @@ SWS_PIC_DATA_END_LABEL:
 }
     
 int  CSPicture::picDecoderInitial() {
-    if (mTrgPicDataType == MD_TYPE_UNKNOWN \
-        || mSrcPicDataType == MD_TYPE_UNKNOWN) {
-        LOGE("Picture encoder initial failed, pciture data is invalid!");
-        return HB_ERROR;
-    }
-    {
-        /**
-         * 针对输入文件
-         */
-        if (mSrcPicDataType == MD_TYPE_COMPRESS) {
-            
-        }
-        else {
-            
-        }
-    }
+    if (mSrcPicDataType == MD_TYPE_COMPRESS) {
     
+    }
     return HB_OK;
 }
 
@@ -462,6 +468,38 @@ int  CSPicture::picDecoderClose() {
 
 int  CSPicture::picDecoderRelease() {
     return HB_OK;
+}
+    
+void CSPicture::_EchoPictureMediaInfo() {
+    /** 输出输入媒体信息： */
+    {
+        LOGI(">>> [INPUT] =========================================");
+        LOGI("MediaType:%s", getMediaDataTypeDescript(mSrcPicDataType));
+        LOGI("File:[%p]%s", mSrcPicFileHandle, mSrcPicMediaFile);
+        LOGI(" --> ImageParam");
+        LOGI(" Muxer:%s", mSrcPicParam.mFormatType);
+        LOGI(" PixFmt:%s", getImagePixFmtDescript(mSrcPicParam.mPixFmt));
+        LOGI(" width:%f", mSrcPicParam.mWidth);
+        LOGI(" height:%f", mSrcPicParam.mHeight);
+        LOGI(" Align:%s", (mSrcPicParam.mAlign == 1 ? "Yes":"No"));
+        LOGI(" Per image size:%d", mSrcPicParam.mDataSize);
+        LOGI("<<< =================================================");
+    }
+    
+    /** 输出输出媒体信息： */
+    {
+        LOGI(">>> [OUTPUT] ========================================");
+        LOGI("MediaType:%s", getMediaDataTypeDescript(mTrgPicDataType));
+        LOGI("File:[%p]%s", mTrgPicFileHandle, mTrgPicMediaFile);
+        LOGI(" --> ImageParam");
+        LOGI(" Muxer:%s", mTrgPicParam.mFormatType);
+        LOGI(" PixFmt:%s", getImagePixFmtDescript(mTrgPicParam.mPixFmt));
+        LOGI(" width:%f", mTrgPicParam.mWidth);
+        LOGI(" height:%f", mTrgPicParam.mHeight);
+        LOGI(" Align:%s", (mTrgPicParam.mAlign == 1 ? "Yes":"No"));
+        LOGI(" Per image size:%d", mTrgPicParam.mDataSize);
+        LOGI("<<< =================================================");
+    }
 }
 
 int CSPicture::setSrcPicDataType(MEDIA_DATA_TYPE type) {

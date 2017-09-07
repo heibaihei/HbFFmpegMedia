@@ -11,7 +11,8 @@
 
 #include <stdio.h>
 
-#include "HBPicture.h"
+#include "CSDefine.h"
+#include "CSCommon.h"
 #include "CSLog.h"
 
 /***
@@ -106,7 +107,7 @@ public:
     /** ================================================= <<< **/
     
 private:
-    
+    void _EchoPictureMediaInfo();
 protected:
     /**
      *  检查当前 CSPicture 对象中相关属性是否支持进行编解码操作，相关参数是否有效

@@ -30,4 +30,13 @@ int globalInitial();
  */
 enum AVPixelFormat getImageInnerFormat(IMAGE_PIX_FORMAT pixFormat);
 
+/**
+ *  获取像素素材描述信息
+ */
+char* getImagePixFmtDescript(IMAGE_PIX_FORMAT dataType);
+
+/**
+ *  获取媒体类型的描述信息
+ */
+char* getMediaDataTypeDescript(MEDIA_DATA_TYPE dataType);
 #endif

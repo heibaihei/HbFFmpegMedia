@@ -47,15 +47,17 @@ typedef enum IMAGE_PIX_FORMAT {
     CS_PIX_FMT_YUV444P  = 2,
     CS_PIX_FMT_NV12     = 3,
     CS_PIX_FMT_NV21     = 4,
+    CS_PIX_FMT_YUVJ420P = 5,
 } IMAGE_PIX_FORMAT;
 
 typedef struct _ImageParams {
-    enum AVPixelFormat mPixFmt;
+    IMAGE_PIX_FORMAT mPixFmt;
     float mWidth;
     float mHeight;
-    char *mCodecType;
+    char *mFormatType;
     int   mAlign;
-    int   mDataSize; /** 当前媒体格式下，每个帧的大小 */
+    /** 对应像素格式下，每个帧的空间大小 */
+    int   mDataSize;
 } ImageParams;
 
 /** 输入数据类型，裸数据还是压缩数据 */
@@ -63,8 +65,8 @@ typedef enum MEDIA_DATA_TYPE {
     MD_TYPE_UNKNOWN = 0,
     MD_TYPE_RAW_BY_FILE = 1,
     MD_TYPE_RAW_BY_MEMORY = 2,
-    MD_TYPE_RAW_BY_PROTOCOL = 2,
-    MD_TYPE_COMPRESS = 3,
+    MD_TYPE_RAW_BY_PROTOCOL = 3,
+    MD_TYPE_COMPRESS = 4,
 } MEDIA_DATA_TYPE;
 
 #endif

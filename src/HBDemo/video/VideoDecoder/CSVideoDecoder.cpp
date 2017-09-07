@@ -92,9 +92,9 @@ int  CSVideoDecoder::videoDoSwscale(uint8_t** inData, int*inDataSize) {
     uint8_t *pictureSrcData[4] = {NULL};
     uint8_t *pictureDstData[4] = {NULL};
     
-    av_image_fill_arrays(pictureSrcData, pictureSrcDataLineSize, *inData, mSrcVideoParams.mPixFmt, mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, mSrcVideoParams.mAlign);
+    av_image_fill_arrays(pictureSrcData, pictureSrcDataLineSize, *inData, getImageInnerFormat(mSrcVideoParams.mPixFmt), mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, mSrcVideoParams.mAlign);
     
-    av_image_fill_arrays(pictureDstData, pictureDstDataLineSize, mTargetVideoFrameBuffer, mTargetVideoParams.mPixFmt, mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
+    av_image_fill_arrays(pictureDstData, pictureDstDataLineSize, mTargetVideoFrameBuffer, getImageInnerFormat(mTargetVideoParams.mPixFmt), mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
     
     if (sws_scale(mPVideoConvertCtx, (const uint8_t* const*)pictureSrcData, pictureSrcDataLineSize, 0, mSrcVideoParams.mHeight, pictureDstData, pictureDstDataLineSize) <= 0) {
         LOGE("Picture sws scale failed !");
@@ -207,7 +207,7 @@ int  CSVideoDecoder::selectVideoFrame() {
                             uint8_t* pTargetData = (uint8_t *)av_mallocz(mTargetVideoFrameBufferSize);
                             memcpy(pTargetData, mTargetVideoFrameBuffer, mTargetVideoFrameBufferSize);
                             
-                            av_image_fill_arrays(pTmpFrame->data, pTmpFrame->linesize, pTargetData, mTargetVideoParams.mPixFmt, mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
+                            av_image_fill_arrays(pTmpFrame->data, pTmpFrame->linesize, pTargetData, getImageInnerFormat(mTargetVideoParams.mPixFmt), mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
                             pTmpFrame->width = mTargetVideoParams.mWidth;
                             pTmpFrame->height = mTargetVideoParams.mHeight;
                             pTmpFrame->format = mTargetVideoParams.mPixFmt;
@@ -324,19 +324,19 @@ int CSVideoDecoder::videoDecoderOpen() {
     packet_queue_put_flush_pkt(&mFrameCacheList);
     
     /** 初始化原视频参数 : mSrcVideoParams */
-    mSrcVideoParams.mDataSize = av_image_get_buffer_size(mSrcVideoParams.mPixFmt, \
+    mSrcVideoParams.mDataSize = av_image_get_buffer_size(getImageInnerFormat(mSrcVideoParams.mPixFmt), \
                                                          mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, mSrcVideoParams.mAlign);
     return HB_OK;
 }
 
 int CSVideoDecoder::videoSwscalePrepare() {
-    mPVideoConvertCtx = sws_getContext(mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, mSrcVideoParams.mPixFmt, mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mPixFmt, SWS_BICUBIC, NULL, NULL, NULL);
+    mPVideoConvertCtx = sws_getContext(mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, getImageInnerFormat(mSrcVideoParams.mPixFmt), mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, getImageInnerFormat(mTargetVideoParams.mPixFmt), SWS_BICUBIC, NULL, NULL, NULL);
     if (!mPVideoConvertCtx) {
         LOGE("Create video sws context failed !");
         return HB_ERROR;
     }
     
-    mTargetVideoFrameBufferSize = av_image_get_buffer_size(mTargetVideoParams.mPixFmt, \
+    mTargetVideoFrameBufferSize = av_image_get_buffer_size(getImageInnerFormat(mTargetVideoParams.mPixFmt), \
         mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
     if (!mTargetVideoFrameBufferSize) {
         LOGE("Video get Sws target frame buffer size failed<%d> !", mTargetVideoFrameBufferSize);
