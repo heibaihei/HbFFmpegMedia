@@ -57,7 +57,7 @@ int CSPicture::_checkPicMediaValid() {
     return HB_OK;
 }
 
-int CSPicture::picPrepare() {
+int CSPicture::prepare() {
 
     if (HB_OK != picBaseInitial()) {
         return HB_ERROR;
@@ -83,7 +83,7 @@ int CSPicture::picPrepare() {
     return HB_OK;
 }
 
-int CSPicture::picDispose() {
+int CSPicture::dispose() {
     if (HB_OK != picEncoderClose()) {
         return HB_ERROR;
     }
@@ -242,14 +242,33 @@ int  CSPicture::picEncoderClose() {
 }
 
 int  CSPicture::picEncoderRelease() {
-
     avcodec_free_context(&(mOutMCodec.mCodecCtx));
     avformat_free_context(mOutMCodec.mFormat);
     
     return HB_OK;
 }
 
-int  CSPicture::getPicRawData(uint8_t** pData, int* pDataSizes) {
+int  CSPicture::sendImageData(uint8_t** pData, int* pDataSizes) {
+    if (mTrgPicDataType == MD_TYPE_COMPRESS) {
+        if (pictureEncode(*pData, *pDataSizes) != HB_OK) {
+            LOGE("Picture encode exit !");
+            return HB_ERROR;
+        }
+    }
+    return HB_OK;
+}
+
+int  CSPicture::transformImageData(uint8_t** pData, int* pDataSizes) {
+    /** 进行对应图像格式转换 */
+    if (HB_OK != pictureSwscale(pData, pDataSizes, &mSrcPicParam, &mTrgPicParam)) {
+        LOGE("Picture convert failed !");
+        av_free(pData);
+        return HB_ERROR;
+    }
+    return HB_OK;
+}
+
+int  CSPicture::receiveImageData(uint8_t** pData, int* pDataSizes) {
 
     int HbErr = HB_ERROR;
     if (!pData || !pDataSizes) {
@@ -263,39 +282,56 @@ int  CSPicture::getPicRawData(uint8_t** pData, int* pDataSizes) {
     uint8_t* pictureDataBuffer = nullptr;
     int  pictureDataBufferSize = 0;
     
-    if (mSrcPicDataType != MD_TYPE_COMPRESS) {
-        if (mSrcPicMediaFile && mSrcPicFileHandle) {
-            pictureDataBufferSize = av_image_get_buffer_size(getImageInnerFormat(mSrcPicParam.mPixFmt), mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
-            if (!pictureDataBufferSize) {
-                LOGE("Picture get buffer size failed<%d> ! ", pictureDataBufferSize);
-                goto READ_PIC_DATA_END_LABEL;
-            }
-            
-            pictureDataBuffer = (uint8_t *)av_mallocz(pictureDataBufferSize);
-            if (!pictureDataBuffer) {
-                LOGE("Picture create data buffer failed !");
-                goto READ_PIC_DATA_END_LABEL;
-            }
-
-            if (fread(pictureDataBuffer, 1, pictureDataBufferSize, mSrcPicFileHandle) <= 0) {
-                if (feof(mSrcPicFileHandle))
-                    HbErr = HB_EOF;
+    switch (mSrcPicDataType) {
+        case MD_TYPE_RAW_BY_FILE:
+            {
+                if (mSrcPicMediaFile && mSrcPicFileHandle) {
+                    pictureDataBufferSize = av_image_get_buffer_size(getImageInnerFormat(mSrcPicParam.mPixFmt), mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
+                    if (!pictureDataBufferSize) {
+                        LOGE("Picture get buffer size failed<%d> ! ", pictureDataBufferSize);
+                        goto READ_PIC_DATA_END_LABEL;
+                    }
+                    
+                    pictureDataBuffer = (uint8_t *)av_mallocz(pictureDataBufferSize);
+                    if (!pictureDataBuffer) {
+                        LOGE("Picture create data buffer failed !");
+                        goto READ_PIC_DATA_END_LABEL;
+                    }
+                    
+                    if (fread(pictureDataBuffer, 1, pictureDataBufferSize, mSrcPicFileHandle) <= 0) {
+                        if (feof(mSrcPicFileHandle))
+                            HbErr = HB_EOF;
+                        else
+                            LOGE("Read picture raw data failed !");
+                        goto READ_PIC_DATA_END_LABEL;
+                    }
+                }
                 else
-                    LOGE("Read picture raw data failed !");
-                goto READ_PIC_DATA_END_LABEL;
+                    LOGE("Get data by other ways <memory ...> !");
+                
+                
             }
-        }
-        else
-            LOGE("Get data by other ways <memory ...> !");
-        
-        *pData = pictureDataBuffer;
-        *pDataSizes = pictureDataBufferSize;
-    }
-    else {
-        /** 以别的方式获取数据 */
-        LOGE("Get data by other ways !");
+            break;
+        case MD_TYPE_RAW_BY_MEMORY:
+            {/** 从内存数据中获取数据 */
+            }
+            break;
+        case MD_TYPE_COMPRESS:
+            {/** 从解码模块中获取数据 */
+                if (pictureDecode(&pictureDataBuffer, &pictureDataBufferSize) == HB_ERROR) {
+                    LOGE("Picture decode get data failed !");
+                    HbErr = HB_ERROR;
+                    goto READ_PIC_DATA_END_LABEL;
+                }
+            }
+            break;
+        default:
+            LOGE("Get data by other ways !");
+            break;
     }
     
+    *pData = pictureDataBuffer;
+    *pDataSizes = pictureDataBufferSize;
     return HB_OK;
     
 READ_PIC_DATA_END_LABEL:
@@ -307,15 +343,13 @@ READ_PIC_DATA_END_LABEL:
 }
     
 int  CSPicture::pictureEncode(uint8_t* pData, int pDataSizes) {
-    if (!pData || pDataSizes <= 0) {
-        LOGE("picture encoder the args is invalid !");
+    if (mTrgPicDataType != MD_TYPE_COMPRESS) {
+        LOGE("Picture target media type:%s", getMediaDataTypeDescript(mTrgPicDataType));
         return HB_ERROR;
     }
     
-    /** 进行对应图像格式转换 */
-    if (HB_OK != pictureSwscale(&pData, &pDataSizes, &mSrcPicParam, &mTrgPicParam)) {
-        LOGE("Picture convert failed !");
-        av_free(pData);
+    if (!pData || pDataSizes <= 0) {
+        LOGE("picture encoder the args is invalid !");
         return HB_ERROR;
     }
     
@@ -452,17 +486,69 @@ SWS_PIC_DATA_END_LABEL:
 }
     
 int  CSPicture::picDecoderInitial() {
+    int HBError = HB_OK;
     if (mSrcPicDataType == MD_TYPE_COMPRESS) {
-    
+        mInMCodec.mFormat = avformat_alloc_context();
+        HBError = avformat_open_input(&(mInMCodec.mFormat), mSrcPicMediaFile, NULL, NULL);
+        if (HBError != 0) {
+            LOGE("Audio decoder couldn't open input file. <%d> <%s>", HBError, av_err2str(HBError));
+            return HB_ERROR;
+        }
+        
+        HBError = avformat_find_stream_info(mInMCodec.mFormat, NULL);
+        if (HBError < 0) {
+            LOGE("Audio decoder couldn't find stream information. <%s>", av_err2str(HBError));
+            return HB_ERROR;
+        }
+        
+        for (int i=0; i<mInMCodec.mFormat->nb_streams; i++) {
+            if (mInMCodec.mFormat->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+                mInMCodec.mStream = mInMCodec.mFormat->streams[i];
+                break;
+            }
+        }
+        
+        if (!mInMCodec.mStream) {
+            LOGE("Picture find best stream info failed !");
+            return HB_ERROR;
+        }
+        
+        mInMCodec.mCodec = avcodec_find_decoder(mInMCodec.mStream->codecpar->codec_id);
+        if (!mInMCodec.mCodec) {
+            LOGE("Codec ctx <%d> not found !", mInMCodec.mStream->codecpar->codec_id);
+            return HB_ERROR;
+        }
+        
+        mInMCodec.mCodecCtx = avcodec_alloc_context3(mInMCodec.mCodec);
+        if (!mInMCodec.mCodecCtx) {
+            LOGE("Codec ctx <%d> not found !", mInMCodec.mStream->codecpar->codec_id);
+            return HB_ERROR;
+        }
+        
+        avcodec_parameters_to_context(mInMCodec.mCodecCtx, mInMCodec.mStream->codecpar);
+        
+        av_dump_format(mInMCodec.mFormat, mInMCodec.mStream->index, mSrcPicMediaFile, false);
     }
-    return HB_OK;
+    return HBError;
 }
 
 int  CSPicture::picDecoderOpen() {
+    int HBError = HB_ERROR;
+    if (mSrcPicDataType == MD_TYPE_COMPRESS) {
+        HBError = avcodec_open2(mInMCodec.mCodecCtx, mInMCodec.mCodec, NULL);
+        if (HBError < 0) {
+            LOGE("Could not open codec. <%s>", av_err2str(HBError));
+            return HB_ERROR;
+        }
+    }
+    
     return HB_OK;
 }
 
 int  CSPicture::picDecoderClose() {
+    if (mInMCodec.mCodecCtx && avcodec_is_open(mInMCodec.mCodecCtx)) {
+        avcodec_close(mInMCodec.mCodecCtx);
+    }
     return HB_OK;
 }
 
@@ -502,14 +588,67 @@ void CSPicture::_EchoPictureMediaInfo() {
     }
 }
 
-int CSPicture::setSrcPicDataType(MEDIA_DATA_TYPE type) {
-    mSrcPicDataType = type;
-    return HB_OK;
-}
+int  CSPicture::pictureDecode(uint8_t** pData, int* pDataSizes) {
+    int HBError = HB_ERROR;
+    AVPacket *pNewPacket = nullptr;
+    if (mSrcPicDataType == MD_TYPE_COMPRESS) {
+        pNewPacket = av_packet_alloc();
+        while (true) {
+            HBError = av_read_frame(mInMCodec.mFormat, pNewPacket);
+            if (HBError != 0) {
+                HBError = HB_ERROR;
+                break;
+            }
 
-int CSPicture::setTrgPicDataType(MEDIA_DATA_TYPE type) {
-    mTrgPicDataType = type;
-    return HB_OK;
+            if (pNewPacket->stream_index != mInMCodec.mStream->index) {
+                av_packet_unref(pNewPacket);
+                continue;
+            }
+            
+            HBError = avcodec_send_packet(mInMCodec.mCodecCtx, pNewPacket);
+            if (HBError != 0) {
+                HBError = HB_ERROR;
+                break;
+            }
+            
+            AVFrame* pNewFrame = av_frame_alloc();
+            HBError = avcodec_receive_frame(mInMCodec.mCodecCtx, pNewFrame);
+            if (HBError != 0) {
+                HBError = HB_ERROR;
+                break;
+            }
+            
+            *pDataSizes = av_image_get_buffer_size(getImageInnerFormat(mSrcPicParam.mPixFmt), mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
+            if (!(*pDataSizes)) {
+                LOGE("Picture get buffer size failed<%d> ! ", *pDataSizes);
+                av_frame_unref(pNewFrame);
+                break;
+            }
+            
+            uint8_t * pictureDataBuffer = (uint8_t*)av_mallocz(*pDataSizes);
+            if (!pictureDataBuffer) {
+                LOGE("Picture create data buffer failed !");
+                av_frame_unref(pNewFrame);
+                break;
+            }
+            
+            av_image_copy_to_buffer(pictureDataBuffer, *pDataSizes, pNewFrame->data, pNewFrame->linesize, getImageInnerFormat(mSrcPicParam.mPixFmt), mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
+            
+            *pData = pictureDataBuffer;
+            HBError = HB_ERROR;
+            break;
+            
+        }
+    }
+    av_packet_free(&pNewPacket);
+    return HBError;
+}
+    
+int  CSPicture::pictureFlushDecode() {
+    if (mSrcPicDataType == MD_TYPE_COMPRESS) {
+        
+    }
+    return HB_ERROR;
 }
     
 /**
@@ -521,10 +660,6 @@ void CSPicture::setInputPicMediaFile(char *file) {
     mSrcPicMediaFile = av_strdup(file);
 }
 
-char *CSPicture::getInputPicMediaFile() {
-    return mSrcPicMediaFile;
-}
-
 /**
  *  配置输出的音频文件
  */
@@ -532,10 +667,6 @@ void CSPicture::setOutputPicMediaFile(char *file) {
     if (mTrgPicMediaFile)
         av_freep(&mTrgPicMediaFile);
     mTrgPicMediaFile = av_strdup(file);
-}
-
-char *CSPicture::getOutputPicMediaFile() {
-    return mTrgPicMediaFile;
 }
 
 int CSPicture::setSrcPictureParam(ImageParams* param) {

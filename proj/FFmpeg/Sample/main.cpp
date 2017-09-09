@@ -79,33 +79,39 @@ int PictureCSpictureDemo()
     ImageParams targetPictureParam = { CS_PIX_FMT_YUVJ420P, 1080, 1080, (char *)"mjpeg", 1 };
     objPicture.setTrgPictureParam(&targetPictureParam);
     
-    objPicture.picPrepare();
+    objPicture.prepare();
     
     uint8_t *pictureData = NULL;
     int      pictureDataSizes = 0;
     int      HbErr = HB_OK;
     while (HbErr == HB_OK) {
-        {
-            HbErr = objPicture.getPicRawData(&pictureData, &pictureDataSizes);
-            if (HbErr == HB_EOF) {
+
+        HbErr = objPicture.receiveImageData(&pictureData, &pictureDataSizes);
+        switch (HbErr) {
+            case HB_OK:
+                break;
+            case HB_EOF:
                 LOGW("Picture reach raw data EOF !");
                 goto ENCODE_LOOP_END_LABEL;
-            }
-            else if (HbErr != HB_OK) {
-                LOGW("Picture get raw data failed <%d> !", HbErr);
-                break;
-            }
+            default:
+                LOGE("Picture get raw data failed <%d> !", HbErr);
+                goto ENCODE_LOOP_END_LABEL;
         }
         
-        HbErr = objPicture.pictureEncode(pictureData, pictureDataSizes);
+        HbErr = objPicture.transformImageData(&pictureData, &pictureDataSizes);
         if (HbErr != HB_OK) {
-            LOGW("Picture encode exit !");
+            LOGE("Transform picture data failed !");
+            break;
+        }
+        
+        HbErr = objPicture.sendImageData(&pictureData, &pictureDataSizes);
+        if (HbErr != HB_OK) {
+            LOGE("Picture encode exit !");
             break;
         }
     }
 ENCODE_LOOP_END_LABEL:
-    objPicture.pictureFlushEncode();
-    objPicture.picDispose();
+    objPicture.dispose();
     
     return 0;
 }

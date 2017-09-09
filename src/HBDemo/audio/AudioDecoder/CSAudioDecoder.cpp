@@ -58,7 +58,7 @@ int  CSAudioDecoder::audioDecoderInitial()
     mDecodeStateFlag = 0x00;
     globalInitial();
     
-    int HBError = -1;
+    int HBError = HB_ERROR;
     if (!mInputAudioMediaFile) {
         LOGE("Audio decoder args file is invalid !");
         return HB_ERROR;
@@ -128,7 +128,7 @@ int  CSAudioDecoder::audioDecoderInitial()
 
 int  CSAudioDecoder::audioDecoderOpen()
 {
-    int HBError = -1;
+    int HBError = HB_ERROR;
     HBError = avcodec_open2(mPInputAudioCodecCtx, mPInputAudioCodec, NULL);
     if (HBError < 0) {
         LOGE("Could not open codec. <%s>", av_err2str(HBError));
@@ -164,7 +164,7 @@ int  CSAudioDecoder::audioDecoderRelease()
 
 int  CSAudioDecoder::readAudioPacket()
 {
-    int HBError = -1;
+    int HBError = HB_ERROR;
     
     if ((mDecodeStateFlag & DECODE_STATE_READPKT_END) \
         || (mDecodeStateFlag & DECODE_STATE_READPKT_ABORT)) {

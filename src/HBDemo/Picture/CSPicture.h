@@ -43,32 +43,32 @@ public:
     int setSrcPictureParam(ImageParams* param);
     int setTrgPictureParam(ImageParams* param);
 
-    int setSrcPicDataType(MEDIA_DATA_TYPE type);
-    int setTrgPicDataType(MEDIA_DATA_TYPE type);
+    void setSrcPicDataType(MEDIA_DATA_TYPE type) { mSrcPicDataType = type; }
+    void setTrgPicDataType(MEDIA_DATA_TYPE type) { mTrgPicDataType = type; }
     
     /**
      *  配置输入的音频文件
      */
     void setInputPicMediaFile(char *file);
-    char *getInputPicMediaFile();
+    char *getInputPicMediaFile() { return mSrcPicMediaFile; };
     
     /**
      *  配置输出的音频文件
      */
     void setOutputPicMediaFile(char *file);
-    char *getOutputPicMediaFile();
+    char *getOutputPicMediaFile() { return mTrgPicMediaFile; }
     
     /**
      *  图片对象的准备，完成所有的参数设置后，调用该接口完成对应的参数初始化、打开等操作；
      *  @return HB_ERROR 初始化异常; HB_OK 正常初始化
      */
-    int picPrepare();
+    int prepare();
     
     /**
      *  释放对象prepare 操作期间创建的资源；
      *  @return HB_ERROR 初始化异常; HB_OK 正常初始化
      */
-    int picDispose();
+    int dispose();
     
     /**
      *  获取图片像素数据，返回对应的数据缓冲区以及像素大小
@@ -77,7 +77,20 @@ public:
      *  @param pDataSizes : 指向数据大小的指针，标识得到的数据大小
      *  @return HB_ERROR 获取数据失败; HB_OK 成功得到有效数据; 如果无数据可读，返回HB_EOF;
      */
-    int  getPicRawData(uint8_t** pData, int* pDataSizes);
+    int  receiveImageData(uint8_t** pData, int* pDataSizes);
+    
+    /**
+     *
+     */
+    int  transformImageData(uint8_t** pData, int* pDataSizes);
+    
+    int  sendImageData(uint8_t** pData, int* pDataSizes);
+    /** ================================================= <<< **/
+    
+private:
+    void _EchoPictureMediaInfo();
+    
+protected:
     
     /**
      *  对图片像素进行编码
@@ -93,22 +106,20 @@ public:
      *  @return HB_ERROR 刷解码器失败; HB_OK 正常完成解码器刷新;
      */
     int  pictureFlushEncode();
-    /** ================================================= <<< **/
     
-    /** ================================================= >>> Decode **/
     /**
-     *  图像解码器初始化、启动、关闭、释放
+     *  对图片像素进行解码
+     *  如果用户传入图像数据，就以这么大的数据作为一个像素帧进行解码
+     *  @return HB_ERROR 获取数据失败; HB_OK 成功得到有效数据
      */
-    int  picDecoderInitial();
-    int  picDecoderOpen();
-    int  picDecoderClose();
-    int  picDecoderRelease();
+    int  pictureDecode(uint8_t** pData, int* pDataSizes);
     
-    /** ================================================= <<< **/
+    /**
+     *  刷新编码器，清空编码器中的缓存
+     *  @return HB_ERROR 刷解码器失败; HB_OK 正常完成解码器刷新;
+     */
+    int  pictureFlushDecode();
     
-private:
-    void _EchoPictureMediaInfo();
-protected:
     /**
      *  检查当前 CSPicture 对象中相关属性是否支持进行编解码操作，相关参数是否有效
      *  @return HB_ERROR 编解码参数异常; HB_OK 编解码参数正常
@@ -141,6 +152,14 @@ protected:
     int  picEncoderClose();
     int  picEncoderRelease();
     
+    /** ================================================= >>> Decode **/
+    /**
+     *  图像解码器初始化、启动、关闭、释放
+     */
+    int  picDecoderInitial();
+    int  picDecoderOpen();
+    int  picDecoderClose();
+    int  picDecoderRelease();
 private:
     /**
      *  媒体数据输入信息
