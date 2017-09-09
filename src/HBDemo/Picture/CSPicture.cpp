@@ -79,6 +79,13 @@ int CSPicture::prepare() {
         return HB_ERROR;
     }
     
+    /** 判断是否需要进行图像格式转换 */
+    if (mSrcPicParam.mPixFmt != mTrgPicParam.mPixFmt \
+        || mSrcPicParam.mWidth != mTrgPicParam.mPixFmt \
+        || mSrcPicParam.mHeight != mTrgPicParam.mPixFmt \
+        || mSrcPicParam.mAlign != mTrgPicParam.mAlign) {
+        mIsNeedTransform = true;
+    }
     _EchoPictureMediaInfo();
     return HB_OK;
 }
@@ -259,7 +266,9 @@ int  CSPicture::sendImageData(uint8_t** pData, int* pDataSizes) {
 }
 
 int  CSPicture::transformImageData(uint8_t** pData, int* pDataSizes) {
-    /** 进行对应图像格式转换 */
+    if (!mIsNeedTransform)
+        return HB_OK;
+    
     if (HB_OK != pictureSwscale(pData, pDataSizes, &mSrcPicParam, &mTrgPicParam)) {
         LOGE("Picture convert failed !");
         av_free(pData);

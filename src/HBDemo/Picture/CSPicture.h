@@ -170,6 +170,7 @@ private:
     MEDIA_DATA_TYPE mSrcPicDataType;
     CSMediaCodec    mInMCodec;
     
+    bool            mIsNeedTransform;
     /**
      *  媒体数据输出信息
      */

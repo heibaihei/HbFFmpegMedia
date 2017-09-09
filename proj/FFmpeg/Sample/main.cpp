@@ -81,11 +81,11 @@ int PictureCSpictureDemo()
     
     objPicture.prepare();
     
-    uint8_t *pictureData = NULL;
-    int      pictureDataSizes = 0;
     int      HbErr = HB_OK;
     while (HbErr == HB_OK) {
-
+        uint8_t *pictureData = NULL;
+        int      pictureDataSizes = 0;
+        
         HbErr = objPicture.receiveImageData(&pictureData, &pictureDataSizes);
         switch (HbErr) {
             case HB_OK:
@@ -110,6 +110,7 @@ int PictureCSpictureDemo()
             break;
         }
     }
+    
 ENCODE_LOOP_END_LABEL:
     objPicture.dispose();
     
