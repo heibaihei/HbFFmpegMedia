@@ -80,14 +80,26 @@ public:
     int  receiveImageData(uint8_t** pData, int* pDataSizes);
     
     /**
-     *
+     *   图像格式转换，以及对图像进行相应的格式操作
+     *   @param pData  只想待转换的数据的指针，调用完成后，放回转换后的数据
+     *   @param pDataSizes 只想待转换数据的空间大小，调用后，返回转换后的数据大小
+     *   @return HB_ERROR 转换数据失败; HB_OK 转换数据成功；
      */
     int  transformImageData(uint8_t** pData, int* pDataSizes);
     
+    /**
+     *   发送数据到目标
+     *   @param pData  待发送的数据
+     *   @param pDataSizes 待发送的数据空间大小
+     *   @return HB_ERROR 转换数据失败; HB_OK 转换数据成功；
+     */
     int  sendImageData(uint8_t** pData, int* pDataSizes);
     /** ================================================= <<< **/
     
 private:
+    /**
+     *  输出图像数据格式信息
+     */
     void _EchoPictureMediaInfo();
     
 protected:
@@ -134,7 +146,7 @@ protected:
      *  内部会对即将进行编解码的参数进行校验以及基础组件的初始化
      *  @return HB_ERROR 初始化异常; HB_OK 正常初始化
      */
-    int  picBaseInitial();
+    int  picCommonInitial();
     
     /** ================================================= >>> Encode **/
     /** 图像编码器初始化、启动、关闭、释放 **/

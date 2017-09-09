@@ -14,12 +14,12 @@ CSPicture::CSPicture() {
     mSrcPicMediaFile = nullptr;
     mSrcPicFileHandle = nullptr;
     mSrcPicDataType = MD_TYPE_UNKNOWN;
-    memset(&mSrcPicParam, 0x00, sizeof(ImageParams));
+    imageParamInit(&mSrcPicParam);
     
     mTrgPicMediaFile = nullptr;
     mTrgPicFileHandle = nullptr;
     mTrgPicDataType = MD_TYPE_UNKNOWN;
-    memset(&mTrgPicParam, 0x00, sizeof(ImageParams));
+    imageParamInit(&mTrgPicParam);
 }
 
 CSPicture::~CSPicture() {
@@ -29,37 +29,8 @@ CSPicture::~CSPicture() {
         av_freep(&mTrgPicMediaFile);
 }
 
-int CSPicture::_checkPicMediaValid() {
-    if (mTrgPicDataType == MD_TYPE_UNKNOWN || mSrcPicDataType == MD_TYPE_UNKNOWN) {
-        LOGE("Unknown picture data type !");
-        return HB_ERROR;
-    }
-    
-    if (MD_TYPE_RAW_BY_MEMORY != mTrgPicDataType) {
-        if (!mTrgPicMediaFile) {
-            LOGE("Please input valid target picture file url !");
-            return HB_ERROR;
-        }
-    }
-    if (MD_TYPE_RAW_BY_MEMORY != mSrcPicDataType) {
-        if (!mSrcPicMediaFile) {
-            LOGE("Please input valid source picture file url !");
-            return HB_ERROR;
-        }
-    }
-    
-    if ((getImageInnerFormat(mSrcPicParam.mPixFmt) == AV_PIX_FMT_YUVJ420P && mSrcPicParam.mAlign == 0) \
-        || (getImageInnerFormat(mTrgPicParam.mPixFmt)  == AV_PIX_FMT_YUVJ420P && mTrgPicParam.mAlign == 0)) {
-        LOGE("Picture check valid: AV_PIX_FMT_YUVJ420P format not support (0) valud of align !");
-        return HB_ERROR;
-    }
-    
-    return HB_OK;
-}
-
 int CSPicture::prepare() {
-
-    if (HB_OK != picBaseInitial()) {
+    if (HB_OK != picCommonInitial()) {
         return HB_ERROR;
     }
     
@@ -101,14 +72,14 @@ int CSPicture::dispose() {
     return HB_ERROR;
 }
     
-int  CSPicture::picBaseInitial() {
+int  CSPicture::picCommonInitial() {
     if (HB_OK != globalInitial()) {
-        LOGF("global initial failed !");
+        LOGF("global ffmpeg initial failed !");
         return HB_ERROR;
     }
     
     if (HB_OK != _checkPicMediaValid()) {
-        LOGE("Check pic media args failed !");
+        LOGE("Picture media args invalid !");
         return HB_ERROR;
     }
     
@@ -116,16 +87,16 @@ int  CSPicture::picBaseInitial() {
         case MD_TYPE_RAW_BY_MEMORY:
             break;
         case MD_TYPE_RAW_BY_FILE:
-        {
-            if (mTrgPicMediaFile && !mTrgPicFileHandle) {
-                mTrgPicFileHandle = fopen(mTrgPicMediaFile, "rb");
-                if (!mTrgPicFileHandle) {
-                    LOGE("Picture encoder open failed !");
-                    return HB_ERROR;
+            {
+                if (mTrgPicMediaFile && !mTrgPicFileHandle) {
+                    mTrgPicFileHandle = fopen(mTrgPicMediaFile, "rb");
+                    if (!mTrgPicFileHandle) {
+                        LOGE("Open target media file failed !");
+                        return HB_ERROR;
+                    }
                 }
-            }
 
-        }
+            }
             break;
         case MD_TYPE_RAW_BY_PROTOCOL:
             break;
@@ -140,15 +111,15 @@ int  CSPicture::picBaseInitial() {
         case MD_TYPE_RAW_BY_MEMORY:
             break;
         case MD_TYPE_RAW_BY_FILE:
-        {
-            if (mSrcPicMediaFile && !mSrcPicFileHandle) {
-                mSrcPicFileHandle = fopen(mSrcPicMediaFile, "rb");
-                if (!mSrcPicFileHandle) {
-                    LOGE("Picture encoder open failed !");
-                    return HB_ERROR;
+            {
+                if (mSrcPicMediaFile && !mSrcPicFileHandle) {
+                    mSrcPicFileHandle = fopen(mSrcPicMediaFile, "rb");
+                    if (!mSrcPicFileHandle) {
+                        LOGE("Open source media file failed !");
+                        return HB_ERROR;
+                    }
                 }
             }
-        }
             break;
         case MD_TYPE_RAW_BY_PROTOCOL:
             break;
@@ -163,9 +134,12 @@ int  CSPicture::picBaseInitial() {
 }
     
 int  CSPicture::picEncoderInitial() {
-
     if (mTrgPicDataType == MD_TYPE_COMPRESS) {
-
+        if (!mTrgPicParam.mFormatType) {
+            LOGE("Target picture format type unknown !");
+            return HB_ERROR;
+        }
+        
         mOutMCodec.mFormat = avformat_alloc_context();
         if (!mOutMCodec.mFormat) {
             LOGE("Picture encoder initial, alloc avformat context failed !");
@@ -495,8 +469,8 @@ SWS_PIC_DATA_END_LABEL:
 }
     
 int  CSPicture::picDecoderInitial() {
-    int HBError = HB_OK;
     if (mSrcPicDataType == MD_TYPE_COMPRESS) {
+        int HBError = HB_OK;
         mInMCodec.mFormat = avformat_alloc_context();
         HBError = avformat_open_input(&(mInMCodec.mFormat), mSrcPicMediaFile, NULL, NULL);
         if (HBError != 0) {
@@ -538,13 +512,12 @@ int  CSPicture::picDecoderInitial() {
         
         av_dump_format(mInMCodec.mFormat, mInMCodec.mStream->index, mSrcPicMediaFile, false);
     }
-    return HBError;
+    return HB_OK;
 }
 
 int  CSPicture::picDecoderOpen() {
-    int HBError = HB_ERROR;
     if (mSrcPicDataType == MD_TYPE_COMPRESS) {
-        HBError = avcodec_open2(mInMCodec.mCodecCtx, mInMCodec.mCodec, NULL);
+        int HBError = avcodec_open2(mInMCodec.mCodecCtx, mInMCodec.mCodec, NULL);
         if (HBError < 0) {
             LOGE("Could not open codec. <%s>", av_err2str(HBError));
             return HB_ERROR;
@@ -659,7 +632,35 @@ int  CSPicture::pictureFlushDecode() {
     }
     return HB_ERROR;
 }
+
+int CSPicture::_checkPicMediaValid() {
+    if (mTrgPicDataType == MD_TYPE_UNKNOWN || mSrcPicDataType == MD_TYPE_UNKNOWN) {
+        LOGE("Unknown picture data type !");
+        return HB_ERROR;
+    }
     
+    if (MD_TYPE_RAW_BY_MEMORY != mTrgPicDataType) {
+        if (!mTrgPicMediaFile) {
+            LOGE("Please input valid target picture file url !");
+            return HB_ERROR;
+        }
+    }
+    if (MD_TYPE_RAW_BY_MEMORY != mSrcPicDataType) {
+        if (!mSrcPicMediaFile) {
+            LOGE("Please input valid source picture file url !");
+            return HB_ERROR;
+        }
+    }
+    
+    if ((getImageInnerFormat(mSrcPicParam.mPixFmt) == AV_PIX_FMT_YUVJ420P && mSrcPicParam.mAlign == 0) \
+        || (getImageInnerFormat(mTrgPicParam.mPixFmt)  == AV_PIX_FMT_YUVJ420P && mTrgPicParam.mAlign == 0)) {
+        LOGE("Picture check valid: AV_PIX_FMT_YUVJ420P format not support (0) valud of align !");
+        return HB_ERROR;
+    }
+    
+    return HB_OK;
+}
+
 /**
  *  配置输入的音频文件
  */

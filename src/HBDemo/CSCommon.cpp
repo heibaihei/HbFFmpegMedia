@@ -17,8 +17,23 @@ int globalInitial()
     return HB_OK;
 }
 
-enum AVPixelFormat getImageInnerFormat(IMAGE_PIX_FORMAT pixFormat)
-{
+int imageParamInit(ImageParams* param) {
+    if (!param) {
+        LOGE("Image param args is invalid !");
+        return HB_ERROR;
+    }
+    
+    memset(param, 0x00, sizeof(ImageParams));
+    param->mAlign = 1;
+    param->mWidth = 0;
+    param->mHeight = 0;
+    param->mPixFmt = CS_PIX_FMT_NONE;
+    param->mFormatType = NULL;
+    param->mDataSize = 0;
+    return HB_OK;
+}
+
+enum AVPixelFormat getImageInnerFormat(IMAGE_PIX_FORMAT pixFormat) {
     switch (pixFormat) {
         case CS_PIX_FMT_YUV420P:
             return AV_PIX_FMT_YUV420P;

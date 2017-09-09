@@ -25,6 +25,13 @@ double mt_gettime_monotonic();
 int globalInitial();
 
 /**
+ *  图像参数初始化
+ *  @param param 指向待初始化图像参数对象的指针
+ *  @return HB_ERROR 初始化失败， HB_OK 初始化成功;
+ */
+int imageParamInit(ImageParams* param);
+
+/**
  *  将 IMAGE_PIX_FORMAT 格式转换成 ffmpeg 内部的图像格式，实现对封装格式的抽象封装
  *
  */
