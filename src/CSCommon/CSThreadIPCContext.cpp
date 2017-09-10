@@ -8,38 +8,29 @@
 
 #include "CSThreadIPCContext.h"
 
-ThreadIPCContext::ThreadIPCContext(int initNUm)
-{
+ThreadIPCContext::ThreadIPCContext(int initNUm) {
     condCnt = initNUm;
-    
     pthread_cond_init(&cond, NULL);
     pthread_mutex_init(&condMux, NULL);
-//    condMux = PTHREAD_MUTEX_INITIALIZER;
-//    cond = PTHREAD_COND_INITIALIZER;
 }
 
-ThreadIPCContext::~ThreadIPCContext()
-{
-
+ThreadIPCContext::~ThreadIPCContext() {
 }
 
-int ThreadIPCContext::create()
-{
+int ThreadIPCContext::create() {
     return 0;
 }
 
-int ThreadIPCContext::condP()
-{
+int ThreadIPCContext::condP() {
     pthread_mutex_lock(&condMux);
-    pthread_cond_signal(&cond);
     condCnt++;
     pthread_mutex_unlock(&condMux);
+    pthread_cond_signal(&cond);
     
     return 0;
 }
 
-int ThreadIPCContext::condV()
-{
+int ThreadIPCContext::condV() {
     pthread_mutex_lock(&condMux);
     if (condCnt <= 0) {
         pthread_cond_wait(&cond, &condMux);
@@ -50,8 +41,7 @@ int ThreadIPCContext::condV()
     return 0;
 }
 
-int ThreadIPCContext::release()
-{
+int ThreadIPCContext::release() {
     pthread_cond_destroy(&cond);
     pthread_mutex_destroy(&condMux);
     

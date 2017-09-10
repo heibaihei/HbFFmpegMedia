@@ -9,84 +9,70 @@
 #include "CSThreadContext.h"
 #include "CSLog.h"
 
-ThreadContext::ThreadContext()
-{
-    threadArg = NULL;
+ThreadContext::ThreadContext() {
+    mThreadArg = NULL;
 }
 
-ThreadContext::~ThreadContext()
-{
-    if (threadArg) {
-        free(threadArg);
-        threadArg = NULL;
+ThreadContext::~ThreadContext() {
+    if (mThreadArg) {
+        free(mThreadArg);
+        mThreadArg = NULL;
     }
 }
 
-int ThreadContext::setFunction(func function, void *arg)
-{
-    threadArg = (ThreadParam_t *)malloc(sizeof(*threadArg));
-    if (threadArg == NULL) {
+int ThreadContext::setFunction(ThreadFunc function, void *arg) {
+    mThreadArg = (ThreadParam_t *)malloc(sizeof(*mThreadArg));
+    if (mThreadArg == NULL) {
         return HB_ERROR;
     }
     
-    threadFunc = function;
-    threadArg->arg = arg;
-    threadArg->stat = THREAD_IDLE;
-    
-    return 0;
+    mThreadFunc = function;
+    mThreadArg->mThreadArgs = arg;
+    mThreadArg->mStatus = THREAD_IDLE;
+    return HB_OK;
 }
 
-int ThreadContext::start()
-{
-    int ret;
-    
-    ret = pthread_create(&thread, NULL, threadFunc, threadArg);
+int ThreadContext::bindIPC(ThreadIPCContext *pv) {
+    if (!pv) {
+        LOGE("Bind thread IPC context failed !");
+        return HB_ERROR;
+    }
+    mThreadIPC = pv;
+    return HB_OK;
+}
+
+int ThreadContext::start() {
+    int ret = pthread_create(&mThreadID, NULL, mThreadFunc, mThreadArg);
     if (ret < 0) {
         return ret;
     }
 
-    threadArg->stat = THREAD_RUNNING;
-    return 0;
+    mThreadArg->mStatus = THREAD_RUNNING;
+    return HB_OK;
 }
 
-int ThreadContext::abort()
-{
-    threadArg->stat = THREAD_FORCEQUIT;
-    
-    return 0;
+int ThreadContext::abort() {
+    mThreadArg->mStatus = THREAD_FORCEQUIT;
+    return HB_OK;
 }
 
-int ThreadContext::getThreadState()
-{
-    if (threadArg == NULL) {
+int ThreadContext::getThreadState() {
+    if (mThreadArg == NULL) {
         return HB_ERROR;
     }
-    
-    return threadArg->stat;
+    return mThreadArg->mStatus;
 }
 
-int ThreadContext::stop()
-{
-//    if (threadArg) {
-//        free(threadArg);
-//        threadArg = NULL;
-//    }
-    threadArg->stat = THREAD_STOP;
-    
-    return 0;
+int ThreadContext::stop() {
+    mThreadArg->mStatus = THREAD_STOP;
+    return HB_OK;
 }
 
-int ThreadContext::markOver()
-{
-    threadArg->stat = THREAD_DEAD;
-    
-    return 0;
+int ThreadContext::markOver() {
+    mThreadArg->mStatus = THREAD_DEAD;
+    return HB_OK;
 }
 
-int ThreadContext::join()
-{
-//    if (thread <= 0) {
-//        return AV_STAT_ERR;
-//    }
-    return pthread_join(thread, NULL);
+int ThreadContext::join() {
+    return pthread_join(mThreadID, NULL);
 }
