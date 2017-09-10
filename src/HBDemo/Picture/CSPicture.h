@@ -88,13 +88,11 @@ public:
     int  sendImageData(uint8_t** pData, int* pDataSizes);
     /** ================================================= <<< **/
     
-private:
+protected:
     /**
      *  输出图像数据格式信息
      */
     void _EchoPictureMediaInfo();
-    
-protected:
     
     /**
      *   图像格式转换，以及对图像进行相应的格式操作
@@ -178,6 +176,7 @@ protected:
     int  picDecoderOpen();
     int  picDecoderClose();
     int  picDecoderRelease();
+    
 private:
     /**
      *  媒体数据输入信息

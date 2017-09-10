@@ -36,6 +36,7 @@
 		A181BC691EA21788004861DA /* simplest_ffmpeg_video_encoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC651EA21788004861DA /* simplest_ffmpeg_video_encoder.cpp */; };
 		A181BC6A1EA21788004861DA /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC671EA21788004861DA /* simplest_ffmpeg_video_encoder_pure.cpp */; };
 		A183E2ED1F1F0028003700C3 /* AudioEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A183E2E71F1F0028003700C3 /* AudioEncoder.cpp */; };
+		A18E5C4A1F64EB6600442E09 /* CSPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A18E5C481F64EB6600442E09 /* CSPlayer.cpp */; };
 		A18EC5851F442B67002964C4 /* CSPicture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A18EC5831F442B67002964C4 /* CSPicture.cpp */; };
 		A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67B91EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp */; };
 		A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67BB1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp */; };
@@ -2853,6 +2854,8 @@
 		A183E2E71F1F0028003700C3 /* AudioEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioEncoder.cpp; sourceTree = "<group>"; };
 		A183E2E81F1F0028003700C3 /* AudioEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioEncoder.h; sourceTree = "<group>"; };
 		A183E2EA1F1F0028003700C3 /* simplest_ffmpeg_audio_encoder.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = simplest_ffmpeg_audio_encoder.jpg; sourceTree = "<group>"; };
+		A18E5C481F64EB6600442E09 /* CSPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSPlayer.cpp; sourceTree = "<group>"; };
+		A18E5C491F64EB6600442E09 /* CSPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPlayer.h; sourceTree = "<group>"; };
 		A18EC5831F442B67002964C4 /* CSPicture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSPicture.cpp; sourceTree = "<group>"; };
 		A18EC5841F442B67002964C4 /* CSPicture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPicture.h; sourceTree = "<group>"; };
 		A19A67B91EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_grabdesktop.cpp; sourceTree = "<group>"; };
@@ -9290,6 +9293,7 @@
 		A181BC331EA1F682004861DA /* Sample */ = {
 			isa = PBXGroup;
 			children = (
+				A18E5C471F64EB4000442E09 /* Player */,
 				A1091CDF1F59587000565177 /* video */,
 				A15B11711F4D7E40000FB2EA /* HBCSCommon */,
 				A1FB662E1F19EBDC001B08F0 /* audio */,
@@ -9431,6 +9435,16 @@
 				A15BB0F01F431E9700AFE839 /* CSAudioEncoder.h */,
 			);
 			path = AudioEncoder;
+			sourceTree = "<group>";
+		};
+		A18E5C471F64EB4000442E09 /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				A18E5C481F64EB6600442E09 /* CSPlayer.cpp */,
+				A18E5C491F64EB6600442E09 /* CSPlayer.h */,
+			);
+			name = Player;
+			path = ../../../src/HBDemo/player;
 			sourceTree = "<group>";
 		};
 		A19A67B71EB33DD200DE8F11 /* Device */ = {
@@ -16826,6 +16840,7 @@
 				A19A67DA1EB3445600DE8F11 /* simplest_ffmpeg_video_filter.cpp in Sources */,
 				A1091CEB1F595BD900565177 /* CSVideoDecoder.cpp in Sources */,
 				A183E2ED1F1F0028003700C3 /* AudioEncoder.cpp in Sources */,
+				A18E5C4A1F64EB6600442E09 /* CSPlayer.cpp in Sources */,
 				A1FB66411F19EBDC001B08F0 /* audio_player.cpp in Sources */,
 				A19A67EA1EB3465D00DE8F11 /* simplest_ffmpeg_mem_player.cpp in Sources */,
 				A15BB0E81F42912400AFE839 /* CSAudioDecoder.cpp in Sources */,
