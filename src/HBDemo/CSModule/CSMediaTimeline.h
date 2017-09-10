@@ -28,15 +28,26 @@ public:
     ~CSTimeline();
     
     /*
-     * @func 打开文件.
+     * @func open 打开文件
      * @arg filename 文件名
-     * @return 0 为正常, 其他为异常
+     * @return HB_OK 为正常, HB_ERROR 为异常
      */
     int open(const char *filename);
+    
+    
     
     void setOutputFile(char *file);
     char *getOutputFile() { return mSaveFilePath; };
 protected:
+    /** 保存模式下使用到的参数: */
+    /*
+     * @func writeHeader & writeTailer 写文件头 和 文件尾.
+     * @return HB_OK 为正常, HB_ERROR 为异常
+     */
+    int writeHeader();
+    int writeTailer();
+    
+    /** 预览模式下使用到的参数： */
     
 private:
     /** 保存模式下使用到的参数: */
