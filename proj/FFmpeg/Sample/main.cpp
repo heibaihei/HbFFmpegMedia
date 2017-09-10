@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "CSFiFoQueue.h"
 #include "CSLog.h"
 #include "CSCommon.h"
 #include "HBAudio.h"
