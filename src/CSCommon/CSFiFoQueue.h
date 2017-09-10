@@ -34,10 +34,6 @@ public:
      */
     FiFoQueue(uint32_t queueSize);
     ~FiFoQueue();
-
-    /** 创建 & 释放 queue 中内部使用的对象空间 */
-    int init();
-    void release();
     
     /** 往队列中插入类型为 T 的数据节点 */
     bool push(T data);
@@ -57,6 +53,12 @@ public:
     /** 设置队列状态 */
     int setQueueStat(QueueStat_t stat);
     QueueStat_t getQueueStat();
+
+protected:
+    /** 创建 & 释放 queue 中内部使用的对象空间 */
+    int init();
+    void release();
+    
 private:
     /** 队列的状态 */
     QueueStat_t mStatus;
@@ -74,6 +76,8 @@ FiFoQueue<T>::FiFoQueue(uint32_t size) {
     mKfifo = NULL;
     mStatus = QUEUE_EMPTY;
     mQueueSize = size;
+    
+    init();
 }
 
 template <typename T>
