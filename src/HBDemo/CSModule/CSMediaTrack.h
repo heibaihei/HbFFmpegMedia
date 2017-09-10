@@ -11,4 +11,19 @@
 
 #include <stdio.h>
 
+namespace HBMedia {
+    
+typedef class CSTrack {
+public:
+    CSTrack();
+    ~CSTrack();
+    
+protected:
+    
+private:
+    
+} CSTrack;
+    
+}
+
 #endif /* CSMediaTrack_h */

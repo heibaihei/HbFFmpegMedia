@@ -7,3 +7,15 @@
 //
 
 #include "CSMediaTrack.h"
+
+namespace HBMedia {
+    
+CSTrack::CSTrack(){
+
+}
+
+CSTrack::~CSTrack(){
+    
+}
+
+}

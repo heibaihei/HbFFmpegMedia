@@ -11,4 +11,19 @@
 
 #include <stdio.h>
 
+namespace HBMedia {
+    
+typedef class CSTimeline {
+public:
+    CSTimeline();
+    ~CSTimeline();
+    
+protected:
+    
+private:
+    
+} CSTimeline;
+    
+}
+
 #endif /* CSTimeline_h */

@@ -7,3 +7,15 @@
 //
 
 #include "CSMediaTimeline.h"
+
+namespace HBMedia {
+
+CSTimeline::CSTimeline(){
+    
+}
+
+CSTimeline::~CSTimeline(){
+    
+}
+
+}
