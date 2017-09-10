@@ -98,12 +98,6 @@ int PictureCSpictureDemo()
                 goto ENCODE_LOOP_END_LABEL;
         }
         
-        HbErr = objPicture.transformImageData(&pictureData, &pictureDataSizes);
-        if (HbErr != HB_OK) {
-            LOGE("Transform picture data failed !");
-            break;
-        }
-        
         HbErr = objPicture.sendImageData(&pictureData, &pictureDataSizes);
         if (HbErr != HB_OK) {
             LOGE("Picture encode exit !");

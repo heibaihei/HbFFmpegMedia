@@ -80,14 +80,6 @@ public:
     int  receiveImageData(uint8_t** pData, int* pDataSizes);
     
     /**
-     *   图像格式转换，以及对图像进行相应的格式操作
-     *   @param pData  只想待转换的数据的指针，调用完成后，放回转换后的数据
-     *   @param pDataSizes 只想待转换数据的空间大小，调用后，返回转换后的数据大小
-     *   @return HB_ERROR 转换数据失败; HB_OK 转换数据成功；
-     */
-    int  transformImageData(uint8_t** pData, int* pDataSizes);
-    
-    /**
      *   发送数据到目标
      *   @param pData  待发送的数据
      *   @param pDataSizes 待发送的数据空间大小
@@ -103,6 +95,20 @@ private:
     void _EchoPictureMediaInfo();
     
 protected:
+    
+    /**
+     *   图像格式转换，以及对图像进行相应的格式操作
+     *   @param pData  只想待转换的数据的指针，调用完成后，放回转换后的数据
+     *   @param pDataSizes 只想待转换数据的空间大小，调用后，返回转换后的数据大小
+     *   @return HB_ERROR 转换数据失败; HB_OK 转换数据成功；
+     */
+    int  transformImageData(uint8_t** pData, int* pDataSizes);
+    
+    /** 关闭内部资源 */
+    int close();
+    
+    /** 释放内部资源 */
+    int release();
     
     /**
      *  对图片像素进行编码
@@ -138,7 +144,7 @@ protected:
      */
     int _checkPicMediaValid();
     
-    int  pictureSwscale(uint8_t** pData, int* pDataSizes, ImageParams* srcParam, ImageParams* dstParam);
+    int  pictureSwscale(uint8_t** pData, int* pDataSizes);
     
     /**
      *  图片基础组建初始化，比如ffmpeg、等基础组件初始化
@@ -181,7 +187,8 @@ private:
     ImageParams     mSrcPicParam;
     MEDIA_DATA_TYPE mSrcPicDataType;
     CSMediaCodec    mInMCodec;
-    
+    /** 从输入端拿到的图像裸数据，未经过特殊处理的图像数据 */
+    uint8_t*        mInDataBuffer;
     bool            mIsNeedTransform;
     /**
      *  媒体数据输出信息
@@ -191,6 +198,8 @@ private:
     ImageParams     mTrgPicParam;
     MEDIA_DATA_TYPE mTrgPicDataType;
     CSMediaCodec    mOutMCodec;
+    /** 将 mInDataBuffer 经过转换后的最终图像裸数据 */
+    uint8_t*        mOutDataBuffer;
 } CSPicture;
 
 } /** HBMedia */
