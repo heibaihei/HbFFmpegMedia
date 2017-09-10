@@ -7,3 +7,16 @@
 //
 
 #include "CSPlayer.h"
+
+namespace HBMedia {
+
+CSPlayer::CSPlayer(){
+    mbSaveMode = false;
+}
+
+CSPlayer::~CSPlayer(){
+    
+}
+
+}
+
