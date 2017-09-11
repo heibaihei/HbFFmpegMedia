@@ -28,18 +28,18 @@ public:
     void setSaveMode(bool mode) { mbSaveMode=mode; }
     bool getSaveMode() { return mbSaveMode; }
     
+    void setTimeline(CSTimeline* pNewTimeline) { mTimeline = pNewTimeline; }
     /**
      *  完成媒体流的构建后，调用准备接口
      *  @return HB_OK 为正常, HB_ERROR 为异常;
      */
     int prepare();
     
+    int start();
+    
     int stop();
 protected:
-    /**
-     *  初始化对象
-     */
-    int initial();
+    
     
 private:
     /** 是否处于保存模式: true处于保存模式, false处于预览模式 */

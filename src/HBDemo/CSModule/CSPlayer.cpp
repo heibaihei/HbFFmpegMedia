@@ -7,6 +7,7 @@
 //
 
 #include "CSPlayer.h"
+#include "CSMediaTimeline.h"
 
 namespace HBMedia {
 
@@ -19,20 +20,22 @@ CSPlayer::~CSPlayer(){
 }
 
 int CSPlayer::prepare() {
-    if (initial() != HB_OK) {
-        LOGE("Player prepare call initial failed !");
+    if (mTimeline->prepare() != HB_OK) {
+        LOGE("Player prepare timeline failed !");
         return HB_ERROR;
     }
     
+    
+    mTimeline->writeHeader();
     return HB_OK;
 }
 
-int CSPlayer::initial() {
-    av_register_all();
-    av_log_set_flags(AV_LOG_DEBUG);
-    
+int CSPlayer::start() {
     return HB_OK;
 }
+    
+    
+
 
 }
 

@@ -11,7 +11,7 @@
 namespace HBMedia {
     
 CSAStream::CSAStream(){
-    
+    mAudioParam = nullptr;
 }
 
 CSAStream::~CSAStream(){
@@ -23,6 +23,20 @@ int CSAStream::bindOpaque(void *handle) {
 }
 
 int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
+    return HB_OK;
+}
+
+void CSAStream::setAudioParam(AudioParams* param) {
+    mAudioParam = param;
+}
+
+int CSAStream::setEncoder(const char *CodecName) {
+    mCodec = avcodec_find_encoder_by_name(CodecName);
+    if (mCodec == NULL) {
+        LOGE("CSVStream find encoder failed !");
+        return HB_ERROR;
+    }
+    
     return HB_OK;
 }
 

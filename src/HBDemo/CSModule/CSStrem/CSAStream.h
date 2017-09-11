@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "CSIStream.h"
 
+
 namespace HBMedia {
     
 typedef class CSAStream : public CSIStream
@@ -24,11 +25,16 @@ public:
     
     virtual int bindOpaque(void *handle) override;
     
+    void setAudioParam(AudioParams* param);
+    
+    int setEncoder(const char *CodecName);
+    
     virtual void EchoStreamInfo() override;
 protected:
     
 private:
-    
+    AVCodec    * mCodec;
+    AudioParams* mAudioParam;
 } CSAStream;
     
 }

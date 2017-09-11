@@ -7,7 +7,10 @@
 //
 
 #include "CSMediaTimeline.h"
+#include "CSStreamFactory.h"
 #include "CSIStream.h"
+#include "CSVStream.h"
+#include "CSAStream.h"
 
 namespace HBMedia {
 
@@ -27,7 +30,49 @@ CSTimeline::~CSTimeline(){
     }
 }
 
-int CSTimeline::open(const char *filename) {
+int CSTimeline::prepare() {
+    if (initial() != HB_OK) {
+        LOGE("Timeline prepare call initial failed !");
+        return HB_ERROR;
+    }
+    
+    CSIStream* pBaseStream = CSStreamFactory::CreateMediaStream(CS_STREAM_TYPE_VIDEO);
+    if (pBaseStream) {
+        CSVStream* pVideoStream = (CSVStream *)pBaseStream;
+        pVideoStream->setVideoParam(&mTgtImageParams);
+        if (HB_OK != pVideoStream->setEncoder("libx264")) {
+            LOGE("Timeline set video stream encoder failed !");
+            return HB_ERROR;
+        }
+        if (HB_OK != _addStream(pVideoStream)) {
+            LOGE("Timeline add video stream failed !");
+            return HB_ERROR;
+        }
+    }
+    
+    pBaseStream = CSStreamFactory::CreateMediaStream(CS_STREAM_TYPE_AUDIO);
+    if (pBaseStream) {
+        CSAStream* pAudioStream = (CSAStream*)pBaseStream;
+        pAudioStream->setAudioParam(&mTgtAudioParams);
+        if (HB_OK != pAudioStream->setEncoder("libfdk_aac")) {
+            LOGE("Timeline set audio stream encoder failed !");
+            return HB_ERROR;
+        }
+        if (HB_OK != _addStream(pAudioStream)) {
+            LOGE("Timeline add audio stream failed !");
+            return HB_ERROR;
+        }
+    }
+    
+    if (HB_OK != _open(mSaveFilePath)) {
+        LOGE("Timeline open file failed !");
+        return HB_ERROR;
+    }
+    
+    return HB_OK;
+}
+    
+int CSTimeline::_open(const char *filename) {
     int HBErr = HB_OK;
     HBErr = avformat_alloc_output_context2(&mFmtCtx, NULL, NULL, filename);
     if (HBErr < 0) {
@@ -51,6 +96,13 @@ TIMELINE_OPEN_END_LABEL:
     return HBErr;
 }
 
+int CSTimeline::initial() {
+    av_register_all();
+    av_log_set_flags(AV_LOG_DEBUG);
+    
+    return HB_OK;
+}
+
 int CSTimeline::sendRawData(uint8_t* pData, long DataSize, int StreamIdex, int64_t TimeStamp) {
     if (!pData || DataSize<=0 || StreamIdex < mStreamsList.size() || TimeStamp <0) {
         LOGE("Timeline send raw data failed !<Data:%p><Size:%ld><Stream:%d><:TimeStamp%lld>", pData, DataSize, StreamIdex, TimeStamp);
@@ -65,7 +117,7 @@ int CSTimeline::sendRawData(uint8_t* pData, long DataSize, int StreamIdex, int64
     return HB_OK;
 }
     
-int CSTimeline::addStream(CSIStream* pNewStream) {
+int CSTimeline::_addStream(CSIStream* pNewStream) {
     if (!pNewStream || !mFmtCtx) {
         LOGE("Timeline add stream failed, args is invalid ! <Fmt:%p> <Stream:%p>", mFmtCtx, pNewStream);
         return HB_ERROR;

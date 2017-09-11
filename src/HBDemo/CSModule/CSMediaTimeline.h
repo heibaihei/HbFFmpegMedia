@@ -23,30 +23,21 @@ namespace HBMedia {
 class CSIStream;
 
 typedef class CSTimeline {
+    
+    friend class CSPlayer;
+    
 public:
     CSTimeline();
     ~CSTimeline();
     
-    /**
-     * @func open 打开文件
-     * @param filename 文件名
-     * @return HB_OK 为正常, HB_ERROR 为异常
-     */
-    int open(const char *filename);
-    
-    /**
-     * @func addStream 往输出对象中添加流对象
-     * @param pNewStream 指向待添加的流对象
-     * @return HB_OK 为正常, HB_ERROR 为异常
-     */
-    int addStream(CSIStream* pNewStream);
-    
+    int prepare();
     /**
      *  @func setOutputFile & getOutputFile 
      *        设置以及获取输出文件 URL 信息
      */
     void setOutputFile(char *file);
     char *getOutputFile() { return mSaveFilePath; };
+    
     
     /** 测试接口 */
     /**
@@ -68,7 +59,25 @@ protected:
     /** 预览模式下使用到的参数： */
     
     /** 公共接口 */
+    
+    /**
+     *  初始化对象
+     */
+    int initial();
+    
+    /**
+     * @func addStream 往输出对象中添加流对象
+     * @param pNewStream 指向待添加的流对象
+     * @return HB_OK 为正常, HB_ERROR 为异常
+     */
+    int _addStream(CSIStream* pNewStream);
 
+    /**
+     * @func open 打开文件
+     * @param filename 文件名
+     * @return HB_OK 为正常, HB_ERROR 为异常
+     */
+    int _open(const char *filename);
 private:
     /** 保存模式下使用到的参数: */
     /** 输出文件媒体格式 */
