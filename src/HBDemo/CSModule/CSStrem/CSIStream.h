@@ -22,10 +22,15 @@ public:
     CSIStream();
     ~CSIStream();
     
+    virtual int bindOpaque(void *handle) = 0;
+    
+    virtual int sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) = 0;
+    
+    virtual void EchoStreamInfo() = 0;
 protected:
     
 private:
-    
+
 } CSIStream;
     
 }

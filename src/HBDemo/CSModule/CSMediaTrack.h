@@ -10,6 +10,11 @@
 #define CSMediaTrack_h
 
 #include <stdio.h>
+#include "CSDefine.h"
+#include "CSLog.h"
+#include "CSDefine.h"
+#include "CSCommon.h"
+#include "CSUtil.h"
 
 namespace HBMedia {
     

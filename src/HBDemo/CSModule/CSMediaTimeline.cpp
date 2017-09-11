@@ -14,6 +14,10 @@ namespace HBMedia {
 CSTimeline::CSTimeline(){
     mFmtCtx = nullptr;
     mSaveFilePath = nullptr;
+    memset(&mSrcAudioParams, 0x00, sizeof(AudioParams));
+    memset(&mTgtAudioParams, 0x00, sizeof(AudioParams));
+    memset(&mSrcImageParams, 0x00, sizeof(ImageParams));
+    memset(&mTgtImageParams, 0x00, sizeof(ImageParams));
 }
 
 CSTimeline::~CSTimeline(){
@@ -45,6 +49,36 @@ TIMELINE_OPEN_END_LABEL:
         mFmtCtx = nullptr;
     }
     return HBErr;
+}
+
+int CSTimeline::sendRawData(uint8_t* pData, long DataSize, int StreamIdex, int64_t TimeStamp) {
+    if (!pData || DataSize<=0 || StreamIdex < mStreamsList.size() || TimeStamp <0) {
+        LOGE("Timeline send raw data failed !<Data:%p><Size:%ld><Stream:%d><:TimeStamp%lld>", pData, DataSize, StreamIdex, TimeStamp);
+        return HB_ERROR;
+    }
+    
+    CSIStream* pStream = mStreamsList[StreamIdex];
+    if (!pStream || pStream->sendRawData(pData, DataSize, TimeStamp) != HB_OK) {
+        LOGE("Timeline send raw data to stream failed !");
+        return HB_ERROR;
+    }
+    return HB_OK;
+}
+    
+int CSTimeline::addStream(CSIStream* pNewStream) {
+    if (!pNewStream || !mFmtCtx) {
+        LOGE("Timeline add stream failed, args is invalid ! <Fmt:%p> <Stream:%p>", mFmtCtx, pNewStream);
+        return HB_ERROR;
+    }
+    
+    if (pNewStream->bindOpaque(mFmtCtx) != HB_OK) {
+        LOGE("Timeline bind file handle failed !");
+        return HB_ERROR;
+    }
+    
+    mStreamsList.push_back(pNewStream);
+    pNewStream->EchoStreamInfo();
+    return HB_OK;
 }
 
 int CSTimeline::writeHeader() {

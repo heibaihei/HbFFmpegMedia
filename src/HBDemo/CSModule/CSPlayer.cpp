@@ -18,5 +18,21 @@ CSPlayer::~CSPlayer(){
     
 }
 
+int CSPlayer::prepare() {
+    if (initial() != HB_OK) {
+        LOGE("Player prepare call initial failed !");
+        return HB_ERROR;
+    }
+    
+    return HB_OK;
+}
+
+int CSPlayer::initial() {
+    av_register_all();
+    av_log_set_flags(AV_LOG_DEBUG);
+    
+    return HB_OK;
+}
+
 }
 

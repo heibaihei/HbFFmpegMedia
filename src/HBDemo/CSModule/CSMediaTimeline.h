@@ -27,20 +27,38 @@ public:
     CSTimeline();
     ~CSTimeline();
     
-    /*
+    /**
      * @func open 打开文件
-     * @arg filename 文件名
+     * @param filename 文件名
      * @return HB_OK 为正常, HB_ERROR 为异常
      */
     int open(const char *filename);
     
+    /**
+     * @func addStream 往输出对象中添加流对象
+     * @param pNewStream 指向待添加的流对象
+     * @return HB_OK 为正常, HB_ERROR 为异常
+     */
+    int addStream(CSIStream* pNewStream);
     
-    
+    /**
+     *  @func setOutputFile & getOutputFile 
+     *        设置以及获取输出文件 URL 信息
+     */
     void setOutputFile(char *file);
     char *getOutputFile() { return mSaveFilePath; };
+    
+    /** 测试接口 */
+    /**
+     *   往 Timeline 中特定流发送裸数据
+     *
+     */
+    int  sendRawData(uint8_t* pData, long DataSize, int StreamIdex, int64_t TimeStamp);
+    
 protected:
     /** 保存模式下使用到的参数: */
-    /*
+    
+    /**
      * @func writeHeader & writeTailer 写文件头 和 文件尾.
      * @return HB_OK 为正常, HB_ERROR 为异常
      */
@@ -49,6 +67,8 @@ protected:
     
     /** 预览模式下使用到的参数： */
     
+    /** 公共接口 */
+
 private:
     /** 保存模式下使用到的参数: */
     /** 输出文件媒体格式 */
@@ -60,7 +80,11 @@ private:
     /** 预览模式下使用到的参数： */
     
     /** 公共参数： */
+    AudioParams  mSrcAudioParams;
+    AudioParams  mTgtAudioParams;
     
+    ImageParams  mSrcImageParams;
+    ImageParams  mTgtImageParams;
 } CSTimeline;
     
 }

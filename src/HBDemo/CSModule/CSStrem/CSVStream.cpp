@@ -10,12 +10,23 @@
 
 namespace HBMedia {
     
-    CSVStream::CSVStream(){
-        
-    }
+CSVStream::CSVStream(){
     
-    CSVStream::~CSVStream(){
-        
-    }
+}
+
+CSVStream::~CSVStream(){
     
+}
+
+void CSVStream::EchoStreamInfo() {
+}
+
+int CSVStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
+    return HB_OK;
+}
+
+int CSVStream::bindOpaque(void *handle) {
+    return HB_OK;
+}
+
 }

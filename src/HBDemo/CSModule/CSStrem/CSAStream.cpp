@@ -10,12 +10,24 @@
 
 namespace HBMedia {
     
-    CSAStream::CSAStream(){
-        
-    }
+CSAStream::CSAStream(){
     
-    CSAStream::~CSAStream(){
-        
-    }
+}
+
+CSAStream::~CSAStream(){
     
+}
+
+int CSAStream::bindOpaque(void *handle) {
+    return HB_OK;
+}
+
+int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
+    return HB_OK;
+}
+
+void CSAStream::EchoStreamInfo() {
+
+}
+
 }

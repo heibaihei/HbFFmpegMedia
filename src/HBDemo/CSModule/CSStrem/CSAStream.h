@@ -20,6 +20,11 @@ public:
     CSAStream();
     ~CSAStream();
     
+    virtual int sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) override;
+    
+    virtual int bindOpaque(void *handle) override;
+    
+    virtual void EchoStreamInfo() override;
 protected:
     
 private:
