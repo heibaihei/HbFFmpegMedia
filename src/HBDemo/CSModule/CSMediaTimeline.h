@@ -21,6 +21,8 @@ namespace HBMedia {
 
 /** 类前置生命处 */
 class CSIStream;
+class ThreadContext;
+class CSWorkContext;
 
 typedef class CSTimeline {
     
@@ -89,11 +91,12 @@ private:
     /** 预览模式下使用到的参数： */
     
     /** 公共参数： */
-    AudioParams  mSrcAudioParams;
-    AudioParams  mTgtAudioParams;
+    CSWorkContext* mWorkCtx;
+    AudioParams    mSrcAudioParams;
+    AudioParams    mTgtAudioParams;
     
-    ImageParams  mSrcImageParams;
-    ImageParams  mTgtImageParams;
+    ImageParams    mSrcImageParams;
+    ImageParams    mTgtImageParams;
 } CSTimeline;
     
 }

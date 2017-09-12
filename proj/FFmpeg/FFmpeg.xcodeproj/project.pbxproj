@@ -17,6 +17,7 @@
 		A1245A951F65FD3300DB5D45 /* CSVStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A931F65FD3300DB5D45 /* CSVStream.cpp */; };
 		A1245A981F65FD4A00DB5D45 /* CSAStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A961F65FD4A00DB5D45 /* CSAStream.cpp */; };
 		A13A69751F3ED3F900FC6376 /* HBAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A13A69741F3ED3F900FC6376 /* HBAudio.cpp */; };
+		A13E121B1F676775003FC0AC /* CSWorkContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A13E12191F676775003FC0AC /* CSWorkContext.cpp */; };
 		A156FEF31EA25C7000258C1E /* FFmpegSwscale.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A156FEF11EA25C7000258C1E /* FFmpegSwscale.cpp */; };
 		A15BB0E81F42912400AFE839 /* CSAudioDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0E61F42912400AFE839 /* CSAudioDecoder.cpp */; };
 		A15BB0EE1F42C2DA00AFE839 /* CSPacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0EC1F42C2DA00AFE839 /* CSPacketQueue.cpp */; };
@@ -43,6 +44,7 @@
 		A181BC721F6517F400B34FD0 /* CSThreadIPCContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC701F6517F400B34FD0 /* CSThreadIPCContext.cpp */; };
 		A183E2ED1F1F0028003700C3 /* AudioEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A183E2E71F1F0028003700C3 /* AudioEncoder.cpp */; };
 		A18EC5851F442B67002964C4 /* CSPicture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A18EC5831F442B67002964C4 /* CSPicture.cpp */; };
+		A19450B11F6754E1004E8669 /* CSWorkTasks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19450AF1F6754E1004E8669 /* CSWorkTasks.cpp */; };
 		A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67B91EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp */; };
 		A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67BB1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp */; };
 		A19A67C31EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67C21EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp */; };
@@ -2830,6 +2832,8 @@
 		A1245A971F65FD4A00DB5D45 /* CSAStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAStream.h; sourceTree = "<group>"; };
 		A12912111EC756E7008847CE /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		A13A69741F3ED3F900FC6376 /* HBAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HBAudio.cpp; sourceTree = "<group>"; };
+		A13E12191F676775003FC0AC /* CSWorkContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSWorkContext.cpp; sourceTree = "<group>"; };
+		A13E121A1F676775003FC0AC /* CSWorkContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSWorkContext.h; sourceTree = "<group>"; };
 		A156FEF11EA25C7000258C1E /* FFmpegSwscale.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFmpegSwscale.cpp; sourceTree = "<group>"; };
 		A156FEF21EA25C7000258C1E /* FFmpegSwscale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegSwscale.h; sourceTree = "<group>"; };
 		A15BB0E61F42912400AFE839 /* CSAudioDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioDecoder.cpp; sourceTree = "<group>"; };
@@ -2876,6 +2880,8 @@
 		A183E2EA1F1F0028003700C3 /* simplest_ffmpeg_audio_encoder.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = simplest_ffmpeg_audio_encoder.jpg; sourceTree = "<group>"; };
 		A18EC5831F442B67002964C4 /* CSPicture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSPicture.cpp; sourceTree = "<group>"; };
 		A18EC5841F442B67002964C4 /* CSPicture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPicture.h; sourceTree = "<group>"; };
+		A19450AF1F6754E1004E8669 /* CSWorkTasks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSWorkTasks.cpp; sourceTree = "<group>"; };
+		A19450B01F6754E1004E8669 /* CSWorkTasks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSWorkTasks.h; sourceTree = "<group>"; };
 		A19A67B91EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_grabdesktop.cpp; sourceTree = "<group>"; };
 		A19A67BB1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_readcamera.cpp; sourceTree = "<group>"; };
 		A19A67C21EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_demuxer_simple.cpp; sourceTree = "<group>"; };
@@ -16647,6 +16653,10 @@
 				A1F706151F656F9F003A6010 /* CSMediaTimeline.h */,
 				A1F7061A1F657181003A6010 /* CSMediaTrack.cpp */,
 				A1F7061B1F657181003A6010 /* CSMediaTrack.h */,
+				A19450AF1F6754E1004E8669 /* CSWorkTasks.cpp */,
+				A19450B01F6754E1004E8669 /* CSWorkTasks.h */,
+				A13E12191F676775003FC0AC /* CSWorkContext.cpp */,
+				A13E121A1F676775003FC0AC /* CSWorkContext.h */,
 			);
 			name = CSModule;
 			path = ../../../src/HBDemo/CSModule;
@@ -16872,8 +16882,10 @@
 				A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */,
 				A181BC721F6517F400B34FD0 /* CSThreadIPCContext.cpp in Sources */,
 				A1F706161F656F9F003A6010 /* CSMediaTimeline.cpp in Sources */,
+				A19450B11F6754E1004E8669 /* CSWorkTasks.cpp in Sources */,
 				A1FB66451F19F18B001B08F0 /* AudioDecoder.cpp in Sources */,
 				A181BC691EA21788004861DA /* simplest_ffmpeg_video_encoder.cpp in Sources */,
+				A13E121B1F676775003FC0AC /* CSWorkContext.cpp in Sources */,
 				A19A67D21EB3434200DE8F11 /* simplest_ffmpeg_remuxer.cpp in Sources */,
 				A1091CE81F595BC200565177 /* CSVideoEncoder.cpp in Sources */,
 				A181BC6A1EA21788004861DA /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,
