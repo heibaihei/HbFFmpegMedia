@@ -20,6 +20,9 @@ public:
     CSVStream();
     virtual ~CSVStream();
     
+    /**
+     *  @return 返回发送的裸数据大小
+     */
     virtual int sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) override;
     
     virtual int bindOpaque(void *handle) override;

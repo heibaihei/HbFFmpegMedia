@@ -30,16 +30,17 @@ class ThreadIPCContext;
 typedef struct StreamThreadParam {
     AVCodecContext* mCodecCtx;
     
-    FiFoQueue<AVFrame*> mFrameQueue;
-    FiFoQueue<AVFrame*> mFrameRecycleQueue;
+    FiFoQueue<AVFrame*> *mFrameQueue;
+    FiFoQueue<AVFrame*> *mFrameRecycleQueue;
     
-    FiFoQueue<AVPacket*> mPacketQueue;
-    FiFoQueue<AVPacket*> mPacketRecycleQueue;
+    FiFoQueue<AVPacket*> *mPacketQueue;
+    FiFoQueue<AVPacket*> *mPacketRecycleQueue;
     
     ThreadIPCContext *mEncodeIPC;
     ThreadIPCContext *mWriteIPC;
     
     int mStreamIndex;
+    AVRational mTimeBase;
     /** 指向当前流线程参数对应的线程上下文 */
     ThreadContext *mThreadCtx;
 } StreamThreadParam;

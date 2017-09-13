@@ -127,7 +127,7 @@ int CSWorkContext::pushStream(CSIStream* pStream) {
         return HB_ERROR;
     }
     
-    StreamThreadParam* pStreamPthreadParam = pStream->getThreadParam();
+    StreamThreadParam* pStreamPthreadParam = pStream->getStreamThreadParam();
     if (!pStreamPthreadParam) {
         LOGE("Stream's thread param invalid !");
         return HB_ERROR;

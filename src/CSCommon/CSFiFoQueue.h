@@ -36,7 +36,7 @@ public:
     ~FiFoQueue();
     
     /** 往队列中插入类型为 T 的数据节点 */
-    bool push(T data);
+    int push(T data);
     
     /** 从队列中取出数据，先入先出 */
     T get();
@@ -104,16 +104,15 @@ void FiFoQueue<T>::release() {
 }
 
 template <typename T>
-bool FiFoQueue<T>::push(T data) {
+int FiFoQueue<T>::push(T data) {
     int len = 0;
     len = __kfifo_put(mKfifo, (const unsigned char *)&data, sizeof(T));
     if(len > 0) {
         mStatus = QUEUE_FILLED;
-        return true;
     } else {
         mStatus = QUEUE_OVERFLOW;
-        return false;
     }
+    return len;
 }
 
 template <typename T>

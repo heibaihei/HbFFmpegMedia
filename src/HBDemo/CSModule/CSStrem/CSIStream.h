@@ -36,10 +36,13 @@ public:
     void setStreamType(STREAM_TYPE type) { mStreamType = type; }
     
     /** 设置流的线程参数 */
-    void setThreadParam(StreamThreadParam *Param) { mThreadParam = Param; };
-    StreamThreadParam* getThreadParam() { return mThreadParam; };
+    StreamThreadParam* getStreamThreadParam() { return mStreamThreadParam; };
     
     virtual void EchoStreamInfo() = 0;
+    
+    /** 设置速度接口 */
+    void setSpeed(float speed) { mSpeed = speed; }
+    float getSpeed() { return mSpeed; }
     
 protected:
     AVFormatContext* mFmtCtx;
@@ -51,7 +54,7 @@ protected:
     float       mSpeed;
     STREAM_TYPE mStreamType;
     int mStreamIndex;
-    StreamThreadParam* mThreadParam;
+    StreamThreadParam* mStreamThreadParam;
     ThreadIPCContext * mThreadIPCCtx;
     
 private:
