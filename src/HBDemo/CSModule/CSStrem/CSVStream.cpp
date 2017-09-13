@@ -11,9 +11,13 @@
 
 namespace HBMedia {
     
+#define DEFAULT_VIDEO_CODEC_ID        (AV_CODEC_ID_H264)
+#define DEFAULT_MAX_FRAME_QUEUE_SIZE  (8)
+
 CSVStream::CSVStream(){
     mImageParam = nullptr;
-    mCodec = nullptr;
+    mCodecID = DEFAULT_VIDEO_CODEC_ID;
+    mQueueFrameNums = DEFAULT_MAX_FRAME_QUEUE_SIZE;
 }
 
 CSVStream::~CSVStream(){
@@ -32,10 +36,15 @@ int CSVStream::bindOpaque(void *handle) {
 }
 
 int CSVStream::stop() {
+    if (mCodecCtx)
+        avcodec_close(mCodecCtx);
+
     return HB_OK;
 }
 
 int CSVStream::release() {
+    if (mCodecCtx)
+        avcodec_free_context(&mCodecCtx);
     return HB_OK;
 }
 
@@ -51,6 +60,14 @@ int CSVStream::setEncoder(const char *CodecName) {
 
 void CSVStream::setVideoParam(ImageParams* param) {
     mImageParam = param;
+}
+
+int CSVStream::setFrameBufferNum(int num) {
+    if (num <= 0) {
+        return HB_ERROR;
+    }
+    mQueueFrameNums = num;
+    return HB_OK;
 }
 
 }

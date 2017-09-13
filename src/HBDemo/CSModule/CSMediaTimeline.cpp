@@ -76,7 +76,8 @@ int CSTimeline::prepare() {
         LOGE("Timeline create work context failed !");
         return HB_ERROR;
     }
-    mWorkCtx->prepare();
+    
+    mWorkCtx->prepare(mFmtCtx);
     
     return HB_OK;
 }

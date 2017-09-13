@@ -15,6 +15,7 @@
 #include "CSCommon.h"
 #include "CSUtil.h"
 #include "CSWorkContext.h"
+#include "CSThreadIPCContext.h"
 
 namespace HBMedia {
     
@@ -39,12 +40,22 @@ public:
     StreamThreadParam* getThreadParam() { return mThreadParam; };
     
     virtual void EchoStreamInfo() = 0;
-protected:
     
-private:
+protected:
+    AVFormatContext* mFmtCtx;
+    AVStream*        mStream;
+    AVCodecContext*  mCodecCtx;
+    AVCodec*         mCodec;
+    enum AVCodecID   mCodecID;
+    
+    float       mSpeed;
     STREAM_TYPE mStreamType;
     int mStreamIndex;
     StreamThreadParam* mThreadParam;
+    ThreadIPCContext * mThreadIPCCtx;
+    
+private:
+    
 } CSIStream;
     
 }

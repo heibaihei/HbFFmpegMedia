@@ -39,6 +39,7 @@ typedef struct StreamThreadParam {
     ThreadIPCContext *mEncodeIPC;
     ThreadIPCContext *mWriteIPC;
     
+    int mStreamIndex;
     /** 指向当前流线程参数对应的线程上下文 */
     ThreadContext *mThreadCtx;
 } StreamThreadParam;
@@ -49,7 +50,9 @@ typedef struct StreamThreadParam {
  */
 typedef struct WorkContextParam {
     int mThreadNum;
-    int mStreamIndex;
+    AVFormatContext  *mTargetFormatCtx;
+    
+    /** 数据输出线程以及对应的通信对象 */
     ThreadContext    *mWorkThread;
     ThreadIPCContext *mWorkIPCCtx;
     std::vector<StreamThreadParam *> mStreamPthreadParamList;
@@ -61,9 +64,10 @@ public:
     CSWorkContext();
     ~CSWorkContext();
     
+    /** Push 流的操作等到 prepare 操作以后再执行 */
     int pushStream(CSIStream* pStream);
     
-    int prepare();
+    int prepare(void *args);
     
     int start();
     
@@ -74,6 +78,8 @@ public:
     int flush();
     
 protected:
+    /** 创建输出线程 */
+    int _createOutputWorker();
     
 private:
     /** 存放当前的线程环境 */

@@ -25,6 +25,7 @@ public:
     virtual int bindOpaque(void *handle) override;
     
     void setVideoParam(ImageParams* param);
+    ImageParams* getVideoParam() { return mImageParam; };
     
     /*
     * @func 通过编码器的名称来配置编码器
@@ -37,11 +38,13 @@ public:
     
     virtual int release() override;
     
+    int setFrameBufferNum(int num);
+    
     virtual void EchoStreamInfo() override;
 protected:
     
 private:
-    AVCodec    * mCodec;
+    int          mQueueFrameNums;
     ImageParams* mImageParam;
 } CSVStream;
     

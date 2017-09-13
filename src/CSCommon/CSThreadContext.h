@@ -26,11 +26,11 @@ enum ThreadStat_t {
 
 typedef void *(CALLBACK)(void *handle, int stat);
 
-struct ThreadParam_t {
+typedef struct ThreadParam_t {
     void *mThreadArgs;        /** 线程参数 */
     enum ThreadStat_t mStatus;/** 线程运行状态 */
     CALLBACK mThreadCB;        /** 线程要执行的回调接口 */
-};
+} ThreadParam_t;
 
 typedef void *(*ThreadFunc)(void *arg);
 

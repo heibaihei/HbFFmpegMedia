@@ -7,10 +7,30 @@
 //
 
 #include "CSWorkTasks.h"
+#include "CSThreadContext.h"
+#include "CSWorkContext.h"
 
 namespace HBMedia {
     
 void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
+    ThreadParam_t* pThreadArgs = (ThreadParam_t *)arg;
+    if (!pThreadArgs) {
+        LOGE("Work task args is nullptr!");
+        return nullptr;
+    }
+    
+    StreamThreadParam* pStreamThreadParam = (StreamThreadParam*)(pThreadArgs->mThreadArgs);
+    if (!pStreamThreadParam) {
+        LOGE("Work task streams args is nullptr !");
+        return nullptr;
+    }
+    
+    int iStreamIndex = pStreamThreadParam->mStreamIndex;
+    ThreadContext *pThreadCtx = pStreamThreadParam->mThreadCtx;
+    
+    
+    
+    
     return nullptr;
 }
 

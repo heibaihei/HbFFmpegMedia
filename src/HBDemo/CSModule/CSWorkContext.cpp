@@ -11,25 +11,41 @@
 #include "CSThreadIPCContext.h"
 #include "CSIStream.h"
 #include "CSWorkTasks.h"
+#include "CSWorkContext.h"
 
 namespace HBMedia {
     
 CSWorkContext::CSWorkContext() {
-    mWorkContextParam = (WorkContextParam *)av_mallocz(sizeof(WorkContextParam));
-    if (!mWorkContextParam)
-        LOGE("Workcontext create work context param failed !");
-    
 }
 
 CSWorkContext::~CSWorkContext() {
     
 }
 
-int CSWorkContext::prepare() {
+int CSWorkContext::prepare(void *args) {
+    AVFormatContext *outputFormatCtx = (AVFormatContext *)args;
+    if (!outputFormatCtx || outputFormatCtx->nb_streams <= 0) {
+        LOGE("Work context prepare failed !");
+        return HB_ERROR;
+    }
+    
+    mWorkContextParam = (WorkContextParam *)av_mallocz(sizeof(WorkContextParam));
+    if (!mWorkContextParam) {
+        LOGE("Workcontext create work context param failed !");
+        return HB_ERROR;
+    }
+    mWorkContextParam->mTargetFormatCtx = outputFormatCtx;
+    mWorkContextParam->mWorkIPCCtx = new ThreadIPCContext(0);
+    if (!mWorkContextParam->mWorkIPCCtx) {
+        LOGE("Work context create IPC context failed !");
+        return HB_ERROR;
+    }
+    
+    _createOutputWorker();
     return HB_OK;
 }
 
-int CSWorkContext::start() {
+int CSWorkContext::_createOutputWorker() {
     ThreadContext *pThreadCtx = new ThreadContext();
     if (pThreadCtx) {
         LOGE("Work context create thread context failed !");
@@ -44,7 +60,15 @@ int CSWorkContext::start() {
     }
     
     mThreadContextList.push_back(pThreadCtx);
-    pThreadCtx->start();
+    return HB_OK;
+}
+
+int CSWorkContext::start() {
+    ThreadContext *pThreadCtx = nullptr;
+    for (std::vector<ThreadContext *>::iterator pNode; pNode != mThreadContextList.end(); pNode++) {
+        pThreadCtx = *pNode;
+        pThreadCtx->start();
+    }
     
     return HB_OK;
 }
@@ -63,6 +87,11 @@ int CSWorkContext::stop() {
             pStreamPthreadParam = *pNode;
             pStreamPthreadParam->mEncodeIPC->condP();
         }
+    }
+    
+    for (std::vector<ThreadContext *>::iterator pNode; pNode != mThreadContextList.end(); pNode++) {
+        pThreadCtx = *pNode;
+        pThreadCtx->join();
     }
     
     for (std::vector<ThreadContext *>::iterator pNode; pNode != mThreadContextList.end(); pNode++) {
@@ -111,9 +140,13 @@ int CSWorkContext::pushStream(CSIStream* pStream) {
     }
     
     pStreamPthreadParam->mThreadCtx = pThreadCtx;
-
+    pStreamPthreadParam->mWriteIPC = mWorkContextParam->mWorkIPCCtx;
+    pStreamPthreadParam->mThreadCtx->setFunction(CSWorkTasks::WorkTask_EncodeFrameRawData, pStreamPthreadParam);
+    
+    mWorkContextParam->mThreadNum++;
     mWorkContextParam->mStreamPthreadParamList.push_back(pStreamPthreadParam);
-    mWorkContextParam->mWorkIPCCtx = new ThreadIPCContext(0);
+    mThreadContextList.push_back(pStreamPthreadParam->mThreadCtx);
+
     return HB_OK;
 }
 
