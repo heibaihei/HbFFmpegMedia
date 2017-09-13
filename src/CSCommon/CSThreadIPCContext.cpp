@@ -8,6 +8,8 @@
 
 #include "CSThreadIPCContext.h"
 
+namespace HBMedia {
+
 ThreadIPCContext::ThreadIPCContext(int initNUm) {
     condCnt = initNUm;
     pthread_cond_init(&cond, NULL);
@@ -18,7 +20,7 @@ ThreadIPCContext::~ThreadIPCContext() {
 }
 
 int ThreadIPCContext::create() {
-    return 0;
+    return HB_OK;
 }
 
 int ThreadIPCContext::condP() {
@@ -27,7 +29,7 @@ int ThreadIPCContext::condP() {
     pthread_mutex_unlock(&condMux);
     pthread_cond_signal(&cond);
     
-    return 0;
+    return HB_OK;
 }
 
 int ThreadIPCContext::condV() {
@@ -38,7 +40,7 @@ int ThreadIPCContext::condV() {
     condCnt--;
     pthread_mutex_unlock(&condMux);
     
-    return 0;
+    return HB_OK;
 }
 
 int ThreadIPCContext::release() {
@@ -47,5 +49,7 @@ int ThreadIPCContext::release() {
     
     condCnt = -1;
     
-    return 0;
+    return HB_OK;
+}
+
 }

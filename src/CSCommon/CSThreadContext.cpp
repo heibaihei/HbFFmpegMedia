@@ -9,6 +9,8 @@
 #include "CSThreadContext.h"
 #include "CSLog.h"
 
+namespace HBMedia {
+
 ThreadContext::ThreadContext() {
     mThreadArg = NULL;
 }
@@ -75,4 +77,6 @@ int ThreadContext::markOver() {
 
 int ThreadContext::join() {
     return pthread_join(mThreadID, NULL);
+}
+
 }

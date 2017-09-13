@@ -11,8 +11,15 @@
 
 #include <pthread.h>
 #include <unistd.h>
-
 #include <stdio.h>
+
+#include "CSDefine.h"
+#include "CSLog.h"
+#include "CSDefine.h"
+#include "CSCommon.h"
+#include "CSUtil.h"
+
+namespace HBMedia {
 
 class ThreadIPCContext {
 public:
@@ -42,4 +49,5 @@ private:
     int condCnt;
 };
 
+}
 #endif /* ThreadIPCContext_hpp */

@@ -14,6 +14,7 @@
 #include "CSDefine.h"
 #include "CSCommon.h"
 #include "CSUtil.h"
+#include "CSWorkContext.h"
 
 namespace HBMedia {
     
@@ -26,11 +27,15 @@ public:
     
     virtual int sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) = 0;
     
+    /** 设置流的线程参数 */
+    void setThreadParam(StreamThreadParam *Param) { mThreadParam = Param; };
+    StreamThreadParam* getThreadParam() { return mThreadParam; };
+    
     virtual void EchoStreamInfo() = 0;
 protected:
     
 private:
-
+    StreamThreadParam* mThreadParam;
 } CSIStream;
     
 }

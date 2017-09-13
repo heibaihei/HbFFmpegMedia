@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1080E9A1F68DC6F0015A2D3 /* CSConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1080E981F68DC6F0015A2D3 /* CSConfig.cpp */; };
 		A1091CE21F5958AF00565177 /* CSVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1091CE01F5958AF00565177 /* CSVideo.cpp */; };
 		A1091CE81F595BC200565177 /* CSVideoEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1091CE61F595BC200565177 /* CSVideoEncoder.cpp */; };
 		A1091CEB1F595BD900565177 /* CSVideoDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1091CE91F595BD900565177 /* CSVideoDecoder.cpp */; };
@@ -2813,6 +2814,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A1080E981F68DC6F0015A2D3 /* CSConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSConfig.cpp; sourceTree = "<group>"; };
+		A1080E991F68DC6F0015A2D3 /* CSConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSConfig.h; sourceTree = "<group>"; };
 		A1091CE01F5958AF00565177 /* CSVideo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideo.cpp; sourceTree = "<group>"; };
 		A1091CE11F5958AF00565177 /* CSVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVideo.h; sourceTree = "<group>"; };
 		A1091CE61F595BC200565177 /* CSVideoEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoEncoder.cpp; sourceTree = "<group>"; };
@@ -9294,6 +9297,8 @@
 				A1245A971F65FD4A00DB5D45 /* CSAStream.h */,
 				A1F6019D1F66C98C00168C96 /* CSStreamFactory.cpp */,
 				A1F6019E1F66C98C00168C96 /* CSStreamFactory.h */,
+				A1080E981F68DC6F0015A2D3 /* CSConfig.cpp */,
+				A1080E991F68DC6F0015A2D3 /* CSConfig.h */,
 			);
 			path = CSStrem;
 			sourceTree = "<group>";
@@ -16892,6 +16897,7 @@
 				A181BC5F1EA21756004861DA /* HBSeperateFormat.c in Sources */,
 				A181BC581EA2172B004861DA /* audio_format_convert.cpp in Sources */,
 				A1F7061C1F657181003A6010 /* CSMediaTrack.cpp in Sources */,
+				A1080E9A1F68DC6F0015A2D3 /* CSConfig.cpp in Sources */,
 				A13A69751F3ED3F900FC6376 /* HBAudio.cpp in Sources */,
 				A19A67E41EB3460100DE8F11 /* simplest_ffmpeg_swscale.cpp in Sources */,
 				A1091CE21F5958AF00565177 /* CSVideo.cpp in Sources */,

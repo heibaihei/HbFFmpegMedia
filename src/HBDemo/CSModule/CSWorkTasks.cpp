@@ -10,11 +10,12 @@
 
 namespace HBMedia {
     
-    CSWorkTasks::CSWorkTasks() {
-    
-    }
-    
-    CSWorkTasks::~CSWorkTasks() {
-    
-    }
+void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
+    return nullptr;
+}
+
+void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
+    return nullptr;
+}
+
 }

@@ -11,6 +11,7 @@
 #include "CSIStream.h"
 #include "CSVStream.h"
 #include "CSAStream.h"
+#include "CSWorkContext.h"
 
 namespace HBMedia {
 
@@ -62,6 +63,13 @@ int CSTimeline::prepare() {
             LOGE("Timeline add audio stream failed !");
             return HB_ERROR;
         }
+    }
+    
+    /** 创建线程环境 */
+    mWorkCtx = new CSWorkContext();
+    if (!mWorkCtx) {
+        LOGE("Timeline create work context failed !");
+        return HB_ERROR;
     }
     
     if (HB_OK != _open(mSaveFilePath)) {

@@ -13,6 +13,8 @@
 #include "CSDefine.h"
 #include "CSThreadIPCContext.h"
 
+namespace HBMedia {
+
 enum ThreadStat_t {
     THREAD_IDLE         = 0,
     THREAD_PREPARE      = 1,
@@ -70,4 +72,5 @@ private:
     ThreadIPCContext* mThreadIPC;
 };
 
+}
 #endif /* ThreadContext_hpp */

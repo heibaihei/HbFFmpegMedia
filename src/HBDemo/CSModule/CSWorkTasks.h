@@ -15,9 +15,9 @@ namespace HBMedia {
     
 typedef class CSWorkTasks {
 public:
-    CSWorkTasks();
-    ~CSWorkTasks();
+    static void *WorkTask_EncodeFrameRawData(void *arg);
     
+    static void *WorkTask_WritePacketData(void *arg);
 protected:
     
 private:
