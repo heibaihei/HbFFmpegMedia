@@ -37,6 +37,11 @@ int CSTimeline::prepare() {
         return HB_ERROR;
     }
     
+    if (HB_OK != _open(mSaveFilePath)) {
+        LOGE("Timeline open file failed !");
+        return HB_ERROR;
+    }
+    
     CSIStream* pBaseStream = CSStreamFactory::CreateMediaStream(CS_STREAM_TYPE_VIDEO);
     if (pBaseStream) {
         CSVStream* pVideoStream = (CSVStream *)pBaseStream;
@@ -71,12 +76,54 @@ int CSTimeline::prepare() {
         LOGE("Timeline create work context failed !");
         return HB_ERROR;
     }
+    mWorkCtx->prepare();
     
-    if (HB_OK != _open(mSaveFilePath)) {
-        LOGE("Timeline open file failed !");
+    return HB_OK;
+}
+
+int CSTimeline::start(void) {
+    CSIStream *pBaseStream = nullptr;
+    for (std::vector<CSIStream *>::iterator pNode = mStreamsList.begin(); pNode != mStreamsList.end(); pNode++) {
+        pBaseStream = (CSIStream *)(*pNode);
+        if (HB_OK != mWorkCtx->pushStream(pBaseStream)) {
+            LOGE("Timeline push stream to work context failed !");
+            return HB_ERROR;
+        }
+    }
+    
+    if (HB_OK != writeHeader()) {
+        LOGE("Timeline write header failed !");
         return HB_ERROR;
     }
     
+    if (HB_OK != mWorkCtx->start()) {
+        LOGE("Timeline start work context failed !");
+        return HB_ERROR;
+    }
+    
+    return HB_OK;
+}
+
+int CSTimeline::stop(void) {
+    CSIStream* pBaseStream = nullptr;
+    for (std::vector<CSIStream *>::iterator pNode = mStreamsList.begin(); pNode != mStreamsList.end(); pNode++) {
+        pBaseStream = (CSIStream *)(*pNode);
+        pBaseStream->stop();
+    }
+    
+    writeTailer();
+    return HB_OK;
+}
+
+int  CSTimeline::release(void) {
+    CSIStream* pBaseStream = nullptr;
+    for (std::vector<CSIStream *>::iterator pNode = mStreamsList.begin(); pNode != mStreamsList.end(); pNode++) {
+        pBaseStream = (CSIStream *)(*pNode);
+        pBaseStream->release();
+        SAFE_DELETE(pBaseStream);
+    }
+    mStreamsList.clear();
+    std::vector<CSIStream*>().swap(mStreamsList);
     return HB_OK;
 }
     
@@ -96,6 +143,7 @@ int CSTimeline::_open(const char *filename) {
     
     strncpy(mFmtCtx->filename, mSaveFilePath, strlen(mSaveFilePath));
     return HB_OK;
+    
 TIMELINE_OPEN_END_LABEL:
     if (mFmtCtx) {
         avformat_close_input(&mFmtCtx);

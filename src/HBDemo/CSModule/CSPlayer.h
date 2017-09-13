@@ -38,6 +38,12 @@ public:
     int start();
     
     int stop();
+    
+    int release(void);
+    
+    /** 临时接口，往播放器中喂数据 */
+    int writeExternData(uint8_t data[], size_t dataSize, int index, long timeStamp);
+    
 protected:
     
     
@@ -48,7 +54,7 @@ private:
      *  装有素材的 timeline 结构
      */
     CSTimeline* mTimeline;
-    
+    unsigned long long mStatues;
     
 } CSPlayer;
 

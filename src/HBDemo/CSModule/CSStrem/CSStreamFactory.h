@@ -13,14 +13,6 @@
 #include "CSIStream.h"
 
 namespace HBMedia {
-    
-typedef enum STREAM_TYPE {
-    CS_STREAM_TYPE_NONE      = 0,
-    CS_STREAM_TYPE_VIDEO     = 0x01,
-    CS_STREAM_TYPE_AUDIO     = 0x02,
-    CS_STREAM_TYPE_DATA      = 0x04,
-    CS_STREAM_TYPE_ALL       = 0x07,
-} STREAM_TYPE;
 
 typedef class CSStreamFactory {
 public:

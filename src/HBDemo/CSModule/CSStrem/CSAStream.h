@@ -19,7 +19,7 @@ typedef class CSAStream : public CSIStream
 {
 public:
     CSAStream();
-    ~CSAStream();
+    virtual ~CSAStream();
     
     virtual int sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) override;
     
@@ -28,6 +28,10 @@ public:
     void setAudioParam(AudioParams* param);
     
     int setEncoder(const char *CodecName);
+    
+    virtual int stop() override;
+    
+    virtual int release() override;
     
     virtual void EchoStreamInfo() override;
 protected:

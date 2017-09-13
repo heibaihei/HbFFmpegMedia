@@ -10,13 +10,19 @@
 #define CSConfig_h
 
 #include <stdio.h>
+#include "CSMediaTimeline.h"
 
 namespace HBMedia {
 
 typedef class CSConfig {
+    friend class CSTimeline;
 public:
     CSConfig();
     ~CSConfig();
+    
+private:
+    
+
 } CSConfig;
 
 }

@@ -13,6 +13,7 @@ namespace HBMedia {
 
 CSPlayer::CSPlayer(){
     mbSaveMode = false;
+    memset(&mStatues, 0x00, sizeof(unsigned long long));
 }
 
 CSPlayer::~CSPlayer(){
@@ -25,17 +26,38 @@ int CSPlayer::prepare() {
         return HB_ERROR;
     }
     
-    
-    mTimeline->writeHeader();
     return HB_OK;
 }
 
 int CSPlayer::start() {
+    if (mTimeline) {
+        mTimeline->start();
+    }
+    
     return HB_OK;
 }
-    
-    
 
+int CSPlayer::stop() {
+    if (mTimeline) {
+        mTimeline->stop();
+    }
+    return HB_OK;
+}
+
+int CSPlayer::release(void) {
+    if (mTimeline) {
+        mTimeline->release();
+        SAFE_DELETE(mTimeline);
+    }
+    return HB_OK;
+}
+
+int CSPlayer::writeExternData(uint8_t data[], size_t dataSize, int index, long timeStamp) {
+    if (mTimeline) {
+        mTimeline->sendRawData(data, dataSize, index, timeStamp);
+    }
+    return HB_OK;
+}
 
 }
 

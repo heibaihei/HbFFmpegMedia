@@ -32,7 +32,12 @@ public:
     CSTimeline();
     ~CSTimeline();
     
-    int prepare();
+    int prepare(void);
+    
+    int start(void);
+    
+    int stop(void);
+    
     /**
      *  @func setOutputFile & getOutputFile 
      *        设置以及获取输出文件 URL 信息
@@ -40,6 +45,17 @@ public:
     void setOutputFile(char *file);
     char *getOutputFile() { return mSaveFilePath; };
     
+    /**
+     * 获取源图像参数信息
+     */
+    void setSrcImageParam(ImageParams* pParam) { mSrcImageParams = *pParam; }
+    ImageParams* getSrcImageParam() { return &mSrcImageParams; }
+    
+    /**
+     * 获取目标音频参数信息
+     */
+    void setTgtAudioParam(AudioParams* pParam) { mTgtAudioParams = *pParam; }
+    AudioParams* getTgtAudioParam() { return &mTgtAudioParams; }
     
     /** 测试接口 */
     /**
@@ -47,6 +63,11 @@ public:
      *
      */
     int  sendRawData(uint8_t* pData, long DataSize, int StreamIdex, int64_t TimeStamp);
+    
+    /**
+     *  释放 parepare 期间创建的资源；
+     */
+    int  release(void);
     
 protected:
     /** 保存模式下使用到的参数: */
@@ -82,7 +103,7 @@ protected:
     int _open(const char *filename);
 private:
     /** 保存模式下使用到的参数: */
-    /** 输出文件媒体格式 */
+    /** 输出文件媒体格式, 在 Prepare 时对该成员进行初始化 */
     AVFormatContext *mFmtCtx;
     char            *mSaveFilePath;
     /** 输出文件中的媒体流信息 */
@@ -93,9 +114,10 @@ private:
     /** 公共参数： */
     CSWorkContext* mWorkCtx;
     AudioParams    mSrcAudioParams;
-    AudioParams    mTgtAudioParams;
-    
     ImageParams    mSrcImageParams;
+    
+    
+    AudioParams    mTgtAudioParams;
     ImageParams    mTgtImageParams;
 } CSTimeline;
     

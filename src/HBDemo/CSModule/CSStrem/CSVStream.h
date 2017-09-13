@@ -18,7 +18,7 @@ typedef class CSVStream : public CSIStream
 {
 public:
     CSVStream();
-    ~CSVStream();
+    virtual ~CSVStream();
     
     virtual int sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) override;
     
@@ -32,6 +32,10 @@ public:
     * @return 0 为正常, 其他为异常
     */
     int setEncoder(const char *CodecName);
+    
+    virtual int stop() override;
+    
+    virtual int release() override;
     
     virtual void EchoStreamInfo() override;
 protected:

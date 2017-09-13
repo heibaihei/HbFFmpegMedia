@@ -18,10 +18,12 @@ CSIStream* CSStreamFactory::CreateMediaStream(STREAM_TYPE type) {
     switch (type) {
         case CS_STREAM_TYPE_VIDEO:
             pStream = new CSVStream();
+            pStream->setStreamType(type);
             break;
             
         case CS_STREAM_TYPE_AUDIO:
             pStream = new CSAStream();
+            pStream->setStreamType(type);
             break;
         default:
             break;

@@ -40,6 +40,14 @@ int CSAStream::setEncoder(const char *CodecName) {
     return HB_OK;
 }
 
+int CSAStream::stop() {
+    return HB_OK;
+}
+
+int CSAStream::release() {
+    return HB_OK;
+}
+
 void CSAStream::EchoStreamInfo() {
 
 }

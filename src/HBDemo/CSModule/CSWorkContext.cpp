@@ -25,6 +25,10 @@ CSWorkContext::~CSWorkContext() {
     
 }
 
+int CSWorkContext::prepare() {
+    return HB_OK;
+}
+
 int CSWorkContext::start() {
     ThreadContext *pThreadCtx = new ThreadContext();
     if (pThreadCtx) {

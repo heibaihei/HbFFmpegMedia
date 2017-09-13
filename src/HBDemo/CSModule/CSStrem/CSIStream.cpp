@@ -12,6 +12,8 @@ namespace HBMedia {
 
 CSIStream::CSIStream(){
     mThreadParam = nullptr;
+    mStreamType = CS_STREAM_TYPE_NONE;
+    mStreamIndex = -1;
 }
 
 CSIStream::~CSIStream(){

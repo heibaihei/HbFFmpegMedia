@@ -21,11 +21,18 @@ namespace HBMedia {
 typedef class CSIStream {
 public:
     CSIStream();
-    ~CSIStream();
+    virtual ~CSIStream();
     
     virtual int bindOpaque(void *handle) = 0;
     
     virtual int sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) = 0;
+    
+    virtual int stop() = 0;
+    
+    virtual int release() = 0;
+    
+    void setStreamIndex(int index) { mStreamIndex = index; }
+    void setStreamType(STREAM_TYPE type) { mStreamType = type; }
     
     /** 设置流的线程参数 */
     void setThreadParam(StreamThreadParam *Param) { mThreadParam = Param; };
@@ -35,6 +42,8 @@ public:
 protected:
     
 private:
+    STREAM_TYPE mStreamType;
+    int mStreamIndex;
     StreamThreadParam* mThreadParam;
 } CSIStream;
     

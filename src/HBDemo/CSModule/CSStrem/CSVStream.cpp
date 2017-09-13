@@ -31,6 +31,14 @@ int CSVStream::bindOpaque(void *handle) {
     return HB_OK;
 }
 
+int CSVStream::stop() {
+    return HB_OK;
+}
+
+int CSVStream::release() {
+    return HB_OK;
+}
+
 int CSVStream::setEncoder(const char *CodecName) {
     mCodec = avcodec_find_encoder_by_name(CodecName);
     if (mCodec == NULL) {

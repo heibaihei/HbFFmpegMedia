@@ -58,6 +58,9 @@ typedef struct _ImageParams {
     int   mAlign;
     /** 对应像素格式下，每个帧的空间大小 */
     int   mDataSize;
+    int   mBitRate;
+    /** 旋转角度 */
+    int   mRotate;
 } ImageParams;
 
 /** 输入数据类型，裸数据还是压缩数据 */
@@ -68,5 +71,13 @@ typedef enum MEDIA_DATA_TYPE {
     MD_TYPE_RAW_BY_PROTOCOL = 3,
     MD_TYPE_COMPRESS = 4,
 } MEDIA_DATA_TYPE;
+
+typedef enum STREAM_TYPE {
+    CS_STREAM_TYPE_NONE      = 0,
+    CS_STREAM_TYPE_VIDEO     = 0x01,
+    CS_STREAM_TYPE_AUDIO     = 0x02,
+    CS_STREAM_TYPE_DATA      = 0x04,
+    CS_STREAM_TYPE_ALL       = 0x07,
+} STREAM_TYPE;
 
 #endif

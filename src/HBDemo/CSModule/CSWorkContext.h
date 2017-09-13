@@ -63,6 +63,8 @@ public:
     
     int pushStream(CSIStream* pStream);
     
+    int prepare();
+    
     int start();
     
     int stop();
