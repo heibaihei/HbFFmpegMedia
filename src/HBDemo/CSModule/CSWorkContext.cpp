@@ -150,4 +150,74 @@ int CSWorkContext::pushStream(CSIStream* pStream) {
     return HB_OK;
 }
 
+int initialStreamThreadParams(StreamThreadParam *pStreamThreadParam) {
+    if (!pStreamThreadParam) {
+        LOGE("Stream thread initial with invalid params !");
+        return HB_ERROR;
+    }
+    
+    FiFoQueue<AVFrame *> *frameQueue = new FiFoQueue<AVFrame *>(MAX_FRAME_BUFFER);
+    FiFoQueue<AVFrame *> *frameRecycleQueue = new FiFoQueue<AVFrame *>(MAX_FRAME_BUFFER);
+    FiFoQueue<AVPacket *>*packetQueue = new FiFoQueue<AVPacket *>(MAX_PACKET_BUFFER);
+    FiFoQueue<AVPacket *>*packetRecycleQueue = new FiFoQueue<AVPacket *>(MAX_PACKET_BUFFER);
+    ThreadIPCContext *pEncodeIpcCtx = new ThreadIPCContext(0);
+    
+    if (!frameQueue || !frameRecycleQueue\
+        || !packetQueue || !packetRecycleQueue) {
+        LOGE("Stream thread initial failed, buffer queue malloc error !");
+        return HB_ERROR;
+    }
+    
+    pStreamThreadParam->mFrameQueue = frameQueue;
+    pStreamThreadParam->mFrameRecycleQueue = frameRecycleQueue;
+    pStreamThreadParam->mPacketQueue = packetQueue;
+    pStreamThreadParam->mPacketRecycleQueue = packetRecycleQueue;
+    pStreamThreadParam->mEncodeIPC = pEncodeIpcCtx;
+
+    return HB_OK;
 }
+
+int releaseStreamThreadParams(StreamThreadParam *pStreamThreadParam) {
+    AVFrame* pFrame = nullptr;
+    if (pStreamThreadParam->mFrameQueue) {
+        while ((pFrame = pStreamThreadParam->mFrameQueue->get())) {
+            av_freep(&pFrame->opaque);
+            av_frame_free(&pFrame);
+        }
+    }
+    
+    if (pStreamThreadParam->mFrameRecycleQueue) {
+        while ((pFrame = pStreamThreadParam->mFrameRecycleQueue->get())) {
+            av_freep(&pFrame->opaque);
+            av_frame_free(&pFrame);
+        }
+    }
+    
+    AVPacket*pPacket = nullptr;
+    if (pStreamThreadParam->mPacketQueue) {
+        while ((pPacket = pStreamThreadParam->mPacketQueue->get())) {
+            av_packet_free(&pPacket);
+        }
+    }
+    
+    if (pStreamThreadParam->mPacketRecycleQueue) {
+        while ((pPacket = pStreamThreadParam->mPacketRecycleQueue->get())) {
+            av_packet_free(&pPacket);
+        }
+    }
+    
+    if (pStreamThreadParam->mEncodeIPC) {
+        pStreamThreadParam->mEncodeIPC->release();
+        delete pStreamThreadParam->mEncodeIPC;
+    }
+    
+    return HB_OK;
+}
+
+}
+
+
+
+
+
+

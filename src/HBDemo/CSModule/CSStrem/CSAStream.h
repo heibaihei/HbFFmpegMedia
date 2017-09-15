@@ -37,8 +37,14 @@ public:
 protected:
     
 private:
-    AVCodec    * mCodec;
-    AudioParams* mAudioParam;
+    
+    long mInTotalOfSamples;
+    long mOutTotalOfSamples;
+    long mOutTotalOfFrame;
+    
+    AVFrame     *mSrcFrame;
+    AVAudioFifo *mAudioFifo;
+    AudioParams *mAudioParam;
 } CSAStream;
     
 }

@@ -63,6 +63,17 @@ typedef struct _ImageParams {
     int   mRotate;
 } ImageParams;
 
+typedef struct _AudioParams {
+    int sample_rate;
+    int channels;
+    int64_t channel_layout;
+    AVSampleFormat sample_fmt;
+    int frame_size;
+    int bytes_per_sec;
+    long mbitRate;
+    int   mAlign;
+} AudioParams;
+
 /** 输入数据类型，裸数据还是压缩数据 */
 typedef enum MEDIA_DATA_TYPE {
     MD_TYPE_UNKNOWN = 0,

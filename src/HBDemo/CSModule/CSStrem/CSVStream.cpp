@@ -91,6 +91,13 @@ int CSVStream::bindOpaque(void *handle) {
         LOGE("Video stream create stream pthread params failed !");
         return HB_ERROR;
     }
+    
+    int HBErr = initialStreamThreadParams(mStreamThreadParam);
+    if (HBErr != HB_OK) {
+        LOGE("Initial stream thread params failed !");
+        return HB_ERROR;
+    }
+    
     if (!mCodec) {
         mCodec = avcodec_find_encoder_by_name("libx264");
         if (!mCodec) {
@@ -142,7 +149,7 @@ int CSVStream::bindOpaque(void *handle) {
         av_opt_set(mCodecCtx->priv_data, "tune", "zerolatency", 0);
     }
     av_dict_set(&opts, "threads", "auto", 0);
-    int HBErr = avcodec_open2(mCodecCtx, mCodec, &opts);
+    HBErr = avcodec_open2(mCodecCtx, mCodec, &opts);
     if (HBErr < 0) {
         LOGE("Video stream codec open failed !<%s>", makeErrorStr(HBErr));
         return HB_ERROR;

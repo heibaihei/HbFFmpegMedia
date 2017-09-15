@@ -25,6 +25,8 @@ class CSIStream;
 class ThreadContext;
 class ThreadIPCContext;
 
+#define MAX_FRAME_BUFFER 5
+#define MAX_PACKET_BUFFER 10
 
 /** 每个流的线程参数信息 */
 typedef struct StreamThreadParam {
@@ -59,6 +61,8 @@ typedef struct WorkContextParam {
     std::vector<StreamThreadParam *> mStreamPthreadParamList;
 } WorkContextParam;
 
+int initialStreamThreadParams(StreamThreadParam *pStreamThreadParam);
+int releaseStreamThreadParams(StreamThreadParam *pStreamThreadParam);
 
 typedef class CSWorkContext {
 public:

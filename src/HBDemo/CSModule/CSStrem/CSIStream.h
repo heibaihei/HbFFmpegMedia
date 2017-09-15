@@ -60,7 +60,7 @@ protected:
 private:
     
 } CSIStream;
-    
+
 }
 
 #endif /* CSIStream_h */
