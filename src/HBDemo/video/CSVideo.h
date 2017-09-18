@@ -14,4 +14,6 @@
 #include "CSCommon.h"
 
 
+int TVideoFasterTranfor(int argc, const char *argv[]);
+
 #endif /* CSVideo_h */

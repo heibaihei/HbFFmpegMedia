@@ -12,6 +12,7 @@
 #include "CSLog.h"
 #include "CSCommon.h"
 #include "HBAudio.h"
+#include "CSVideo.h"
 #include "FFmpegModule/Swscale/FFmpegSwscale.h"
 
 #include "Picture/CSPicture.h"
@@ -61,7 +62,18 @@ int main(int argc, const char * argv[]) {
 //    }
 /** ################################# <<< */
     
-    PictureCSpictureDemo();
+//    PictureCSpictureDemo();
+    
+    {
+    /**
+     *  qt-faststart
+     */
+        int tmpArgc = 3;
+        const char *tmpArgv[] = {argv[1], \
+            (char *)PROJ_ROOT_PATH"/video/100.mp4", \
+            (char *)PROJ_ROOT_PATH"/video/100WithFaststart.mp4"};
+        TVideoFasterTranfor(tmpArgc, tmpArgv);
+    }
     
     return 0;
 }
