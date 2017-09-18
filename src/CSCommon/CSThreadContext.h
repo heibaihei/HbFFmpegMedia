@@ -15,20 +15,20 @@
 
 namespace HBMedia {
 
-enum ThreadStat_t {
+typedef enum ThreadStat_t {
     THREAD_IDLE         = 0,
     THREAD_PREPARE      = 1,
     THREAD_RUNNING      = 2,
     THREAD_STOP         = 3,
     THREAD_DEAD         = 4,
     THREAD_FORCEQUIT    = 5,
-};
+} ThreadStat;
 
 typedef void *(CALLBACK)(void *handle, int stat);
 
 typedef struct ThreadParam_t {
     void *mThreadArgs;        /** 线程参数 */
-    enum ThreadStat_t mStatus;/** 线程运行状态 */
+    ThreadStat mStatus;/** 线程运行状态 */
     CALLBACK mThreadCB;        /** 线程要执行的回调接口 */
 } ThreadParam_t;
 
@@ -42,7 +42,7 @@ public:
     int setFunction(ThreadFunc function, void *arg);
     
     /** 获取线程状态 */
-    int getThreadState();
+    ThreadStat getThreadState();
     
     /** 绑定线程间通信机制 */
     int bindIPC(ThreadIPCContext *pv);

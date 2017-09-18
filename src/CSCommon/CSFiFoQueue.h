@@ -42,7 +42,7 @@ public:
     T get();
     
     /** 获取当前队列中存储的节点个数 */
-    uint32_t queueUsed();
+    uint32_t queueLength();
     
     /** 获取当前队列中空闲的节点个数 */
     int32_t queueLeft();
@@ -140,7 +140,7 @@ int32_t FiFoQueue<T>::queueLeft() {
 }
 
 template <typename T>
-uint32_t FiFoQueue<T>::queueUsed() {
+uint32_t FiFoQueue<T>::queueLength() {
     return __kfifo_len(mKfifo) / sizeof(T);
 }
 

@@ -185,11 +185,12 @@ int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
         }
         mOutTotalOfSamples += HBErr;
         pBufferFrame->pts = actualAudioSamples * mOutTotalOfFrame * mAudioParam->sample_rate;
-        mOutTotalOfFrame += 1;
+        mOutTotalOfFrame++;
         
+        frameQueue->push(pBufferFrame);
+        
+        pEncodeThreadIpcCtx->condP();
     }
-    
-    
     
     return HB_OK;
 }

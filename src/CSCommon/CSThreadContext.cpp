@@ -58,9 +58,9 @@ int ThreadContext::abort() {
     return HB_OK;
 }
 
-int ThreadContext::getThreadState() {
+ThreadStat ThreadContext::getThreadState() {
     if (mThreadArg == NULL) {
-        return HB_ERROR;
+        return THREAD_FORCEQUIT;
     }
     return mThreadArg->mStatus;
 }

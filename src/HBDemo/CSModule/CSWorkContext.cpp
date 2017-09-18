@@ -150,6 +150,30 @@ int CSWorkContext::pushStream(CSIStream* pStream) {
     return HB_OK;
 }
 
+int updateQueue(StreamThreadParam *streamParam) {
+    if (!streamParam) {
+        LOGE("Updata stream packet queue failed !");
+        return HB_ERROR;
+    }
+    
+    AVPacket *pPacket = nullptr;
+    FiFoQueue<AVPacket *> *pPacketQueue = streamParam->mPacketQueue;
+    streamParam->mUpdateFlag = false;
+    if (pPacketQueue->queueLength() == 0)
+        return HB_ERROR;
+    
+    pPacket = pPacketQueue->get();
+    if (!pPacket) {
+        streamParam->mBufferPacket = nullptr;
+        LOGE("Update queue buffer packet is null !");
+        return HB_ERROR;
+    }
+    
+    streamParam->mBufferPacket= pPacket;
+    streamParam->mUpdateFlag = true;
+    return HB_OK;
+}
+
 int initialStreamThreadParams(StreamThreadParam *pStreamThreadParam) {
     if (!pStreamThreadParam) {
         LOGE("Stream thread initial with invalid params !");
@@ -211,6 +235,34 @@ int releaseStreamThreadParams(StreamThreadParam *pStreamThreadParam) {
         delete pStreamThreadParam->mEncodeIPC;
     }
     
+    return HB_OK;
+}
+
+int clearFrameQueue(FiFoQueue<AVFrame*> *queue) {
+    if (!queue) {
+        LOGE("Clear frame queue<%p> failed, args invalid !", queue);
+        return HB_ERROR;
+    }
+    
+    AVFrame *pFrame = nullptr;
+    while ((pFrame = queue->get()) != NULL) {
+        av_freep(pFrame->opaque);
+        av_frame_free(&pFrame);
+    }
+    
+    return HB_OK;
+}
+
+int clearPacketQueue(FiFoQueue<AVPacket*> *queue) {
+    if (!queue) {
+        LOGE("Clear packet queue<%p> failed, args invalid !", queue);
+        return HB_ERROR;
+    }
+    
+    AVPacket *pPacket = nullptr;
+    while ((pPacket = queue->get()) != NULL) {
+        av_packet_free(&pPacket);
+    }
     return HB_OK;
 }
 

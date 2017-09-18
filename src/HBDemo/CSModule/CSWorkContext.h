@@ -41,6 +41,10 @@ typedef struct StreamThreadParam {
     ThreadIPCContext *mEncodeIPC;
     ThreadIPCContext *mWriteIPC;
     
+    bool mUpdateFlag;
+    AVPacket *mBufferPacket;
+    int64_t mMinPacketPTS;
+    
     int mStreamIndex;
     AVRational mTimeBase;
     /** 指向当前流线程参数对应的线程上下文 */
@@ -61,6 +65,10 @@ typedef struct WorkContextParam {
     std::vector<StreamThreadParam *> mStreamPthreadParamList;
 } WorkContextParam;
 
+int updateQueue(StreamThreadParam *streamParam);
+int clearFrameQueue(FiFoQueue<AVFrame*> *queue);
+int clearPacketQueue(FiFoQueue<AVPacket*> *queue);
+    
 int initialStreamThreadParams(StreamThreadParam *pStreamThreadParam);
 int releaseStreamThreadParams(StreamThreadParam *pStreamThreadParam);
 
