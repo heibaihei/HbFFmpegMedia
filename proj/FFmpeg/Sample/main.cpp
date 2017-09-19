@@ -13,6 +13,7 @@
 #include "CSCommon.h"
 #include "HBAudio.h"
 #include "CSVideo.h"
+#include "HBExample.h"
 #include "FFmpegModule/Swscale/FFmpegSwscale.h"
 
 #include "Picture/CSPicture.h"
@@ -64,15 +65,25 @@ int main(int argc, const char * argv[]) {
     
 //    PictureCSpictureDemo();
     
+//    {
+//    /**
+//     *  qt-faststart
+//     */
+//        int tmpArgc = 3;
+//        const char *tmpArgv[] = {argv[1], \
+//            (char *)PROJ_ROOT_PATH"/video/100.mp4", \
+//            (char *)PROJ_ROOT_PATH"/video/100WithFaststart.mp4"};
+//        TVideoFasterTranfor(tmpArgc, tmpArgv);
+//    }
+    
     {
-    /**
-     *  qt-faststart
-     */
-        int tmpArgc = 3;
+        /**
+         *  Example
+         */
+        int tmpArgc = 2;
         const char *tmpArgv[] = {argv[1], \
-            (char *)PROJ_ROOT_PATH"/video/100.mp4", \
-            (char *)PROJ_ROOT_PATH"/video/100WithFaststart.mp4"};
-        TVideoFasterTranfor(tmpArgc, tmpArgv);
+            (char *)PROJ_ROOT_PATH"/video/100.mp4"};
+        demo_avio_reading(tmpArgc, tmpArgv);
     }
     
     return 0;

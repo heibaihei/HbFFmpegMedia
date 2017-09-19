@@ -62,7 +62,7 @@
 		A15BB0EE1F42C2DA00AFE839 /* CSPacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0EC1F42C2DA00AFE839 /* CSPacketQueue.cpp */; };
 		A15BB0F11F431E9700AFE839 /* CSAudioEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0EF1F431E9700AFE839 /* CSAudioEncoder.cpp */; };
 		A15BB0F51F4321C600AFE839 /* CSAudioResample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0F31F4321C600AFE839 /* CSAudioResample.cpp */; };
-		A16159C21F70ADCE001D54EA /* avio_reading.c in Sources */ = {isa = PBXBuildFile; fileRef = A16159B01F70AD05001D54EA /* avio_reading.c */; };
+		A16159C21F70ADCE001D54EA /* avio_reading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16159B01F70AD05001D54EA /* avio_reading.cpp */; };
 		A17202B31F69993E00662F18 /* CSAudioFifo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17202B11F69993E00662F18 /* CSAudioFifo.cpp */; };
 		A181BC2D1EA1F4CF004861DA /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A181BC2C1EA1F4CF004861DA /* main.c */; };
 		A181BC351EA1F682004861DA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC341EA1F682004861DA /* main.cpp */; };
@@ -2883,6 +2883,7 @@
 		A1245A971F65FD4A00DB5D45 /* CSAStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAStream.h; sourceTree = "<group>"; };
 		A12912111EC756E7008847CE /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		A13A69741F3ED3F900FC6376 /* HBAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HBAudio.cpp; sourceTree = "<group>"; };
+		A13A995B1F70D33A00F88E3A /* HBExample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBExample.h; path = ../../../src/HBDemo/Example/HBExample.h; sourceTree = "<group>"; };
 		A13B34F01F6FC27400D3D494 /* MultiMediaTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MultiMediaTool; sourceTree = BUILT_PRODUCTS_DIR; };
 		A13B34F21F6FC27400D3D494 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		A13B34F81F6FC2CE00D3D494 /* ADD_WaterMark.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ADD_WaterMark.cpp; sourceTree = "<group>"; };
@@ -2951,7 +2952,7 @@
 		A15BB0F31F4321C600AFE839 /* CSAudioResample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioResample.cpp; sourceTree = "<group>"; };
 		A15BB0F41F4321C600AFE839 /* CSAudioResample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioResample.h; sourceTree = "<group>"; };
 		A16159AF1F70AD05001D54EA /* avio_dir_cmd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = avio_dir_cmd.c; path = ../../../src/HBDemo/Example/avio_dir_cmd.c; sourceTree = "<group>"; };
-		A16159B01F70AD05001D54EA /* avio_reading.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = avio_reading.c; path = ../../../src/HBDemo/Example/avio_reading.c; sourceTree = "<group>"; };
+		A16159B01F70AD05001D54EA /* avio_reading.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = avio_reading.cpp; path = ../../../src/HBDemo/Example/avio_reading.cpp; sourceTree = "<group>"; };
 		A16159B11F70AD05001D54EA /* decoding_encoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = decoding_encoding.c; path = ../../../src/HBDemo/Example/decoding_encoding.c; sourceTree = "<group>"; };
 		A16159B21F70AD05001D54EA /* demuxing_decoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = demuxing_decoding.c; path = ../../../src/HBDemo/Example/demuxing_decoding.c; sourceTree = "<group>"; };
 		A16159B31F70AD05001D54EA /* extract_mvs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = extract_mvs.c; path = ../../../src/HBDemo/Example/extract_mvs.c; sourceTree = "<group>"; };
@@ -9425,8 +9426,9 @@
 		A10B26D91EC9BCB0006D24C6 /* examples */ = {
 			isa = PBXGroup;
 			children = (
+				A13A995B1F70D33A00F88E3A /* HBExample.h */,
 				A16159AF1F70AD05001D54EA /* avio_dir_cmd.c */,
-				A16159B01F70AD05001D54EA /* avio_reading.c */,
+				A16159B01F70AD05001D54EA /* avio_reading.cpp */,
 				A16159B11F70AD05001D54EA /* decoding_encoding.c */,
 				A16159B21F70AD05001D54EA /* demuxing_decoding.c */,
 				A16159B31F70AD05001D54EA /* extract_mvs.c */,
@@ -17179,7 +17181,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A16159C21F70ADCE001D54EA /* avio_reading.c in Sources */,
+				A16159C21F70ADCE001D54EA /* avio_reading.cpp in Sources */,
 				A19A67E11EB3457500DE8F11 /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,
 				A181BC681EA21788004861DA /* simplest_ffmpeg_demuxer.cpp in Sources */,
 				A15BB0F51F4321C600AFE839 /* CSAudioResample.cpp in Sources */,

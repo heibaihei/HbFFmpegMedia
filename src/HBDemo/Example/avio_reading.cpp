@@ -28,13 +28,21 @@
  * AVIOContext read callback.
  * @example avio_reading.c
  */
+#include "HBExample.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavformat/avio.h>
 #include <libavutil/file.h>
 
-struct buffer_data {
+#ifdef __cplusplus
+};
+#endif
+
+struct buffer_handle {
     uint8_t *ptr;
     size_t size; ///< size left in the buffer
 };
@@ -45,32 +53,31 @@ struct buffer_data {
  */
 static int read_packet(void *opaque, uint8_t *buf, int buf_size)
 {
-    struct buffer_data *bd = (struct buffer_data *)opaque;
+    struct buffer_handle *pBufferHandle = (struct buffer_handle *)opaque;
     
     /** 计算最小妖读取的数据大小 */
-    buf_size = FFMIN(buf_size, ((int)(bd->size)));
+    buf_size = FFMIN(buf_size, ((int)(pBufferHandle->size)));
 
-    printf("ptr:%p size:%zu\n", bd->ptr, bd->size);
+    printf("ptr:%p size:%zu\n", pBufferHandle->ptr, pBufferHandle->size);
 
     /* copy internal buffer data to buf */
-    memcpy(buf, bd->ptr, buf_size);
+    memcpy(buf, pBufferHandle->ptr, buf_size);
     
     /** 更新 opaque 中缓存的数据 */
-    bd->ptr  += buf_size;
-    bd->size -= buf_size;
+    pBufferHandle->ptr  += buf_size;
+    pBufferHandle->size -= buf_size;
 
     return buf_size;
 }
 
-int demo_avio_reading(int argc, char *argv[])
+#define MAX_AVIO_CTX_BUFFER_SIZE (4096)
+int demo_avio_reading(int argc, const char *argv[])
 {
     AVFormatContext *fmt_ctx = NULL;
     AVIOContext *avio_ctx = NULL;
-    uint8_t *buffer = NULL, *avio_ctx_buffer = NULL;
-    size_t buffer_size, avio_ctx_buffer_size = 4096;
-    char *input_filename = NULL;
-    int ret = 0;
-    struct buffer_data bd = { 0 };
+    uint8_t *avio_ctx_buffer = NULL;
+    size_t avio_ctx_buffer_size = MAX_AVIO_CTX_BUFFER_SIZE;
+    struct buffer_handle stBufferHandle = { NULL, 0 };
 
     if (argc != 2) {
         fprintf(stderr, "usage: %s input_file\n"
@@ -78,32 +85,28 @@ int demo_avio_reading(int argc, char *argv[])
                 "accessed through AVIOContext.\n", argv[0]);
         return 1;
     }
-    input_filename = argv[1];
+    char *input_filename = (char *)(argv[1]);
 
     /* register codecs and formats and other lavf/lavc components*/
     av_register_all();
 
     /* slurp file content into buffer */
-    ret = av_file_map(input_filename, &buffer, &buffer_size, 0, NULL);
+    int ret = av_file_map(input_filename, &(stBufferHandle.ptr), &(stBufferHandle.size), 0, NULL);
     if (ret < 0)
         goto end;
-
-    /* fill opaque structure used by the AVIOContext read callback */
-    bd.ptr  = buffer;
-    bd.size = buffer_size;
 
     if (!(fmt_ctx = avformat_alloc_context())) {
         ret = AVERROR(ENOMEM);
         goto end;
     }
 
-    avio_ctx_buffer = av_malloc(avio_ctx_buffer_size);
+    avio_ctx_buffer = (uint8_t *)av_malloc(avio_ctx_buffer_size);
     if (!avio_ctx_buffer) {
         ret = AVERROR(ENOMEM);
         goto end;
     }
-    avio_ctx = avio_alloc_context(avio_ctx_buffer, avio_ctx_buffer_size,
-                                  0, &bd, &read_packet, NULL, NULL);
+    avio_ctx = avio_alloc_context(avio_ctx_buffer, (int)avio_ctx_buffer_size,
+                                  0, &stBufferHandle, &read_packet, NULL, NULL);
     if (!avio_ctx) {
         ret = AVERROR(ENOMEM);
         goto end;
@@ -131,7 +134,7 @@ end:
         av_freep(&avio_ctx->buffer);
         av_freep(&avio_ctx);
     }
-    av_file_unmap(buffer, buffer_size);
+    av_file_unmap(stBufferHandle.ptr, stBufferHandle.size);
 
     if (ret < 0) {
         fprintf(stderr, "Error occurred: %s\n", av_err2str(ret));
