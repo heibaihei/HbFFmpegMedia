@@ -12,7 +12,6 @@
 		A1091CE81F595BC200565177 /* CSVideoEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1091CE61F595BC200565177 /* CSVideoEncoder.cpp */; };
 		A1091CEB1F595BD900565177 /* CSVideoDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1091CE91F595BD900565177 /* CSVideoDecoder.cpp */; };
 		A1091CEE1F595BF500565177 /* CSVideoScale.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1091CEC1F595BF500565177 /* CSVideoScale.cpp */; };
-		A10B26DB1EC9BD94006D24C6 /* filtering_video.c in Sources */ = {isa = PBXBuildFile; fileRef = A10B26DA1EC9BD94006D24C6 /* filtering_video.c */; };
 		A1245A8B1F657F9000DB5D45 /* CSPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A891F657F9000DB5D45 /* CSPlayer.cpp */; };
 		A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A901F65FD1900DB5D45 /* CSIStream.cpp */; };
 		A1245A951F65FD3300DB5D45 /* CSVStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A931F65FD3300DB5D45 /* CSVStream.cpp */; };
@@ -63,6 +62,7 @@
 		A15BB0EE1F42C2DA00AFE839 /* CSPacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0EC1F42C2DA00AFE839 /* CSPacketQueue.cpp */; };
 		A15BB0F11F431E9700AFE839 /* CSAudioEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0EF1F431E9700AFE839 /* CSAudioEncoder.cpp */; };
 		A15BB0F51F4321C600AFE839 /* CSAudioResample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0F31F4321C600AFE839 /* CSAudioResample.cpp */; };
+		A16159C21F70ADCE001D54EA /* avio_reading.c in Sources */ = {isa = PBXBuildFile; fileRef = A16159B01F70AD05001D54EA /* avio_reading.c */; };
 		A17202B31F69993E00662F18 /* CSAudioFifo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17202B11F69993E00662F18 /* CSAudioFifo.cpp */; };
 		A181BC2D1EA1F4CF004861DA /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A181BC2C1EA1F4CF004861DA /* main.c */; };
 		A181BC351EA1F682004861DA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC341EA1F682004861DA /* main.cpp */; };
@@ -2873,7 +2873,6 @@
 		A1091CEA1F595BD900565177 /* CSVideoDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVideoDecoder.h; sourceTree = "<group>"; };
 		A1091CEC1F595BF500565177 /* CSVideoScale.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoScale.cpp; sourceTree = "<group>"; };
 		A1091CED1F595BF500565177 /* CSVideoScale.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSVideoScale.hpp; sourceTree = "<group>"; };
-		A10B26DA1EC9BD94006D24C6 /* filtering_video.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = filtering_video.c; path = "../../../ffmpeg-3.2/doc/examples/filtering_video.c"; sourceTree = "<group>"; };
 		A1245A891F657F9000DB5D45 /* CSPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSPlayer.cpp; sourceTree = "<group>"; };
 		A1245A8A1F657F9000DB5D45 /* CSPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPlayer.h; sourceTree = "<group>"; };
 		A1245A901F65FD1900DB5D45 /* CSIStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSIStream.cpp; sourceTree = "<group>"; };
@@ -2951,6 +2950,25 @@
 		A15BB0F01F431E9700AFE839 /* CSAudioEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioEncoder.h; sourceTree = "<group>"; };
 		A15BB0F31F4321C600AFE839 /* CSAudioResample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioResample.cpp; sourceTree = "<group>"; };
 		A15BB0F41F4321C600AFE839 /* CSAudioResample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioResample.h; sourceTree = "<group>"; };
+		A16159AF1F70AD05001D54EA /* avio_dir_cmd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = avio_dir_cmd.c; path = ../../../src/HBDemo/Example/avio_dir_cmd.c; sourceTree = "<group>"; };
+		A16159B01F70AD05001D54EA /* avio_reading.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = avio_reading.c; path = ../../../src/HBDemo/Example/avio_reading.c; sourceTree = "<group>"; };
+		A16159B11F70AD05001D54EA /* decoding_encoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = decoding_encoding.c; path = ../../../src/HBDemo/Example/decoding_encoding.c; sourceTree = "<group>"; };
+		A16159B21F70AD05001D54EA /* demuxing_decoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = demuxing_decoding.c; path = ../../../src/HBDemo/Example/demuxing_decoding.c; sourceTree = "<group>"; };
+		A16159B31F70AD05001D54EA /* extract_mvs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = extract_mvs.c; path = ../../../src/HBDemo/Example/extract_mvs.c; sourceTree = "<group>"; };
+		A16159B41F70AD05001D54EA /* filter_audio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = filter_audio.c; path = ../../../src/HBDemo/Example/filter_audio.c; sourceTree = "<group>"; };
+		A16159B51F70AD05001D54EA /* filtering_audio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = filtering_audio.c; path = ../../../src/HBDemo/Example/filtering_audio.c; sourceTree = "<group>"; };
+		A16159B61F70AD05001D54EA /* filtering_video.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = filtering_video.c; path = ../../../src/HBDemo/Example/filtering_video.c; sourceTree = "<group>"; };
+		A16159B71F70AD05001D54EA /* http_multiclient.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = http_multiclient.c; path = ../../../src/HBDemo/Example/http_multiclient.c; sourceTree = "<group>"; };
+		A16159B81F70AD05001D54EA /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = ../../../src/HBDemo/Example/Makefile; sourceTree = "<group>"; };
+		A16159B91F70AD05001D54EA /* metadata.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = metadata.c; path = ../../../src/HBDemo/Example/metadata.c; sourceTree = "<group>"; };
+		A16159BA1F70AD05001D54EA /* muxing.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = muxing.c; path = ../../../src/HBDemo/Example/muxing.c; sourceTree = "<group>"; };
+		A16159BB1F70AD05001D54EA /* qsvdec.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = qsvdec.c; path = ../../../src/HBDemo/Example/qsvdec.c; sourceTree = "<group>"; };
+		A16159BC1F70AD05001D54EA /* README */ = {isa = PBXFileReference; lastKnownFileType = text; name = README; path = ../../../src/HBDemo/Example/README; sourceTree = "<group>"; };
+		A16159BD1F70AD05001D54EA /* remuxing.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = remuxing.c; path = ../../../src/HBDemo/Example/remuxing.c; sourceTree = "<group>"; };
+		A16159BE1F70AD05001D54EA /* resampling_audio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = resampling_audio.c; path = ../../../src/HBDemo/Example/resampling_audio.c; sourceTree = "<group>"; };
+		A16159BF1F70AD05001D54EA /* scaling_video.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = scaling_video.c; path = ../../../src/HBDemo/Example/scaling_video.c; sourceTree = "<group>"; };
+		A16159C01F70AD05001D54EA /* transcode_aac.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = transcode_aac.c; path = ../../../src/HBDemo/Example/transcode_aac.c; sourceTree = "<group>"; };
+		A16159C11F70AD05001D54EA /* transcoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = transcoding.c; path = ../../../src/HBDemo/Example/transcoding.c; sourceTree = "<group>"; };
 		A17202B11F69993E00662F18 /* CSAudioFifo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioFifo.cpp; sourceTree = "<group>"; };
 		A17202B21F69993E00662F18 /* CSAudioFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioFifo.h; sourceTree = "<group>"; };
 		A181BC2C1EA1F4CF004861DA /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../../src/main.c; sourceTree = "<group>"; };
@@ -9407,7 +9425,25 @@
 		A10B26D91EC9BCB0006D24C6 /* examples */ = {
 			isa = PBXGroup;
 			children = (
-				A10B26DA1EC9BD94006D24C6 /* filtering_video.c */,
+				A16159AF1F70AD05001D54EA /* avio_dir_cmd.c */,
+				A16159B01F70AD05001D54EA /* avio_reading.c */,
+				A16159B11F70AD05001D54EA /* decoding_encoding.c */,
+				A16159B21F70AD05001D54EA /* demuxing_decoding.c */,
+				A16159B31F70AD05001D54EA /* extract_mvs.c */,
+				A16159B41F70AD05001D54EA /* filter_audio.c */,
+				A16159B51F70AD05001D54EA /* filtering_audio.c */,
+				A16159B61F70AD05001D54EA /* filtering_video.c */,
+				A16159B71F70AD05001D54EA /* http_multiclient.c */,
+				A16159B81F70AD05001D54EA /* Makefile */,
+				A16159B91F70AD05001D54EA /* metadata.c */,
+				A16159BA1F70AD05001D54EA /* muxing.c */,
+				A16159BB1F70AD05001D54EA /* qsvdec.c */,
+				A16159BC1F70AD05001D54EA /* README */,
+				A16159BD1F70AD05001D54EA /* remuxing.c */,
+				A16159BE1F70AD05001D54EA /* resampling_audio.c */,
+				A16159BF1F70AD05001D54EA /* scaling_video.c */,
+				A16159C01F70AD05001D54EA /* transcode_aac.c */,
+				A16159C11F70AD05001D54EA /* transcoding.c */,
 			);
 			name = examples;
 			sourceTree = "<group>";
@@ -9533,9 +9569,18 @@
 			path = AudioResample;
 			sourceTree = "<group>";
 		};
+		A16159AE1F70ACBC001D54EA /* Example */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Example;
+			path = ../../../src/HBDemo/Example;
+			sourceTree = "<group>";
+		};
 		A181BC331EA1F682004861DA /* Sample */ = {
 			isa = PBXGroup;
 			children = (
+				A16159AE1F70ACBC001D54EA /* Example */,
 				A1F706131F656F9F003A6010 /* CSModule */,
 				A181BC6A1F6516D100B34FD0 /* CSCommon */,
 				A1091CDF1F59587000565177 /* video */,
@@ -9891,12 +9936,12 @@
 		A1F127E41EA12A7F00939FF3 = {
 			isa = PBXGroup;
 			children = (
+				A1F127FC1EA12AB600939FF3 /* FFmpeg_Src */,
 				A181BC331EA1F682004861DA /* Sample */,
 				A1BE85611EB743BC004B839C /* HBCommon */,
 				A181BC6F1EA219B3004861DA /* resource */,
 				A181BC6B1EA217C9004861DA /* include */,
 				A1F127EF1EA12A7F00939FF3 /* FFmpeg */,
-				A1F127FC1EA12AB600939FF3 /* FFmpeg_Src */,
 				A19A67F11EB3473100DE8F11 /* ffplay */,
 				A1BE857E1EB75585004B839C /* ffprobe */,
 				A1BE85961EB75E1D004B839C /* ffserver */,
@@ -9941,6 +9986,7 @@
 		A1F128021EA12ADF00939FF3 /* ffmpeg */ = {
 			isa = PBXGroup;
 			children = (
+				A1F140691EA12AFE00939FF3 /* tools */,
 				A1F128071EA12ADF00939FF3 /* arch.mak */,
 				A1F128081EA12ADF00939FF3 /* Changelog */,
 				A1F128091EA12ADF00939FF3 /* cmdutils.c */,
@@ -10006,7 +10052,6 @@
 				A1F135D71EA12AED00939FF3 /* RELEASE_NOTES */,
 				A1F135D81EA12AED00939FF3 /* share */,
 				A1F135E31EA12AED00939FF3 /* tests */,
-				A1F140691EA12AFE00939FF3 /* tools */,
 				A1F1408C1EA12AFE00939FF3 /* VERSION */,
 				A1F1408D1EA12AFE00939FF3 /* version.sh */,
 			);
@@ -17134,9 +17179,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A16159C21F70ADCE001D54EA /* avio_reading.c in Sources */,
 				A19A67E11EB3457500DE8F11 /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,
 				A181BC681EA21788004861DA /* simplest_ffmpeg_demuxer.cpp in Sources */,
-				A10B26DB1EC9BD94006D24C6 /* filtering_video.c in Sources */,
 				A15BB0F51F4321C600AFE839 /* CSAudioResample.cpp in Sources */,
 				A1245A951F65FD3300DB5D45 /* CSVStream.cpp in Sources */,
 				A19A67C31EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp in Sources */,
@@ -20186,6 +20231,7 @@
 				A13B34F51F6FC27400D3D494 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A181BC361EA1F682004861DA /* Build configuration list for PBXNativeTarget "Sample" */ = {
 			isa = XCConfigurationList;
