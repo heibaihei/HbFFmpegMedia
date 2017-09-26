@@ -19,6 +19,10 @@ extern "C" {
  */
 int demo_avio_reading(int argc, const char *argv[]);
 
+int demo_decode_encode(int argc, char **argv);
+
+
+
 #ifdef __cplusplus
 };
 #endif

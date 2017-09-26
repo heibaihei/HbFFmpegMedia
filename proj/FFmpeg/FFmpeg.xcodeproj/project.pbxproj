@@ -100,6 +100,7 @@
 		A19A67EB1EB3465D00DE8F11 /* simplest_ffmpeg_mem_transcoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67E91EB3465D00DE8F11 /* simplest_ffmpeg_mem_transcoder.cpp */; };
 		A19A67F91EB3475E00DE8F11 /* HBFfplay.c in Sources */ = {isa = PBXBuildFile; fileRef = A19A67F71EB3475E00DE8F11 /* HBFfplay.c */; };
 		A19A67FB1EB3483900DE8F11 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A19A67FA1EB3483900DE8F11 /* main.c */; };
+		A19E9C711F716075000EAF8C /* decoding_encoding.c in Sources */ = {isa = PBXBuildFile; fileRef = A16159B11F70AD05001D54EA /* decoding_encoding.c */; };
 		A1B7FE331F0DDD52003C6D0F /* HBPickPicture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1B7FE311F0DDD52003C6D0F /* HBPickPicture.cpp */; };
 		A1BE85571EB742F7004B839C /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC411EA21430004861DA /* libSDL2.a */; };
 		A1BE85581EB7433C004B839C /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC431EA2145E004861DA /* libavcodec.a */; };
@@ -17181,6 +17182,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A19E9C711F716075000EAF8C /* decoding_encoding.c in Sources */,
 				A16159C21F70ADCE001D54EA /* avio_reading.cpp in Sources */,
 				A19A67E11EB3457500DE8F11 /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,
 				A181BC681EA21788004861DA /* simplest_ffmpeg_demuxer.cpp in Sources */,

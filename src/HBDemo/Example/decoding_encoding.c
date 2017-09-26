@@ -31,7 +31,11 @@
  */
 
 #include <math.h>
-
+#include "HBExample.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+    
 #include <libavutil/opt.h>
 #include <libavcodec/avcodec.h>
 #include <libavutil/channel_layout.h>
@@ -39,6 +43,10 @@
 #include <libavutil/imgutils.h>
 #include <libavutil/mathematics.h>
 #include <libavutil/samplefmt.h>
+
+#ifdef __cplusplus
+};
+#endif
 
 #define INBUF_SIZE 4096
 #define AUDIO_INBUF_SIZE 20480
@@ -174,7 +182,7 @@ static void audio_encode_example(const char *filename)
         fprintf(stderr, "Could not get sample buffer size\n");
         exit(1);
     }
-    samples = av_malloc(buffer_size);
+    samples = (uint16_t *)av_malloc(buffer_size);
     if (!samples) {
         fprintf(stderr, "Could not allocate %d bytes for samples buffer\n",
                 buffer_size);
@@ -357,7 +365,7 @@ static void video_encode_example(const char *filename, int codec_id)
     printf("Encode video file %s\n", filename);
 
     /* find the video encoder */
-    codec = avcodec_find_encoder(codec_id);
+    codec = avcodec_find_encoder((enum AVCodecID)codec_id);
     if (!codec) {
         fprintf(stderr, "Codec not found\n");
         exit(1);
@@ -628,7 +636,7 @@ static void video_decode_example(const char *outfilename, const char *filename)
     printf("\n");
 }
 
-int main(int argc, char **argv)
+int demo_decode_encode(int argc, char **argv)
 {
     const char *output_type;
 
