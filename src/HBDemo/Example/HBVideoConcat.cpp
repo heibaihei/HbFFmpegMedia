@@ -276,7 +276,16 @@ static int _initialOutputMediaContext(AVFormatContext** pOFmtCtx, AVFormatContex
             audioStreamIndex = i;
         else if (pOutStream->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
             videoStreamIndex = i;
-        
+
+        uint32_t tag = 0;
+        if (av_codec_get_tag2(pTargetVideoFormatCtx->oformat->codec_tag, pOutputCodec->id, &tag) == 0) {
+            LOGW("could not find codec tag for codec id %d, default to 0", pOutputCodec->id);
+        }
+        pOutStream->codecpar->codec_tag = tag;
+        /* 待确认无法设置原因
+        if (pTargetVideoFormatCtx->oformat->flags & AVFMT_GLOBALHEADER) {
+            pOutStream->codecpar->codec_tag  |= AV_CODEC_FLAG_GLOBAL_HEADER;
+        } */
         av_dict_copy(&pOutStream->metadata, pInStream->metadata, AV_DICT_DONT_OVERWRITE);
     }
     
