@@ -14,6 +14,7 @@
 #include "HBAudio.h"
 #include "CSVideo.h"
 #include "HBExample.h"
+#include "HBVideoConcat.h"
 #include "FFmpegModule/Swscale/FFmpegSwscale.h"
 
 #include "Picture/CSPicture.h"
@@ -75,16 +76,19 @@ int main(int argc, const char * argv[]) {
 //            (char *)PROJ_ROOT_PATH"/video/100WithFaststart.mp4"};
 //        TVideoFasterTranfor(tmpArgc, tmpArgv);
 //    }
-    
-    {
-        /**
-         *  Example
-         */
-        int tmpArgc = 2;
-        const char *tmpArgv[] = {argv[1], \
-            (char *)PROJ_ROOT_PATH"/video/100.mp4"};
-        demo_avio_reading(tmpArgc, tmpArgv);
+    {   /** 媒体拼接接口 */
+        demo_video_concat_with_same_codec();
+        
     }
+//    {
+//        /**
+//         *  Example
+//         */
+//        int tmpArgc = 2;
+//        const char *tmpArgv[] = {argv[1], \
+//            (char *)PROJ_ROOT_PATH"/video/100.mp4"};
+//        demo_avio_reading(tmpArgc, tmpArgv);
+//    }
     
     return 0;
 }

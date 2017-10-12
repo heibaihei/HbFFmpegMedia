@@ -40,6 +40,7 @@ extern "C" {
  */
 
 static int _initialOutputMediaContext(AVFormatContext** pOFmtCtx, AVFormatContext* TemplateFmtCtx, const char* strOutputFile, int& videoStreamIndex, int& audioStreamIndex);
+static int _initialInputMediaContext(AVFormatContext** pInFmtCtx, const char* strInputFile, int& videoStreamIndex, int& audioStreamIndex);
 
 int demo_video_concat_with_same_codec() {
     int HBError = HB_OK;
@@ -53,16 +54,13 @@ int demo_video_concat_with_same_codec() {
     
     AVFormatContext* pOutputVideoFormatCtx = nullptr;
     
-    AVRational defaultTimebase;
-    
     /** 外部可直观查看的时间基数 */
+    AVRational defaultTimebase;
     defaultTimebase.num = 1;
     defaultTimebase.den = AV_TIME_BASE;
     
-    int64_t tCurDealTime = 0;
     bool bIsSyncBaseOnAudio = true;
     bool bIsSyncBaseOnVideo = false;
-    
     bool bOutputMediaInitialed = false;
     int oVideoStreamIndex = INVALID_STREAM_INDEX;
     int oAudioStreamIndex = INVALID_STREAM_INDEX;
@@ -83,19 +81,13 @@ int demo_video_concat_with_same_codec() {
 
         int iVideoStreamIndex = INVALID_STREAM_INDEX;
         int iAudioStreamIndex = INVALID_STREAM_INDEX;
-        AVFormatContext* pSourceVideoFormatCtx = avformat_alloc_context();
-        HBError = avformat_open_input(&pSourceVideoFormatCtx, sourceFile[i], NULL, NULL);
-        if (HBError != 0) {
-            LOGE("Video decoder couldn't open input file. <%d> <%s>", HBError, av_err2str(HBError));
+        
+        AVFormatContext* pSourceVideoFormatCtx = nullptr;
+        if (_initialInputMediaContext(&pSourceVideoFormatCtx, sourceFile[i], iVideoStreamIndex, iAudioStreamIndex) != HB_OK) {
+            LOGE("Initial input media context failed, %s", sourceFile[i]);
             return HB_ERROR;
         }
-        
-        HBError = avformat_find_stream_info(pSourceVideoFormatCtx, NULL);
-        if (HBError < 0) {
-            LOGE("Video decoder couldn't find stream information. <%s>", av_err2str(HBError));
-            return HB_ERROR;
-        }
-        
+
         if (!bOutputMediaInitialed) {
             if (_initialOutputMediaContext(&pOutputVideoFormatCtx, pSourceVideoFormatCtx, outputFile, oVideoStreamIndex, oAudioStreamIndex) != HB_OK) {
                 LOGE("Initial output media context failed !");
@@ -104,39 +96,30 @@ int demo_video_concat_with_same_codec() {
             bOutputMediaInitialed = true;
         }
         
-        for (int i=0; i<pSourceVideoFormatCtx->nb_streams; i++) {
-            if (pSourceVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-                iVideoStreamIndex = i;
-            }
-            else if (pSourceVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
-                iAudioStreamIndex = i;
-            }
-        }
-        
         int64_t tDeltaDtsWithPts = 0;
         bool bIsFirstVideoPacket = true;
         int64_t tFirstVideoPacketPts = 0;
         int64_t tFirstVideoPacketDts = 0;
         int64_t tCurSrcMediaSegmentVideoDuration = 0;
         
-        
         bool bIsFitstAudioPacket = true;
         int64_t tFirstAudioPacketPts = 0;
         int64_t tCurSrcMediaSegmentAudioDuration = 0;
         
         AVPacket *pNewPacket = av_packet_alloc();
-        AVStream* pCurPacketSourceStream = nullptr;
-        AVStream* pCurPacketOutputStream = nullptr;
-        
         while (true) {
             HBError = av_read_frame(pSourceVideoFormatCtx, pNewPacket);
             if (HBError == 0 && pNewPacket) {
-                pCurPacketSourceStream = pSourceVideoFormatCtx->streams[pNewPacket->stream_index];
-                tCurDealTime = av_rescale_q_rnd(pNewPacket->pts, pCurPacketSourceStream->time_base, defaultTimebase, AV_ROUND_INF);
+                /** pCurPacketSourceStream & pCurPacketOutputStream 指向当前数据包对应的输入和输出流 */
+                AVStream* pCurPacketOutputStream = nullptr;
+                AVStream* pCurPacketSourceStream = pSourceVideoFormatCtx->streams[pNewPacket->stream_index];
                 
+                int64_t tCurDealTime = av_rescale_q_rnd(pNewPacket->pts, pCurPacketSourceStream->time_base, defaultTimebase, AV_ROUND_INF);
                 if (pNewPacket->stream_index == iAudioStreamIndex) {
                     pCurPacketOutputStream = pOutputVideoFormatCtx->streams[oAudioStreamIndex];
                     av_packet_rescale_ts(pNewPacket, pCurPacketSourceStream->time_base, pCurPacketOutputStream->time_base);
+                    
+                    LOGD("Audio packet duration:%lld", pNewPacket->duration);
                     
                     if (bIsFitstAudioPacket) {
                         bIsFitstAudioPacket = false;
@@ -148,7 +131,7 @@ int demo_video_concat_with_same_codec() {
                         LOGI("File:%s, audio duration:%lld", sourceFile[i], tCurSrcMediaSegmentAudioDuration);
                     }
                     if (bIsSyncBaseOnAudio \
-                        && tCurSrcMediaSegmentAudioDuration != 0 && tCurSrcMediaSegmentAudioDuration != 0 \
+                        && tCurSrcMediaSegmentAudioDuration != 0 && tCurSrcMediaSegmentVideoDuration != 0 \
                         && tCurSrcMediaSegmentVideoDuration < tCurSrcMediaSegmentAudioDuration \
                         && tCurDealTime > tCurSrcMediaSegmentVideoDuration) {
                         LOGW("[Sync with audio] Cut audio frame, drop packet:%lld", tCurDealTime);
@@ -167,6 +150,8 @@ int demo_video_concat_with_same_codec() {
                     pCurPacketOutputStream = pOutputVideoFormatCtx->streams[oVideoStreamIndex];
                     av_packet_rescale_ts(pNewPacket, pCurPacketSourceStream->time_base, pCurPacketOutputStream->time_base);
                     
+                    LOGD("Video packet duration:%lld", pNewPacket->duration);
+                    
                     if (bIsFirstVideoPacket) {
                         bIsFirstVideoPacket = false;
                         tFirstVideoPacketPts = pNewPacket->pts;
@@ -178,6 +163,7 @@ int demo_video_concat_with_same_codec() {
                     if (tCurSrcMediaSegmentVideoDuration == 0) {
                         tCurSrcMediaSegmentVideoDuration = av_rescale_q(pCurPacketSourceStream->duration, \
                                             pCurPacketSourceStream->time_base, defaultTimebase);
+                        LOGI("File:%s, video duration:%lld", sourceFile[i], tCurSrcMediaSegmentVideoDuration);
                     }
                     pNewPacket->pts = pNewPacket->pts - tFirstVideoPacketPts \
                         + av_rescale_q(tTotalVideoDuration, AV_TIME_BASE_Q, pCurPacketOutputStream->time_base);
@@ -192,9 +178,9 @@ int demo_video_concat_with_same_codec() {
                     tCurVideoPacketPts = pNewPacket->pts;
 
                     if (bIsSyncBaseOnVideo \
-                        && tCurSrcMediaSegmentAudioDuration != 0 && tCurSrcMediaSegmentAudioDuration != 0 \
+                        && tCurSrcMediaSegmentAudioDuration != 0 && tCurSrcMediaSegmentVideoDuration != 0 \
                         && tCurSrcMediaSegmentVideoDuration > tCurSrcMediaSegmentAudioDuration \
-                        && tCurDealTime > tCurSrcMediaSegmentAudioDuration) {
+                        && tCurDealTime >= tCurSrcMediaSegmentAudioDuration) {
                         LOGW("[Sync with audio] Cut video frame, drop packet:%lld", tCurDealTime);
                         av_packet_unref(pNewPacket);
                         continue;
@@ -216,6 +202,7 @@ int demo_video_concat_with_same_codec() {
                 break;
             }
         }
+        av_packet_free(&pNewPacket);
         
         tLastVideoBaseFramePts = tCurVideoPacketPts + 1; /** tCurVideoPacketPts + tDeltaDtsWithPts */
         tLastAudioBaseFramePts = tCurAudioPacketPts + 1;
@@ -264,8 +251,8 @@ static int _initialOutputMediaContext(AVFormatContext** pOFmtCtx, AVFormatContex
         return HB_ERROR;
     }
     
-    AVFormatContext* pOutputVideoFormatCtx = avformat_alloc_context();
-    pOutputVideoFormatCtx->oformat = av_guess_format(NULL, strOutputFile, NULL);
+    AVFormatContext* pTargetVideoFormatCtx = avformat_alloc_context();
+    pTargetVideoFormatCtx->oformat = av_guess_format(NULL, strOutputFile, NULL);
     
     videoStreamIndex = INVALID_STREAM_INDEX;
     audioStreamIndex = INVALID_STREAM_INDEX;
@@ -278,7 +265,7 @@ static int _initialOutputMediaContext(AVFormatContext** pOFmtCtx, AVFormatContex
             return HB_ERROR;
         }
         
-        AVStream *pOutStream = avformat_new_stream(pOutputVideoFormatCtx, pOutputCodec);
+        AVStream *pOutStream = avformat_new_stream(pTargetVideoFormatCtx, pOutputCodec);
         if (!pOutStream) {
             LOGE("Create output stream failed !");
             return HB_ERROR;
@@ -293,24 +280,55 @@ static int _initialOutputMediaContext(AVFormatContext** pOFmtCtx, AVFormatContex
         av_dict_copy(&pOutStream->metadata, pInStream->metadata, AV_DICT_DONT_OVERWRITE);
     }
     
-    if (!(pOutputVideoFormatCtx->oformat->flags & AVFMT_NOFILE)) {
-        if (avio_open(&pOutputVideoFormatCtx->pb, strOutputFile, AVIO_FLAG_READ_WRITE) < 0) {
+    if (!(pTargetVideoFormatCtx->oformat->flags & AVFMT_NOFILE)) {
+        if (avio_open(&pTargetVideoFormatCtx->pb, strOutputFile, AVIO_FLAG_READ_WRITE) < 0) {
             LOGE("Failed to open output file: %s!\n", strOutputFile);
             return HB_ERROR;
         }
     }
     
-    strcpy(pOutputVideoFormatCtx->filename, strOutputFile);
+    strcpy(pTargetVideoFormatCtx->filename, strOutputFile);
     
     AVDictionary * dict = NULL;
     av_dict_set(&dict, "movflags", "faststart", 0);
-    if (avformat_write_header(pOutputVideoFormatCtx, &dict) < 0) {
-        LOGE("Avformat write header failed !");
+    int HBError = avformat_write_header(pTargetVideoFormatCtx, &dict);
+    if (HBError < 0) {
+        LOGE("Avformat write header failed, %s !", av_err2str(HBError));
         return HB_ERROR;
     }
     av_dict_free(&dict);
 
-    *pOFmtCtx = pOutputVideoFormatCtx;
+    *pOFmtCtx = pTargetVideoFormatCtx;
     
+    return HB_OK;
+}
+
+static int _initialInputMediaContext(AVFormatContext** pInFmtCtx, const char* strInputFile, int& videoStreamIndex, int& audioStreamIndex) {
+    int HBError = HB_OK;
+    AVFormatContext* pTargetVideoFormatCtx = nullptr;
+    videoStreamIndex = INVALID_STREAM_INDEX;
+    audioStreamIndex = INVALID_STREAM_INDEX;
+    HBError = avformat_open_input(&pTargetVideoFormatCtx, strInputFile, NULL, NULL);
+    if (HBError != 0) {
+        LOGE("Video decoder couldn't open input file. <%d> <%s>", HBError, av_err2str(HBError));
+        return HB_ERROR;
+    }
+    
+    HBError = avformat_find_stream_info(pTargetVideoFormatCtx, NULL);
+    if (HBError < 0) {
+        LOGE("Video decoder couldn't find stream information. <%s>", av_err2str(HBError));
+        return HB_ERROR;
+    }
+    
+    for (int i=0; i<pTargetVideoFormatCtx->nb_streams; i++) {
+        if (pTargetVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+            videoStreamIndex = i;
+        }
+        else if (pTargetVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
+            audioStreamIndex = i;
+        }
+    }
+    
+    *pInFmtCtx = pTargetVideoFormatCtx;
     return HB_OK;
 }
