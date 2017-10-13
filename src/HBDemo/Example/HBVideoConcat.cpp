@@ -62,6 +62,8 @@ int demo_video_concat_with_same_codec() {
     bool bIsSyncBaseOnAudio = true;
     bool bIsSyncBaseOnVideo = false;
     bool bOutputMediaInitialed = false;
+    
+    /** 输出媒体文件中对应的 音&视频 流索引 */
     int oVideoStreamIndex = INVALID_STREAM_INDEX;
     int oAudioStreamIndex = INVALID_STREAM_INDEX;
     
@@ -78,7 +80,6 @@ int demo_video_concat_with_same_codec() {
     int64_t tTotalAudioDuration = 0;
     
     for (int i=0; i<MAX_SOURCE_FILE_NUM; i++) {
-
         int iVideoStreamIndex = INVALID_STREAM_INDEX;
         int iAudioStreamIndex = INVALID_STREAM_INDEX;
         
@@ -90,7 +91,7 @@ int demo_video_concat_with_same_codec() {
 
         if (!bOutputMediaInitialed) {
             if (_initialOutputMediaContext(&pOutputVideoFormatCtx, pSourceVideoFormatCtx, outputFile, oVideoStreamIndex, oAudioStreamIndex) != HB_OK) {
-                LOGE("Initial output media context failed !");
+                LOGE("Initial output media context failed, %s !", outputFile);
                 return HB_ERROR;
             }
             bOutputMediaInitialed = true;
@@ -98,50 +99,59 @@ int demo_video_concat_with_same_codec() {
         
         int64_t tDeltaDtsWithPts = 0;
         bool bIsFirstVideoPacket = true;
-        int64_t tFirstVideoPacketPts = 0;
-        int64_t tFirstVideoPacketDts = 0;
-        int64_t tCurSrcMediaSegmentVideoDuration = 0;
+        int64_t tCurSourceSegmentFirstVideoPacketPts = 0;
+        int64_t tCurSourceSegmentFirstVideoPacketDts = 0;
+        int64_t tCurSourceMediaSegmentVideoDuration = 0;
         
-        bool bIsFitstAudioPacket = true;
-        int64_t tFirstAudioPacketPts = 0;
-        int64_t tCurSrcMediaSegmentAudioDuration = 0;
+        bool bIsCurSegmentFitstAudioPacket = true;
+        int64_t tCurSegmentFirstAudioPacketPts = 0;
+        /** 当前正在拼接的源片段，转换成外部可读性的时间基后得到的时长 */
+        int64_t tCurSourceMediaSegmentAudioDuration = 0;
         
         AVPacket *pNewPacket = av_packet_alloc();
         while (true) {
             HBError = av_read_frame(pSourceVideoFormatCtx, pNewPacket);
             if (HBError == 0 && pNewPacket) {
-                /** pCurPacketSourceStream & pCurPacketOutputStream 指向当前数据包对应的输入和输出流 */
+                /** pCurPacketSourceStream & pCurPacketOutputStream 指向当前数据包对应的输入和输出媒体流 */
                 AVStream* pCurPacketOutputStream = nullptr;
                 AVStream* pCurPacketSourceStream = pSourceVideoFormatCtx->streams[pNewPacket->stream_index];
                 
+                /**
+                 * 转换当前数据包 pts 转换成外部阅读的时间基数 defaultTimebase
+                 * tCurDealTime 标识当前正在处理的包的显示时间
+                 */
                 int64_t tCurDealTime = av_rescale_q_rnd(pNewPacket->pts, pCurPacketSourceStream->time_base, defaultTimebase, AV_ROUND_INF);
+                
                 if (pNewPacket->stream_index == iAudioStreamIndex) {
                     pCurPacketOutputStream = pOutputVideoFormatCtx->streams[oAudioStreamIndex];
+                    
+                    /** 将 数据包的 pts 时间基由输入流的时间基 转换成对应输出流的时间基 */
                     av_packet_rescale_ts(pNewPacket, pCurPacketSourceStream->time_base, pCurPacketOutputStream->time_base);
                     
                     LOGD("Audio packet duration:%lld", pNewPacket->duration);
                     
-                    if (bIsFitstAudioPacket) {
-                        bIsFitstAudioPacket = false;
-                        tFirstAudioPacketPts = pNewPacket->pts;
+                    if (bIsCurSegmentFitstAudioPacket) {
+                        bIsCurSegmentFitstAudioPacket = false;
+                        tCurSegmentFirstAudioPacketPts = pNewPacket->pts;
                     }
-                    if (tCurSrcMediaSegmentAudioDuration == 0) {/** 转换输入媒体时长，转化获取输出时长 */
-                        tCurSrcMediaSegmentAudioDuration = av_rescale_q(pCurPacketSourceStream->duration,\
+                    if (tCurSourceMediaSegmentAudioDuration == 0) {/** 转换输入媒体时长，转化获取输出时长 */
+                        tCurSourceMediaSegmentAudioDuration = av_rescale_q(pCurPacketSourceStream->duration,\
                                             pCurPacketSourceStream->time_base, defaultTimebase);
-                        LOGI("File:%s, audio duration:%lld", sourceFile[i], tCurSrcMediaSegmentAudioDuration);
+                        LOGI("File:%s, audio duration:%lld", sourceFile[i], tCurSourceMediaSegmentAudioDuration);
                     }
                     if (bIsSyncBaseOnAudio \
-                        && tCurSrcMediaSegmentAudioDuration != 0 && tCurSrcMediaSegmentVideoDuration != 0 \
-                        && tCurSrcMediaSegmentVideoDuration < tCurSrcMediaSegmentAudioDuration \
-                        && tCurDealTime > tCurSrcMediaSegmentVideoDuration) {
+                        && tCurSourceMediaSegmentAudioDuration != 0 && tCurSourceMediaSegmentVideoDuration != 0 \
+                        && tCurSourceMediaSegmentVideoDuration < tCurSourceMediaSegmentAudioDuration \
+                        && tCurDealTime > tCurSourceMediaSegmentVideoDuration) {
+                        /** 如果以音频时间为准，但是当前包已经超过了视频时长，则将当前音频包丢弃 */
                         LOGW("[Sync with audio] Cut audio frame, drop packet:%lld", tCurDealTime);
                         av_packet_unref(pNewPacket);
                         continue;
                     }
                     
-                    pNewPacket->pts = pNewPacket->pts - tFirstAudioPacketPts \
+                    pNewPacket->pts = pNewPacket->pts - tCurSegmentFirstAudioPacketPts \
                             + av_rescale_q(tTotalAudioDuration, AV_TIME_BASE_Q, pCurPacketOutputStream->time_base);
-                    pNewPacket->dts = pNewPacket->dts - tFirstAudioPacketPts \
+                    pNewPacket->dts = pNewPacket->dts - tCurSegmentFirstAudioPacketPts \
                             + av_rescale_q(tTotalAudioDuration, AV_TIME_BASE_Q, pCurPacketOutputStream->time_base);
                     
                     tCurAudioPacketPts = pNewPacket->pts;
@@ -154,33 +164,33 @@ int demo_video_concat_with_same_codec() {
                     
                     if (bIsFirstVideoPacket) {
                         bIsFirstVideoPacket = false;
-                        tFirstVideoPacketPts = pNewPacket->pts;
-                        tFirstVideoPacketDts = pNewPacket->dts;
-                        tDeltaDtsWithPts = tFirstVideoPacketPts - tFirstVideoPacketDts;
+                        tCurSourceSegmentFirstVideoPacketPts = pNewPacket->pts;
+                        tCurSourceSegmentFirstVideoPacketDts = pNewPacket->dts;
+                        tDeltaDtsWithPts = tCurSourceSegmentFirstVideoPacketPts - tCurSourceSegmentFirstVideoPacketDts;
                         if (tDeltaDtsWithPts < 0)
                             tDeltaDtsWithPts = -tDeltaDtsWithPts;
                     }
-                    if (tCurSrcMediaSegmentVideoDuration == 0) {
-                        tCurSrcMediaSegmentVideoDuration = av_rescale_q(pCurPacketSourceStream->duration, \
+                    if (tCurSourceMediaSegmentVideoDuration == 0) {/** 转换输入媒体时长，转化获取输出时长 */
+                        tCurSourceMediaSegmentVideoDuration = av_rescale_q(pCurPacketSourceStream->duration, \
                                             pCurPacketSourceStream->time_base, defaultTimebase);
-                        LOGI("File:%s, video duration:%lld", sourceFile[i], tCurSrcMediaSegmentVideoDuration);
+                        LOGI("File:%s, video duration:%lld", sourceFile[i], tCurSourceMediaSegmentVideoDuration);
                     }
-                    pNewPacket->pts = pNewPacket->pts - tFirstVideoPacketPts \
+                    pNewPacket->pts = pNewPacket->pts - tCurSourceSegmentFirstVideoPacketPts \
                         + av_rescale_q(tTotalVideoDuration, AV_TIME_BASE_Q, pCurPacketOutputStream->time_base);
                     
-                    if (tFirstVideoPacketPts > 0) {
-                        pNewPacket->dts = pNewPacket->dts - tFirstVideoPacketPts + av_rescale_q(tTotalVideoDuration, AV_TIME_BASE_Q, pCurPacketOutputStream->time_base);
+                    if (tCurSourceSegmentFirstVideoPacketPts > 0) {
+                        pNewPacket->dts = pNewPacket->dts - tCurSourceSegmentFirstVideoPacketPts + av_rescale_q(tTotalVideoDuration, AV_TIME_BASE_Q, pCurPacketOutputStream->time_base);
                     }
                     else {
-                        pNewPacket->dts = pNewPacket->dts + tFirstVideoPacketPts + av_rescale_q(tTotalVideoDuration, AV_TIME_BASE_Q, pCurPacketOutputStream->time_base);
+                        pNewPacket->dts = pNewPacket->dts + tCurSourceSegmentFirstVideoPacketPts + av_rescale_q(tTotalVideoDuration, AV_TIME_BASE_Q, pCurPacketOutputStream->time_base);
                     }
                     
                     tCurVideoPacketPts = pNewPacket->pts;
 
                     if (bIsSyncBaseOnVideo \
-                        && tCurSrcMediaSegmentAudioDuration != 0 && tCurSrcMediaSegmentVideoDuration != 0 \
-                        && tCurSrcMediaSegmentVideoDuration > tCurSrcMediaSegmentAudioDuration \
-                        && tCurDealTime >= tCurSrcMediaSegmentAudioDuration) {
+                        && tCurSourceMediaSegmentAudioDuration != 0 && tCurSourceMediaSegmentVideoDuration != 0 \
+                        && tCurSourceMediaSegmentVideoDuration > tCurSourceMediaSegmentAudioDuration \
+                        && tCurDealTime >= tCurSourceMediaSegmentAudioDuration) {
                         LOGW("[Sync with audio] Cut video frame, drop packet:%lld", tCurDealTime);
                         av_packet_unref(pNewPacket);
                         continue;
@@ -313,10 +323,16 @@ static int _initialOutputMediaContext(AVFormatContext** pOFmtCtx, AVFormatContex
 }
 
 static int _initialInputMediaContext(AVFormatContext** pInFmtCtx, const char* strInputFile, int& videoStreamIndex, int& audioStreamIndex) {
+    if (!pInFmtCtx || !strInputFile) {
+        LOGE("Initial input media context failed, invalid params !");
+        return HB_ERROR;
+    }
+    
     int HBError = HB_OK;
-    AVFormatContext* pTargetVideoFormatCtx = nullptr;
     videoStreamIndex = INVALID_STREAM_INDEX;
     audioStreamIndex = INVALID_STREAM_INDEX;
+    
+    AVFormatContext* pTargetVideoFormatCtx = nullptr;
     HBError = avformat_open_input(&pTargetVideoFormatCtx, strInputFile, NULL, NULL);
     if (HBError != 0) {
         LOGE("Video decoder couldn't open input file. <%d> <%s>", HBError, av_err2str(HBError));
@@ -330,12 +346,10 @@ static int _initialInputMediaContext(AVFormatContext** pInFmtCtx, const char* st
     }
     
     for (int i=0; i<pTargetVideoFormatCtx->nb_streams; i++) {
-        if (pTargetVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+        if (pTargetVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
             videoStreamIndex = i;
-        }
-        else if (pTargetVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
+        else if (pTargetVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
             audioStreamIndex = i;
-        }
     }
     
     *pInFmtCtx = pTargetVideoFormatCtx;
