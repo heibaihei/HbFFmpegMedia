@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A10365CB1F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10365C91F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp */; };
 		A1080E9A1F68DC6F0015A2D3 /* CSConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1080E981F68DC6F0015A2D3 /* CSConfig.cpp */; };
 		A1091CE21F5958AF00565177 /* CSVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1091CE01F5958AF00565177 /* CSVideo.cpp */; };
 		A1091CE81F595BC200565177 /* CSVideoEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1091CE61F595BC200565177 /* CSVideoEncoder.cpp */; };
@@ -65,6 +66,7 @@
 		A15BB0F51F4321C600AFE839 /* CSAudioResample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0F31F4321C600AFE839 /* CSAudioResample.cpp */; };
 		A16159C21F70ADCE001D54EA /* avio_reading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16159B01F70AD05001D54EA /* avio_reading.cpp */; };
 		A17202B31F69993E00662F18 /* CSAudioFifo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17202B11F69993E00662F18 /* CSAudioFifo.cpp */; };
+		A175D0121F945D9100A7F5A4 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A175D0111F945D9000A7F5A4 /* libmp3lame.a */; };
 		A181BC2D1EA1F4CF004861DA /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A181BC2C1EA1F4CF004861DA /* main.c */; };
 		A181BC351EA1F682004861DA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC341EA1F682004861DA /* main.cpp */; };
 		A181BC421EA21430004861DA /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC411EA21430004861DA /* libSDL2.a */; };
@@ -2865,6 +2867,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A10365C91F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = HBVideoChangeBgmMusic.cpp; sourceTree = "<group>"; };
+		A10365CA1F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HBVideoChangeBgmMusic.h; sourceTree = "<group>"; };
 		A1080E981F68DC6F0015A2D3 /* CSConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSConfig.cpp; sourceTree = "<group>"; };
 		A1080E991F68DC6F0015A2D3 /* CSConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSConfig.h; sourceTree = "<group>"; };
 		A1091CE01F5958AF00565177 /* CSVideo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideo.cpp; sourceTree = "<group>"; };
@@ -2976,6 +2980,7 @@
 		A16159C11F70AD05001D54EA /* transcoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = transcoding.c; path = ../../../src/HBDemo/Example/transcoding.c; sourceTree = "<group>"; };
 		A17202B11F69993E00662F18 /* CSAudioFifo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioFifo.cpp; sourceTree = "<group>"; };
 		A17202B21F69993E00662F18 /* CSAudioFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioFifo.h; sourceTree = "<group>"; };
+		A175D0111F945D9000A7F5A4 /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmp3lame.a; path = ../../lib/lame/lib/libmp3lame.a; sourceTree = "<group>"; };
 		A181BC2C1EA1F4CF004861DA /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../../src/main.c; sourceTree = "<group>"; };
 		A181BC321EA1F682004861DA /* Sample */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Sample; sourceTree = BUILT_PRODUCTS_DIR; };
 		A181BC341EA1F682004861DA /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -9298,6 +9303,7 @@
 				A1FC23BA1F277BD200024371 /* libbz2.tbd in Frameworks */,
 				A1FC23B81F277BC800024371 /* libz.tbd in Frameworks */,
 				A1E5CBA21F276AA500A02704 /* libx264.a in Frameworks */,
+				A175D0121F945D9100A7F5A4 /* libmp3lame.a in Frameworks */,
 				A1E5CBA01F274AE100A02704 /* libfdk-aac.a in Frameworks */,
 				A181BC421EA21430004861DA /* libSDL2.a in Frameworks */,
 				A181BC4A1EA21466004861DA /* libavformat.a in Frameworks */,
@@ -9580,6 +9586,8 @@
 			children = (
 				A1538FBB1F8C771D002C8880 /* HBVideoConcat.cpp */,
 				A1538FBC1F8C771D002C8880 /* HBVideoConcat.h */,
+				A10365C91F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp */,
+				A10365CA1F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.h */,
 			);
 			name = Example;
 			path = ../../../src/HBDemo/Example;
@@ -9623,6 +9631,7 @@
 		A181BC401EA2142F004861DA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A175D0111F945D9000A7F5A4 /* libmp3lame.a */,
 				A1FC23BB1F277BEB00024371 /* libobjc.tbd */,
 				A1FC23B91F277BD200024371 /* libbz2.tbd */,
 				A1FC23B71F277BC800024371 /* libz.tbd */,
@@ -17235,6 +17244,7 @@
 				A183E2ED1F1F0028003700C3 /* AudioEncoder.cpp in Sources */,
 				A1FB66411F19EBDC001B08F0 /* audio_player.cpp in Sources */,
 				A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */,
+				A10365CB1F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp in Sources */,
 				A19A67EA1EB3465D00DE8F11 /* simplest_ffmpeg_mem_player.cpp in Sources */,
 				A15BB0E81F42912400AFE839 /* CSAudioDecoder.cpp in Sources */,
 				A1091CEE1F595BF500565177 /* CSVideoScale.cpp in Sources */,
@@ -19973,12 +19983,14 @@
 					"\"$(SRCROOT)/../../lib/x264/include\"",
 					"\"$(SRCROOT)/../../src/HBDemo\"",
 					"\"$(SRCROOT)/../../src/HBDemo/CSModule\"",
+					"\"$(SRCROOT)/../../lib/lame/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
 					"\"$(SRCROOT)/../../lib/x264/lib\"",
+					"\"$(SRCROOT)/../../lib/lame/lib\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -19995,12 +20007,14 @@
 					"\"$(SRCROOT)/../../lib/x264/include\"",
 					"\"$(SRCROOT)/../../src/HBDemo\"",
 					"\"$(SRCROOT)/../../src/HBDemo/CSModule\"",
+					"\"$(SRCROOT)/../../lib/lame/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
 					"\"$(SRCROOT)/../../lib/x264/lib\"",
+					"\"$(SRCROOT)/../../lib/lame/lib\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
