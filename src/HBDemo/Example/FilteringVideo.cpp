@@ -28,7 +28,12 @@
  */
 
 #define _XOPEN_SOURCE 600 /* for usleep */
+#include "HBExample.h"
 #include <unistd.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -36,6 +41,12 @@
 #include <libavfilter/buffersink.h>
 #include <libavfilter/buffersrc.h>
 #include <libavutil/opt.h>
+
+#ifdef __cplusplus
+};
+#endif
+
+#include "CSLog.h"
 
 /**
  *  采用的滤镜类型以及相关参数
@@ -103,11 +114,13 @@ static int init_filters(const char *filters_descr)
     int ret = 0;
     AVFilter *buffersrc  = avfilter_get_by_name("buffer");
     AVFilter *buffersink = avfilter_get_by_name("buffersink");
+    
     /**
      *  纯粹创建滤镜的对象空间
      */
     AVFilterInOut *outputs = avfilter_inout_alloc();
     AVFilterInOut *inputs  = avfilter_inout_alloc();
+    
     AVRational time_base = gFmt_ctx->streams[video_stream_index]->time_base;
     enum AVPixelFormat pix_fmts[] = { AV_PIX_FMT_GRAY8, AV_PIX_FMT_NONE };
     
@@ -255,8 +268,7 @@ int examples_filtering_video(int argc, char **argv)
     if ((ret = init_filters(gFilter_descr)) < 0)
         goto end;
 
-    /* read all packets */
-    while (1) {
+    while (1) { /** 读取数据包 */
         if ((ret = av_read_frame(gFmt_ctx, &packet)) < 0)
             break;
 
@@ -286,10 +298,19 @@ int examples_filtering_video(int argc, char **argv)
                 while (1) {
                     /** 从FilterGraph中取出一个AVFrame */
                     ret = av_buffersink_get_frame(gBuffersink_ctx, filter_frame);
-                    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+                    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+                        LOGE("[line:%d] av_buffersink_get_frame : %s", __LINE__, av_err2str(ret));
                         break;
-                    if (ret < 0)
+                    }
+                    if (ret < 0) {
+                        LOGE("[line:%d] av_buffersink_get_frame : %s", __LINE__, av_err2str(ret));
                         goto end;
+                    }
+                    
+                    ;
+                    LOGD("[line:%d] av_buffersink_get_frame : %lld <stream:%d-%d> <filter:%d-%d>", __LINE__, filter_frame->pts, \
+                         gFmt_ctx->streams[video_stream_index]->time_base.den, gFmt_ctx->streams[video_stream_index]->time_base.num, \
+                         gBuffersink_ctx->inputs[0]->time_base.den, gBuffersink_ctx->inputs[0]->time_base.num);
                     display_frame(filter_frame, gBuffersink_ctx->inputs[0]->time_base);
                     av_frame_unref(filter_frame);
                 }

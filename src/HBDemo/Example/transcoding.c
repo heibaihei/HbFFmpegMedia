@@ -36,14 +36,14 @@
 #include <libavutil/opt.h>
 #include <libavutil/pixdesc.h>
 
-static AVFormatContext *ifmt_ctx;
-static AVFormatContext *ofmt_ctx;
+static AVFormatContext *ifmt_ctx = NULL;
+static AVFormatContext *ofmt_ctx = NULL;
 typedef struct FilteringContext {
     AVFilterContext *buffersink_ctx;
     AVFilterContext *buffersrc_ctx;
     AVFilterGraph *filter_graph;
 } FilteringContext;
-static FilteringContext *filter_ctx;
+static FilteringContext *filter_ctx = NULL;
 
 static int open_input_file(const char *filename)
 {
@@ -62,10 +62,11 @@ static int open_input_file(const char *filename)
     }
 
     for (i = 0; i < ifmt_ctx->nb_streams; i++) {
-        AVStream *stream;
-        AVCodecContext *codec_ctx;
+        AVStream *stream = NULL;
+        AVCodecContext *codec_ctx = NULL;
         stream = ifmt_ctx->streams[i];
         codec_ctx = stream->codec;
+        
         /* Reencode video & audio and remux subtitles etc. */
         if (codec_ctx->codec_type == AVMEDIA_TYPE_VIDEO
                 || codec_ctx->codec_type == AVMEDIA_TYPE_AUDIO) {
@@ -134,6 +135,12 @@ static int open_output_file(const char *filename)
                     enc_ctx->pix_fmt = dec_ctx->pix_fmt;
                 /* video time_base can be set to whatever is handy and supported by encoder */
                 enc_ctx->time_base = dec_ctx->time_base;
+                
+                enc_ctx->me_range = 16;
+                enc_ctx->max_qdiff = 4;
+                enc_ctx->qmin = 10;
+                enc_ctx->qmax = 31;
+                enc_ctx->qcompress = 0.6;
             } else {
                 enc_ctx->sample_rate = dec_ctx->sample_rate;
                 enc_ctx->channel_layout = dec_ctx->channel_layout;
@@ -146,7 +153,7 @@ static int open_output_file(const char *filename)
             /* Third parameter can be used to pass settings to encoder */
             ret = avcodec_open2(enc_ctx, encoder, NULL);
             if (ret < 0) {
-                av_log(NULL, AV_LOG_ERROR, "Cannot open video encoder for stream #%u\n", i);
+                av_log(NULL, AV_LOG_ERROR, "Cannot open video encoder for stream #%u, %s, %s\n", i, avcodec_get_name(encoder->id), av_err2str(ret));
                 return ret;
             }
         } else if (dec_ctx->codec_type == AVMEDIA_TYPE_UNKNOWN) {
@@ -340,6 +347,7 @@ static int init_filters(void)
     const char *filter_spec;
     unsigned int i;
     int ret;
+    /** 创建 ifmt_ctx->nb_streams 个FilteringContext 对象数组空间 */
     filter_ctx = av_malloc_array(ifmt_ctx->nb_streams, sizeof(*filter_ctx));
     if (!filter_ctx)
         return AVERROR(ENOMEM);
@@ -465,7 +473,7 @@ static int flush_encoder(unsigned int stream_index)
     return ret;
 }
 
-int main(int argc, char **argv)
+int demo_transcod_main(int argc, char **argv)
 {
     int ret;
     AVPacket packet = { .data = NULL, .size = 0 };

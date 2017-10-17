@@ -81,9 +81,9 @@ int main(int argc, const char * argv[]) {
 //        demo_video_concat_with_same_codec();
 //        
 //    }
-    {   /** 音乐和视频拼接 */
-        demo_video_change_bgm_music();
-    }
+//    {   /** 音乐和视频拼接 */
+//        demo_video_change_bgm_music();
+//    }
 //    {
 //        /**
 //         *  Example
@@ -93,6 +93,27 @@ int main(int argc, const char * argv[]) {
 //            (char *)PROJ_ROOT_PATH"/video/100.mp4"};
 //        demo_avio_reading(tmpArgc, tmpArgv);
 //    }
+//    {/** Example */
+//        int iArgcNum = 2;
+//        char *tmpArgv[] = {nullptr, \
+//                        (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/concat/100.mp4"};
+//        examples_filtering_video(iArgcNum, (char **)tmpArgv);
+//    }
+//    {
+//        int iArgcNum = 2;
+//        char *tmpArgv[] = {nullptr, \
+//            (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/concat/100.mp4"};
+//        demo_avio_reading(iArgcNum, (const char **)tmpArgv);
+//    }
+    
+    {
+        int iArgcNum = 3;
+        char *tmpArgv[] = {nullptr, \
+            (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/concat/100.mp4", \
+            (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/concat/100_transcode_main.flv"
+        };
+        demo_transcod_main(iArgcNum, (char **)tmpArgv);
+    }
     
     return 0;
 }

@@ -56,8 +56,8 @@ TMPDIR=${TMPDIR/%\/} $CUR_WORK_ROOT_DIR/configure \
 	--prefix="$FFMPEG_OUTPUT_TARGET_DIR/$ARCH" \
 	|| exit 1
 
-make -j3 install $EXPORT || exit 1
-cd $CWD
+#make -j3 install $EXPORT || exit 1
+#cd $CWD
 
 
 echo Done
