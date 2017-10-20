@@ -212,6 +212,7 @@ static int init_filter(FilteringContext* fctx, AVCodecContext *dec_ctx,
     }
 
     if (dec_ctx->codec_type == AVMEDIA_TYPE_VIDEO) {
+        /** 创建两个必须的滤镜入口和出口 */
         buffersrc = avfilter_get_by_name("buffer");
         buffersink = avfilter_get_by_name("buffersink");
         if (!buffersrc || !buffersink) {
@@ -415,7 +416,9 @@ static int filter_encode_write_frame(AVFrame *frame, unsigned int stream_index)
     AVFrame *filt_frame;
 
     av_log(NULL, AV_LOG_INFO, "Pushing decoded frame to filters\n");
-    /* push the decoded frame into the filtergraph */
+    /* push the decoded frame into the filtergraph
+     * 将解码后的图像帧丢到 filter 中
+     */
     ret = av_buffersrc_add_frame_flags(filter_ctx[stream_index].buffersrc_ctx,
             frame, 0);
     if (ret < 0) {
@@ -515,6 +518,7 @@ int demo_transcod_main(int argc, char **argv)
                 ret = AVERROR(ENOMEM);
                 break;
             }
+            /** 将流时间基 转为 codec 时间基 */
             av_packet_rescale_ts(&packet,
                                  ifmt_ctx->streams[stream_index]->time_base,
                                  ifmt_ctx->streams[stream_index]->codec->time_base);

@@ -26,3 +26,12 @@ proj/FFmpeg/FFmpeg.xcodeproj/project.xcworkspace/xcuserdata/zj-db0519.xcuserdata
 proj/FFmpeg/FFmpeg.xcodeproj/xcuserdata/zj-db0519.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
 proj/FFmpeg/FFmpeg.xcodeproj/xcuserdata/zj-db0519.xcuserdatad/xcschemes/Sample.xcscheme
 proj/FFmpeg/FFmpeg.xcodeproj/xcuserdata/zj-db0519.xcuserdatad/xcschemes/xcschememanagement.plist
+resource/video/change_music/music.mp3
+resource/video/change_music/music2.mp3
+resource/video/change_music/music_1.mp3
+resource/video/change_music/outputVideo.mp4
+resource/video/concat/100_transcode_main.flv
+resource/video/concat/outputFile.mp4
+resource/video/concat/pieces1.mp4
+resource/video/concat/pieces2.mp4
+resource/video/concat/pieces3.mp4

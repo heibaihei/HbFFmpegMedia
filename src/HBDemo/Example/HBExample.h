@@ -19,7 +19,7 @@ extern "C" {
  */
 //int demo_avio_reading(int argc, const char *argv[]);
 //
-//int demo_decode_encode(int argc, char **argv);
+int demo_decode_encode(int argc, char **argv);
 
 int examples_filtering_video(int argc, char **argv);
 int demo_avio_reading(int argc, const char *argv[]);

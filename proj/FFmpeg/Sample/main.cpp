@@ -106,13 +106,19 @@ int main(int argc, const char * argv[]) {
 //        demo_avio_reading(iArgcNum, (const char **)tmpArgv);
 //    }
     
-    {
+//    {
+//        int iArgcNum = 3;
+//        char *tmpArgv[] = {nullptr, \
+//            (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/concat/100.mp4", \
+//            (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/concat/100_transcode_main.flv"
+//        };
+//        demo_transcod_main(iArgcNum, (char **)tmpArgv);
+//    }
+    
+    {   /** 解码 并且 编码 */
         int iArgcNum = 3;
-        char *tmpArgv[] = {nullptr, \
-            (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/concat/100.mp4", \
-            (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/concat/100_transcode_main.flv"
-        };
-        demo_transcod_main(iArgcNum, (char **)tmpArgv);
+        char *tmpArgv[] = {"demo_decode_encode", (char *)"mpg"};
+        demo_decode_encode(iArgcNum, (char **)tmpArgv);
     }
     
     return 0;

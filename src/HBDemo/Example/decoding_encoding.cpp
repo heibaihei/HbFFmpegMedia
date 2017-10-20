@@ -123,7 +123,7 @@ static void audio_encode_example(const char *filename)
     printf("Encode audio file %s\n", filename);
 
     /* find the MP2 encoder */
-    codec = avcodec_find_encoder(AV_CODEC_ID_MP2);
+    codec = avcodec_find_encoder(AV_CODEC_ID_MP3);
     if (!codec) {
         fprintf(stderr, "Codec not found\n");
         exit(1);
@@ -139,7 +139,7 @@ static void audio_encode_example(const char *filename)
     c->bit_rate = 64000;
 
     /* check that the encoder supports s16 pcm input */
-    c->sample_fmt = AV_SAMPLE_FMT_S16;
+    c->sample_fmt = AV_SAMPLE_FMT_S32P;
     if (!check_sample_fmt(codec, c->sample_fmt)) {
         fprintf(stderr, "Encoder does not support sample format %s",
                 av_get_sample_fmt_name(c->sample_fmt));
@@ -201,9 +201,10 @@ static void audio_encode_example(const char *filename)
     tincr = 2 * M_PI * 440.0 / c->sample_rate;
     for (i = 0; i < 200; i++) {
         av_init_packet(&pkt);
-        pkt.data = NULL; // packet data will be allocated by the encoder
+        // packet data will be allocated by the encoder
+        pkt.data = NULL;
         pkt.size = 0;
-
+        /** 构建虚拟 pcm 数据 */
         for (j = 0; j < c->frame_size; j++) {
             samples[2*j] = (int)(sin(t) * 10000);
 
@@ -218,6 +219,7 @@ static void audio_encode_example(const char *filename)
             exit(1);
         }
         if (got_output) {
+            printf("Write audio frame %3d | pkt.pos:%lld <size=%5d> <pkt.pts:%lld> <frame.pts:%lld> \n", i, pkt.pos, pkt.size, pkt.pts, frame->pts);
             fwrite(pkt.data, 1, pkt.size, f);
             av_packet_unref(&pkt);
         }
@@ -232,6 +234,7 @@ static void audio_encode_example(const char *filename)
         }
 
         if (got_output) {
+            printf("Write audio frame %3d | pkt.pos:%lld <size=%5d> <pkt.pts:%lld> <frame.pts:%lld> \n", i, pkt.pos, pkt.size, pkt.pts, frame->pts);
             fwrite(pkt.data, 1, pkt.size, f);
             av_packet_unref(&pkt);
         }
@@ -262,7 +265,7 @@ static void audio_decode_example(const char *outfilename, const char *filename)
     printf("Decode audio file %s to %s\n", filename, outfilename);
 
     /* find the MPEG audio decoder */
-    codec = avcodec_find_decoder(AV_CODEC_ID_MP2);
+    codec = avcodec_find_decoder(AV_CODEC_ID_MP3);
     if (!codec) {
         fprintf(stderr, "Codec not found\n");
         exit(1);
@@ -305,7 +308,9 @@ static void audio_decode_example(const char *outfilename, const char *filename)
                 exit(1);
             }
         }
-
+        /**
+         *  将所有的帧数据都放入 avpkt 对象当中， avcodec_decode_audio4 接口内部会对该帧数据进行切割
+         */
         len = avcodec_decode_audio4(c, decoded_frame, &got_frame, &avpkt);
         if (len < 0) {
             fprintf(stderr, "Error while decoding\n");
@@ -319,6 +324,7 @@ static void audio_decode_example(const char *outfilename, const char *filename)
                 fprintf(stderr, "Failed to calculate data size\n");
                 exit(1);
             }
+            /** 为什么还要这样写 音频裸数据到输出文件中, 几个通道的数据需要进行拆分着输出文件 */
             for (i=0; i<decoded_frame->nb_samples; i++)
                 for (ch=0; ch<c->channels; ch++)
                     fwrite(decoded_frame->data[ch] + data_size*i, 1, data_size, outfile);
@@ -334,7 +340,7 @@ static void audio_decode_example(const char *outfilename, const char *filename)
              * libavformat. */
             memmove(inbuf, avpkt.data, avpkt.size);
             avpkt.data = inbuf;
-            len = fread(avpkt.data + avpkt.size, 1,
+            len = (int)fread(avpkt.data + avpkt.size, 1,
                         AUDIO_INBUF_SIZE - avpkt.size, f);
             if (len > 0)
                 avpkt.size += len;
@@ -430,10 +436,12 @@ static void video_encode_example(const char *filename, int codec_id)
     /* encode 1 second of video */
     for (i = 0; i < 25; i++) {
         av_init_packet(&pkt);
-        pkt.data = NULL;    // packet data will be allocated by the encoder
+        // packet data will be allocated by the encoder
+        pkt.data = NULL;
         pkt.size = 0;
 
         fflush(stdout);
+        /** [构建虚拟帧] =================================================== */
         /* prepare a dummy image */
         /* Y */
         for (y = 0; y < c->height; y++) {
@@ -449,6 +457,7 @@ static void video_encode_example(const char *filename, int codec_id)
                 frame->data[2][y * frame->linesize[2] + x] = 64 + x + i * 5;
             }
         }
+        /** =================================================== */
 
         frame->pts = i;
 
@@ -460,7 +469,8 @@ static void video_encode_example(const char *filename, int codec_id)
         }
 
         if (got_output) {
-            printf("Write frame %3d (size=%5d)\n", i, pkt.size);
+            printf("Write frame %3d <size=%5d> <pkt.pts:%lld> <frame.pts:%lld> <frame.type:%d>\n", i, pkt.size, pkt.pts, frame->pts, frame->pict_type);
+            /** 将编码后文件写入到输出文件中 */
             fwrite(pkt.data, 1, pkt.size, f);
             av_packet_unref(&pkt);
         }
@@ -477,7 +487,7 @@ static void video_encode_example(const char *filename, int codec_id)
         }
 
         if (got_output) {
-            printf("Write frame %3d (size=%5d)\n", i, pkt.size);
+            printf("Write frame %3d <size=%5d> <pkt.pts:%lld> \n", i, pkt.size, pkt.pts);
             fwrite(pkt.data, 1, pkt.size, f);
             av_packet_unref(&pkt);
         }
@@ -656,13 +666,16 @@ int demo_decode_encode(int argc, char **argv)
     output_type = argv[1];
 
     if (!strcmp(output_type, "h264")) {
-        video_encode_example("test.h264", AV_CODEC_ID_H264);
-    } else if (!strcmp(output_type, "mp2")) {
-        audio_encode_example("test.mp2");
-        audio_decode_example("test.pcm", "test.mp2");
+        video_encode_example("/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/encode/test.h264", AV_CODEC_ID_H264);
+    } else if (!strcmp(output_type, "mp3")) {
+        audio_encode_example("/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/encode/test.mp3");
+        audio_decode_example("/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/encode/test.pcm", \
+                             "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/encode/test.mp3");
+        
     } else if (!strcmp(output_type, "mpg")) {
-        video_encode_example("test.mpg", AV_CODEC_ID_MPEG1VIDEO);
-        video_decode_example("test%02d.pgm", "test.mpg");
+        video_encode_example("/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/encode/test.mpg", AV_CODEC_ID_MPEG1VIDEO);
+        video_decode_example("/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/encode/test%02d.pgm", \
+                             "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video/encode/test.mpg");
     } else {
         fprintf(stderr, "Invalid output type '%s', choose between 'h264', 'mp2', or 'mpg'\n",
                 output_type);
