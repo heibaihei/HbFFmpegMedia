@@ -267,7 +267,7 @@ static int get_input(AVFrame *frame, int frame_num)
     return 0;
 }
 
-int main(int argc, char *argv[])
+int demo_filter_audio(int argc, char *argv[])
 {
     struct AVMD5 *md5;
     AVFilterGraph *graph;

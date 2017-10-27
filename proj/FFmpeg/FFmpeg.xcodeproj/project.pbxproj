@@ -2967,9 +2967,9 @@
 		A15BB0F41F4321C600AFE839 /* CSAudioResample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioResample.h; sourceTree = "<group>"; };
 		A16159AF1F70AD05001D54EA /* avio_dir_cmd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = avio_dir_cmd.c; path = ../../../src/HBDemo/Example/avio_dir_cmd.c; sourceTree = "<group>"; };
 		A16159B11F70AD05001D54EA /* decoding_encoding.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = decoding_encoding.cpp; sourceTree = "<group>"; };
-		A16159B21F70AD05001D54EA /* demuxing_decoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = demuxing_decoding.c; path = ../../../src/HBDemo/Example/demuxing_decoding.c; sourceTree = "<group>"; };
+		A16159B21F70AD05001D54EA /* demuxing_decoding.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = demuxing_decoding.cpp; sourceTree = "<group>"; };
 		A16159B31F70AD05001D54EA /* extract_mvs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = extract_mvs.c; path = ../../../src/HBDemo/Example/extract_mvs.c; sourceTree = "<group>"; };
-		A16159B41F70AD05001D54EA /* filter_audio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = filter_audio.c; path = ../../../src/HBDemo/Example/filter_audio.c; sourceTree = "<group>"; };
+		A16159B41F70AD05001D54EA /* filter_audio.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = filter_audio.cpp; sourceTree = "<group>"; };
 		A16159B51F70AD05001D54EA /* filtering_audio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = filtering_audio.c; path = ../../../src/HBDemo/Example/filtering_audio.c; sourceTree = "<group>"; };
 		A16159B71F70AD05001D54EA /* http_multiclient.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = http_multiclient.c; path = ../../../src/HBDemo/Example/http_multiclient.c; sourceTree = "<group>"; };
 		A16159B81F70AD05001D54EA /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = ../../../src/HBDemo/Example/Makefile; sourceTree = "<group>"; };
@@ -9442,9 +9442,7 @@
 			children = (
 				A13A995B1F70D33A00F88E3A /* HBExample.h */,
 				A16159AF1F70AD05001D54EA /* avio_dir_cmd.c */,
-				A16159B21F70AD05001D54EA /* demuxing_decoding.c */,
 				A16159B31F70AD05001D54EA /* extract_mvs.c */,
-				A16159B41F70AD05001D54EA /* filter_audio.c */,
 				A16159B51F70AD05001D54EA /* filtering_audio.c */,
 				A16159B71F70AD05001D54EA /* http_multiclient.c */,
 				A16159B81F70AD05001D54EA /* Makefile */,
@@ -9585,6 +9583,8 @@
 		A16159AE1F70ACBC001D54EA /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				A16159B41F70AD05001D54EA /* filter_audio.cpp */,
+				A16159B21F70AD05001D54EA /* demuxing_decoding.cpp */,
 				A16159B11F70AD05001D54EA /* decoding_encoding.cpp */,
 				A15632C01F94BB5E00F0140F /* transcoding.c */,
 				A15632BE1F94B96400F0140F /* AvioReading.cpp */,

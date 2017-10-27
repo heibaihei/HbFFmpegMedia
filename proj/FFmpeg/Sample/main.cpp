@@ -38,18 +38,19 @@ int main(int argc, const char * argv[]) {
 //    HBPickPictureFromVideo();
     
 /** ################################# >>> Audio */
-//    { /** Audio decode */
-//        char *strInputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioDecoder/skycity1.mp3";
-//        char *strOutputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioDecoder/skycity1_output.pcm";
-//        AudioParams outputAudioParams;
-//        outputAudioParams.fmt = AV_SAMPLE_FMT_FLTP;
+    { /** Audio decode */
+        char *strInputAudioFile = (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/src/HBDemo/audio/AudioDecoder/100.mp4";
+        char *strOutputAudioFile = (char *)"/Users/zj-db0519/Desktop/material/folder/video/100_fltp_2_output.pcm";
+        AudioParams outputAudioParams;
+        outputAudioParams.sample_fmt = AV_SAMPLE_FMT_FLTP;
 //        outputAudioParams.channel_layout = AV_CH_LAYOUT_MONO;
-//        outputAudioParams.channels = av_get_channel_layout_nb_channels(outputAudioParams.channel_layout);
-//        outputAudioParams.freq = 44100;
-//        outputAudioParams.freq = 64000;
-//        
-//        HBAudioDecoder(strInputAudioFile, strOutputAudioFile, AUDIO_DATA_TYPE_OF_PCM, &outputAudioParams);
-//    }
+        outputAudioParams.channel_layout = AV_CH_LAYOUT_STEREO;
+        outputAudioParams.channels = av_get_channel_layout_nb_channels(outputAudioParams.channel_layout);
+        outputAudioParams.sample_rate = 44100;
+        outputAudioParams.mbitRate = 64000;
+        
+        HBAudioDecoder(strInputAudioFile, strOutputAudioFile, AUDIO_DATA_TYPE_OF_PCM, &outputAudioParams);
+    }
     
 //    { /** Audio decode */
 //        char *strInputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioEncoder/skycity1_output.pcm";
@@ -115,11 +116,11 @@ int main(int argc, const char * argv[]) {
 //        demo_transcod_main(iArgcNum, (char **)tmpArgv);
 //    }
     
-    {   /** 解码 并且 编码 */
-        int iArgcNum = 3;
-        char *tmpArgv[] = {"demo_decode_encode", (char *)"mpg"};
-        demo_decode_encode(iArgcNum, (char **)tmpArgv);
-    }
+//    {   /** 解码 并且 编码 */
+//        int iArgcNum = 3;
+//        char *tmpArgv[] = {"demo_decode_encode", (char *)"mpg"};
+//        demo_decode_encode(iArgcNum, (char **)tmpArgv);
+//    }
     
     return 0;
 }

@@ -89,7 +89,7 @@ static int decode_packet(int *got_frame, int cached)
                         "new: width = %d, height = %d, format = %s\n",
                         width, height, av_get_pix_fmt_name(pix_fmt),
                         frame->width, frame->height,
-                        av_get_pix_fmt_name(frame->format));
+                        av_get_pix_fmt_name((enum AVPixelFormat)(frame->format)));
                 return -1;
             }
 
@@ -120,7 +120,7 @@ static int decode_packet(int *got_frame, int cached)
         decoded = FFMIN(ret, pkt.size);
 
         if (*got_frame) {
-            size_t unpadded_linesize = frame->nb_samples * av_get_bytes_per_sample(frame->format);
+            size_t unpadded_linesize = frame->nb_samples * av_get_bytes_per_sample((enum AVSampleFormat)(frame->format));
             printf("audio_frame%s n:%d nb_samples:%d pts:%s\n",
                    cached ? "(cached)" : "",
                    audio_frame_count++, frame->nb_samples,
@@ -228,7 +228,7 @@ static int get_format_from_sample_fmt(const char **fmt,
     return -1;
 }
 
-int main (int argc, char **argv)
+int demo_demuxing_decoding(int argc, char **argv)
 {
     int ret = 0, got_frame;
 

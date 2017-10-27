@@ -35,3 +35,9 @@ resource/video/concat/outputFile.mp4
 resource/video/concat/pieces1.mp4
 resource/video/concat/pieces2.mp4
 resource/video/concat/pieces3.mp4
+resource/video/encode/test.h264
+resource/video/encode/test.mp3
+resource/video/encode/test.pcm
+src/HBDemo/audio/AudioDecoder/100_fltp_2_output.pcm
+src/HBDemo/audio/AudioDecoder/100_fltp_output.pcm
+src/HBDemo/audio/AudioDecoder/100_s16_1_output.pcm
