@@ -209,7 +209,6 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
                         av_frame_unref(pOutputFrame);
                         av_frame_free(&pOutputFrame);
                     }
-                    LOGF("[Huangcl]>>> output frame:%p", pOutputFrame);
                     av_frame_unref(pFrame);
                 }
                 else if (hbError == AVERROR(EAGAIN))
