@@ -40,12 +40,11 @@ int main(int argc, const char * argv[]) {
 /** ################################# >>> Audio */
     { /** Audio decode */
         char *strInputAudioFile = (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/src/HBDemo/audio/AudioDecoder/100.mp4";
-        char *strOutputAudioFile = (char *)"/Users/zj-db0519/Desktop/material/folder/video/100_fltp_2_output.pcm";
+        char *strOutputAudioFile = (char *)"/Users/zj-db0519/Desktop/material/folder/video/100_s16_2_output.pcm";
         AudioParams outputAudioParams;
-        outputAudioParams.sample_fmt = AV_SAMPLE_FMT_FLTP;
-//        outputAudioParams.channel_layout = AV_CH_LAYOUT_MONO;
-        outputAudioParams.channel_layout = AV_CH_LAYOUT_STEREO;
-        outputAudioParams.channels = av_get_channel_layout_nb_channels(outputAudioParams.channel_layout);
+        outputAudioParams.sample_fmt = AV_SAMPLE_FMT_S16;
+        outputAudioParams.channels = 2;
+        outputAudioParams.channel_layout = av_get_default_channel_layout(outputAudioParams.channels);
         outputAudioParams.sample_rate = 44100;
         outputAudioParams.mbitRate = 64000;
         

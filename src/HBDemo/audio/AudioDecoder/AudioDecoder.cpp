@@ -34,11 +34,17 @@ static int audioSwrConvertComponentInitial(struct SwrContext** pAudioConvertCtx,
         return HB_ERROR;
     }
     
-    struct SwrContext* audioConvertCtx = swr_alloc();
-    audioConvertCtx = swr_alloc_set_opts(audioConvertCtx, targetAudioParams->channel_layout, targetAudioParams->sample_fmt, targetAudioParams->sample_rate,
-                                       av_get_default_channel_layout(audioCodeCtx->channels), audioCodeCtx->sample_fmt, audioCodeCtx->sample_rate, 0, NULL);
+    struct SwrContext* audioConvertCtx = nullptr;
+    if (targetAudioParams->channel_layout != audioCodeCtx->channel_layout \
+        || targetAudioParams->channels != audioCodeCtx->channels \
+        || targetAudioParams->sample_rate != audioCodeCtx->sample_rate \
+        || targetAudioParams->sample_fmt != audioCodeCtx->sample_fmt) {
+        audioConvertCtx = swr_alloc();
+        audioConvertCtx = swr_alloc_set_opts(audioConvertCtx, targetAudioParams->channel_layout, targetAudioParams->sample_fmt, targetAudioParams->sample_rate,
+                                           av_get_default_channel_layout(audioCodeCtx->channels), audioCodeCtx->sample_fmt, audioCodeCtx->sample_rate, 0, NULL);
 
-    swr_init(audioConvertCtx);
+        swr_init(audioConvertCtx);
+    }
     *pAudioConvertCtx = audioConvertCtx;
     
     return HB_OK;
@@ -164,32 +170,46 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
             }
             
             
-            while (true) {
+            while (true) {/** 参照： AudioResampler::audioConvert */
                 hbError = avcodec_receive_frame(pInputAudioCodecCtx, pFrame);
                 if (hbError == 0) {
-                    int outputAudioSamplePerChannle = ((pFrame->nb_samples * outputAudioParams->sample_rate) / pFrame->sample_rate + 256);
-                    int outputAudioSampleSize = av_samples_get_buffer_size(NULL, outputAudioParams->channels, outputAudioSamplePerChannle, outputAudioParams->sample_fmt, 0);
-                    if (outputAudioSampleSize < 0) {
-                        LOGE("Calculate ouput sample size failed !");
-                        return HB_ERROR;
+                    unsigned int iOutputAudioDataByteSizes = 0;
+                    int audioSwrPerChannelSamples = pFrame->nb_samples;
+                    AVFrame *pOutputFrame = nullptr;
+                    if (audioConvertCtx) {
+                        
+                        /** 创建音频数据输出缓冲区 */
+                        pOutputFrame = av_frame_alloc();
+                        pOutputFrame->nb_samples = (int)av_rescale_rnd((pFrame->nb_samples + swr_get_delay(audioConvertCtx, outputAudioParams->sample_rate)), \
+                                                           outputAudioParams->sample_rate, pFrame->sample_rate, AV_ROUND_UP);
+                        hbError = av_samples_alloc(pOutputFrame->data, &(pOutputFrame->linesize[0]), \
+                                           outputAudioParams->channels, pOutputFrame->nb_samples, outputAudioParams->sample_fmt, 1);
+                        if (hbError < 0) {
+                            LOGE("av samples alloc failed !");
+                            return -1;
+                        }
+                        audioSwrPerChannelSamples = swr_convert(audioConvertCtx, \
+                                                        pOutputFrame->data, pOutputFrame->nb_samples, (const uint8_t **)pFrame->data, pFrame->nb_samples);
+                        iOutputAudioDataByteSizes = audioSwrPerChannelSamples * outputAudioParams->channels * av_get_bytes_per_sample(outputAudioParams->sample_fmt);
+                    }
+                    else {
+                        pOutputFrame = pFrame;
+                        iOutputAudioDataByteSizes = audioSwrPerChannelSamples * pOutputFrame->channels * av_get_bytes_per_sample((enum AVSampleFormat)pOutputFrame->format);
                     }
                     
-                    av_fast_malloc(&swrOutputAudioBuffer, &swrOutputAudioBufferSize, outputAudioSampleSize);
-                    if (!swrOutputAudioBuffer)
-                        return AVERROR(ENOMEM);
-                    
-                    
-                    int audioSwrPerChannelSamples = swr_convert(audioConvertCtx, &swrOutputAudioBuffer, outputAudioSamplePerChannle, (const uint8_t **)pFrame->data, pFrame->nb_samples);
                     if (audioSwrPerChannelSamples < 0) {
                         LOGE("Swr convert audio sample failed !");
                         return HB_ERROR;
                     }
-                    else {
-                        /** 输出转换后的音频数据到输出文件中 */
-                        unsigned int resampled_data_size = audioSwrPerChannelSamples * outputAudioParams->channels * av_get_bytes_per_sample(outputAudioParams->sample_fmt);
-                        
-                        fwrite(swrOutputAudioBuffer, 1, resampled_data_size, pAudioOutputFileHandle);
+                    else if (pOutputFrame) { /** 输出转换后的音频数据到输出文件中 */
+                        fwrite(pOutputFrame->data[0], iOutputAudioDataByteSizes, 1, pAudioOutputFileHandle);
                     }
+                    
+                    if (pOutputFrame && (pOutputFrame != pFrame)) {
+                        av_frame_unref(pOutputFrame);
+                        av_frame_free(&pOutputFrame);
+                    }
+                    LOGF("[Huangcl]>>> output frame:%p", pOutputFrame);
                     av_frame_unref(pFrame);
                 }
                 else if (hbError == AVERROR(EAGAIN))
