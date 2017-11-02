@@ -58,7 +58,8 @@ typedef struct _ImageParams {
     int   mAlign;
     /** 对应像素格式下，每个帧的空间大小 */
     int   mDataSize;
-    int   mBitRate;
+    int64_t   mBitRate;
+    float mFrameRate;
     /** 旋转角度 */
     int   mRotate;
 } ImageParams;

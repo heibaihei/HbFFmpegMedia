@@ -157,6 +157,7 @@
 		A1BE85A61EB75F00004B839C /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC531EA21474004861DA /* libswscale.a */; };
 		A1BE85A91EB75F29004B839C /* ffserver_config.c in Sources */ = {isa = PBXBuildFile; fileRef = A1BE85A71EB75F29004B839C /* ffserver_config.c */; };
 		A1BE85AA1EB75F4C004B839C /* cmdutils.c in Sources */ = {isa = PBXBuildFile; fileRef = A1BE85621EB743C7004B839C /* cmdutils.c */; };
+		A1D1CDBC1FAB473D0027C8AE /* MTVideoTransToGif.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1D1CDBA1FAB473C0027C8AE /* MTVideoTransToGif.cpp */; };
 		A1E5CBA01F274AE100A02704 /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E5CB9F1F274AE100A02704 /* libfdk-aac.a */; };
 		A1E5CBA21F276AA500A02704 /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E5CBA11F276AA500A02704 /* libx264.a */; };
 		A1F1408E1EA12AFE00939FF3 /* arch.mak in Sources */ = {isa = PBXBuildFile; fileRef = A1F128071EA12ADF00939FF3 /* arch.mak */; };
@@ -3060,6 +3061,8 @@
 		A1BE85A71EB75F29004B839C /* ffserver_config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ffserver_config.c; path = "../../ffmpeg-3.2/ffserver_config.c"; sourceTree = "<group>"; };
 		A1BE85A81EB75F29004B839C /* ffserver_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ffserver_config.h; path = "../../ffmpeg-3.2/ffserver_config.h"; sourceTree = "<group>"; };
 		A1C142DC1F4DC2D400B2C5C5 /* ReadMe */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ReadMe; path = ../../../ReadMe; sourceTree = "<group>"; };
+		A1D1CDBA1FAB473C0027C8AE /* MTVideoTransToGif.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MTVideoTransToGif.cpp; sourceTree = "<group>"; };
+		A1D1CDBB1FAB473C0027C8AE /* MTVideoTransToGif.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTVideoTransToGif.h; sourceTree = "<group>"; };
 		A1E5CB9F1F274AE100A02704 /* libfdk-aac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfdk-aac.a"; path = "../../lib/fdk-aac/lib/libfdk-aac.a"; sourceTree = "<group>"; };
 		A1E5CBA11F276AA500A02704 /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libx264.a; path = ../../lib/x264/lib/libx264.a; sourceTree = "<group>"; };
 		A1E5CBA31F276BCB00A02704 /* VideoDecodeAcceleration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoDecodeAcceleration.framework; path = System/Library/Frameworks/VideoDecodeAcceleration.framework; sourceTree = SDKROOT; };
@@ -9583,6 +9586,8 @@
 		A16159AE1F70ACBC001D54EA /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				A1D1CDBA1FAB473C0027C8AE /* MTVideoTransToGif.cpp */,
+				A1D1CDBB1FAB473C0027C8AE /* MTVideoTransToGif.h */,
 				A16159B41F70AD05001D54EA /* filter_audio.cpp */,
 				A16159B21F70AD05001D54EA /* demuxing_decoding.cpp */,
 				A16159B11F70AD05001D54EA /* decoding_encoding.cpp */,
@@ -17217,6 +17222,7 @@
 				A181BC351EA1F682004861DA /* main.cpp in Sources */,
 				A1B7FE331F0DDD52003C6D0F /* HBPickPicture.cpp in Sources */,
 				A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */,
+				A1D1CDBC1FAB473D0027C8AE /* MTVideoTransToGif.cpp in Sources */,
 				A181BC721F6517F400B34FD0 /* CSThreadIPCContext.cpp in Sources */,
 				A1F706161F656F9F003A6010 /* CSMediaTimeline.cpp in Sources */,
 				A19450B11F6754E1004E8669 /* CSWorkTasks.cpp in Sources */,

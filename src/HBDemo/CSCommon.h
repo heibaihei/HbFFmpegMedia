@@ -37,6 +37,7 @@ int imageParamInit(ImageParams* param);
  */
 enum AVPixelFormat getImageInnerFormat(IMAGE_PIX_FORMAT pixFormat);
 
+enum IMAGE_PIX_FORMAT getImageExternFormat(AVPixelFormat pixFormat);
 /**
  *  获取像素素材描述信息
  */

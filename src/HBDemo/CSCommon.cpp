@@ -53,6 +53,26 @@ enum AVPixelFormat getImageInnerFormat(IMAGE_PIX_FORMAT pixFormat) {
     }
 }
 
+enum IMAGE_PIX_FORMAT getImageExternFormat(AVPixelFormat pixFormat) {
+    switch (pixFormat) {
+        case AV_PIX_FMT_YUV420P:
+            return CS_PIX_FMT_YUV420P;
+        case AV_PIX_FMT_YUV422P:
+            return CS_PIX_FMT_YUV422P;
+        case AV_PIX_FMT_YUV444P:
+            return CS_PIX_FMT_YUV444P;
+        case AV_PIX_FMT_NV12:
+            return CS_PIX_FMT_NV12;
+        case AV_PIX_FMT_NV21:
+            return CS_PIX_FMT_NV21;
+        case AV_PIX_FMT_YUVJ420P:
+            return CS_PIX_FMT_YUVJ420P;
+        default:
+            LOGE("Get image inner format failed !");
+            exit(0);
+    }
+}
+
 char* getImagePixFmtDescript(IMAGE_PIX_FORMAT dataType) {
     switch (dataType) {
         case CS_PIX_FMT_NONE:
