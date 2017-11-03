@@ -37,6 +37,10 @@ enum AVPixelFormat getImageInnerFormat(IMAGE_PIX_FORMAT pixFormat) {
     switch (pixFormat) {
         case CS_PIX_FMT_YUV420P:
             return AV_PIX_FMT_YUV420P;
+        case CS_PIX_FMT_BGRA:
+            return AV_PIX_FMT_BGRA;
+        case CS_PIX_FMT_RGB8:
+            return AV_PIX_FMT_RGB8;
         case CS_PIX_FMT_YUV422P:
             return AV_PIX_FMT_YUV422P;
         case CS_PIX_FMT_YUV444P:
@@ -57,6 +61,10 @@ enum IMAGE_PIX_FORMAT getImageExternFormat(AVPixelFormat pixFormat) {
     switch (pixFormat) {
         case AV_PIX_FMT_YUV420P:
             return CS_PIX_FMT_YUV420P;
+        case AV_PIX_FMT_BGRA:
+            return CS_PIX_FMT_BGRA;
+        case AV_PIX_FMT_RGB8:
+            return CS_PIX_FMT_RGB8;
         case AV_PIX_FMT_YUV422P:
             return CS_PIX_FMT_YUV422P;
         case AV_PIX_FMT_YUV444P:
@@ -89,6 +97,10 @@ char* getImagePixFmtDescript(IMAGE_PIX_FORMAT dataType) {
             return (char*)"CS_PIX_FMT_NV21";
         case CS_PIX_FMT_YUVJ420P:
             return (char*)"CS_PIX_FMT_YUVJ420P";
+        case CS_PIX_FMT_BGRA:
+            return (char*)"CS_PIX_FMT_BGRA";
+        case CS_PIX_FMT_RGB8:
+            return (char*)"CS_PIX_FMT_RGB8";
         default:
             LOGE("Get image pixmat inner format failed !");
             exit(0);

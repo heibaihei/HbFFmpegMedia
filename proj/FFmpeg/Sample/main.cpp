@@ -17,7 +17,7 @@
 #include "HBVideoConcat.h"
 #include "HBVideoChangeBgmMusic.h"
 #include "FFmpegModule/Swscale/FFmpegSwscale.h"
-
+#include "MTVideoTransToGif.h"
 #include "Picture/CSPicture.h"
 
 #include <unistd.h>
@@ -28,7 +28,13 @@ int gMtmvLogLevel = LOG_LEVEL_DEBUG;
 
 int PictureCSpictureDemo();
 int main(int argc, const char * argv[]) {
-    
+    {/** 测试 mp4 文件转 gif 文件测试 demo */
+        FormatConvert::VideoFormatTranser *pVideoConverter = new FormatConvert::VideoFormatTranser();
+        pVideoConverter->setInputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.mp4"));
+        pVideoConverter->setOutputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.gif"));
+        pVideoConverter->prepare();
+        pVideoConverter->doConvert();
+    }
 //    HBFFmpegSwscale();
 //    HBPictureEncoder(argc, argv);
     
@@ -38,18 +44,18 @@ int main(int argc, const char * argv[]) {
 //    HBPickPictureFromVideo();
     
 /** ################################# >>> Audio */
-    { /** Audio decode */
-        char *strInputAudioFile = (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/src/HBDemo/audio/AudioDecoder/100.mp4";
-        char *strOutputAudioFile = (char *)"/Users/zj-db0519/Desktop/material/folder/video/100_s16_2_output.pcm";
-        AudioParams outputAudioParams;
-        outputAudioParams.sample_fmt = AV_SAMPLE_FMT_S16;
-        outputAudioParams.channels = 2;
-        outputAudioParams.channel_layout = av_get_default_channel_layout(outputAudioParams.channels);
-        outputAudioParams.sample_rate = 44100;
-        outputAudioParams.mbitRate = 64000;
-        
-        HBAudioDecoder(strInputAudioFile, strOutputAudioFile, AUDIO_DATA_TYPE_OF_PCM, &outputAudioParams);
-    }
+//    { /** Audio decode */
+//        char *strInputAudioFile = (char *)"/Users/zj-db0519/work/code/github/HbFFmpegMedia/src/HBDemo/audio/AudioDecoder/100.mp4";
+//        char *strOutputAudioFile = (char *)"/Users/zj-db0519/Desktop/material/folder/video/100_s16_2_output.pcm";
+//        AudioParams outputAudioParams;
+//        outputAudioParams.sample_fmt = AV_SAMPLE_FMT_S16;
+//        outputAudioParams.channels = 2;
+//        outputAudioParams.channel_layout = av_get_default_channel_layout(outputAudioParams.channels);
+//        outputAudioParams.sample_rate = 44100;
+//        outputAudioParams.mbitRate = 64000;
+//
+//        HBAudioDecoder(strInputAudioFile, strOutputAudioFile, AUDIO_DATA_TYPE_OF_PCM, &outputAudioParams);
+//    }
     
 //    { /** Audio decode */
 //        char *strInputAudioFile = (char *)PROJ_ROOT_PATH"/src/HBDemo/audio/AudioEncoder/skycity1_output.pcm";

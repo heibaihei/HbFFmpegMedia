@@ -48,6 +48,8 @@ typedef enum IMAGE_PIX_FORMAT {
     CS_PIX_FMT_NV12     = 3,
     CS_PIX_FMT_NV21     = 4,
     CS_PIX_FMT_YUVJ420P = 5,
+    CS_PIX_FMT_BGRA     = 6,
+    CS_PIX_FMT_RGB8     = 7,
 } IMAGE_PIX_FORMAT;
 
 typedef struct _ImageParams {

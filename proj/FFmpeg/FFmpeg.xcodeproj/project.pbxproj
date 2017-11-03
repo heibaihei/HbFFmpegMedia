@@ -19992,20 +19992,20 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
 					"\"$(SRCROOT)/../../lib/ffmpeg/include\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/include\"",
 					"\"$(SRCROOT)/../../lib/x264/include\"",
 					"\"$(SRCROOT)/../../src/HBDemo\"",
 					"\"$(SRCROOT)/../../src/HBDemo/CSModule\"",
 					"\"$(SRCROOT)/../../lib/lame/include\"",
+					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
 					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
 					"\"$(SRCROOT)/../../lib/x264/lib\"",
 					"\"$(SRCROOT)/../../lib/lame/lib\"",
+					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -20017,20 +20017,20 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
 					"\"$(SRCROOT)/../../lib/ffmpeg/include\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/include\"",
 					"\"$(SRCROOT)/../../lib/x264/include\"",
 					"\"$(SRCROOT)/../../src/HBDemo\"",
 					"\"$(SRCROOT)/../../src/HBDemo/CSModule\"",
 					"\"$(SRCROOT)/../../lib/lame/include\"",
+					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
 					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
 					"\"$(SRCROOT)/../../lib/x264/lib\"",
 					"\"$(SRCROOT)/../../lib/lame/lib\"",
+					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -20160,8 +20160,8 @@
 					/usr/local/Cellar/sdl2/2.0.4/include/SDL2,
 				);
 				LIBRARY_SEARCH_PATHS = (
-					/usr/local/Cellar/sdl2/2.0.4/lib,
 					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
+					/usr/local/Cellar/sdl2/2.0.4/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -20210,8 +20210,8 @@
 					/usr/local/Cellar/sdl2/2.0.4/include/SDL2,
 				);
 				LIBRARY_SEARCH_PATHS = (
-					/usr/local/Cellar/sdl2/2.0.4/lib,
 					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
+					/usr/local/Cellar/sdl2/2.0.4/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;

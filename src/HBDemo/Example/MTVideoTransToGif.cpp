@@ -247,6 +247,7 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
     if (!(mState & STATE_DECODE_END) && !(mState & STATE_ENCODE_ABORT)) {
         HBError = avcodec_send_frame(mPMediaEncoder->mPVideoCodecCtx, pNewFrame);
         if (HBError != 0) {
+            LOGE("image convert failed, %s", makeErrorStr(HBError));
             av_frame_free(&pNewFrame);
             if (HBError != AVERROR(EAGAIN)) {
                 mState |= STATE_ENCODE_ABORT;
@@ -266,7 +267,7 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
     }
     
     AVPacket *pNewPacket = av_packet_alloc();
-    if (pNewPacket) {
+    if (!pNewPacket) {
         LOGE("Video format transer alloc new packet room failed !");
         return -2;
     }
@@ -317,8 +318,13 @@ int VideoFormatTranser::_ImageConvert(AVFrame** pInFrame) {
         LOGE("Image convert sws failed !");
         goto IMAGE_CONVERT_END_LABEL;
     }
+    /** 此部分操作待续 */
+    pNewFrame->width = (*pInFrame)->width;
+    pNewFrame->height = (*pInFrame)->height;
+    pNewFrame->pts = (*pInFrame)->pts;
+    pNewFrame->format = getImageInnerFormat(mOutputImageParams.mPixFmt);
     
-    av_frame_free(&pNewFrame);
+    av_frame_free(pInFrame);
     *pInFrame = pNewFrame;
     return HB_OK;
     
@@ -421,6 +427,8 @@ int VideoFormatTranser::_OutputMediaInitial() {
             mOutputImageParams.mBitRate = mInputImageParams.mBitRate;
         if (mOutputImageParams.mFrameRate <= 0)
             mOutputImageParams.mFrameRate = mInputImageParams.mFrameRate;
+        mOutputImageParams.mPixFmt = CS_PIX_FMT_RGB8;
+        mOutputImageParams.mAlign = 4;
     }
     
     AVFormatContext* pFormatCtx = nullptr;
@@ -435,7 +443,7 @@ int VideoFormatTranser::_OutputMediaInitial() {
         goto OUTPUT_INITIAL_END_LABEL;
     }
     
-    pFormatCtx = mPMediaDecoder->mPVideoFormatCtx;
+    pFormatCtx = mPMediaEncoder->mPVideoFormatCtx;
     HBError = avio_open(&(pFormatCtx->pb), mOutputMediaFile, AVIO_FLAG_WRITE);
     if (HBError < 0) {
         LOGE("Avio open output file failed, %s !", av_err2str(HBError));
@@ -443,7 +451,7 @@ int VideoFormatTranser::_OutputMediaInitial() {
     }
     
     strncpy(pFormatCtx->filename, mOutputMediaFile, strlen(mOutputMediaFile));
-    mPMediaEncoder->mPVideoCodec = avcodec_find_encoder_by_name("libx264");
+    mPMediaEncoder->mPVideoCodec = avcodec_find_encoder_by_name("gif");
     if (mPMediaEncoder->mPVideoCodec == NULL) {
         LOGE("Avcodec find output encode codec failed !");
         goto OUTPUT_INITIAL_END_LABEL;
@@ -491,8 +499,8 @@ int VideoFormatTranser::_OutputMediaInitial() {
     if (pFormatCtx->oformat->flags & AVFMT_GLOBALHEADER) {
         pCodecCtx->flags |= CODEC_FLAG_GLOBAL_HEADER;
     }
-    
-    av_dict_set(&opts, "profile", "baseline", 0);
+    // huangcl
+//    av_dict_set(&opts, "profile", "baseline", 0);
     
     if (pCodecCtx->codec_id == AV_CODEC_ID_H264) {
         av_opt_set(pCodecCtx->priv_data, "level", "4.1", 0);
@@ -500,7 +508,7 @@ int VideoFormatTranser::_OutputMediaInitial() {
         av_opt_set(pCodecCtx->priv_data, "tune", "zerolatency", 0);
     }
     
-    av_dict_set(&opts, "threads", "5", 0);
+    av_dict_set(&opts, "threads", "auto", 0);
     HBError = avcodec_open2(pCodecCtx, mPMediaEncoder->mPVideoCodec, &opts);
     if (HBError < 0) {
         av_dict_free(&opts);
