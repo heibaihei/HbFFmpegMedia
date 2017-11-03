@@ -14,6 +14,7 @@
 #include "CSLog.h"
 #include "CSDefine.h"
 #include "CSCommon.h"
+#include "CSFiFoQueue.h"
 
 typedef struct SwsContext SwsContext;
 
@@ -90,6 +91,14 @@ protected:
     int _ImageConvert(AVFrame** pInFrame);
     
 private:
+    /** 是否使用同步的模式 */
+    bool mIsSyncMode;
+    pthread_t mDecodeThreadId;
+    pthread_t mEncodeThreadId;
+    FiFoQueue<AVFrame*>  *mEncodeFrameQueue;
+    FiFoQueue<AVPacket*> *mDecodePacketQueue;
+    FiFoQueue<AVPacket*> *mOutputPacketQueue;
+    
     /** 输入相关解码器媒体信息 */
     MediaCoder *mPMediaDecoder;
     MediaCoder *mPMediaEncoder;

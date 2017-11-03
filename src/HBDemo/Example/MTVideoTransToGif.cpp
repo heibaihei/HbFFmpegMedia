@@ -7,6 +7,8 @@
 //
 
 #include "MTVideoTransToGif.h"
+#include <pthread.h>
+#include <unistd.h>
 
 namespace FormatConvert {
 
@@ -23,6 +25,19 @@ namespace FormatConvert {
 #define STATE_ENCODE_END         0X0100
 #define STATE_ENCODE_FLUSHING    0X0200
 #define STATE_ENCODE_ABORT       0X0400
+
+#define MAX_FRAME_BUFFER  (5)
+typedef void *(*ThreadFunc)(void *arg);
+
+void *DecodeThreadFunc(void *arg) {
+    
+    return NULL;
+}
+
+void *EncodeThreadFunc(void *arg) {
+    
+    return NULL;
+}
 
 MediaCoder* AllocMediaCoder() {
     MediaCoder *coder = (MediaCoder *)malloc(sizeof(MediaCoder));
@@ -56,8 +71,15 @@ VideoFormatTranser::VideoFormatTranser() {
     mPVideoConvertCtx = nullptr;
     mInputMediaFile = nullptr;
     mOutputMediaFile = nullptr;
+    mDecodeThreadId = nullptr;
+    mEncodeThreadId = nullptr;
+    mIsSyncMode = false;
     ImageParamsInitial(&mInputImageParams);
     ImageParamsInitial(&mOutputImageParams);
+    
+    mEncodeFrameQueue = nullptr;
+    mDecodePacketQueue = nullptr;
+    mOutputPacketQueue = nullptr;
     
     memset(&mState, 0x00, sizeof(mState));
     mState |= STATE_UNKNOWN;
@@ -108,6 +130,23 @@ int VideoFormatTranser::doConvert() {
         goto CONVERT_END_LABEL;
     }
     
+    if (bNeedTranscode && !mIsSyncMode) {
+        mEncodeFrameQueue = new FiFoQueue<AVFrame *>(MAX_FRAME_BUFFER);
+        mDecodePacketQueue = new FiFoQueue<AVPacket *>(MAX_FRAME_BUFFER);
+        mOutputPacketQueue = new FiFoQueue<AVPacket *>(MAX_FRAME_BUFFER);
+        
+        HBError = pthread_create(&mDecodeThreadId, NULL, DecodeThreadFunc, this);
+        if (HBError < 0) {
+            LOGE("Create decode thread failed !");
+            goto CONVERT_END_LABEL;
+        }
+        HBError = pthread_create(&mEncodeThreadId, NULL, EncodeThreadFunc, this);
+        if (HBError < 0) {
+            LOGE("Create decode thread failed !");
+            goto CONVERT_END_LABEL;
+        }
+        
+    }
     pNewPacket = av_packet_alloc();
     while (!((mState & STATE_ABORT) || (mState & STATE_TRANS_END))) {
         
@@ -129,14 +168,19 @@ int VideoFormatTranser::doConvert() {
         }
         
         if (bNeedTranscode) {
-            if ((HBError = _TransMedia(&pNewPacket)) != 0) {
-                if (pNewPacket)
-                    av_packet_unref(pNewPacket);
-                if (HBError == -2) {/** 转码发生异常，则直接退出 */
-                    mState |= STATE_ABORT;
-                    LOGE("Trans video media packet occur exception !");
+            if (mIsSyncMode) {
+                if ((HBError = _TransMedia(&pNewPacket)) != 0) {
+                    if (pNewPacket)
+                        av_packet_unref(pNewPacket);
+                    if (HBError == -2) {/** 转码发生异常，则直接退出 */
+                        mState |= STATE_ABORT;
+                        LOGE("Trans video media packet occur exception !");
+                    }
+                    continue;
                 }
-                continue;
+            }
+            else {
+                
             }
         }
         
@@ -146,6 +190,16 @@ int VideoFormatTranser::doConvert() {
             mState |= STATE_ABORT;/** 如果写入失败，则直接退出 */
         }
         av_packet_unref(pNewPacket);
+    }
+    
+    if (!mIsSyncMode && mDecodeThreadId) {
+        pthread_join(mDecodeThreadId, NULL);
+        mDecodeThreadId = nullptr;
+    }
+    
+    if (!mIsSyncMode && mEncodeThreadId) {
+        pthread_join(mEncodeThreadId, NULL);
+        mEncodeThreadId = nullptr;
     }
     
     if ((HBError = av_write_trailer(mPMediaEncoder->mPVideoFormatCtx)) != 0)
@@ -184,7 +238,8 @@ int VideoFormatTranser::_release() {
     
     mPMediaDecoder->mPVideoStream = nullptr;
     mPMediaEncoder->mPVideoStream = nullptr;
-    
+    mDecodeThreadId = nullptr;
+    mEncodeThreadId = nullptr;
     memset(&mState, 0x00, sizeof(mState));
     mState |= STATE_UNKNOWN;
     return HB_OK;
