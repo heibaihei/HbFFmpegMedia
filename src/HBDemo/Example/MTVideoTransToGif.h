@@ -23,6 +23,7 @@ namespace FormatConvert {
 typedef struct MediaCoder {
     /** 解码器相关信息 */
     AVFormatContext* mPVideoFormatCtx;
+    AVStream* mPVideoStream;
     AVCodecContext* mPVideoCodecCtx;
     AVCodec* mPVideoCodec;
     int mVideoStreamIndex;

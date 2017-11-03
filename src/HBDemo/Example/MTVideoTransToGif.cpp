@@ -29,6 +29,7 @@ MediaCoder* AllocMediaCoder() {
     if (coder) {
         coder->mPVideoFormatCtx = nullptr;
         coder->mPVideoCodecCtx = nullptr;
+        coder->mPVideoStream = nullptr;
         coder->mPVideoCodec = nullptr;
         coder->mVideoStreamIndex = INVALID_STREAM_INDEX;
     }
@@ -116,7 +117,7 @@ int VideoFormatTranser::doConvert() {
                 mState |= STATE_READ_END;
                 if (HBError == AVERROR_EOF && !bNeedTranscode)
                     mState |= STATE_TRANS_END;
-                LOGW("Video Format tracnser read input data finished !");
+                LOGW("Read input video data end !");
                 continue;
             }
             
@@ -141,7 +142,7 @@ int VideoFormatTranser::doConvert() {
         
         HBError = av_interleaved_write_frame(mPMediaEncoder->mPVideoFormatCtx, pNewPacket);
         if (HBError < 0) {
-            LOGE("Video format transer write frame failed !");
+            LOGE("Write frame failed !");
             mState |= STATE_ABORT;/** 如果写入失败，则直接退出 */
         }
         av_packet_unref(pNewPacket);
@@ -181,6 +182,9 @@ int VideoFormatTranser::_release() {
     if (mPMediaDecoder->mPVideoFormatCtx)
         avformat_close_input(&(mPMediaDecoder->mPVideoFormatCtx));
     
+    mPMediaDecoder->mPVideoStream = nullptr;
+    mPMediaEncoder->mPVideoStream = nullptr;
+    
     memset(&mState, 0x00, sizeof(mState));
     mState |= STATE_UNKNOWN;
     return HB_OK;
@@ -213,6 +217,7 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
                  && ((mState & STATE_READ_END) || (mState & STATE_DECODE_ABORT))) {
             HBError = avcodec_send_packet(mPMediaDecoder->mPVideoCodecCtx, NULL);
             mState |= STATE_DECODE_FLUSHING;
+            LOGW("Decode process into flush buffer !");
         }
         
         pNewFrame = av_frame_alloc();
@@ -226,6 +231,7 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
             if (HBError != 0) {
                 if ((HBError != AVERROR(EAGAIN)) || (mState & STATE_DECODE_FLUSHING)) {
                     mState |= STATE_DECODE_END;
+                    LOGW("Decode process end!");
                 }
                 av_frame_free(&pNewFrame);
                 return -1;
@@ -264,6 +270,7 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
              && ((mState & STATE_DECODE_END) || (mState & STATE_ENCODE_ABORT))) {
         HBError = avcodec_send_frame(mPMediaEncoder->mPVideoCodecCtx, NULL);
         mState |= STATE_ENCODE_FLUSHING;
+        LOGW("Encode process into flush buffer !");
     }
     
     AVPacket *pNewPacket = av_packet_alloc();
@@ -275,12 +282,17 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
     while (true) {
         HBError = avcodec_receive_packet(mPMediaEncoder->mPVideoCodecCtx, pNewPacket);
         if (HBError != 0) {
-            if ((HBError != AVERROR(EAGAIN)) || (mState & STATE_ENCODE_FLUSHING)) {
-                mState |= STATE_ENCODE_END;
+            if ((HBError != AVERROR(EAGAIN))) {
+                if (mState & STATE_ENCODE_FLUSHING) {
+                    LOGW("tran codec finished !%s", av_err2str(HBError));
+                    mState |= STATE_ENCODE_END;
+                }
+                else {
+                    LOGE("trans decode video frame failed !%s", av_err2str(HBError));
+                    mState |= STATE_ENCODE_ABORT;
+                }
                 mState |= STATE_TRANS_END;
             }
-            if (HBError != AVERROR(EAGAIN))
-                LOGE("Video format trans decode video frame failed !%s", av_err2str(HBError));
             av_packet_free(&pNewPacket);
             return -1;
         }
@@ -321,7 +333,9 @@ int VideoFormatTranser::_ImageConvert(AVFrame** pInFrame) {
     /** 此部分操作待续 */
     pNewFrame->width = (*pInFrame)->width;
     pNewFrame->height = (*pInFrame)->height;
-    pNewFrame->pts = (*pInFrame)->pts;
+    pNewFrame->pts =  av_rescale_q((*pInFrame)->pts, \
+                                   mPMediaDecoder->mPVideoStream->time_base, \
+                                   mPMediaEncoder->mPVideoStream->time_base);
     pNewFrame->format = getImageInnerFormat(mOutputImageParams.mPixFmt);
     
     av_frame_free(pInFrame);
@@ -352,10 +366,12 @@ int VideoFormatTranser::_InputMediaInitial() {
     }
     
     pFormatCtx = mPMediaDecoder->mPVideoFormatCtx;
+    mPMediaDecoder->mPVideoStream = nullptr;
     mPMediaDecoder->mVideoStreamIndex = INVALID_STREAM_INDEX;
     for (int i=0; i<pFormatCtx->nb_streams; i++) {
         if (pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             mPMediaDecoder->mVideoStreamIndex = i;
+            mPMediaDecoder->mPVideoStream = pFormatCtx->streams[i];
             break;
         }
     }
@@ -413,6 +429,7 @@ INPUT_INITIAL_END_LABEL:
         mPMediaDecoder->mPVideoFormatCtx = nullptr;
     }
     mPMediaDecoder->mVideoStreamIndex = INVALID_STREAM_INDEX;
+    mPMediaDecoder->mPVideoStream = nullptr;
     return HB_ERROR;
 }
 
@@ -465,6 +482,7 @@ int VideoFormatTranser::_OutputMediaInitial() {
     pVideoStream->time_base.num = 1;
     pVideoStream->time_base.den = 90000;
     mPMediaEncoder->mVideoStreamIndex = pVideoStream->index;
+    mPMediaEncoder->mPVideoStream = pVideoStream;
     
     mPMediaEncoder->mPVideoCodecCtx = avcodec_alloc_context3(mPMediaEncoder->mPVideoCodec);
     if (mPMediaEncoder->mPVideoCodecCtx == NULL) {
@@ -499,9 +517,8 @@ int VideoFormatTranser::_OutputMediaInitial() {
     if (pFormatCtx->oformat->flags & AVFMT_GLOBALHEADER) {
         pCodecCtx->flags |= CODEC_FLAG_GLOBAL_HEADER;
     }
-    // huangcl
+
 //    av_dict_set(&opts, "profile", "baseline", 0);
-    
     if (pCodecCtx->codec_id == AV_CODEC_ID_H264) {
         av_opt_set(pCodecCtx->priv_data, "level", "4.1", 0);
         av_opt_set(pCodecCtx->priv_data, "preset", "superfast", 0);
