@@ -57,11 +57,17 @@ VideoFormatTranser::VideoFormatTranser() {
     mOutputMediaFile = nullptr;
     ImageParamsInitial(&mInputImageParams);
     ImageParamsInitial(&mOutputImageParams);
+    
     memset(&mState, 0x00, sizeof(mState));
     mState |= STATE_UNKNOWN;
 }
 
 int VideoFormatTranser::prepare() {
+    if (!(mState & STATE_UNKNOWN)) {
+        LOGE("Video transer state error, no initial state, can't do prepare !");
+        return HB_ERROR;
+    }
+    
     av_register_all();
     avformat_network_init();
     
@@ -69,9 +75,6 @@ int VideoFormatTranser::prepare() {
         LOGE("Input media initial failed !");
         goto PREPARE_END_LABEL;
     }
-    
-    /** TODO：暂时拷贝输入视频的参数作为输出视频的参数 */
-    memcpy(&mOutputImageParams, &mInputImageParams, sizeof(ImageParams));
     
     if (_OutputMediaInitial() != HB_OK) {
         LOGE("Output media initial failed !");
@@ -86,24 +89,25 @@ int VideoFormatTranser::prepare() {
     return HB_OK;
     
 PREPARE_END_LABEL:
-    mState |= STATE_ABORT;
+    _release();
     return HB_ERROR;
 }
 
 int VideoFormatTranser::doConvert() {
-    int HBError = HB_ERROR;
     if (!(mState & STATE_INITIALED)) {
         LOGE("Video format transer has't initial, can't do format convert !");
-        return HBError;
+        return HB_ERROR;
     }
     
+    int HBError = HB_ERROR;
+    AVPacket *pNewPacket = nullptr;
+    bool bNeedTranscode = ((mPVideoConvertCtx || (mPMediaDecoder->mPVideoCodec->id != mPMediaEncoder->mPVideoCodec->id)) ? true : false);
     if ((HBError = avformat_write_header(mPMediaEncoder->mPVideoFormatCtx, NULL)) < 0) {
         LOGE("Avformat write header failed, %s!", makeErrorStr(HBError));
-        return HBError;
+        goto CONVERT_END_LABEL;
     }
     
-    bool bNeedTranscode = ((mPVideoConvertCtx || (mPMediaDecoder->mPVideoCodec->id != mPMediaEncoder->mPVideoCodec->id)) ? true : false);
-    AVPacket *pNewPacket = av_packet_alloc();
+    pNewPacket = av_packet_alloc();
     while (!((mState & STATE_ABORT) || (mState & STATE_TRANS_END))) {
         
         if (!(mState & STATE_READ_END)) {
@@ -148,26 +152,20 @@ int VideoFormatTranser::doConvert() {
         av_packet_unref(pNewPacket);
     }
     
-    if ((HBError = av_write_trailer(mPMediaEncoder->mPVideoFormatCtx)) != 0) {
+    if ((HBError = av_write_trailer(mPMediaEncoder->mPVideoFormatCtx)) != 0)
         LOGE("AVformat wirte tailer failed, %s ", makeErrorStr(HBError));
-    }
     
-    if (bNeedTranscode) {
-        if (mPMediaDecoder->mPVideoCodecCtx) {
-            if (avcodec_is_open(mPMediaDecoder->mPVideoCodecCtx))
-                avcodec_close(mPMediaDecoder->mPVideoCodecCtx);
-        }
-        if (mPMediaEncoder->mPVideoCodecCtx) {
-            if (avcodec_is_open(mPMediaEncoder->mPVideoCodecCtx))
-                avcodec_close(mPMediaEncoder->mPVideoCodecCtx);
-        }
-    }
-    
-    avformat_close_input(&mPMediaEncoder->mPVideoFormatCtx);
+    av_packet_free(&pNewPacket);
+    _release();
     return HB_OK;
+
+CONVERT_END_LABEL:
+    av_packet_free(&pNewPacket);
+    _release();
+    return HB_ERROR;
 }
 
-int VideoFormatTranser::release() {
+int VideoFormatTranser::_release() {
     if (mPMediaDecoder->mPVideoCodecCtx) {
         if (avcodec_is_open(mPMediaDecoder->mPVideoCodecCtx))
             avcodec_close(mPMediaDecoder->mPVideoCodecCtx);
@@ -183,9 +181,13 @@ int VideoFormatTranser::release() {
         mPMediaEncoder->mPVideoCodec = nullptr;
     }
     
-    avformat_close_input(&(mPMediaEncoder->mPVideoFormatCtx));
-    avformat_close_input(&(mPMediaDecoder->mPVideoFormatCtx));
+    if (mPMediaEncoder->mPVideoFormatCtx)
+        avformat_close_input(&(mPMediaEncoder->mPVideoFormatCtx));
+    if (mPMediaDecoder->mPVideoFormatCtx)
+        avformat_close_input(&(mPMediaDecoder->mPVideoFormatCtx));
     
+    memset(&mState, 0x00, sizeof(mState));
+    mState |= STATE_UNKNOWN;
     return HB_OK;
 }
 
@@ -311,19 +313,23 @@ int VideoFormatTranser::_ImageConvert(AVFrame** pInFrame) {
 }
 
 int VideoFormatTranser::_InputMediaInitial() {
+    AVDictionaryEntry *tag = NULL;
+    AVFormatContext* pFormatCtx = nullptr;
+    AVStream* pVideoStream = nullptr;
+    
     int HBError = avformat_open_input(&(mPMediaDecoder->mPVideoFormatCtx), mInputMediaFile, NULL, NULL);
     if (HBError != 0) {
         LOGE("Video decoder couldn't open input file <%s>", av_err2str(HBError));
-        return HB_ERROR;
+        goto INPUT_INITIAL_END_LABEL;
     }
     
     HBError = avformat_find_stream_info(mPMediaDecoder->mPVideoFormatCtx, NULL);
     if (HBError < 0) {
         LOGE("Video decoder couldn't find stream information. <%s>", av_err2str(HBError));
-        return HB_ERROR;
+        goto INPUT_INITIAL_END_LABEL;
     }
     
-    AVFormatContext* pFormatCtx = mPMediaDecoder->mPVideoFormatCtx;
+    pFormatCtx = mPMediaDecoder->mPVideoFormatCtx;
     mPMediaDecoder->mVideoStreamIndex = INVALID_STREAM_INDEX;
     for (int i=0; i<pFormatCtx->nb_streams; i++) {
         if (pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
@@ -334,25 +340,23 @@ int VideoFormatTranser::_InputMediaInitial() {
     
     if (mPMediaDecoder->mVideoStreamIndex == INVALID_STREAM_INDEX) {
         LOGW("Video decoder counldn't find valid audio stream !");
-        return HB_ERROR;
+        goto INPUT_INITIAL_END_LABEL;
     }
     
-    AVStream* pVideoStream = pFormatCtx->streams[mPMediaDecoder->mVideoStreamIndex];
+    pVideoStream = pFormatCtx->streams[mPMediaDecoder->mVideoStreamIndex];
     mPMediaDecoder->mPVideoCodec = avcodec_find_decoder(pVideoStream->codecpar->codec_id);
     if (!mPMediaDecoder->mPVideoCodec) {
         LOGE("Codec <%d> not found !", pVideoStream->codecpar->codec_id);
-        return HB_ERROR;
+        goto INPUT_INITIAL_END_LABEL;
     }
     
     mPMediaDecoder->mPVideoCodecCtx = avcodec_alloc_context3(mPMediaDecoder->mPVideoCodec);
     if (!mPMediaDecoder->mPVideoCodecCtx) {
         LOGE("Codec ctx <%d> not found !", pVideoStream->codecpar->codec_id);
-        return HB_ERROR;
+        goto INPUT_INITIAL_END_LABEL;
     }
     avcodec_parameters_to_context(mPMediaDecoder->mPVideoCodecCtx, pVideoStream->codecpar);
     
-    
-    AVDictionaryEntry *tag = NULL;
     tag = av_dict_get(pVideoStream->metadata, "rotate", tag, 0);
     if (tag != NULL) {
         mInputImageParams.mRotate = atoi(tag->value);
@@ -366,45 +370,73 @@ int VideoFormatTranser::_InputMediaInitial() {
     mInputImageParams.mPixFmt = getImageExternFormat((AVPixelFormat)(pVideoStream->codecpar->format));
     mInputImageParams.mFrameRate = pVideoStream->avg_frame_rate.num * 1.0 / pVideoStream->avg_frame_rate.den;
     mInputImageParams.mDataSize = av_image_get_buffer_size((AVPixelFormat)(pVideoStream->codecpar->format), \
-                                                           mInputImageParams.mWidth, mInputImageParams.mHeight, mInputImageParams.mAlign);
-
+                                       mInputImageParams.mWidth, mInputImageParams.mHeight, mInputImageParams.mAlign);
+    
     av_dump_format(pFormatCtx, mPMediaDecoder->mVideoStreamIndex, mInputMediaFile, 0);
 
     HBError = avcodec_open2(mPMediaDecoder->mPVideoCodecCtx, mPMediaEncoder->mPVideoCodec, NULL);
     if (HBError < 0) {
         LOGE("Could not open codec. <%s>", av_err2str(HBError));
-        return HB_ERROR;
+        goto INPUT_INITIAL_END_LABEL;
     }
     
     return HB_OK;
+INPUT_INITIAL_END_LABEL:
+    if (mPMediaDecoder->mPVideoCodecCtx) {
+        avcodec_close(mPMediaDecoder->mPVideoCodecCtx);
+        avcodec_free_context(&(mPMediaDecoder->mPVideoCodecCtx));
+    }
+    if (mPMediaDecoder->mPVideoFormatCtx) {
+        avformat_close_input(&(mPMediaDecoder->mPVideoFormatCtx));
+        mPMediaDecoder->mPVideoFormatCtx = nullptr;
+    }
+    mPMediaDecoder->mVideoStreamIndex = INVALID_STREAM_INDEX;
+    return HB_ERROR;
 }
 
 int VideoFormatTranser::_OutputMediaInitial() {
+    
+    {/** 参数初始化 */
+        if (mOutputImageParams.mWidth <= 0 || mOutputImageParams.mHeight <= 0) {
+            mOutputImageParams.mWidth = mInputImageParams.mWidth;
+            mOutputImageParams.mHeight = mInputImageParams.mHeight;
+        }
+        if (mOutputImageParams.mBitRate <= 1000)
+            mOutputImageParams.mBitRate = mInputImageParams.mBitRate;
+        if (mOutputImageParams.mFrameRate <= 0)
+            mOutputImageParams.mFrameRate = mInputImageParams.mFrameRate;
+    }
+    
+    AVFormatContext* pFormatCtx = nullptr;
+    AVStream *pVideoStream = nullptr;
+    AVCodecContext *pCodecCtx = nullptr;
+    AVDictionary *opts = NULL;
+    
     /** 是否要指定输出格式为 gif */
     int HBError = avformat_alloc_output_context2(&(mPMediaEncoder->mPVideoFormatCtx), NULL, NULL, mOutputMediaFile);
     if (HBError < 0) {
         LOGE("Create output media avforamt failed, %s !", av_err2str(HBError));
-        return HBError;
+        goto OUTPUT_INITIAL_END_LABEL;
     }
     
-    AVFormatContext* pFormatCtx = mPMediaDecoder->mPVideoFormatCtx;
+    pFormatCtx = mPMediaDecoder->mPVideoFormatCtx;
     HBError = avio_open(&(pFormatCtx->pb), mOutputMediaFile, AVIO_FLAG_WRITE);
     if (HBError < 0) {
         LOGE("Avio open output file failed, %s !", av_err2str(HBError));
-        return HBError;
+        goto OUTPUT_INITIAL_END_LABEL;
     }
-    strncpy(pFormatCtx->filename, mOutputMediaFile, strlen(mOutputMediaFile));
     
+    strncpy(pFormatCtx->filename, mOutputMediaFile, strlen(mOutputMediaFile));
     mPMediaEncoder->mPVideoCodec = avcodec_find_encoder_by_name("libx264");
     if (mPMediaEncoder->mPVideoCodec == NULL) {
         LOGE("Avcodec find output encode codec failed !");
-        return HBError;
+        goto OUTPUT_INITIAL_END_LABEL;
     }
     
-    AVStream *pVideoStream = avformat_new_stream(mPMediaEncoder->mPVideoFormatCtx, mPMediaEncoder->mPVideoCodec);
+    pVideoStream = avformat_new_stream(mPMediaEncoder->mPVideoFormatCtx, mPMediaEncoder->mPVideoCodec);
     if (pVideoStream == NULL) {
         LOGE("Avformat new output video stream failed !");
-        return HBError;
+        goto OUTPUT_INITIAL_END_LABEL;
     }
     pVideoStream->time_base.num = 1;
     pVideoStream->time_base.den = 90000;
@@ -413,10 +445,10 @@ int VideoFormatTranser::_OutputMediaInitial() {
     mPMediaEncoder->mPVideoCodecCtx = avcodec_alloc_context3(mPMediaEncoder->mPVideoCodec);
     if (mPMediaEncoder->mPVideoCodecCtx == NULL) {
         LOGE("avcodec context alloc output video context failed !");
-        return HBError;
+        goto OUTPUT_INITIAL_END_LABEL;
     }
-    AVCodecContext *pCodecCtx = mPMediaEncoder->mPVideoCodecCtx;
     
+    pCodecCtx = mPMediaEncoder->mPVideoCodecCtx;
     if (mOutputImageParams.mWidth < 0) {
         pCodecCtx->width = -mOutputImageParams.mWidth;
     } else {
@@ -443,7 +475,7 @@ int VideoFormatTranser::_OutputMediaInitial() {
     if (pFormatCtx->oformat->flags & AVFMT_GLOBALHEADER) {
         pCodecCtx->flags |= CODEC_FLAG_GLOBAL_HEADER;
     }
-    AVDictionary *opts = NULL;
+    
     av_dict_set(&opts, "profile", "baseline", 0);
     
     if (pCodecCtx->codec_id == AV_CODEC_ID_H264) {
@@ -457,14 +489,14 @@ int VideoFormatTranser::_OutputMediaInitial() {
     if (HBError < 0) {
         av_dict_free(&opts);
         LOGE("Avcodec open output failed !");
-        return HBError;
+        goto OUTPUT_INITIAL_END_LABEL;
     }
     av_dict_free(&opts);
     
     HBError = avcodec_parameters_from_context(pVideoStream->codecpar, pCodecCtx);
     if (HBError < 0) {
         LOGE("AVcodec Copy context paramter error!\n");
-        return HBError;
+        goto OUTPUT_INITIAL_END_LABEL;
     }
     
     mOutputImageParams.mBitRate = pVideoStream->codecpar->bit_rate;
@@ -473,10 +505,21 @@ int VideoFormatTranser::_OutputMediaInitial() {
     mOutputImageParams.mPixFmt = getImageExternFormat((AVPixelFormat)(pVideoStream->codecpar->format));
     mOutputImageParams.mFrameRate = pVideoStream->avg_frame_rate.num * 1.0 / pVideoStream->avg_frame_rate.den;
     mOutputImageParams.mDataSize = av_image_get_buffer_size((AVPixelFormat)(pVideoStream->codecpar->format), \
-                                                           mOutputImageParams.mWidth, mOutputImageParams.mHeight, mOutputImageParams.mAlign);
-    
+                                      mOutputImageParams.mWidth, mOutputImageParams.mHeight, mOutputImageParams.mAlign);
     av_dump_format(pFormatCtx, mPMediaEncoder->mVideoStreamIndex, mOutputMediaFile, 1);
     return HB_OK;
+    
+OUTPUT_INITIAL_END_LABEL:
+    if (mPMediaEncoder->mPVideoCodecCtx) {
+        avcodec_close(mPMediaEncoder->mPVideoCodecCtx);
+        avcodec_free_context(&(mPMediaEncoder->mPVideoCodecCtx));
+    }
+    mPMediaEncoder->mPVideoCodec = nullptr;
+    if (mPMediaEncoder->mPVideoFormatCtx) {
+        avformat_close_input(&(mPMediaEncoder->mPVideoFormatCtx));
+        mPMediaEncoder->mPVideoFormatCtx = nullptr;
+    }
+    return HB_ERROR;
 }
 
 int VideoFormatTranser::_SwsMediaInitial() {

@@ -58,12 +58,12 @@ public:
      */
     int doConvert();
     
+protected:
     /**
      *  释放空间
      */
-    int release();
+    int _release();
     
-protected:
     /** 内部接口 */
     /** 输入 & 输出媒体初始化 */
     int _InputMediaInitial();
