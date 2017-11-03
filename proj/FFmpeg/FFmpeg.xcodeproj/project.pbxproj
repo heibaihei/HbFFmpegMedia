@@ -19992,6 +19992,7 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
+					"/usr/local/hcl-test/include",
 					"\"$(SRCROOT)/../../lib/ffmpeg/include\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/include\"",
 					"\"$(SRCROOT)/../../lib/x264/include\"",
@@ -20001,6 +20002,7 @@
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
+					"/usr/local/hcl-test/lib",
 					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
 					"\"$(SRCROOT)/../../lib/x264/lib\"",
@@ -20017,6 +20019,7 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
+					"/usr/local/hcl-test/include",
 					"\"$(SRCROOT)/../../lib/ffmpeg/include\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/include\"",
 					"\"$(SRCROOT)/../../lib/x264/include\"",
@@ -20026,6 +20029,7 @@
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
+					"/usr/local/hcl-test/lib",
 					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
 					"\"$(SRCROOT)/../../lib/x264/lib\"",

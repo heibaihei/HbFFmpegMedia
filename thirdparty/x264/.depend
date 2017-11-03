@@ -3,19 +3,20 @@ common/mc.o: common/mc.c common/common.h common/osdep.h config.h x264.h \
   common/cabac.h common/bitstream.h common/set.h common/predict.h \
   common/pixel.h common/mc.h common/frame.h common/dct.h common/quant.h \
   common/cpu.h common/threadpool.h common/macroblock.h common/x86/util.h \
-  common/rectangle.h
+  common/rectangle.h common/x86/mc.h
 common/predict.o: common/predict.c common/common.h common/osdep.h \
   config.h x264.h x264_config.h common/opencl.h extras/cl.h \
   extras/cl_platform.h common/cabac.h common/bitstream.h common/set.h \
   common/predict.h common/pixel.h common/mc.h common/frame.h \
   common/dct.h common/quant.h common/cpu.h common/threadpool.h \
-  common/macroblock.h common/x86/util.h common/rectangle.h
+  common/macroblock.h common/x86/util.h common/rectangle.h \
+  common/x86/predict.h
 common/pixel.o: common/pixel.c common/common.h common/osdep.h config.h \
   x264.h x264_config.h common/opencl.h extras/cl.h extras/cl_platform.h \
   common/cabac.h common/bitstream.h common/set.h common/predict.h \
   common/pixel.h common/mc.h common/frame.h common/dct.h common/quant.h \
   common/cpu.h common/threadpool.h common/macroblock.h common/x86/util.h \
-  common/rectangle.h
+  common/rectangle.h common/x86/pixel.h common/x86/predict.h
 common/macroblock.o: common/macroblock.c common/common.h common/osdep.h \
   config.h x264.h x264_config.h common/opencl.h extras/cl.h \
   extras/cl_platform.h common/cabac.h common/bitstream.h common/set.h \
@@ -33,7 +34,7 @@ common/dct.o: common/dct.c common/common.h common/osdep.h config.h x264.h \
   common/cabac.h common/bitstream.h common/set.h common/predict.h \
   common/pixel.h common/mc.h common/frame.h common/dct.h common/quant.h \
   common/cpu.h common/threadpool.h common/macroblock.h common/x86/util.h \
-  common/rectangle.h
+  common/rectangle.h common/x86/dct.h
 common/cpu.o: common/cpu.c common/common.h common/osdep.h config.h x264.h \
   x264_config.h common/opencl.h extras/cl.h extras/cl_platform.h \
   common/cabac.h common/bitstream.h common/set.h common/predict.h \
@@ -75,7 +76,7 @@ common/quant.o: common/quant.c common/common.h common/osdep.h config.h \
   common/cabac.h common/bitstream.h common/set.h common/predict.h \
   common/pixel.h common/mc.h common/frame.h common/dct.h common/quant.h \
   common/cpu.h common/threadpool.h common/macroblock.h common/x86/util.h \
-  common/rectangle.h
+  common/rectangle.h common/x86/quant.h
 common/deblock.o: common/deblock.c common/common.h common/osdep.h \
   config.h x264.h x264_config.h common/opencl.h extras/cl.h \
   extras/cl_platform.h common/cabac.h common/bitstream.h common/set.h \
@@ -168,6 +169,20 @@ common/threadpool.o: common/threadpool.c common/common.h common/osdep.h \
   common/predict.h common/pixel.h common/mc.h common/frame.h \
   common/dct.h common/quant.h common/cpu.h common/threadpool.h \
   common/macroblock.h common/x86/util.h common/rectangle.h
+common/x86/mc-c.o: common/x86/mc-c.c common/common.h common/osdep.h \
+  config.h x264.h x264_config.h common/opencl.h extras/cl.h \
+  extras/cl_platform.h common/cabac.h common/bitstream.h common/set.h \
+  common/predict.h common/pixel.h common/mc.h common/frame.h \
+  common/dct.h common/quant.h common/cpu.h common/threadpool.h \
+  common/macroblock.h common/x86/util.h common/rectangle.h \
+  common/x86/mc.h
+common/x86/predict-c.o: common/x86/predict-c.c common/common.h \
+  common/osdep.h config.h x264.h x264_config.h common/opencl.h \
+  extras/cl.h extras/cl_platform.h common/cabac.h common/bitstream.h \
+  common/set.h common/predict.h common/pixel.h common/mc.h \
+  common/frame.h common/dct.h common/quant.h common/cpu.h \
+  common/threadpool.h common/macroblock.h common/x86/util.h \
+  common/rectangle.h common/x86/predict.h common/x86/pixel.h
 common/opencl.o: common/opencl.c common/common.h common/osdep.h config.h \
   x264.h x264_config.h common/opencl.h extras/cl.h extras/cl_platform.h \
   common/cabac.h common/bitstream.h common/set.h common/predict.h \
@@ -188,33 +203,33 @@ x264.o: x264.c common/common.h common/osdep.h config.h x264.h \
   common/cpu.h common/threadpool.h common/macroblock.h common/x86/util.h \
   common/rectangle.h x264cli.h input/input.h output/output.h \
   filters/filters.h filters/video/video.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavformat/avformat.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavcodec/avcodec.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/samplefmt.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/avutil.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/common.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/attributes.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/macros.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/version.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/avconfig.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/mem.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/error.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/rational.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/mathematics.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/intfloat.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/log.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/pixfmt.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/buffer.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/cpu.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/channel_layout.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/dict.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/frame.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavcodec/version.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavformat/avio.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavformat/version.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/pixdesc.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libswscale/swscale.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libswscale/version.h
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavformat/avformat.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavcodec/avcodec.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/samplefmt.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/avutil.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/common.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/attributes.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/macros.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/version.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/avconfig.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/mem.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/error.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/rational.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/mathematics.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/intfloat.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/log.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/pixfmt.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/buffer.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/cpu.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/channel_layout.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/dict.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/frame.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavcodec/version.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavformat/avio.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavformat/version.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/pixdesc.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libswscale/swscale.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libswscale/version.h
 input/input.o: input/input.c input/input.h x264cli.h common/common.h \
   common/osdep.h config.h x264.h x264_config.h common/opencl.h \
   extras/cl.h extras/cl_platform.h common/cabac.h common/bitstream.h \
@@ -314,25 +329,25 @@ filters/video/resize.o: filters/video/resize.c filters/video/video.h \
   common/pixel.h common/mc.h common/frame.h common/dct.h common/quant.h \
   common/cpu.h common/threadpool.h common/macroblock.h common/x86/util.h \
   common/rectangle.h filters/filters.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libswscale/swscale.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/avutil.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/common.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/attributes.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/macros.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/version.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/avconfig.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/mem.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/error.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/rational.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/mathematics.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/intfloat.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/log.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/pixfmt.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libswscale/version.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/opt.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/dict.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/samplefmt.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/pixdesc.h
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libswscale/swscale.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/avutil.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/common.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/attributes.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/macros.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/version.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/avconfig.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/mem.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/error.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/rational.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/mathematics.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/intfloat.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/log.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/pixfmt.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libswscale/version.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/opt.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/dict.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/samplefmt.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/pixdesc.h
 filters/video/cache.o: filters/video/cache.c filters/video/video.h \
   input/input.h x264cli.h common/common.h common/osdep.h config.h x264.h \
   x264_config.h common/opencl.h extras/cl.h extras/cl_platform.h \
@@ -377,10 +392,10 @@ input/avs.o: input/avs.c input/input.h x264cli.h common/common.h \
   common/frame.h common/dct.h common/quant.h common/cpu.h \
   common/threadpool.h common/macroblock.h common/x86/util.h \
   common/rectangle.h extras/avxsynth_c.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/pixfmt.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/avconfig.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/version.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/macros.h
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/pixfmt.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/avconfig.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/version.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/macros.h
 input/thread.o: input/thread.c input/input.h x264cli.h common/common.h \
   common/osdep.h config.h x264.h x264_config.h common/opencl.h \
   extras/cl.h extras/cl_platform.h common/cabac.h common/bitstream.h \
@@ -395,28 +410,28 @@ input/lavf.o: input/lavf.c input/input.h x264cli.h common/common.h \
   common/frame.h common/dct.h common/quant.h common/cpu.h \
   common/threadpool.h common/macroblock.h common/x86/util.h \
   common/rectangle.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavformat/avformat.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavcodec/avcodec.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/samplefmt.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/avutil.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/common.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/attributes.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/macros.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/version.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/avconfig.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/mem.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/error.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/rational.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/mathematics.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/intfloat.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/log.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/pixfmt.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/buffer.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/cpu.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/channel_layout.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/dict.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/frame.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavcodec/version.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavformat/avio.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavformat/version.h \
-  /usr/local/Cellar/ffmpeg/3.2.1/include/libavutil/pixdesc.h
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavformat/avformat.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavcodec/avcodec.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/samplefmt.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/avutil.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/common.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/attributes.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/macros.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/version.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/avconfig.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/mem.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/error.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/rational.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/mathematics.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/intfloat.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/log.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/pixfmt.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/buffer.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/cpu.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/channel_layout.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/dict.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/frame.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavcodec/version.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavformat/avio.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavformat/version.h \
+  /usr/local/Cellar/ffmpeg/3.3.4/include/libavutil/pixdesc.h
