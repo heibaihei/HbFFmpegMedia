@@ -29,7 +29,6 @@ typedef struct MediaCoder {
 } MediaCoder;
 
 MediaCoder* AllocMediaCoder();
-void FreeMediaCoder(MediaCoder* pCoder);
 void ImageParamsInitial(ImageParams *pParams);
     
 typedef class VideoFormatTranser {
@@ -42,6 +41,13 @@ public:
      */
     void setInputVideoMediaFile(char *pFilePath);
     void setOutputVideoMediaFile(char *pFilePath);
+    
+    /** 设置输出的视频宽高 */
+    void setVideoOutputSize(int width, int height);
+    /** 设置输出码率 */
+    void setVideoOutputBitrate(int64_t bitrate);
+    /** 设置输出帧率 */
+    void setVideoOutputFrameRate(float frameRate);
     
     /**
      *  准备工作

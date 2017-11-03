@@ -35,11 +35,6 @@ MediaCoder* AllocMediaCoder() {
     return coder;
 }
 
-void FreeMediaCoder(MediaCoder* pCoder) {
-/**  huangcl 待补充如何释放的操作 */
-    
-}
-
 void ImageParamsInitial(ImageParams *pParams) {
     if (pParams) {
         pParams->mPixFmt = CS_PIX_FMT_YUV420P;
@@ -511,6 +506,19 @@ void VideoFormatTranser::setInputVideoMediaFile(char *pFilePath) {
     if (mInputMediaFile)
         av_freep(&mInputMediaFile);
     mInputMediaFile = av_strdup(pFilePath);
+}
+
+void VideoFormatTranser::setVideoOutputFrameRate(float frameRate) {
+    mOutputImageParams.mFrameRate = frameRate;
+}
+
+void VideoFormatTranser::setVideoOutputBitrate(int64_t bitrate) {
+    mOutputImageParams.mBitRate = bitrate;
+}
+
+void VideoFormatTranser::setVideoOutputSize(int width, int height) {
+    mOutputImageParams.mWidth = width;
+    mOutputImageParams.mHeight = height;
 }
 
 void VideoFormatTranser::setOutputVideoMediaFile(char *pFilePath) {
