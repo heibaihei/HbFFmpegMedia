@@ -29,16 +29,6 @@ namespace FormatConvert {
 #define MAX_FRAME_BUFFER  (5)
 typedef void *(*ThreadFunc)(void *arg);
 
-void *DecodeThreadFunc(void *arg) {
-    
-    return NULL;
-}
-
-void *EncodeThreadFunc(void *arg) {
-    
-    return NULL;
-}
-
 MediaCoder* AllocMediaCoder() {
     MediaCoder *coder = (MediaCoder *)malloc(sizeof(MediaCoder));
     if (coder) {
@@ -63,6 +53,149 @@ void ImageParamsInitial(ImageParams *pParams) {
         pParams->mRotate = 0;
         pParams->mFrameRate = 0.0;
     }
+}
+
+void *VideoFormatTranser::DecodeThreadFunc(void *arg) {
+    if (!arg)
+        return NULL;
+    
+    int HBError = -1;
+    AVPacket* pNewPacket = nullptr;
+    VideoFormatTranser *pVideoTranser = (VideoFormatTranser *)arg;
+    MediaCoder * pMediaDecoder = pVideoTranser->mPMediaDecoder;
+    while (!(pVideoTranser->mState & STATE_DECODE_END)) {
+        /** TODO: 从需要编码的数据包队列中取出待解码的数据包 */
+    
+        if (!(pVideoTranser->mState & STATE_READ_END) \
+            && !(pVideoTranser->mState & STATE_DECODE_ABORT)) {
+            /** 只有读数据包未结束以及本身解码器没有发生异常，说明都要往里面丢数据 */
+            HBError = avcodec_send_packet(pMediaDecoder->mPVideoCodecCtx, pNewPacket);
+            if (HBError != 0) {
+                if (HBError != AVERROR(EAGAIN)) {
+                    pVideoTranser->mState |= STATE_DECODE_ABORT;
+                    if (!(pVideoTranser->mState & STATE_READ_END)) {
+                        /** 如果解包未结束，但是解码发生异常，则直接当作异常退出 */
+                        pVideoTranser->mState |= STATE_ABORT;
+                    }
+                }
+                continue;
+            }
+        }
+        else if (!(pVideoTranser->mState & STATE_DECODE_FLUSHING) \
+                 && ((pVideoTranser->mState & STATE_READ_END) || (pVideoTranser->mState & STATE_DECODE_ABORT))) {
+            HBError = avcodec_send_packet(pMediaDecoder->mPVideoCodecCtx, NULL);
+            pVideoTranser->mState |= STATE_DECODE_FLUSHING;
+            LOGW("Decode process into flush buffer !");
+        }
+        
+        AVFrame* pNewFrame = av_frame_alloc();
+        if (!pNewFrame) {
+            LOGE("Trans media malloc new frame failed !");
+            pVideoTranser->mState |= STATE_DECODE_ABORT;
+            pVideoTranser->mState |= STATE_DECODE_END;
+            return NULL;
+        }
+        
+        while (true) {
+            HBError = avcodec_receive_frame(pMediaDecoder->mPVideoCodecCtx, pNewFrame);
+            if (HBError != 0) {
+                if ((HBError != AVERROR(EAGAIN)) || (pVideoTranser->mState & STATE_DECODE_FLUSHING)) {
+                    pVideoTranser->mState |= STATE_DECODE_END;
+                    LOGW("Decode process end!");
+                    return NULL;
+                }
+                av_frame_free(&pNewFrame);
+                goto TRY_REDECODE_LABEL;
+            }
+            else {
+                if (pVideoTranser->_ImageConvert(&pNewFrame) != HB_OK) {
+                    if (pNewFrame)
+                        av_frame_free(&pNewFrame);
+                    LOGE("image convert failed !");
+                    goto TRY_REDECODE_LABEL;
+                }
+                else {
+                    /** TODO: 插入到编码的任务队列中 */
+                    pVideoTranser->mEncodeFrameQueue->push(pNewFrame);
+                }
+                break;
+            }
+        }
+
+    TRY_REDECODE_LABEL:
+        pNewPacket = NULL;
+    }
+    
+    return NULL;
+}
+
+void *VideoFormatTranser::EncodeThreadFunc(void *arg) {
+    if (!arg)
+        return NULL;
+    
+    int HBError = -1;
+    AVFrame *pNewFrame = nullptr;
+    VideoFormatTranser *pVideoTranser = (VideoFormatTranser *)arg;
+    MediaCoder * pMediaEncoder = pVideoTranser->mPMediaEncoder;
+    while (!(pVideoTranser->mState & STATE_ENCODE_END)) {
+        
+        if (!(pVideoTranser->mState & STATE_DECODE_END) && !(pVideoTranser->mState & STATE_ENCODE_ABORT)) {
+            HBError = avcodec_send_frame(pMediaEncoder->mPVideoCodecCtx, pNewFrame);
+            if (HBError != 0) {
+                LOGE("image convert failed, %s", makeErrorStr(HBError));
+                av_frame_free(&pNewFrame);
+                if (HBError != AVERROR(EAGAIN)) {
+                    pVideoTranser->mState |= STATE_ENCODE_ABORT;
+                    if (!(pVideoTranser->mState & STATE_DECODE_END)) {
+                        /** 如果帧原始数据未解码结束，编码器发生异常，则直接当作异常退出 */
+                        pVideoTranser->mState |= STATE_ABORT;
+                    }
+                }
+                continue;
+            }
+            av_frame_free(&pNewFrame);
+        }
+        else if (!(pVideoTranser->mState & STATE_ENCODE_FLUSHING) \
+                 && ((pVideoTranser->mState & STATE_DECODE_END) || (pVideoTranser->mState & STATE_ENCODE_ABORT))) {
+            HBError = avcodec_send_frame(pMediaEncoder->mPVideoCodecCtx, NULL);
+            pVideoTranser->mState |= STATE_ENCODE_FLUSHING;
+            LOGW("Encode process into flush buffer !");
+        }
+        
+        AVPacket *pNewPacket = av_packet_alloc();
+        if (!pNewPacket) {
+            LOGE("Video format transer alloc new packet room failed !");
+            return NULL;
+        }
+        
+        while (true) {
+            HBError = avcodec_receive_packet(pMediaEncoder->mPVideoCodecCtx, pNewPacket);
+            if (HBError != 0) {
+                if ((HBError != AVERROR(EAGAIN))) {
+                    if (pVideoTranser->mState & STATE_ENCODE_FLUSHING) {
+                        LOGW("tran codec finished !%s", av_err2str(HBError));
+                        pVideoTranser->mState |= STATE_ENCODE_END;
+                    }
+                    else {
+                        LOGE("trans decode video frame failed !%s", av_err2str(HBError));
+                        pVideoTranser->mState |= STATE_ENCODE_ABORT;
+                    }
+                    pVideoTranser->mState |= STATE_TRANS_END;
+                }
+                av_packet_free(&pNewPacket);
+                goto TRY_REENCODE_LABEL;
+            }
+            else {
+                pVideoTranser->mOutputPacketQueue->push(pNewPacket);
+                break;
+            }
+        }
+        
+    TRY_REENCODE_LABEL:
+        pNewFrame = nullptr;
+    }
+    
+    return NULL;
 }
 
 VideoFormatTranser::VideoFormatTranser() {
@@ -130,40 +263,42 @@ int VideoFormatTranser::doConvert() {
         goto CONVERT_END_LABEL;
     }
     
-    if (bNeedTranscode && !mIsSyncMode) {
-        mEncodeFrameQueue = new FiFoQueue<AVFrame *>(MAX_FRAME_BUFFER);
-        mDecodePacketQueue = new FiFoQueue<AVPacket *>(MAX_FRAME_BUFFER);
-        mOutputPacketQueue = new FiFoQueue<AVPacket *>(MAX_FRAME_BUFFER);
-        
-        HBError = pthread_create(&mDecodeThreadId, NULL, DecodeThreadFunc, this);
-        if (HBError < 0) {
-            LOGE("Create decode thread failed !");
+    if (bNeedTranscode) {
+        if (_WorkPthreadPrepare() != HB_OK) {
+            LOGE("work phtread prepare failed !");
             goto CONVERT_END_LABEL;
         }
-        HBError = pthread_create(&mEncodeThreadId, NULL, EncodeThreadFunc, this);
-        if (HBError < 0) {
-            LOGE("Create decode thread failed !");
-            goto CONVERT_END_LABEL;
-        }
-        
     }
     pNewPacket = av_packet_alloc();
     while (!((mState & STATE_ABORT) || (mState & STATE_TRANS_END))) {
+        int iDecodeQueueLeft = mDecodePacketQueue->queueLeft();
+        int iOutputQueueLength = mOutputPacketQueue->queueLength();
+        
+        if (iDecodeQueueLeft == 0 && iOutputQueueLength == 0) {
+            pthread_mutex_lock(&mMainThreadMux);/** 陷入等待 */
+            if (iDecodeQueueLeft > 0 || iOutputQueueLength > 0) {
+                pthread_cond_wait(&mMainThreadCond, &mMainThreadMux);
+            }
+            pthread_mutex_unlock(&mMainThreadMux);
+            /** 更新队列中节点信息 */
+            iDecodeQueueLeft = mDecodePacketQueue->queueLeft();
+        }
         
         if (!(mState & STATE_READ_END)) {
-            HBError = av_read_frame(mPMediaDecoder->mPVideoFormatCtx, pNewPacket);
-            if (HBError < 0) {
-                mState |= STATE_READ_END;
-                if (HBError == AVERROR_EOF && !bNeedTranscode)
-                    mState |= STATE_TRANS_END;
-                LOGW("Read input video data end !");
-                continue;
-            }
-            
-            /** 得到数据包 */
-            if (pNewPacket->stream_index != mPMediaDecoder->mVideoStreamIndex) {
-                av_packet_unref(pNewPacket);
-                continue;
+            if (iDecodeQueueLeft > 0) {
+                HBError = av_read_frame(mPMediaDecoder->mPVideoFormatCtx, pNewPacket);
+                if (HBError < 0) {
+                    mState |= STATE_READ_END;
+                    if (HBError == AVERROR_EOF && !bNeedTranscode)
+                        mState |= STATE_TRANS_END;
+                    LOGW("Read input video data end !");
+                    continue;
+                }
+                /** 得到数据包 */
+                if (pNewPacket->stream_index != mPMediaDecoder->mVideoStreamIndex) {
+                    av_packet_unref(pNewPacket);
+                    continue;
+                }
             }
         }
         
@@ -180,26 +315,34 @@ int VideoFormatTranser::doConvert() {
                 }
             }
             else {
-                
+                /** 异步的方式，需要将得到的原始包放入解码包队列 */
+                if (iDecodeQueueLeft > 0) {
+                    if (mDecodePacketQueue->push(pNewPacket) <= 0)
+                        LOGE("Push new raw packet to decode queue failed !");
+                    else {
+                        /** TODO:通知解码线程写 开始解码 */
+                        
+                    }
+                }
             }
         }
         
-        HBError = av_interleaved_write_frame(mPMediaEncoder->mPVideoFormatCtx, pNewPacket);
-        if (HBError < 0) {
-            LOGE("Write frame failed !");
-            mState |= STATE_ABORT;/** 如果写入失败，则直接退出 */
+        iOutputQueueLength = mOutputPacketQueue->queueLength();
+        if (!(mState & STATE_TRANS_END) && (iOutputQueueLength > 0)) {
+            AVPacket* pNewOutputPacket = mOutputPacketQueue->get();
+            if (pNewOutputPacket) {
+                { /** TODO:通知编码线程开始解码 */
+                    
+                    
+                }
+                HBError = av_interleaved_write_frame(mPMediaEncoder->mPVideoFormatCtx, pNewOutputPacket);
+                if (HBError < 0) {
+                    LOGE("Write frame failed !");
+                    mState |= STATE_ABORT;/** 如果写入失败，则直接退出 */
+                }
+                av_packet_free(&pNewOutputPacket);
+            }
         }
-        av_packet_unref(pNewPacket);
-    }
-    
-    if (!mIsSyncMode && mDecodeThreadId) {
-        pthread_join(mDecodeThreadId, NULL);
-        mDecodeThreadId = nullptr;
-    }
-    
-    if (!mIsSyncMode && mEncodeThreadId) {
-        pthread_join(mEncodeThreadId, NULL);
-        mEncodeThreadId = nullptr;
     }
     
     if ((HBError = av_write_trailer(mPMediaEncoder->mPVideoFormatCtx)) != 0)
@@ -216,6 +359,9 @@ CONVERT_END_LABEL:
 }
 
 int VideoFormatTranser::_release() {
+    
+    _WorkPthreadDispose();
+    
     if (mPMediaDecoder->mPVideoCodecCtx) {
         if (avcodec_is_open(mPMediaDecoder->mPVideoCodecCtx))
             avcodec_close(mPMediaDecoder->mPVideoCodecCtx);
@@ -238,8 +384,7 @@ int VideoFormatTranser::_release() {
     
     mPMediaDecoder->mPVideoStream = nullptr;
     mPMediaEncoder->mPVideoStream = nullptr;
-    mDecodeThreadId = nullptr;
-    mEncodeThreadId = nullptr;
+    
     memset(&mState, 0x00, sizeof(mState));
     mState |= STATE_UNKNOWN;
     return HB_OK;
@@ -664,6 +809,74 @@ void VideoFormatTranser::setOutputVideoMediaFile(char *pFilePath) {
     if (mOutputMediaFile)
         av_freep(&mOutputMediaFile);
     mOutputMediaFile = av_strdup(pFilePath);
+}
+
+int VideoFormatTranser::_WorkPthreadPrepare() {
+    if (!mIsSyncMode) {
+        int HBError = 0;
+        mEncodeFrameQueue = new FiFoQueue<AVFrame *>(MAX_FRAME_BUFFER);
+        mDecodePacketQueue = new FiFoQueue<AVPacket *>(MAX_FRAME_BUFFER);
+        mOutputPacketQueue = new FiFoQueue<AVPacket *>(MAX_FRAME_BUFFER);
+        
+        if (!mEncodeFrameQueue || !mDecodePacketQueue || !mOutputPacketQueue) {
+            LOGE("malloc convert queue failed !");
+            return HB_ERROR;
+        }
+        
+        HBError = pthread_create(&mDecodeThreadId, NULL, DecodeThreadFunc, this);
+        if (HBError < 0) {
+            LOGE("Create decode thread failed !");
+            return HB_ERROR;
+        }
+        HBError = pthread_create(&mEncodeThreadId, NULL, EncodeThreadFunc, this);
+        if (HBError < 0) {
+            LOGE("Create decode thread failed !");
+            return HB_ERROR;
+        }
+    }
+    return HB_OK;
+}
+
+int VideoFormatTranser::_WorkPthreadDispose() {
+
+    if (!mIsSyncMode && mDecodeThreadId) {
+        pthread_join(mDecodeThreadId, NULL);
+        mDecodeThreadId = nullptr;
+    }
+    
+    if (!mIsSyncMode && mEncodeThreadId) {
+        pthread_join(mEncodeThreadId, NULL);
+        mEncodeThreadId = nullptr;
+    }
+    
+    if (mEncodeFrameQueue) {
+        AVFrame *pNewFrame = nullptr;
+        while (mEncodeFrameQueue->queueLength() > 0) {
+            pNewFrame = mEncodeFrameQueue->get();
+            av_frame_free(&pNewFrame);
+        }
+        mEncodeFrameQueue = nullptr;
+    }
+    
+    if (mDecodePacketQueue) {
+        AVPacket *pNewPacket = nullptr;
+        while (mDecodePacketQueue->queueLength() > 0) {
+            pNewPacket = mDecodePacketQueue->get();
+            av_packet_free(&pNewPacket);
+        }
+        mDecodePacketQueue = nullptr;
+    }
+    
+    if (mOutputPacketQueue) {
+        AVPacket *pNewPacket = nullptr;
+        while (mOutputPacketQueue->queueLength() > 0) {
+            pNewPacket = mOutputPacketQueue->get();
+            av_packet_free(&pNewPacket);
+        }
+        mOutputPacketQueue = nullptr;
+    }
+
+    return HB_OK;
 }
 
 }

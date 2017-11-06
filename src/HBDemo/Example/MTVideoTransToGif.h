@@ -89,14 +89,32 @@ protected:
      *      如果转码失败，则需要外部释放传入的 frame 内存空间；
      */
     int _ImageConvert(AVFrame** pInFrame);
+
+private:
+    /** 解码线程 */
+    static void *DecodeThreadFunc(void *arg);
+    /** 编码线程 */
+    static void *EncodeThreadFunc(void *arg);
     
+    int _WorkPthreadPrepare();
+    int _WorkPthreadDispose();
 private:
     /** 是否使用同步的模式 */
     bool mIsSyncMode;
     pthread_t mDecodeThreadId;
     pthread_t mEncodeThreadId;
-    FiFoQueue<AVFrame*>  *mEncodeFrameQueue;
+    /** 主线程同步锁 */
+    pthread_mutex_t mMainThreadMux;
+    pthread_cond_t  mMainThreadCond;
+    /** 解码线程同步锁 */
+    pthread_mutex_t mDecodeThreadMux;
+    pthread_cond_t  mDecodeThreadCond;
+    /** 编码线程同步锁 */
+    pthread_mutex_t mEncodeThreadMux;
+    pthread_cond_t  mEncodeThreadCond;
+    
     FiFoQueue<AVPacket*> *mDecodePacketQueue;
+    FiFoQueue<AVFrame*>  *mEncodeFrameQueue;
     FiFoQueue<AVPacket*> *mOutputPacketQueue;
     
     /** 输入相关解码器媒体信息 */
