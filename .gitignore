@@ -42,3 +42,6 @@ src/HBDemo/audio/AudioDecoder/100_fltp_2_output.pcm
 src/HBDemo/audio/AudioDecoder/100_fltp_output.pcm
 src/HBDemo/audio/AudioDecoder/100_s16_1_output.pcm
 100.gif
+proj/compile/ios/iOS-tools/iOS-build
+ffmpeg-3.2/doc
+lib/ffmpeg/MacOS/share
