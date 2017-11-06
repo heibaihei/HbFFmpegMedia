@@ -22,7 +22,6 @@ FF_ALL_ARCHS_IOS6_SDK="armv7 armv7s i386"
 FF_ALL_ARCHS_IOS7_SDK="armv7 armv7s arm64 i386 x86_64"
 FF_ALL_ARCHS_IOS8_SDK="armv7 arm64 i386 x86_64"
 FF_ALL_ARCHS_SDK="armv7 arm64 x86_64"
-
 FF_ALL_ARCHS=$FF_ALL_ARCHS_SDK
 
 #----------
@@ -48,7 +47,7 @@ do_lipo_ffmpeg () {
     LIPO_FLAGS=
     for ARCH in $FF_ALL_ARCHS
     do
-        ARCH_LIB_FILE="$UNI_BUILD_ROOT/iOS-build/ffmpeg-$ARCH/output/lib/$LIB_FILE"
+        ARCH_LIB_FILE="$UNI_BUILD_ROOT/iOS-tools/iOS-build/ffmpeg-$ARCH/output/lib/$LIB_FILE"
         if [ -f "$ARCH_LIB_FILE" ]; then
             LIPO_FLAGS="$LIPO_FLAGS $ARCH_LIB_FILE"
         else
@@ -56,29 +55,32 @@ do_lipo_ffmpeg () {
         fi
     done
 
-    xcrun lipo -create $LIPO_FLAGS -output $UNI_BUILD_ROOT/iOS-build/universal/lib/$LIB_FILE
-    xcrun lipo -info $UNI_BUILD_ROOT/iOS-build/universal/lib/$LIB_FILE
+    xcrun lipo -create $LIPO_FLAGS -output $UNI_BUILD_ROOT/iOS-tools/iOS-build/universal/lib/$LIB_FILE
+    xcrun lipo -info $UNI_BUILD_ROOT/iOS-tools/iOS-build/universal/lib/$LIB_FILE
 }
 
 do_lipo_all () {
-    mkdir -p $UNI_BUILD_ROOT/iOS-build/universal/lib
+    ALL_ARCHS_OUTPUT=$UNI_BUILD_ROOT/iOS-tools/iOS-build/universal
+    mkdir -p ${ALL_ARCHS_OUTPUT}/lib
     echo "lipo archs: $FF_ALL_ARCHS"
+
     for FF_LIB in $FF_LIBS
     do
         do_lipo_ffmpeg "$FF_LIB.a";
     done
+    
+    UNI_INC_DIR="$UNI_BUILD_ROOT/iOS-tools/iOS-build/universal/include"
 
     ANY_ARCH=
     for ARCH in $FF_ALL_ARCHS
     do
-        ARCH_INC_DIR="$UNI_BUILD_ROOT/iOS-build/ffmpeg-$ARCH/output/include"
+        ARCH_INC_DIR="$UNI_BUILD_ROOT/iOS-tools/iOS-build/ffmpeg-$ARCH/output/include"
         if [ -d "$ARCH_INC_DIR" ]; then
             if [ -z "$ANY_ARCH" ]; then
                 ANY_ARCH=$ARCH
-                cp -R "$ARCH_INC_DIR" "$UNI_BUILD_ROOT/iOS-build/universal/"
+                cp -R "$ARCH_INC_DIR" "$UNI_BUILD_ROOT/iOS-tools/iOS-build/universal/"
             fi
-
-            UNI_INC_DIR="$UNI_BUILD_ROOT/iOS-build/universal/include"
+            
 
             mkdir -p "$UNI_INC_DIR/libavutil/$ARCH"
             cp -f "$ARCH_INC_DIR/libavutil/avconfig.h"  "$UNI_INC_DIR/libavutil/$ARCH/avconfig.h"
@@ -91,20 +93,20 @@ do_lipo_all () {
         fi
     done
 
-    mkdir -p iOS-output
-    cp -r $UNI_BUILD_ROOT/iOS-build/universal/* iOS-output/
-    cp $UNI_BUILD_ROOT/iOS-build/ffmpeg/libavformat/avc.h iOS-output/include/libavformat/
+    #mkdir -p iOS-output
+    #cp -r $UNI_BUILD_ROOT/iOS-tools/iOS-build/universal/* iOS-output/
+    cp $UNI_BUILD_ROOT/../../../ffmpeg-3.2/libavformat/avc.h  ${UNI_INC_DIR}/libavformat/
 }
 
 # 解压源码
-if [ "$FF_TARGET" != "clean" ]; then
-    mkdir -p iOS-build
-    if [ ! -d iOS-build/ffmpeg ]; then
+#if [ "$FF_TARGET" != "clean" ]; then
+#    mkdir -p iOS-build
+#    if [ ! -d iOS-build/ffmpeg ]; then
 #        tar xvf sources/ffmpeg-3.1.2.tar.bz2 -C iOS-build
-        cp -rf ffmpeg-3.2 iOS-build/ffmpeg
+#        cp -rf ffmpeg-3.2 iOS-build/ffmpeg
 #        ln -s ffmpeg-3.1.2 iOS-build/ffmpeg
-    fi
-fi
+#    fi
+#fi
 
 #----------
 if [ "$FF_TARGET" = "armv7" -o "$FF_TARGET" = "armv7s" -o "$FF_TARGET" = "arm64" ]; then
@@ -122,7 +124,9 @@ elif [ "$FF_TARGET" = "all" ]; then
     echo_archs
     for ARCH in $FF_ALL_ARCHS
     do
-        sh iOS-tools/do-compile-ffmpeg.sh $ARCH
+        cd ${UNI_BUILD_ROOT}/iOS-tools/
+        sh do-compile-ffmpeg.sh $ARCH
+        cd ${UNI_BUILD_ROOT}
     done
 
     do_lipo_all

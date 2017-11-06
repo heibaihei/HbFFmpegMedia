@@ -43,8 +43,7 @@ fi
 FF_BUILD_ROOT=`pwd`
 FF_TAGET_OS="darwin"
 
-
-# ffmpeg build params
+# ffmpeg build params -- 配置编译参数
 export COMMON_FF_CFG_FLAGS=
 source $FF_BUILD_ROOT/ffmpeg_module_config.cfg
 
@@ -90,14 +89,14 @@ FFMPEG_CFG_FLAGS_ARM="$FFMPEG_CFG_FLAGS_ARM --enable-debug"
 FFMPEG_CFG_FLAGS_ARM="$FFMPEG_CFG_FLAGS_ARM --enable-small"
 
 echo "build_root: $FF_BUILD_ROOT"
-
 #--------------------
 echo "===================="
 echo "[*] check gas-preprocessor"
 echo "===================="
-FF_TOOLS_ROOT="$FF_BUILD_ROOT/iOS-tools"
-export PATH="$FF_TOOLS_ROOT/gas-preprocessor:$PATH"
 
+
+FF_TOOLS_ROOT="$FF_BUILD_ROOT/"
+export PATH="$FF_TOOLS_ROOT/gas-preprocessor:$PATH"
 echo "gasp: $FF_TOOLS_ROOT/gas-preprocessor/gas-preprocessor.pl"
 
 #--------------------
@@ -166,15 +165,13 @@ echo "===================="
 echo "[*] make ios toolchain $FF_BUILD_NAME"
 echo "===================="
 
-FF_BUILD_SOURCE="$FF_BUILD_ROOT/iOS-build/ffmpeg"
+FF_BUILD_SOURCE="$FF_BUILD_ROOT/../../../../ffmpeg-3.2/"
 FF_BUILD_PREFIX="$FF_BUILD_ROOT/iOS-build/$FF_BUILD_NAME/output"
-
-FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS --prefix=$FF_BUILD_PREFIX"
-
 mkdir -p $FF_BUILD_PREFIX
-
 echo "build_source: $FF_BUILD_SOURCE"
 echo "build_prefix: $FF_BUILD_PREFIX"
+
+FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS --prefix=$FF_BUILD_PREFIX"
 
 #--------------------
 echo "\n--------------------"
@@ -203,7 +200,8 @@ export DEBUG_INFORMATION_FORMAT=dwarf-with-dsym
 cd $FF_BUILD_SOURCE
 
 echo "config: $FFMPEG_CFG_FLAGS $FF_XCRUN_CC"
-./configure \
+make clean \
+&& ./configure \
     $FFMPEG_CFG_FLAGS \
     --cc="$FF_XCRUN_CC" \
     $FFMPEG_CFG_CPU \
@@ -221,3 +219,4 @@ make -j8 $FF_GASPP_EXPORT
 make install
 mkdir -p $FF_BUILD_PREFIX/include/libffmpeg
 cp -f config.h $FF_BUILD_PREFIX/include/libffmpeg/config.h
+cd ${FF_BUILD_ROOT}
