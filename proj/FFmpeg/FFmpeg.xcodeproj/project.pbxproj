@@ -73,7 +73,6 @@
 		A181BC351EA1F682004861DA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC341EA1F682004861DA /* main.cpp */; };
 		A181BC421EA21430004861DA /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC411EA21430004861DA /* libSDL2.a */; };
 		A181BC441EA2145E004861DA /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC431EA2145E004861DA /* libavcodec.a */; };
-		A181BC461EA21460004861DA /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC451EA21460004861DA /* libavdevice.a */; };
 		A181BC481EA21464004861DA /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC471EA21464004861DA /* libavfilter.a */; };
 		A181BC4A1EA21466004861DA /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC491EA21466004861DA /* libavformat.a */; };
 		A181BC4C1EA21468004861DA /* libavresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC4B1EA21468004861DA /* libavresample.a */; };
@@ -9320,7 +9319,6 @@
 				A181BC481EA21464004861DA /* libavfilter.a in Frameworks */,
 				A181BC541EA21474004861DA /* libswscale.a in Frameworks */,
 				A181BC441EA2145E004861DA /* libavcodec.a in Frameworks */,
-				A181BC461EA21460004861DA /* libavdevice.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -19992,8 +19990,7 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
-					"/usr/local/hcl-test/include",
-					"\"$(SRCROOT)/../../lib/ffmpeg/include\"",
+					"\"$(SRCROOT)/../../lib/ffmpeg/MacOS/include\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/include\"",
 					"\"$(SRCROOT)/../../lib/x264/include\"",
 					"\"$(SRCROOT)/../../src/HBDemo\"",
@@ -20002,8 +19999,7 @@
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"/usr/local/hcl-test/lib",
-					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
+					"\"$(SRCROOT)/../../lib/ffmpeg/MacOS/lib\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
 					"\"$(SRCROOT)/../../lib/x264/lib\"",
 					"\"$(SRCROOT)/../../lib/lame/lib\"",
@@ -20019,8 +20015,7 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
-					"/usr/local/hcl-test/include",
-					"\"$(SRCROOT)/../../lib/ffmpeg/include\"",
+					"\"$(SRCROOT)/../../lib/ffmpeg/MacOS/include\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/include\"",
 					"\"$(SRCROOT)/../../lib/x264/include\"",
 					"\"$(SRCROOT)/../../src/HBDemo\"",
@@ -20029,8 +20024,7 @@
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"/usr/local/hcl-test/lib",
-					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
+					"\"$(SRCROOT)/../../lib/ffmpeg/MacOS/lib\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
 					"\"$(SRCROOT)/../../lib/x264/lib\"",
 					"\"$(SRCROOT)/../../lib/lame/lib\"",
@@ -20163,10 +20157,7 @@
 					/usr/local/Cellar/sdl2/2.0.4/include,
 					/usr/local/Cellar/sdl2/2.0.4/include/SDL2,
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
-					/usr/local/Cellar/sdl2/2.0.4/lib,
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/sdl2/2.0.4/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -20213,10 +20204,7 @@
 					/usr/local/Cellar/sdl2/2.0.4/include,
 					/usr/local/Cellar/sdl2/2.0.4/include/SDL2,
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"\"$(SRCROOT)/../../lib/ffmpeg/lib\"",
-					/usr/local/Cellar/sdl2/2.0.4/lib,
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/sdl2/2.0.4/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
