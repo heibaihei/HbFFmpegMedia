@@ -1,4 +1,4 @@
-prefix=/Users/zj-db0519/work/code/github/HbFFmpegMedia/proj/compile/ios/iOS-tools/iOS-build/ffmpeg-x86_64/output
+prefix=/Users/zj-db0519/work/code/github/HbFFmpegMedia/proj/compile/mac/../../../lib/ffmpeg/MacOS
 exec_prefix=${prefix}
 libdir=${prefix}/lib
 includedir=${prefix}/include

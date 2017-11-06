@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source ffmpeg_module_config.cfg
+source ./ffmpeg_module_config.cfg
 
 # directories
 SOURCE="ffmpeg-3.0"
@@ -8,9 +8,10 @@ FAT="FFmpeg-iOS"
 
 
 CUR_WORK_ROOT_DIR=$(pwd)
-TARGET_LIBRARY_DIR=$CUR_WORK_ROOT_DIR/../lib
-DEPEND_THIRDPARTY_LIBRARY_DIR=$CUR_WORK_ROOT_DIR/../lib
+TARGET_LIBRARY_DIR=$CUR_WORK_ROOT_DIR/../../../lib
+DEPEND_THIRDPARTY_LIBRARY_DIR=${TARGET_LIBRARY_DIR}
 FFMPEG_OUTPUT_TARGET_DIR=$TARGET_LIBRARY_DIR/ffmpeg
+FFMPEG_PROJ_SRC_ROOT_PATH=${CUR_WORK_ROOT_DIR}/../../../ffmpeg-3.2/
 
 SCRATCH="scratch"
 ARCHS="MacOS"
@@ -45,18 +46,17 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-avresample"
 
 #ARCHS="arm64 armv7 x86_64 i386"
 
-echo "building $ARCH..."
-mkdir -p "$FFMPEG_OUTPUT_TARGET_DIR/$ARCH"
-cd "$FFMPEG_OUTPUT_TARGET_DIR/$ARCH"
+echo "building $ARCHS..."
+mkdir -p "$FFMPEG_OUTPUT_TARGET_DIR/$ARCHS"
 
-echo "$FFMPEG_OUTPUT_TARGET_DIR/$ARCH"
-TMPDIR=${TMPDIR/%\/} $CUR_WORK_ROOT_DIR/configure \
+cd ${FFMPEG_PROJ_SRC_ROOT_PATH} \
+&& ./configure \
 	${COMMON_FF_CFG_FLAGS} \
 	$CONFIGURE_FLAGS \
-	--prefix="$FFMPEG_OUTPUT_TARGET_DIR/$ARCH" \
+	--prefix="$FFMPEG_OUTPUT_TARGET_DIR/$ARCHS" \
 	|| exit 1
-
-make -j3 install $EXPORT || exit 1
+make clean 
+make -j8 install $EXPORT || exit 1
 cd $CWD
 
 

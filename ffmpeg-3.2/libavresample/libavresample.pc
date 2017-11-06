@@ -3,12 +3,12 @@ exec_prefix=${prefix}
 libdir=${prefix}/lib
 includedir=${prefix}/include
 
-Name: libavutil
-Description: FFmpeg utility library
-Version: 55.34.100
-Requires: 
+Name: libavresample
+Description: Libav audio resampling library
+Version: 3.1.0
+Requires: libavutil >= 55.34.100
 Requires.private: 
 Conflicts:
-Libs: -L${libdir}  -lavutil -lm
+Libs: -L${libdir}  -lavresample -lm
 Libs.private: 
 Cflags: -I${includedir}
