@@ -20040,7 +20040,7 @@
 				HEADER_SEARCH_PATHS = (
 					/usr/local/Cellar/sdl2/2.0.4/include,
 					/usr/local/Cellar/sdl2/2.0.4/include/SDL2,
-					"\"$(SRCROOT)/../../lib/ffmpeg/include\"",
+					"\"$(SRCROOT)/../../lib/ffmpeg/MacOS/include\"",
 					"\"$(SRCROOT)/../../src/HBFfplay\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -20053,7 +20053,7 @@
 				HEADER_SEARCH_PATHS = (
 					/usr/local/Cellar/sdl2/2.0.4/include,
 					/usr/local/Cellar/sdl2/2.0.4/include/SDL2,
-					"\"$(SRCROOT)/../../lib/ffmpeg/include\"",
+					"\"$(SRCROOT)/../../lib/ffmpeg/MacOS/include\"",
 					"\"$(SRCROOT)/../../src/HBFfplay\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
