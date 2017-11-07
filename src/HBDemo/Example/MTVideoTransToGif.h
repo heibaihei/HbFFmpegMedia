@@ -29,9 +29,16 @@ typedef struct MediaCoder {
     AVCodec* mPVideoCodec;
     int mVideoStreamIndex;
 } MediaCoder;
+    
+typedef struct ThreadIpcCtx {
+    bool mIsThreadPending;
+    pthread_mutex_t mThreadMux;
+    pthread_cond_t  mThreadCond;
+} ThreadIpcCtx;
 
 MediaCoder* AllocMediaCoder();
 void ImageParamsInitial(ImageParams *pParams);
+void ThreadIpcCtxInitial(ThreadIpcCtx *pIpcCtx);
     
 typedef class VideoFormatTranser {
 public:
@@ -103,15 +110,13 @@ private:
     bool mIsSyncMode;
     pthread_t mDecodeThreadId;
     pthread_t mEncodeThreadId;
+    
     /** 主线程同步锁 */
-    pthread_mutex_t mMainThreadMux;
-    pthread_cond_t  mMainThreadCond;
+    ThreadIpcCtx mReadThreadIpcCtx;
     /** 解码线程同步锁 */
-    pthread_mutex_t mDecodeThreadMux;
-    pthread_cond_t  mDecodeThreadCond;
+    ThreadIpcCtx mDecodeThreadIpcCtx;
     /** 编码线程同步锁 */
-    pthread_mutex_t mEncodeThreadMux;
-    pthread_cond_t  mEncodeThreadCond;
+    ThreadIpcCtx mEncodeThreadIpcCtx;
     
     FiFoQueue<AVPacket*> *mDecodePacketQueue;
     FiFoQueue<AVFrame*>  *mEncodeFrameQueue;

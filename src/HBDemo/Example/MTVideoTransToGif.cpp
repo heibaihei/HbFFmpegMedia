@@ -55,6 +55,14 @@ void ImageParamsInitial(ImageParams *pParams) {
     }
 }
 
+void ThreadIpcCtxInitial(ThreadIpcCtx *pIpcCtx) {
+    if (pIpcCtx) {
+        pIpcCtx->mIsThreadPending = false;
+        pthread_cond_init(&(pIpcCtx->mThreadCond), NULL);
+        pthread_mutex_init(&(pIpcCtx->mThreadMux), NULL);
+    }
+}
+
 void *VideoFormatTranser::DecodeThreadFunc(void *arg) {
     if (!arg)
         return NULL;
@@ -63,11 +71,34 @@ void *VideoFormatTranser::DecodeThreadFunc(void *arg) {
     AVPacket* pNewPacket = nullptr;
     VideoFormatTranser *pVideoTranser = (VideoFormatTranser *)arg;
     MediaCoder * pMediaDecoder = pVideoTranser->mPMediaDecoder;
-    while (!(pVideoTranser->mState & STATE_DECODE_END)) {
-        /** TODO: 从需要编码的数据包队列中取出待解码的数据包 */
     
-        if (!(pVideoTranser->mState & STATE_READ_END) \
-            && !(pVideoTranser->mState & STATE_DECODE_ABORT)) {
+    while (!(pVideoTranser->mState & STATE_DECODE_END)) {
+        if (pVideoTranser->mDecodePacketQueue->queueLength() <= 0 \
+            && pVideoTranser->mEncodeFrameQueue->queueLeft() <= 0) {
+            
+            pthread_mutex_lock(&(pVideoTranser->mDecodeThreadIpcCtx.mThreadMux));
+            if (pVideoTranser->mEncodeFrameQueue->queueLeft() == 0 \
+                || pVideoTranser->mDecodePacketQueue->queueLength() == 0)
+            {
+                pVideoTranser->mDecodeThreadIpcCtx.mIsThreadPending = true;
+                pthread_cond_wait(&(pVideoTranser->mDecodeThreadIpcCtx.mThreadCond), &(pVideoTranser->mDecodeThreadIpcCtx.mThreadMux));
+                pVideoTranser->mDecodeThreadIpcCtx.mIsThreadPending = false;
+            }
+            pthread_mutex_unlock(&(pVideoTranser->mDecodeThreadIpcCtx.mThreadMux));
+        }
+        
+        pNewPacket = nullptr;
+        if (pVideoTranser->mDecodePacketQueue->queueLength() > 0 \
+            && (nullptr != (pNewPacket = pVideoTranser->mDecodePacketQueue->get()))) {
+            /** 得到帧 */
+        }
+        else {
+            LOGE("decode get new packet to decode failed !");
+            continue;
+        }
+        
+        if (pNewPacket || (!(pVideoTranser->mState & STATE_READ_END) \
+            && !(pVideoTranser->mState & STATE_DECODE_ABORT))) {
             /** 只有读数据包未结束以及本身解码器没有发生异常，说明都要往里面丢数据 */
             HBError = avcodec_send_packet(pMediaDecoder->mPVideoCodecCtx, pNewPacket);
             if (HBError != 0) {
@@ -115,8 +146,15 @@ void *VideoFormatTranser::DecodeThreadFunc(void *arg) {
                     goto TRY_REDECODE_LABEL;
                 }
                 else {
-                    /** TODO: 插入到编码的任务队列中 */
                     pVideoTranser->mEncodeFrameQueue->push(pNewFrame);
+                    if (pVideoTranser->mEncodeFrameQueue->queueLeft() > 0) {
+                        pthread_mutex_lock(&(pVideoTranser->mEncodeThreadIpcCtx.mThreadMux));
+                        if (pVideoTranser->mEncodeThreadIpcCtx.mIsThreadPending \
+                            && (pVideoTranser->mEncodeFrameQueue->queueLength() > 0)) {
+                            pthread_cond_signal(&(pVideoTranser->mEncodeThreadIpcCtx.mThreadCond));
+                        }
+                        pthread_mutex_unlock(&(pVideoTranser->mEncodeThreadIpcCtx.mThreadMux));
+                    }
                 }
                 break;
             }
@@ -139,7 +177,33 @@ void *VideoFormatTranser::EncodeThreadFunc(void *arg) {
     MediaCoder * pMediaEncoder = pVideoTranser->mPMediaEncoder;
     while (!(pVideoTranser->mState & STATE_ENCODE_END)) {
         
-        if (!(pVideoTranser->mState & STATE_DECODE_END) && !(pVideoTranser->mState & STATE_ENCODE_ABORT)) {
+        if (pVideoTranser->mEncodeFrameQueue->queueLength() <= 0 \
+            && pVideoTranser->mOutputPacketQueue->queueLeft() <= 0) {
+            
+            pthread_mutex_lock(&(pVideoTranser->mEncodeThreadIpcCtx.mThreadMux));
+            if (pVideoTranser->mEncodeFrameQueue->queueLeft() == 0 \
+                || pVideoTranser->mDecodePacketQueue->queueLength() == 0)
+            {
+                pVideoTranser->mEncodeThreadIpcCtx.mIsThreadPending = true;
+                pthread_cond_wait(&(pVideoTranser->mEncodeThreadIpcCtx.mThreadCond), &(pVideoTranser->mEncodeThreadIpcCtx.mThreadMux));
+                pVideoTranser->mEncodeThreadIpcCtx.mIsThreadPending = false;
+            }
+            pthread_mutex_unlock(&(pVideoTranser->mEncodeThreadIpcCtx.mThreadMux));
+        }
+        
+        pNewFrame = nullptr;
+        if (pVideoTranser->mEncodeFrameQueue->queueLength() > 0 \
+            && (nullptr != (pNewFrame = pVideoTranser->mEncodeFrameQueue->get()))) {
+            /** 得到帧 */
+        }
+        else {
+            LOGE("encode get new frame to encode failed !");
+            continue;
+        }
+        
+        if (pNewFrame || (!(pVideoTranser->mState & STATE_DECODE_END) \
+                          && !(pVideoTranser->mState & STATE_ENCODE_ABORT)))
+        {
             HBError = avcodec_send_frame(pMediaEncoder->mPVideoCodecCtx, pNewFrame);
             if (HBError != 0) {
                 LOGE("image convert failed, %s", makeErrorStr(HBError));
@@ -187,6 +251,14 @@ void *VideoFormatTranser::EncodeThreadFunc(void *arg) {
             }
             else {
                 pVideoTranser->mOutputPacketQueue->push(pNewPacket);
+                if (pVideoTranser->mOutputPacketQueue->queueLeft() > 0) {
+                    pthread_mutex_lock(&(pVideoTranser->mReadThreadIpcCtx.mThreadMux));
+                    if (pVideoTranser->mReadThreadIpcCtx.mIsThreadPending \
+                        && (pVideoTranser->mOutputPacketQueue->queueLength() > 0)) {
+                        pthread_cond_signal(&(pVideoTranser->mReadThreadIpcCtx.mThreadCond));
+                    }
+                    pthread_mutex_unlock(&(pVideoTranser->mReadThreadIpcCtx.mThreadMux));
+                }
                 break;
             }
         }
@@ -269,23 +341,29 @@ int VideoFormatTranser::doConvert() {
             goto CONVERT_END_LABEL;
         }
     }
-    pNewPacket = av_packet_alloc();
+
     while (!((mState & STATE_ABORT) || (mState & STATE_TRANS_END))) {
-        int iDecodeQueueLeft = mDecodePacketQueue->queueLeft();
         int iOutputQueueLength = mOutputPacketQueue->queueLength();
-        
-        if (iDecodeQueueLeft == 0 && iOutputQueueLength == 0) {
-            pthread_mutex_lock(&mMainThreadMux);/** 陷入等待 */
-            if (iDecodeQueueLeft > 0 || iOutputQueueLength > 0) {
-                pthread_cond_wait(&mMainThreadCond, &mMainThreadMux);
+        if (mDecodePacketQueue->queueLeft() == 0 && iOutputQueueLength == 0) {
+            pthread_mutex_lock(&(mReadThreadIpcCtx.mThreadMux));
+            if (mDecodePacketQueue->queueLeft() == 0 || mOutputPacketQueue->queueLength() == 0) {
+                mReadThreadIpcCtx.mIsThreadPending = true;
+                pthread_cond_wait(&(mReadThreadIpcCtx.mThreadCond), &(mReadThreadIpcCtx.mThreadMux));
+                mReadThreadIpcCtx.mIsThreadPending = false;
             }
-            pthread_mutex_unlock(&mMainThreadMux);
-            /** 更新队列中节点信息 */
-            iDecodeQueueLeft = mDecodePacketQueue->queueLeft();
+            pthread_mutex_unlock(&(mReadThreadIpcCtx.mThreadMux));
         }
         
+        if (pNewPacket)
+            av_packet_free(&pNewPacket);
+        pNewPacket = nullptr;
         if (!(mState & STATE_READ_END)) {
-            if (iDecodeQueueLeft > 0) {
+            if (mDecodePacketQueue->queueLeft() > 0) {
+                pNewPacket = av_packet_alloc();
+                if (!pNewPacket) {
+                    LOGE("do convert read frame failed !");
+                    continue;
+                }
                 HBError = av_read_frame(mPMediaDecoder->mPVideoFormatCtx, pNewPacket);
                 if (HBError < 0) {
                     mState |= STATE_READ_END;
@@ -304,6 +382,10 @@ int VideoFormatTranser::doConvert() {
         
         if (bNeedTranscode) {
             if (mIsSyncMode) {
+                if (!pNewPacket) {
+                    pNewPacket = av_packet_alloc();
+                    LOGE("do convert malloc a empty frame failed !");
+                }
                 if ((HBError = _TransMedia(&pNewPacket)) != 0) {
                     if (pNewPacket)
                         av_packet_unref(pNewPacket);
@@ -315,33 +397,44 @@ int VideoFormatTranser::doConvert() {
                 }
             }
             else {
-                /** 异步的方式，需要将得到的原始包放入解码包队列 */
-                if (iDecodeQueueLeft > 0) {
-                    if (mDecodePacketQueue->push(pNewPacket) <= 0)
-                        LOGE("Push new raw packet to decode queue failed !");
-                    else {
-                        /** TODO:通知解码线程写 开始解码 */
-                        
+                if (pNewPacket) { /** 异步的方式，需要将得到的原始包放入解码包队列 */
+                    if (mDecodePacketQueue->queueLeft() > 0) {
+                        if (mDecodePacketQueue->push(pNewPacket) <= 0) {
+                            LOGE("Push new raw packet to decode queue failed !");
+                            av_packet_free(&pNewPacket);
+                        }
+                        if (mDecodePacketQueue->queueLength() > 0) {
+                            pthread_mutex_lock(&(mDecodeThreadIpcCtx.mThreadMux));
+                            if (mDecodeThreadIpcCtx.mIsThreadPending && (mDecodePacketQueue->queueLength() > 0))
+                                pthread_cond_signal(&mDecodeThreadIpcCtx.mThreadCond);/** 通知解码线程开始工作 */
+                            pthread_mutex_unlock(&(mDecodeThreadIpcCtx.mThreadMux));
+                        }
                     }
+                    else
+                        LOGE("Read thread push packet without free room !");
+                }
+                
+                pNewPacket = nullptr;
+                if (mOutputPacketQueue->queueLength() > 0) {
+                    iOutputQueueLength = mOutputPacketQueue->queueLength();
+                    pNewPacket = mOutputPacketQueue->get();
+                }
+                if (mEncodeFrameQueue->queueLength() > 0 && mOutputPacketQueue->queueLeft() > 0) {
+                    pthread_mutex_lock(&(mEncodeThreadIpcCtx.mThreadMux));
+                    if (mEncodeThreadIpcCtx.mIsThreadPending && (mEncodeFrameQueue->queueLength() > 0))
+                        pthread_cond_signal(&mEncodeThreadIpcCtx.mThreadCond);/** 通知解码线程开始工作 */
+                    pthread_mutex_unlock(&(mEncodeThreadIpcCtx.mThreadMux));
                 }
             }
         }
         
-        iOutputQueueLength = mOutputPacketQueue->queueLength();
-        if (!(mState & STATE_TRANS_END) && (iOutputQueueLength > 0)) {
-            AVPacket* pNewOutputPacket = mOutputPacketQueue->get();
-            if (pNewOutputPacket) {
-                { /** TODO:通知编码线程开始解码 */
-                    
-                    
-                }
-                HBError = av_interleaved_write_frame(mPMediaEncoder->mPVideoFormatCtx, pNewOutputPacket);
-                if (HBError < 0) {
-                    LOGE("Write frame failed !");
-                    mState |= STATE_ABORT;/** 如果写入失败，则直接退出 */
-                }
-                av_packet_free(&pNewOutputPacket);
+        if (!(mState & STATE_TRANS_END) && (iOutputQueueLength > 0) && pNewPacket) {
+            HBError = av_interleaved_write_frame(mPMediaEncoder->mPVideoFormatCtx, pNewPacket);
+            if (HBError < 0) {
+                LOGE("Write frame failed !");
+                mState |= STATE_ABORT;/** 如果写入失败，则直接退出 */
             }
+            av_packet_free(&pNewPacket);
         }
     }
     
@@ -822,6 +915,10 @@ int VideoFormatTranser::_WorkPthreadPrepare() {
             LOGE("malloc convert queue failed !");
             return HB_ERROR;
         }
+        
+        ThreadIpcCtxInitial(&mReadThreadIpcCtx);
+        ThreadIpcCtxInitial(&mDecodeThreadIpcCtx);
+        ThreadIpcCtxInitial(&mEncodeThreadIpcCtx);
         
         HBError = pthread_create(&mDecodeThreadId, NULL, DecodeThreadFunc, this);
         if (HBError < 0) {
