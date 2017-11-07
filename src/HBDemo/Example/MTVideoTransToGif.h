@@ -111,11 +111,8 @@ private:
     pthread_t mDecodeThreadId;
     pthread_t mEncodeThreadId;
     
-    /** 主线程同步锁 */
     ThreadIpcCtx mReadThreadIpcCtx;
-    /** 解码线程同步锁 */
     ThreadIpcCtx mDecodeThreadIpcCtx;
-    /** 编码线程同步锁 */
     ThreadIpcCtx mEncodeThreadIpcCtx;
     
     FiFoQueue<AVPacket*> *mDecodePacketQueue;
