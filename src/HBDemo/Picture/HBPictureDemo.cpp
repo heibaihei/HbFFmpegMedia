@@ -15,6 +15,8 @@
  * libyuv 参考：
  *     http://blog.csdn.net/fengbingchun/article/details/50323273
  *
+ // 像素分量分离
+ * http://blog.csdn.net/leixiaohua1020/article/details/50534150
  */
 
 #define PIC_RESOURCE_ROOT_PATH       "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/Picture"
@@ -23,7 +25,7 @@
 /**
  *  生成PPM媒体文件，存放的是 RGB 媒体数据
  */
-static void _SaveFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame);
+static void _ProcessFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame);
 
 const char *pInputFilePath = (const char *)(PIC_RESOURCE_ROOT_PATH"/100.mp4");
 int HBPickPictureFromVideo()
@@ -76,8 +78,6 @@ int HBPickPictureFromVideo()
         return HB_ERROR;
     }
     
-    struct SwsContext *pSwsCtx = sws_getContext(pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height, TARGET_IMAGE_PIX_FMT, SWS_BILINEAR, NULL, NULL, NULL);
-    
     AVFrame *pFrame = nullptr;
     AVPacket* pNewPacket = av_packet_alloc();
     while (av_read_frame(pFormatCtx, pNewPacket) == 0) {
@@ -108,19 +108,8 @@ int HBPickPictureFromVideo()
                 continue;
             }
             else {
-                /** 得到帧，可以在这里对帧进行相应的操作 */
-                HBError = sws_scale(pSwsCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pTargetFrame->data, pTargetFrame->linesize);
-                if (HBError <= 0) {
-                    LOGE("sws scale new frame failed !");
-                }
-                else {//stbi_write_bmp
-                    pTargetFrame->width = pFrame->width;
-                    pTargetFrame->height = pFrame->height;
-                    pTargetFrame->format = TARGET_IMAGE_PIX_FMT;
-                    LOGI("sws scale new frame info: w:%d, h:%d to w:%d, h:%d ", \
-                         pFrame->width, pFrame->height, pTargetFrame->width, pTargetFrame->height);
-                    _SaveFrame(pFrame, pTargetFrame);
-                }
+                _ProcessFrame(pFrame, pTargetFrame);
+                
                 break;
             }
         }
@@ -139,7 +128,26 @@ int HBPickPictureFromVideo()
     return 0;
 }
 
-static void _SaveFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame) {
+static void _ProcessFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame) {
+    int HBError = HB_OK;
+    struct SwsContext *pSwsCtx = sws_getContext(pSrcFrame->width, pSrcFrame->height, (enum AVPixelFormat)pSrcFrame->format, \
+                            pSrcFrame->width, pSrcFrame->height, TARGET_IMAGE_PIX_FMT, SWS_BILINEAR, NULL, NULL, NULL);
+    
+    /** 得到帧，可以在这里对帧进行相应的操作 */
+    HBError = sws_scale(pSwsCtx, pSrcFrame->data, pSrcFrame->linesize, 0, pSrcFrame->height, \
+                        pDstFrame->data, pDstFrame->linesize);
+    if (HBError <= 0) {
+        LOGE("sws scale new frame failed !");
+    }
+    else {//stbi_write_bmp
+        pDstFrame->width = pSrcFrame->width;
+        pDstFrame->height = pSrcFrame->height;
+        pDstFrame->format = TARGET_IMAGE_PIX_FMT;
+        LOGI("sws scale new frame info: w:%d, h:%d to w:%d, h:%d ", \
+             pSrcFrame->width, pSrcFrame->height, pDstFrame->width, pDstFrame->height);
+        /** 文件输出 */
+    }
+    
 #if 0
     FILE *pFile = nullptr;
     char szFilename[512];
