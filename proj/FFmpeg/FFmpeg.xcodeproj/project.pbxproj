@@ -2929,6 +2929,8 @@
 		A1245A961F65FD4A00DB5D45 /* CSAStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAStream.cpp; sourceTree = "<group>"; };
 		A1245A971F65FD4A00DB5D45 /* CSAStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAStream.h; sourceTree = "<group>"; };
 		A12912111EC756E7008847CE /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		A13339F31FB4B128000FC31D /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
+		A13339F41FB4B128000FC31D /* stb_image_write.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image_write.h; sourceTree = "<group>"; };
 		A13A69741F3ED3F900FC6376 /* HBAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HBAudio.cpp; sourceTree = "<group>"; };
 		A13A995B1F70D33A00F88E3A /* HBExample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBExample.h; path = ../../../src/HBDemo/Example/HBExample.h; sourceTree = "<group>"; };
 		A13B34F01F6FC27400D3D494 /* MultiMediaTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MultiMediaTool; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -9518,6 +9520,15 @@
 			path = CSStrem;
 			sourceTree = "<group>";
 		};
+		A13339F21FB4B128000FC31D /* stb */ = {
+			isa = PBXGroup;
+			children = (
+				A13339F31FB4B128000FC31D /* stb_image.h */,
+				A13339F41FB4B128000FC31D /* stb_image_write.h */,
+			);
+			path = stb;
+			sourceTree = "<group>";
+		};
 		A13B34F11F6FC27400D3D494 /* MultiMediaTool */ = {
 			isa = PBXGroup;
 			children = (
@@ -9799,6 +9810,7 @@
 		A181BC6D1EA21935004861DA /* Picture */ = {
 			isa = PBXGroup;
 			children = (
+				A13339F21FB4B128000FC31D /* stb */,
 				A162628D1FB47AFF00217831 /* HBPictureDemo.cpp */,
 				A162628C1FB47AFE00217831 /* HBPictureDemo.h */,
 				A18EC5831F442B67002964C4 /* CSPicture.cpp */,

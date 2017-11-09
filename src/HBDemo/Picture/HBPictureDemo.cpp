@@ -9,6 +9,7 @@
 #include "HBPictureDemo.h"
 #include "CSPicture.h"
 #include "CSCommon.h"
+#include "stb/stb_image_write.h"
 
 /**
  * libyuv 参考：
@@ -17,17 +18,14 @@
  */
 
 #define PIC_RESOURCE_ROOT_PATH       "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/Picture"
-#define SRC_MEDIA_VIDEO_FILE         "/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/resource/video/100.mp4"
-#define OUTPUT_MEDIA_VIDEO_FILE_DIR  "/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/resource/video/"
-#define TARGET_IMAGE_PIX_FMT         AV_PIX_FMT_RGB24
-
-
+#define TARGET_IMAGE_PIX_FMT         (AV_PIX_FMT_YUYV422)
 
 /**
  *  生成PPM媒体文件，存放的是 RGB 媒体数据
  */
-static void _SaveFrame(AVFrame *pFrame, int width, int height);
+static void _SaveFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame);
 
+const char *pInputFilePath = (const char *)(PIC_RESOURCE_ROOT_PATH"/100.mp4");
 int HBPickPictureFromVideo()
 {
     av_register_all();
@@ -35,7 +33,7 @@ int HBPickPictureFromVideo()
     int iVideoStreamIndex = -1;
     int HBError = HB_OK;
     AVFormatContext* pFormatCtx = nullptr;
-    if ((HBError = avformat_open_input(&pFormatCtx, PIC_RESOURCE_ROOT_PATH"/100.mp4", NULL, NULL)) != 0) {
+    if ((HBError = avformat_open_input(&pFormatCtx, pInputFilePath, NULL, NULL)) != 0) {
         LOGE("Open input media file failed !, %s", av_err2str(HBError));
         return HB_ERROR;
     }
@@ -60,7 +58,7 @@ int HBPickPictureFromVideo()
     AVCodecContext* pCodecCtx = avcodec_alloc_context3(pCodec);
     avcodec_parameters_to_context(pCodecCtx, pVideoStream->codecpar);
     
-    av_dump_format(pFormatCtx, 0, SRC_MEDIA_VIDEO_FILE, 0);
+    av_dump_format(pFormatCtx, 0, pInputFilePath, 0);
     if ((HBError = avcodec_open2(pCodecCtx, pCodec, NULL)) < 0) {
         LOGE("Can't open video codec, %s", av_err2str(HBError));
         return HB_ERROR;
@@ -111,13 +109,18 @@ int HBPickPictureFromVideo()
             }
             else {
                 /** 得到帧，可以在这里对帧进行相应的操作 */
-                LOGI("sws scale new frame info: w:%d, h:%d ", pFrame->width, pFrame->height);
                 HBError = sws_scale(pSwsCtx, pFrame->data, pFrame->linesize, 0, pFrame->height, pTargetFrame->data, pTargetFrame->linesize);
                 if (HBError <= 0) {
                     LOGE("sws scale new frame failed !");
                 }
-                else
-                    _SaveFrame(pTargetFrame, pCodecCtx->width, pCodecCtx->height);
+                else {//stbi_write_bmp
+                    pTargetFrame->width = pFrame->width;
+                    pTargetFrame->height = pFrame->height;
+                    pTargetFrame->format = TARGET_IMAGE_PIX_FMT;
+                    LOGI("sws scale new frame info: w:%d, h:%d to w:%d, h:%d ", \
+                         pFrame->width, pFrame->height, pTargetFrame->width, pTargetFrame->height);
+                    _SaveFrame(pFrame, pTargetFrame);
+                }
                 break;
             }
         }
@@ -136,7 +139,7 @@ int HBPickPictureFromVideo()
     return 0;
 }
 
-static void _SaveFrame(AVFrame *pFrame, int width, int height) {
+static void _SaveFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame) {
 #if 0
     FILE *pFile = nullptr;
     char szFilename[512];
