@@ -19,7 +19,7 @@
 #include "FFmpegModule/Swscale/FFmpegSwscale.h"
 #include "MTVideoTransToGif.h"
 #include "Picture/CSPicture.h"
-
+#include "libyuv.h"
 #include <unistd.h>
 
 #define PROJ_ROOT_PATH "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource"
@@ -28,13 +28,18 @@ int gMtmvLogLevel = LOG_LEVEL_DEBUG;
 
 int PictureCSpictureDemo();
 int main(int argc, const char * argv[]) {
-    {/** 测试 mp4 文件转 gif 文件测试 demo */
-        FormatConvert::VideoFormatTranser *pVideoConverter = new FormatConvert::VideoFormatTranser();
-        pVideoConverter->setInputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.mp4"));
-        pVideoConverter->setOutputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.gif"));
-        pVideoConverter->prepare();
-        pVideoConverter->doConvert();
-    }
+    /** ################################# >>> image */
+    
+    
+    /** ################################# >>> video */
+//    {/** 测试 mp4 文件转 gif 文件测试 demo */
+//        FormatConvert::VideoFormatTranser *pVideoConverter = new FormatConvert::VideoFormatTranser();
+//        pVideoConverter->setInputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.mp4"));
+//        pVideoConverter->setOutputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.gif"));
+//        pVideoConverter->prepare();
+//        pVideoConverter->doConvert();
+//    }
+    
 //    HBFFmpegSwscale();
 //    HBPictureEncoder(argc, argv);
     
