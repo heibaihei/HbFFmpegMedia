@@ -10,7 +10,7 @@
 #include "CSDefine.h"
 #include "CSUtil.h"
 #include "CSLog.h"
-#include "HBPickPicture.h"
+#include "HBPictureDemo.h"
 #include "CSPacketQueue.h"
 
 /**

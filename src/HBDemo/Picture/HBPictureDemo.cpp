@@ -6,7 +6,7 @@
 //  Copyright © 2017年 meitu. All rights reserved.
 //
 
-#include "HBPickPicture.h"
+#include "HBPictureDemo.h"
 
 #include "CSCommon.h"
 

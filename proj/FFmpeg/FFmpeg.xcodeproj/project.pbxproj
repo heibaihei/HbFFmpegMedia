@@ -68,6 +68,7 @@
 		A15BB0F11F431E9700AFE839 /* CSAudioEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0EF1F431E9700AFE839 /* CSAudioEncoder.cpp */; };
 		A15BB0F51F4321C600AFE839 /* CSAudioResample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0F31F4321C600AFE839 /* CSAudioResample.cpp */; };
 		A162628B1FB4785E00217831 /* libyuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A162627C1FB4757700217831 /* libyuv.a */; };
+		A162628E1FB47AFF00217831 /* HBPictureDemo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A162628D1FB47AFF00217831 /* HBPictureDemo.cpp */; };
 		A17202B31F69993E00662F18 /* CSAudioFifo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17202B11F69993E00662F18 /* CSAudioFifo.cpp */; };
 		A175D0121F945D9100A7F5A4 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A175D0111F945D9000A7F5A4 /* libmp3lame.a */; };
 		A181BC2D1EA1F4CF004861DA /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A181BC2C1EA1F4CF004861DA /* main.c */; };
@@ -106,7 +107,6 @@
 		A19A67F91EB3475E00DE8F11 /* HBFfplay.c in Sources */ = {isa = PBXBuildFile; fileRef = A19A67F71EB3475E00DE8F11 /* HBFfplay.c */; };
 		A19A67FB1EB3483900DE8F11 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A19A67FA1EB3483900DE8F11 /* main.c */; };
 		A19E9C711F716075000EAF8C /* decoding_encoding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16159B11F70AD05001D54EA /* decoding_encoding.cpp */; };
-		A1B7FE331F0DDD52003C6D0F /* HBPickPicture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1B7FE311F0DDD52003C6D0F /* HBPickPicture.cpp */; };
 		A1BE85571EB742F7004B839C /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC411EA21430004861DA /* libSDL2.a */; };
 		A1BE85581EB7433C004B839C /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC431EA2145E004861DA /* libavcodec.a */; };
 		A1BE85591EB74340004B839C /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC451EA21460004861DA /* libavdevice.a */; };
@@ -3022,6 +3022,8 @@
 		A16159C01F70AD05001D54EA /* transcode_aac.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = transcode_aac.c; path = ../../../src/HBDemo/Example/transcode_aac.c; sourceTree = "<group>"; };
 		A16159C11F70AD05001D54EA /* transcoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = transcoding.c; path = ../../../src/HBDemo/Example/transcoding.c; sourceTree = "<group>"; };
 		A162626E1FB4757700217831 /* YUV.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = YUV.xcodeproj; path = ../../thirdparty/test/libyuv/proj/ios/YUV.xcodeproj; sourceTree = "<group>"; };
+		A162628C1FB47AFE00217831 /* HBPictureDemo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HBPictureDemo.h; sourceTree = "<group>"; };
+		A162628D1FB47AFF00217831 /* HBPictureDemo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HBPictureDemo.cpp; sourceTree = "<group>"; };
 		A17202B11F69993E00662F18 /* CSAudioFifo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioFifo.cpp; sourceTree = "<group>"; };
 		A17202B21F69993E00662F18 /* CSAudioFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioFifo.h; sourceTree = "<group>"; };
 		A175D0111F945D9000A7F5A4 /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmp3lame.a; path = ../../lib/lame/lib/libmp3lame.a; sourceTree = "<group>"; };
@@ -3079,8 +3081,6 @@
 		A19A67F71EB3475E00DE8F11 /* HBFfplay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HBFfplay.c; path = ../../../src/HBFfplay/HBFfplay.c; sourceTree = "<group>"; };
 		A19A67F81EB3475E00DE8F11 /* HBFfplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBFfplay.h; path = ../../../src/HBFfplay/HBFfplay.h; sourceTree = "<group>"; };
 		A19A67FA1EB3483900DE8F11 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		A1B7FE311F0DDD52003C6D0F /* HBPickPicture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HBPickPicture.cpp; sourceTree = "<group>"; };
-		A1B7FE321F0DDD52003C6D0F /* HBPickPicture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HBPickPicture.h; sourceTree = "<group>"; };
 		A1BAF0141F5EF79000C3062C /* CSUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSUtil.h; path = ../../../include/CSUtil.h; sourceTree = "<group>"; };
 		A1BE85621EB743C7004B839C /* cmdutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cmdutils.c; path = "../../ffmpeg-3.2/cmdutils.c"; sourceTree = "<group>"; };
 		A1BE85631EB743C7004B839C /* cmdutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cmdutils.h; path = "../../ffmpeg-3.2/cmdutils.h"; sourceTree = "<group>"; };
@@ -9799,7 +9799,8 @@
 		A181BC6D1EA21935004861DA /* Picture */ = {
 			isa = PBXGroup;
 			children = (
-				A1B7FE301F0DDD20003C6D0F /* pickPicture */,
+				A162628D1FB47AFF00217831 /* HBPictureDemo.cpp */,
+				A162628C1FB47AFE00217831 /* HBPictureDemo.h */,
 				A18EC5831F442B67002964C4 /* CSPicture.cpp */,
 				A18EC5841F442B67002964C4 /* CSPicture.h */,
 			);
@@ -9965,15 +9966,6 @@
 				A19A67F81EB3475E00DE8F11 /* HBFfplay.h */,
 			);
 			path = ffplay;
-			sourceTree = "<group>";
-		};
-		A1B7FE301F0DDD20003C6D0F /* pickPicture */ = {
-			isa = PBXGroup;
-			children = (
-				A1B7FE311F0DDD52003C6D0F /* HBPickPicture.cpp */,
-				A1B7FE321F0DDD52003C6D0F /* HBPickPicture.h */,
-			);
-			path = pickPicture;
 			sourceTree = "<group>";
 		};
 		A1BE85611EB743BC004B839C /* HBCommon */ = {
@@ -17309,9 +17301,9 @@
 				A19A67EB1EB3465D00DE8F11 /* simplest_ffmpeg_mem_transcoder.cpp in Sources */,
 				A15632BA1F94B07200F0140F /* FilteringVideo.cpp in Sources */,
 				A181BC351EA1F682004861DA /* main.cpp in Sources */,
-				A1B7FE331F0DDD52003C6D0F /* HBPickPicture.cpp in Sources */,
 				A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */,
 				A1D1CDBC1FAB473D0027C8AE /* MTVideoTransToGif.cpp in Sources */,
+				A162628E1FB47AFF00217831 /* HBPictureDemo.cpp in Sources */,
 				A181BC721F6517F400B34FD0 /* CSThreadIPCContext.cpp in Sources */,
 				A1F706161F656F9F003A6010 /* CSMediaTimeline.cpp in Sources */,
 				A19450B11F6754E1004E8669 /* CSWorkTasks.cpp in Sources */,
