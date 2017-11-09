@@ -7,28 +7,20 @@
 //
 
 #include "HBPictureDemo.h"
-
+#include "CSPicture.h"
 #include "CSCommon.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/**
+ * libyuv 参考：
+ *     http://blog.csdn.net/fengbingchun/article/details/50323273
+ *
+ */
 
-#include "libavcodec/avcodec.h"
-#include "libavformat/avformat.h"
-#include "libswscale/swscale.h"
-#include "libavutil/imgutils.h"
-
-#ifdef __cplusplus
-};
-#endif
-
-
+#define PIC_RESOURCE_ROOT_PATH       "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/Picture"
 #define SRC_MEDIA_VIDEO_FILE         "/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/resource/video/100.mp4"
 #define OUTPUT_MEDIA_VIDEO_FILE_DIR  "/Users/zj-db0519/work/code/mlab_meitu/FFmpeg_git/ffmpeg_private/resource/video/"
-
-
 #define TARGET_PICTURE_PIX_FMT       AV_PIX_FMT_RGB24
+
 
 
 /**
@@ -39,26 +31,26 @@ static void _SaveFrame(AVFrame *pFrame, int width, int height);
 int HBPickPictureFromVideo()
 {
     av_register_all();
-    
-    AVFormatContext* pFormatCtx = nullptr;
-    if (avformat_open_input(&pFormatCtx, SRC_MEDIA_VIDEO_FILE, NULL, NULL) != 0)
-        return -1;
-    
-    if (avformat_find_stream_info(pFormatCtx, NULL) < 0)
-        return -1;
-    
-    av_dump_format(pFormatCtx, 0, SRC_MEDIA_VIDEO_FILE, 0);
-    
+ 
     int videoStream = -1;
-    for (int i=0; i<pFormatCtx->nb_streams; i++) {
-        if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
-            videoStream = i;
-            break;
-        }
+    int HBError = HB_OK;
+    AVFormatContext* pFormatCtx = nullptr;
+    if ((HBError = avformat_open_input(&pFormatCtx, PIC_RESOURCE_ROOT_PATH"/100.mp4", NULL, NULL)) != 0) {
+        LOGE("Open input media file failed !, %s", av_err2str(HBError));
+        return HB_ERROR;
     }
     
-    if (videoStream == -1)
-        return -1;
+    if ((HBError = avformat_find_stream_info(pFormatCtx, NULL)) < 0) {
+        LOGE("Find stream info failed !, %s", av_err2str(HBError));
+        return HB_ERROR;
+    }
+    
+    av_dump_format(pFormatCtx, 0, SRC_MEDIA_VIDEO_FILE, 0);
+
+    if ((videoStream = av_find_best_stream(pFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0)) < 0) {
+        LOGE("find best video stream failed!, %s", av_err2str(videoStream));
+        return HB_ERROR;
+    }
     
     AVCodecContext* pCodecCtxOrig = pFormatCtx->streams[videoStream]->codec;
     AVCodec* pCodec = avcodec_find_decoder(pCodecCtxOrig->codec_id);
@@ -118,7 +110,7 @@ int HBPickPictureFromVideo()
     return 0;
 }
 
-static void _SaveFrame(AVFrame *pFrame, int width, int height){
+static void _SaveFrame(AVFrame *pFrame, int width, int height) {
     FILE *pFile = nullptr;
     char szFilename[512];
     
@@ -132,6 +124,51 @@ static void _SaveFrame(AVFrame *pFrame, int width, int height){
     fwrite(pFrame->data[0],  1, width*height*3, pFile);
     
     fclose(pFile);
+}
+
+int PictureCSpictureDemo()
+{
+    HBMedia::CSPicture objPicture;
+    objPicture.setSrcPicDataType(MD_TYPE_RAW_BY_FILE);
+    objPicture.setInputPicMediaFile((char *)("/Picture/encoder/1080_1080_JYUV420P.yuv"));
+    ImageParams srcPictureParam = { CS_PIX_FMT_YUVJ420P, 1080, 1080, NULL, 1 };
+    objPicture.setSrcPictureParam(&srcPictureParam);
+    
+    objPicture.setTrgPicDataType(MD_TYPE_COMPRESS);
+    objPicture.setOutputPicMediaFile((char *)("/Picture/encoder/1080_1080_JYUV420P_HB_encoder.jpg"));
+    ImageParams targetPictureParam = { CS_PIX_FMT_YUVJ420P, 1080, 1080, (char *)"mjpeg", 1 };
+    objPicture.setTrgPictureParam(&targetPictureParam);
+    
+    objPicture.prepare();
+    
+    int      HbErr = HB_OK;
+    while (HbErr == HB_OK) {
+        uint8_t *pictureData = NULL;
+        int      pictureDataSizes = 0;
+        
+        HbErr = objPicture.receiveImageData(&pictureData, &pictureDataSizes);
+        switch (HbErr) {
+            case HB_OK:
+                break;
+            case HB_EOF:
+                LOGW("Picture reach raw data EOF !");
+                goto ENCODE_LOOP_END_LABEL;
+            default:
+                LOGE("Picture get raw data failed <%d> !", HbErr);
+                goto ENCODE_LOOP_END_LABEL;
+        }
+        
+        HbErr = objPicture.sendImageData(&pictureData, &pictureDataSizes);
+        if (HbErr != HB_OK) {
+            LOGE("Picture encode exit !");
+            break;
+        }
+    }
+    
+ENCODE_LOOP_END_LABEL:
+    objPicture.dispose();
+    
+    return 0;
 }
 
 

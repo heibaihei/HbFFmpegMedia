@@ -21,16 +21,17 @@
         ffmpeg -i test.asf -vframes 30 -y -f gif a.gif
  
  */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/** 从视频中提取出帧数据 */
 int HBPickPictureFromVideo();
 
+int PictureCSpictureDemo();
+    
 #ifdef __cplusplus
 };
 #endif
-    
     
 #endif /* HBPickPicture_hpp */
