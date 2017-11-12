@@ -21,6 +21,7 @@
 
 #define PIC_RESOURCE_ROOT_PATH       "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/Picture"
 #define TARGET_IMAGE_PIX_FMT         (AV_PIX_FMT_YUYV422)
+#define TARGET_IMAGE_PIX_FMT_STR      "YUYV422"
 
 /**
  *  生成PPM媒体文件，存放的是 RGB 媒体数据
@@ -109,7 +110,6 @@ int HBPickPictureFromVideo()
             }
             else {
                 _ProcessFrame(pFrame, pTargetFrame);
-                
                 break;
             }
         }
@@ -146,23 +146,25 @@ static void _ProcessFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame) {
         LOGI("sws scale new frame info: w:%d, h:%d to w:%d, h:%d ", \
              pSrcFrame->width, pSrcFrame->height, pDstFrame->width, pDstFrame->height);
         /** 文件输出 */
+        // (char const *filename, int w, int h, int comp, const void  *data, int stride_in_bytes)
+//        stbi_write_png(PIC_RESOURCE_ROOT_PATH"/newFrame.png", pDstFrame->width, pDstFrame->height, 1, pDstFrame->data, 1);
+        
+        {/** 以文件的方式输出裸数据 */
+            char szFilename[512] = {0};
+            sprintf(szFilename, "%s/OutputPicture_%s_%d_%d.raw", PIC_RESOURCE_ROOT_PATH, \
+                    TARGET_IMAGE_PIX_FMT_STR, pDstFrame->width, pDstFrame->height);
+            FILE *pFileHanle = fopen(szFilename, "wb");
+            if (pFileHanle == NULL) {
+                LOGE("Open output dest file %s failed !", szFilename);
+                return;
+            }
+            fwrite(pDstFrame->data[0],  1, \
+                   av_image_get_buffer_size((enum AVPixelFormat)(pDstFrame->format), pDstFrame->width, pDstFrame->height, 1),
+                   pFileHanle);
+            
+            fclose(pFileHanle);
+        }
     }
-    
-#if 0
-    FILE *pFile = nullptr;
-    char szFilename[512];
-    
-    sprintf(szFilename, OUTPUT_MEDIA_VIDEO_FILE_DIR"pickTargetFrame.ppm");
-    pFile = fopen(szFilename, "wb");
-    if (pFile == NULL)
-        return;
-    
-    fprintf(pFile, "P6\n%d %d\n255\n", width, height);
-    
-    fwrite(pFrame->data[0],  1, width*height*3, pFile);
-    
-    fclose(pFile);
-#endif
 }
 
 int PictureCSpictureDemo()

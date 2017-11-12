@@ -45,3 +45,4 @@ src/HBDemo/audio/AudioDecoder/100_s16_1_output.pcm
 ffmpeg-3.2/doc
 proj/compile/ios/iOS-tools/iOS-build
 lib/ffmpeg/MacOS
+OutputPicture_YUYV422_480_480.raw
