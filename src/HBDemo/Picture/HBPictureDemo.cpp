@@ -27,6 +27,7 @@
  *  生成PPM媒体文件，存放的是 RGB 媒体数据
  */
 static void _ProcessFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame);
+static int  _imageConver(AVFrame *pSrcFrame, AVFrame *pDstFrame);
 
 const char *pInputFilePath = (const char *)(PIC_RESOURCE_ROOT_PATH"/100.mp4");
 int HBPickPictureFromVideo()
@@ -128,14 +129,20 @@ int HBPickPictureFromVideo()
     return 0;
 }
 
-static void _ProcessFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame) {
-    int HBError = HB_OK;
+/** >0 表示正常完成转换， <= 0 表示没有政策发生格式转换 */
+static int _imageConver(AVFrame *pSrcFrame, AVFrame *pDstFrame) {
     struct SwsContext *pSwsCtx = sws_getContext(pSrcFrame->width, pSrcFrame->height, (enum AVPixelFormat)pSrcFrame->format, \
-                            pSrcFrame->width, pSrcFrame->height, TARGET_IMAGE_PIX_FMT, SWS_BILINEAR, NULL, NULL, NULL);
+                                                pSrcFrame->width, pSrcFrame->height, TARGET_IMAGE_PIX_FMT, SWS_BILINEAR, NULL, NULL, NULL);
     
     /** 得到帧，可以在这里对帧进行相应的操作 */
-    HBError = sws_scale(pSwsCtx, pSrcFrame->data, pSrcFrame->linesize, 0, pSrcFrame->height, \
+    int HBError = sws_scale(pSwsCtx, pSrcFrame->data, pSrcFrame->linesize, 0, pSrcFrame->height, \
                         pDstFrame->data, pDstFrame->linesize);
+    return HBError;
+}
+
+static void _ProcessFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame) {
+
+    int HBError = _imageConver(pSrcFrame, pDstFrame);
     if (HBError <= 0) {
         LOGE("sws scale new frame failed !");
     }
@@ -159,10 +166,62 @@ static void _ProcessFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame) {
                 return;
             }
             fwrite(pDstFrame->data[0],  1, \
-                   av_image_get_buffer_size((enum AVPixelFormat)(pDstFrame->format), pDstFrame->width, pDstFrame->height, 1),
+                   av_image_get_buffer_size((enum AVPixelFormat)(pDstFrame->format), pDstFrame->width, pDstFrame->height, 0),
                    pFileHanle);
             
             fclose(pFileHanle);
+        }
+        {/**
+          * 分离原始输出
+          * http://blog.csdn.net/zhuweigangzwg/article/details/43734169
+          */
+#if 0
+            {// YUV 420
+                for(i = 0 ; i < pstream_info->dec_ctx->height ; i++)
+                {
+                    memcpy(video_decode_buf+pstream_info->dec_ctx->width*i,
+                           pDecodeFrame->data[0]+pDecodeFrame->linesize[0]*i,
+                           pstream_info->dec_ctx->width);
+                }
+                for(j = 0 ; j < pstream_info->dec_ctx->height/2 ; j++)
+                {
+                    memcpy(video_decode_buf+pstream_info->dec_ctx->width*i+pstream_info->dec_ctx->width/2*j,
+                           pDecodeFrame->data[1]+pDecodeFrame->linesize[1]*j,
+                           pstream_info->dec_ctx->width/2);
+                }
+                for(k  =0 ; k < pstream_info->dec_ctx->height/2 ; k++)
+                {
+                    memcpy(video_decode_buf+pstream_info->dec_ctx->width*i+pstream_info->dec_ctx->width/2*j+pstream_info->dec_ctx->width/2*k,
+                           pDecodeFrame->data[2]+pDecodeFrame->linesize[2]*k,
+                           pstream_info->dec_ctx->width/2);
+                }
+            }
+#endif
+#if 0
+            {// YUV 422
+                int iBufferSize = av_image_get_buffer_size((enum AVPixelFormat)(pDstFrame->format), pDstFrame->width, pDstFrame->height, 0);
+                uint8_t * video_decode_buf = (uint8_t *)calloc(1,iBufferSize * 3 * sizeof(char));
+                
+                for(int i = 0 ; i < pDstFrame->height ; i++)
+                {
+                    memcpy(video_decode_buf+pDstFrame->->width*i,
+                           pDstFrame->data[0]+pDstFrame->linesize[0]*i,
+                           pDstFrame->->width);
+                }
+                for(int j = 0 ; j < pDstFrame->height ; j++)
+                {
+                    memcpy(video_decode_buf+pDstFrame->width*i+pDstFrame->width/2*j,
+                           pDstFrame->data[1]+pDstFrame->linesize[1]*j,
+                           pDstFrame->width/2);
+                }
+                for(int k  =0 ; k < pDstFrame->height ; k++)
+                {
+                    memcpy(video_decode_buf+pDstFrame->width*i+pDstFrame->>width/2*j+pDstFrame->width/2*k,
+                           pDstFrame->data[2]+pDstFrame->linesize[2]*k,
+                           pDstFrame->width/2);
+                }
+            }
+#endif
         }
     }
 }
