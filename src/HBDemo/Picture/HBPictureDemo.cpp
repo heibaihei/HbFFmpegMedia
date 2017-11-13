@@ -131,14 +131,19 @@ int HBPickImageFrameFromVideo()
     }
 
 EXIT_LABEL:
-    /** 释放 stPacket 内部占用的内存 */
-    av_packet_unref(pNewPacket);
-
+    if (pDstFrame->data[0])
+        av_freep(&(pDstFrame->data[0]));
     av_frame_free(&pDstFrame);
-    av_frame_free(&pSrcFrame);
+    if (pSrcFrame)
+        av_frame_free(&pSrcFrame);
+    if (pNewPacket)
+        av_packet_free(&pNewPacket);
     
     avcodec_close(pCodecCtx);
-    
+    avcodec_free_context(&pCodecCtx);
+    pCodec = nullptr;
+    iVideoStreamIndex = -1;
+    pVideoStream = nullptr;
     avformat_close_input(&pFormatCtx);
     
     return HBError;
