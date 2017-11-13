@@ -2792,6 +2792,7 @@
 		A1F14AD31EA12B0600939FF3 /* uncoded_frame.c in Sources */ = {isa = PBXBuildFile; fileRef = A1F140871EA12AFE00939FF3 /* uncoded_frame.c */; };
 		A1F14AD41EA12B0600939FF3 /* yuvcmp.c in Sources */ = {isa = PBXBuildFile; fileRef = A1F140891EA12AFE00939FF3 /* yuvcmp.c */; };
 		A1F14AD51EA12B0600939FF3 /* zmqsend.c in Sources */ = {isa = PBXBuildFile; fileRef = A1F1408A1EA12AFE00939FF3 /* zmqsend.c */; };
+		A1F4B09E1FB93192000FF69B /* CSDemo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1F4B09C1FB93192000FF69B /* CSDemo.cpp */; };
 		A1F6019F1F66C98C00168C96 /* CSStreamFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1F6019D1F66C98C00168C96 /* CSStreamFactory.cpp */; };
 		A1F706161F656F9F003A6010 /* CSMediaTimeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1F706141F656F9F003A6010 /* CSMediaTimeline.cpp */; };
 		A1F7061C1F657181003A6010 /* CSMediaPiece.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1F7061A1F657181003A6010 /* CSMediaPiece.cpp */; };
@@ -9300,6 +9301,9 @@
 		A1F1408B1EA12AFE00939FF3 /* zmqshell.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = zmqshell.py; sourceTree = "<group>"; };
 		A1F1408C1EA12AFE00939FF3 /* VERSION */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VERSION; sourceTree = "<group>"; };
 		A1F1408D1EA12AFE00939FF3 /* version.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = version.sh; sourceTree = "<group>"; };
+		A1F4B09C1FB93192000FF69B /* CSDemo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSDemo.cpp; sourceTree = "<group>"; };
+		A1F4B09D1FB93192000FF69B /* CSDemo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSDemo.h; sourceTree = "<group>"; };
+		A1F4B09F1FB9320C000FF69B /* CSExternAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSExternAPI.h; sourceTree = "<group>"; };
 		A1F6019D1F66C98C00168C96 /* CSStreamFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSStreamFactory.cpp; sourceTree = "<group>"; };
 		A1F6019E1F66C98C00168C96 /* CSStreamFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSStreamFactory.h; sourceTree = "<group>"; };
 		A1F706141F656F9F003A6010 /* CSMediaTimeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSMediaTimeline.cpp; sourceTree = "<group>"; };
@@ -16984,6 +16988,8 @@
 		A1F706131F656F9F003A6010 /* CSModule */ = {
 			isa = PBXGroup;
 			children = (
+				A1F4B09C1FB93192000FF69B /* CSDemo.cpp */,
+				A1F4B09D1FB93192000FF69B /* CSDemo.h */,
 				A181BC6A1F6516D100B34FD0 /* CSCommon */,
 				A1245A8F1F65FD1900DB5D45 /* CSStrem */,
 				A1245A891F657F9000DB5D45 /* CSPlayer.cpp */,
@@ -16996,6 +17002,7 @@
 				A19450B01F6754E1004E8669 /* CSWorkTasks.h */,
 				A13E12191F676775003FC0AC /* CSWorkContext.cpp */,
 				A13E121A1F676775003FC0AC /* CSWorkContext.h */,
+				A1F4B09F1FB9320C000FF69B /* CSExternAPI.h */,
 			);
 			name = CSModule;
 			path = ../../../src/HBDemo/CSModule;
@@ -17330,6 +17337,7 @@
 				A181BC581EA2172B004861DA /* audio_format_convert.cpp in Sources */,
 				A1F7061C1F657181003A6010 /* CSMediaPiece.cpp in Sources */,
 				A1080E9A1F68DC6F0015A2D3 /* CSConfig.cpp in Sources */,
+				A1F4B09E1FB93192000FF69B /* CSDemo.cpp in Sources */,
 				A13A69751F3ED3F900FC6376 /* HBAudio.cpp in Sources */,
 				A19A67E41EB3460100DE8F11 /* simplest_ffmpeg_swscale.cpp in Sources */,
 				A1091CE21F5958AF00565177 /* CSVideo.cpp in Sources */,
