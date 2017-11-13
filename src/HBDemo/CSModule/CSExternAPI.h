@@ -10,5 +10,6 @@
 #define Header_h
 
 #include "CSPlayer.h"
+#include "CSPlayerListener.h"
 
 #endif /* Header_h */

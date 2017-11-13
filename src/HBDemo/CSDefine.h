@@ -24,6 +24,21 @@
 #define DECODE_STATE_DECODE_ABORT    0X0008
 #define DECODE_STATE_FLUSH_MODE      0X0010
 
+typedef enum MT_RECORD_STAT_t {
+    MT_EXCEPTION            = -1,
+    MT_IDEL                 = 0,
+    MT_START                = 1,
+    MT_PROCESS              = 2,
+    MT_STOP                 = 3,
+    MT_RELEASE              = 4,
+    MT_AUDIO_ENCODE_START   = 5,
+    MT_AUDIO_ENCODE_STOP    = 6,
+    MT_VIDEO_ENCODE_START   = 7,
+    MT_VIDEO_ENCODE_STOP    = 8,
+    MT_WRITE_START          = 9,
+    MT_WRITE_STOP           = 10,
+} MT_RECORD_STAT_t;
+
 typedef enum AUDIO_SAMPLE_FORMAT {
     MT_SAMPLE_FMT_NONE = 0,
     MT_SAMPLE_FMT_U8,          ///< unsigned 8 bits

@@ -17,7 +17,74 @@
 
 #define SINGLE_SAMPLES  (1024)
 
-void *audioReadThread(void *arg)
+static void *_audioReadThread(void *arg);
+static void *_videoReadThread(void *arg);
+
+class MediaListener:public MTMediaRecord::MediaRecorderStateListener {
+public:
+    MediaListener() {};
+    ~MediaListener() {};
+    void MediaRecordProgressBegan(MTMediaRecord::MediaRecorder* recorder)
+    {
+        LOGD("Media record begin\n");
+    }
+    
+    void MediaRecordProgressChanged(MTMediaRecord::MediaRecorder* recorder, int type)
+    {
+        LOGD("Media inner thread stat change\n");
+        switch (type) {
+            case MT_AUDIO_ENCODE_START:
+                LOGD("Auido thread begin!\n");
+                break;
+            case MT_AUDIO_ENCODE_STOP:
+                LOGD("Audio thread end!\n");
+                break;
+            case MT_VIDEO_ENCODE_START:
+                LOGD("Video encode begin!\n");
+                break;
+            case MT_VIDEO_ENCODE_STOP:
+                LOGD("video encode end!\n");
+                break;
+            case MT_WRITE_START:
+                LOGD("write begin!\n");
+                
+                break;
+            case MT_WRITE_STOP:
+                LOGD("write begin!\n");
+                break;
+            default:
+                break;
+        }
+    }
+    
+    /**
+     *  录制结束
+     *
+     *  @param editer  MediaRecorder object.
+     */
+    void MediaRecordProgressEnded(MTMediaRecord::MediaRecorder* editer)
+    {
+        LOGD("Record stop\n");
+    }
+    
+    /**
+     *  取消录制消息
+     *
+     *  @param editer MediaRecorder object
+     */
+    void MediaRecordProgressCanceled(MTMediaRecord::MediaRecorder* editer)
+    {
+        LOGD("Record canceled\n");
+    }
+    
+};
+
+void CSModulePlayerDemo() {
+    
+    
+}
+
+static void *_audioReadThread(void *arg)
 {
     int ret = HB_OK;
     FILE *pPcmFileHandle = nullptr;
@@ -71,7 +138,7 @@ AUDIO_READ_THREAD_EXIT_LABEL:
     return NULL;
 }
 
-void *videoReadThread(void *arg)
+static void *_videoReadThread(void *arg)
 {
     int ret = HB_OK;
     FILE *pInputYuvHandle = nullptr;

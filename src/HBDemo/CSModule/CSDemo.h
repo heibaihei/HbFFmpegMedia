@@ -17,4 +17,6 @@
 
 #define CS_MODULE_RESOURCE_ROOT_PATH "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/CSModule"
 
+void CSModulePlayerDemo();
+
 #endif /* CSDemo_h */

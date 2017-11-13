@@ -46,3 +46,5 @@ ffmpeg-3.2/doc
 proj/compile/ios/iOS-tools/iOS-build
 lib/ffmpeg/MacOS
 OutputPicture_YUYV422_480_480.raw
+resource/CSModule/100_audio_44100_s16le.pcm
+resource/CSModule/100_video_480_480_420p.yuv
