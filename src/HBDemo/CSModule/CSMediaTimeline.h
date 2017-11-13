@@ -50,12 +50,19 @@ public:
      */
     void setSrcImageParam(ImageParams* pParam) { mSrcImageParams = *pParam; }
     ImageParams* getSrcImageParam() { return &mSrcImageParams; }
+    void setDstImageParam(ImageParams* pParam) { mTgtImageParams = *pParam; }
+    ImageParams* getDstImageParam() { return &mTgtImageParams; }
     
     /**
      * 获取目标音频参数信息
      */
     void setTgtAudioParam(AudioParams* pParam) { mTgtAudioParams = *pParam; }
     AudioParams* getTgtAudioParam() { return &mTgtAudioParams; }
+    void setSrcAudioParam(AudioParams* pParam) { mSrcAudioParams = *pParam; }
+    AudioParams* getsrcAudioParam() { return &mSrcAudioParams; }
+    
+    /** 设置全局播放速度 */
+    void setGlobalSpeed(float speed);
     
     /** 测试接口 */
     /**
@@ -109,13 +116,14 @@ private:
     /** 输出文件中的媒体流信息 */
     std::vector<CSIStream *> mStreamsList;
     
+    float mGlobalSpeed;
+    
     /** 预览模式下使用到的参数： */
     
     /** 公共参数： */
     CSWorkContext* mWorkCtx;
     AudioParams    mSrcAudioParams;
     ImageParams    mSrcImageParams;
-    
     
     AudioParams    mTgtAudioParams;
     ImageParams    mTgtImageParams;

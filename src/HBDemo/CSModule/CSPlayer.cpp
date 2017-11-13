@@ -60,5 +60,9 @@ int CSPlayer::writeExternData(uint8_t data[], size_t dataSize, int index, long t
     return HB_OK;
 }
 
+void CSPlayer::setStateListener(MediaStateListener *listener) {
+    mStateListener = listener;
+    return;
+}
 }
 

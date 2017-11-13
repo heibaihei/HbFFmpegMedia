@@ -16,6 +16,7 @@
 namespace HBMedia {
 
 CSTimeline::CSTimeline(){
+    mGlobalSpeed = 1.0f;
     mFmtCtx = nullptr;
     mSaveFilePath = nullptr;
     memset(&mSrcAudioParams, 0x00, sizeof(AudioParams));
@@ -206,6 +207,10 @@ int CSTimeline::writeTailer() {
         return HB_ERROR;
     }
     return HB_OK;
+}
+
+void CSTimeline::setGlobalSpeed(float speed){
+    mGlobalSpeed = speed;
 }
 
 void CSTimeline::setOutputFile(char *file) {

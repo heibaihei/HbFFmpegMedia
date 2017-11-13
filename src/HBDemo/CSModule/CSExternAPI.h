@@ -11,5 +11,6 @@
 
 #include "CSPlayer.h"
 #include "CSPlayerListener.h"
+#include "CSMediaTimeline.h"
 
 #endif /* Header_h */

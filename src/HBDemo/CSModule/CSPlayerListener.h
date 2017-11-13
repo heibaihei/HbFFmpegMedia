@@ -10,10 +10,9 @@
 #define CSPlayerListener_h
 
 namespace HBMedia {
+    
     class CSPlayer;
-    
-    
-    class MediaStateListener {
+    typedef class MediaStateListener {
     public:
         virtual ~MediaStateListener() {}
         /**
@@ -44,7 +43,7 @@ namespace HBMedia {
          *  @param editer MediaRecorder object
          */
         virtual void MediaRecordProgressCanceled(CSPlayer* editer) = 0;
-    };
+    } MediaStateListener;
 }
 
 

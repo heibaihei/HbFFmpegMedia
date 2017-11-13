@@ -110,6 +110,7 @@ typedef struct _ImageParams {
     /** 对应像素格式下，每个帧的空间大小 */
     int   mDataSize;
     int64_t   mBitRate;
+    float  mVideoCRF;
     float mFrameRate;
     /** 旋转角度 */
     int   mRotate;
@@ -120,6 +121,7 @@ typedef struct _AudioParams {
     int channels;
     int64_t channel_layout;
     AVSampleFormat sample_fmt;
+    AUDIO_SAMPLE_FORMAT pri_sample_fmt;
     int frame_size;
     int bytes_per_sec;
     long mbitRate;

@@ -20,6 +20,8 @@
 static void *_audioReadThread(void *arg);
 static void *_videoReadThread(void *arg);
 
+namespace HBMedia {
+
 class MediaListener:public HBMedia::MediaStateListener {
 public:
     MediaListener() {};
@@ -79,57 +81,116 @@ public:
     
 };
 
+}
 void CSModulePlayerDemo() {
     int ret = 0;
-    const char *pOutputMediaFile = CS_MODULE_RESOURCE_ROOT_PATH"/100_output.mp4";
+    char *pOutputMediaFile = CS_MODULE_RESOURCE_ROOT_PATH"/100_output.mp4";
     int inWidth = 480, inHeight = 480;
     int outWidth = 480, outHeight = 480;
-    int cropX = inWidth-outWidth, cropY = inHeight-outHeight;
-    int cropWidth = outWidth, cropHeight = outHeight;
+//    int cropX = inWidth-outWidth, cropY = inHeight-outHeight;
+//    int cropWidth = outWidth, cropHeight = outHeight;
     
     /** 输出媒体参数 */
     VideoRorate ouputImageRotate = MT_Rotate0;
     int outputChannels = 2;
     int outputSampleRate = 44100;
     AUDIO_SAMPLE_FORMAT outputSampleFmt = CS_SAMPLE_FMT_S16;
+    IMAGE_PIX_FORMAT outputImagePixFormat = CS_PIX_FMT_YUV420P;
     
     /** 输入媒体参数 */
     AUDIO_SAMPLE_FORMAT inputSampleFmt = CS_SAMPLE_FMT_FLTP;
     int inputChannels = 2;
-    int inputsampleRate = 44100;
-    float crf = 58;
+    int inputSampleRate = 44100;
+    float crf = 58.0f;
     IMAGE_PIX_FORMAT inputImagePixFormat = CS_PIX_FMT_YUV420P;
     
     /** 线程信息 */
     pthread_t audioReadThreadId;
     pthread_t videoReadThreadId;
-    MediaListener mediaPlayerlistener;
+    HBMedia::MediaListener mediaPlayerlistener;
     
+    HBMedia::CSTimeline* pTimeline = nullptr;
     HBMedia::CSPlayer::CSPlayer *pMediaPlayer = new HBMedia::CSPlayer::CSPlayer();
     if (!pMediaPlayer) {
         LOGE("create new media player failed !");
         goto PLAYER_DEMO_EXIT_LABEL;
     }
     
+    pTimeline = new HBMedia::CSTimeline();
+    if (!pTimeline) {
+        LOGE("create new media timeline failed !");
+        goto PLAYER_DEMO_EXIT_LABEL;
+    }
     
-//    pMediaPlayer->setStateListener(&mediaPlayerlistener);
-//    pMediaPlayer->setRecordFile(file);
-//    pMediaPlayer->setRecordRate(1);
-//    pMediaPlayer->setRecordBitRate(2000);
-////    param.setVideoInParam(inWidth, inHeight, format);
-//    pMediaPlayer->setInVideoParam(inWidth, inHeight, format);
-//    pMediaPlayer->setOutVideoParam(outWidth, outHeight);
-//    pMediaPlayer->setVideoRotate(rotate);
-//    pMediaPlayer->setRecordQuality(crf);
-//    pMediaPlayer->setInAudioParam(inChannels, insampleRate, inSampleFmt);
-//    pMediaPlayer->setOutAudioParam(outChannels, outSampleRate, outSampleFmt);
+    pTimeline->setOutputFile(pOutputMediaFile);
+    pTimeline->setGlobalSpeed(1.0f);
+    
+    ImageParams outputImageParam;
+    outputImageParam.mBitRate = 2000000;
+    outputImageParam.mVideoCRF = crf;
+    outputImageParam.mWidth = outWidth;
+    outputImageParam.mHeight = outHeight;
+    outputImageParam.mPixFmt = outputImagePixFormat;
+    outputImageParam.mAlign = 1;
+    outputImageParam.mRotate = ouputImageRotate;
+    pTimeline->setDstImageParam(&outputImageParam);
+    
+    ImageParams inputImageParam;
+    inputImageParam.mWidth = inWidth;
+    inputImageParam.mHeight = inHeight;
+    inputImageParam.mPixFmt = inputImagePixFormat;
+    inputImageParam.mAlign = 1;
+    pTimeline->setSrcImageParam(&inputImageParam);
+    
+    AudioParams outputAudioParams;
+    outputAudioParams.channels = outputChannels;
+    outputAudioParams.pri_sample_fmt = outputSampleFmt;
+    outputAudioParams.sample_rate = outputSampleRate;
+    pTimeline->setTgtAudioParam(&outputAudioParams);
+    
+    AudioParams inputAudioParams;
+    inputAudioParams.channels = inputChannels;
+    inputAudioParams.pri_sample_fmt = inputSampleFmt;
+    inputAudioParams.sample_rate = inputSampleRate;
+    pTimeline->setSrcAudioParam(&inputAudioParams);
+
+    /** 新增裁剪区域信息 */
 //    pMediaPlayer->setCropRegion(cropX, cropY, cropWidth, cropHeight);
     
-    pMediaPlayer->prepare();
+    pMediaPlayer->setTimeline(pTimeline);
+    pMediaPlayer->setStateListener(&mediaPlayerlistener);
+    ret = pMediaPlayer->prepare();
+    if (ret < 0) {
+        LOGE("Prepare error!\n");
+        goto PLAYER_DEMO_EXIT_LABEL;
+    }
     
+    ret = pMediaPlayer->start();
+    if (ret < 0) {
+        LOGE("start error!\n");
+        goto PLAYER_DEMO_EXIT_LABEL;
+    }
+    
+    ret = pthread_create(&audioReadThreadId, NULL, _audioReadThread, pMediaPlayer);
+    if (ret < 0) {
+        LOGE("Create audio thread error!\n");
+        goto PLAYER_DEMO_EXIT_LABEL;
+    }
+    
+    ret = pthread_create(&videoReadThreadId, NULL, _videoReadThread, pMediaPlayer);
+    if (ret < 0) {
+        LOGE("Create audio thread error!\n");
+        goto PLAYER_DEMO_EXIT_LABEL;
+    }
+    
+    pthread_join(audioReadThreadId, NULL);
+    pthread_join(videoReadThreadId, NULL);
     
 PLAYER_DEMO_EXIT_LABEL:
+    if (pMediaPlayer)
+        pMediaPlayer->stop();
     SAFE_DELETE(pMediaPlayer);
+    SAFE_DELETE(pTimeline);
 }
 
 static void *_audioReadThread(void *arg)
