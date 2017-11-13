@@ -28,28 +28,28 @@
 int gMtmvLogLevel = LOG_LEVEL_DEBUG;
 
 int main(int argc, const char * argv[]) {
-    {
-        /** ################################# >>> image */
-        
-        HBPickImageFrameFromVideo();
-        
-        /** ################################# <<< image */
+    {/** media demo */
+        {/** Image */
+            HBPickImageFrameFromVideo();
+        }
+        {/** Video */
+//            {/** 测试 mp4 文件转 gif 文件测试 demo */
+//                FormatConvert::VideoFormatTranser *pVideoConverter = new FormatConvert::VideoFormatTranser();
+//                pVideoConverter->setInputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.mp4"));
+//                pVideoConverter->setOutputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.gif"));
+//                pVideoConverter->prepare();
+//                pVideoConverter->doConvert();
+//            }
+        }
     }
-    
-    /** ################################# >>> video */
-//    {/** 测试 mp4 文件转 gif 文件测试 demo */
-//        FormatConvert::VideoFormatTranser *pVideoConverter = new FormatConvert::VideoFormatTranser();
-//        pVideoConverter->setInputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.mp4"));
-//        pVideoConverter->setOutputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.gif"));
-//        pVideoConverter->prepare();
-//        pVideoConverter->doConvert();
-//    }
-    
-//    HBFFmpegSwscale();
-//    HBPictureEncoder(argc, argv);
-    
-/** Examples */
-//    examples_filtering_video(argc, argv);
+    {/** Encapsulation */
+        {/** CSTimeline */
+            
+            
+        }
+        
+    }
+
     
 /** ################################# >>> Audio */
 //    { /** Audio decode */

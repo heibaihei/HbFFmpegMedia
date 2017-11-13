@@ -1,20 +1,20 @@
 //
-//  CSMediaTrack.cpp
+//  CSMediaPiece.cpp
 //  FFmpeg
 //
 //  Created by zj-db0519 on 2017/9/10.
 //  Copyright © 2017年 meitu. All rights reserved.
 //
 
-#include "CSMediaTrack.h"
+#include "CSMediaPiece.h"
 
 namespace HBMedia {
     
-CSTrack::CSTrack(){
+CSPiece::CSPiece(){
 
 }
 
-CSTrack::~CSTrack(){
+CSPiece::~CSPiece(){
     
 }
 

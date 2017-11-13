@@ -1,13 +1,13 @@
 //
-//  CSMediaTrack.h
+//  CSMediaPiece.h
 //  FFmpeg
 //
 //  Created by zj-db0519 on 2017/9/10.
 //  Copyright © 2017年 meitu. All rights reserved.
 //
 
-#ifndef CSMediaTrack_h
-#define CSMediaTrack_h
+#ifndef CSMediaPiece_h
+#define CSMediaPiece_h
 
 #include <stdio.h>
 #include "CSDefine.h"
@@ -18,17 +18,17 @@
 
 namespace HBMedia {
     
-typedef class CSTrack {
+typedef class CSPiece {
 public:
-    CSTrack();
-    ~CSTrack();
+    CSPiece();
+    ~CSPiece();
     
 protected:
     
 private:
     
-} CSTrack;
+} CSPiece;
     
 }
 
-#endif /* CSMediaTrack_h */
+#endif /* CSMediaPiece_h */
