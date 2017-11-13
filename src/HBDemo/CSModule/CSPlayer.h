@@ -16,8 +16,10 @@
 #include "CSCommon.h"
 #include "CSUtil.h"
 
+
 namespace HBMedia {
 
+class MediaStateListener;
 class CSTimeline;
     
 typedef class CSPlayer {
@@ -44,10 +46,16 @@ public:
     /** 临时接口，往播放器中喂数据 */
     int writeExternData(uint8_t data[], size_t dataSize, int index, long timeStamp);
     
+    /** 设置监听器 */
+    void setStateListener(MediaStateListener *listener);
+    
 protected:
     
     
 private:
+    /** 状态监听器 */
+    MediaStateListener *mStateListener;
+    
     /** 是否处于保存模式: true处于保存模式, false处于预览模式 */
     bool mbSaveMode;
     /** 

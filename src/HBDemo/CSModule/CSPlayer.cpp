@@ -13,11 +13,12 @@ namespace HBMedia {
 
 CSPlayer::CSPlayer(){
     mbSaveMode = false;
+    mStateListener = nullptr;
     memset(&mStatues, 0x00, sizeof(unsigned long long));
 }
 
 CSPlayer::~CSPlayer(){
-    
+    SAFE_DELETE(mStateListener);
 }
 
 int CSPlayer::prepare() {

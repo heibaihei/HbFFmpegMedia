@@ -24,6 +24,40 @@
 #define DECODE_STATE_DECODE_ABORT    0X0008
 #define DECODE_STATE_FLUSH_MODE      0X0010
 
+#define SAFE_DELETE(p)           do { if(p) { delete (p); (p) = nullptr;} } while(0)
+#define SAFE_DELETE_ARRAY(p)     do { if(p) { delete[] (p); (p) = nullptr; } } while(0)
+#define SAFE_FREE(p)             do { if(p) { free(p); (p) = nullptr; } } while(0)
+#define SAFE_RELEASE(p)          do { if(p) { (p)->release(); } } while(0)
+#define SAFE_RELEASE_NULL(p)     do { if(p) { (p)->release(); (p) = nullptr; } } while(0)
+#define SAFE_RETAIN(p)           do { if(p) { (p)->retain(); } } while(0)
+#define BREAK_IF(cond)           if(cond) break
+
+typedef enum VideoRorate_t {
+    MT_Rotate0      = 0,  // No rotation.
+    MT_Rotate90     = 90,  // Rotate 90 degrees clockwise.
+    MT_Rotate180    = 180,  // Rotate 180 degrees.
+    MT_Rotate270    = 270,  // Rotate 270 degrees clockwise.
+} VideoRorate;
+
+// 视频裁剪参数
+typedef struct CropParam_t {
+    int posX;
+    int posY;
+    int cropWidth;
+    int cropHeight;
+    int lineSize[4];
+} CropParam;
+
+// 视频裁剪参数
+typedef struct ScaleParam_t {
+    int inWidth;
+    int inHeight;
+    int outWidth;
+    int outHeight;
+    int scaleMode;   // 0~3越大，速度越慢，质量越高
+    int lineSize[4];
+} ScaleParam;
+
 typedef enum MT_RECORD_STAT_t {
     MT_EXCEPTION            = -1,
     MT_IDEL                 = 0,
@@ -40,19 +74,19 @@ typedef enum MT_RECORD_STAT_t {
 } MT_RECORD_STAT_t;
 
 typedef enum AUDIO_SAMPLE_FORMAT {
-    MT_SAMPLE_FMT_NONE = 0,
-    MT_SAMPLE_FMT_U8,          ///< unsigned 8 bits
-    MT_SAMPLE_FMT_S16,         ///< signed 16 bits
-    MT_SAMPLE_FMT_S32,         ///< signed 32 bits
-    MT_SAMPLE_FMT_FLT,         ///< float
-    MT_SAMPLE_FMT_DBL,         ///< double
+    CS_SAMPLE_FMT_NONE = 0,
+    CS_SAMPLE_FMT_U8,          ///< unsigned 8 bits
+    CS_SAMPLE_FMT_S16,         ///< signed 16 bits
+    CS_SAMPLE_FMT_S32,         ///< signed 32 bits
+    CS_SAMPLE_FMT_FLT,         ///< float
+    CS_SAMPLE_FMT_DBL,         ///< double
     
-    MT_SAMPLE_FMT_U8P,         ///< unsigned 8 bits, planar
-    MT_SAMPLE_FMT_S16P,        ///< signed 16 bits, planar
-    MT_SAMPLE_FMT_S32P,        ///< signed 32 bits, planar
-    MT_SAMPLE_FMT_FLTP,        ///< float, planar
+    CS_SAMPLE_FMT_U8P,         ///< unsigned 8 bits, planar
+    CS_SAMPLE_FMT_S16P,        ///< signed 16 bits, planar
+    CS_SAMPLE_FMT_S32P,        ///< signed 32 bits, planar
+    CS_SAMPLE_FMT_FLTP,        ///< float, planar
     
-    MT_SAMPLE_FMT_NB           ///< Number of sample formats. DO NOT USE if linking dynamically
+    CS_SAMPLE_FMT_NB           ///< Number of sample formats. DO NOT USE if linking dynamically
 } AUDIO_SAMPLE_FORMAT;
 
 typedef enum IMAGE_PIX_FORMAT {

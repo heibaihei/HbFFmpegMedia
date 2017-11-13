@@ -20,16 +20,16 @@
 static void *_audioReadThread(void *arg);
 static void *_videoReadThread(void *arg);
 
-class MediaListener:public MTMediaRecord::MediaRecorderStateListener {
+class MediaListener:public HBMedia::MediaStateListener {
 public:
     MediaListener() {};
     ~MediaListener() {};
-    void MediaRecordProgressBegan(MTMediaRecord::MediaRecorder* recorder)
+    void MediaRecordProgressBegan(HBMedia::CSPlayer* recorder)
     {
         LOGD("Media record begin\n");
     }
     
-    void MediaRecordProgressChanged(MTMediaRecord::MediaRecorder* recorder, int type)
+    void MediaRecordProgressChanged(HBMedia::CSPlayer* recorder, int type)
     {
         LOGD("Media inner thread stat change\n");
         switch (type) {
@@ -62,7 +62,7 @@ public:
      *
      *  @param editer  MediaRecorder object.
      */
-    void MediaRecordProgressEnded(MTMediaRecord::MediaRecorder* editer)
+    void MediaRecordProgressEnded(HBMedia::CSPlayer* editer)
     {
         LOGD("Record stop\n");
     }
@@ -72,7 +72,7 @@ public:
      *
      *  @param editer MediaRecorder object
      */
-    void MediaRecordProgressCanceled(MTMediaRecord::MediaRecorder* editer)
+    void MediaRecordProgressCanceled(HBMedia::CSPlayer* editer)
     {
         LOGD("Record canceled\n");
     }
@@ -80,8 +80,56 @@ public:
 };
 
 void CSModulePlayerDemo() {
+    int ret = 0;
+    const char *pOutputMediaFile = CS_MODULE_RESOURCE_ROOT_PATH"/100_output.mp4";
+    int inWidth = 480, inHeight = 480;
+    int outWidth = 480, outHeight = 480;
+    int cropX = inWidth-outWidth, cropY = inHeight-outHeight;
+    int cropWidth = outWidth, cropHeight = outHeight;
+    
+    /** 输出媒体参数 */
+    VideoRorate ouputImageRotate = MT_Rotate0;
+    int outputChannels = 2;
+    int outputSampleRate = 44100;
+    AUDIO_SAMPLE_FORMAT outputSampleFmt = CS_SAMPLE_FMT_S16;
+    
+    /** 输入媒体参数 */
+    AUDIO_SAMPLE_FORMAT inputSampleFmt = CS_SAMPLE_FMT_FLTP;
+    int inputChannels = 2;
+    int inputsampleRate = 44100;
+    float crf = 58;
+    IMAGE_PIX_FORMAT inputImagePixFormat = CS_PIX_FMT_YUV420P;
+    
+    /** 线程信息 */
+    pthread_t audioReadThreadId;
+    pthread_t videoReadThreadId;
+    MediaListener mediaPlayerlistener;
+    
+    HBMedia::CSPlayer::CSPlayer *pMediaPlayer = new HBMedia::CSPlayer::CSPlayer();
+    if (!pMediaPlayer) {
+        LOGE("create new media player failed !");
+        goto PLAYER_DEMO_EXIT_LABEL;
+    }
     
     
+//    pMediaPlayer->setStateListener(&mediaPlayerlistener);
+//    pMediaPlayer->setRecordFile(file);
+//    pMediaPlayer->setRecordRate(1);
+//    pMediaPlayer->setRecordBitRate(2000);
+////    param.setVideoInParam(inWidth, inHeight, format);
+//    pMediaPlayer->setInVideoParam(inWidth, inHeight, format);
+//    pMediaPlayer->setOutVideoParam(outWidth, outHeight);
+//    pMediaPlayer->setVideoRotate(rotate);
+//    pMediaPlayer->setRecordQuality(crf);
+//    pMediaPlayer->setInAudioParam(inChannels, insampleRate, inSampleFmt);
+//    pMediaPlayer->setOutAudioParam(outChannels, outSampleRate, outSampleFmt);
+//    pMediaPlayer->setCropRegion(cropX, cropY, cropWidth, cropHeight);
+    
+    pMediaPlayer->prepare();
+    
+    
+PLAYER_DEMO_EXIT_LABEL:
+    SAFE_DELETE(pMediaPlayer);
 }
 
 static void *_audioReadThread(void *arg)
