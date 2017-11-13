@@ -25,8 +25,11 @@
 extern "C" {
 #endif
 
-/** 从视频中提取出帧数据 */
-int HBPickPictureFromVideo();
+/**
+ *  从视频流序列中处理帧数据，提供解封装、转码、等相关操作
+ *  中途可插入而外操作。
+ */
+int HBPickImageFrameFromVideo();
 
 int PictureCSpictureDemo();
     

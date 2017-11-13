@@ -20,6 +20,8 @@
  */
 
 #define PIC_RESOURCE_ROOT_PATH       "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/Picture"
+
+/** 输出目标格式 */
 #define TARGET_IMAGE_PIX_FMT         (AV_PIX_FMT_YUYV422)
 #define TARGET_IMAGE_PIX_FMT_STR      "YUYV422"
 
@@ -30,58 +32,69 @@ static void _ProcessFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame);
 static int  _imageConver(AVFrame *pSrcFrame, AVFrame *pDstFrame);
 
 const char *pInputFilePath = (const char *)(PIC_RESOURCE_ROOT_PATH"/100.mp4");
-int HBPickPictureFromVideo()
+int HBPickImageFrameFromVideo()
 {
     av_register_all();
- 
-    int iVideoStreamIndex = -1;
-    int HBError = HB_OK;
+
+    int HBError = HB_OK, iVideoStreamIndex = -1;
+    AVPacket* pNewPacket = nullptr;
+    AVFrame *pDstFrame = nullptr, *pSrcFrame = nullptr;
+    AVCodec* pCodec = nullptr;
+    AVCodecContext* pCodecCtx = nullptr;
+    AVStream *pVideoStream = nullptr;
     AVFormatContext* pFormatCtx = nullptr;
     if ((HBError = avformat_open_input(&pFormatCtx, pInputFilePath, NULL, NULL)) != 0) {
         LOGE("Open input media file failed !, %s", av_err2str(HBError));
-        return HB_ERROR;
+        HBError = HB_ERROR;
+        goto EXIT_LABEL;
     }
     
     if ((HBError = avformat_find_stream_info(pFormatCtx, NULL)) < 0) {
         LOGE("Find stream info failed !, %s", av_err2str(HBError));
-        return HB_ERROR;
+        HBError = HB_ERROR;
+        goto EXIT_LABEL;
     }
     
     if ((iVideoStreamIndex = av_find_best_stream(pFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0)) < 0) {
         LOGE("find best video stream failed!, %s", av_err2str(iVideoStreamIndex));
-        return HB_ERROR;
+        HBError = HB_ERROR;
+        goto EXIT_LABEL;
     }
     
-    AVStream *pVideoStream = pFormatCtx->streams[iVideoStreamIndex];
-    AVCodec* pCodec = avcodec_find_decoder(pVideoStream->codecpar->codec_id);
+    pVideoStream = pFormatCtx->streams[iVideoStreamIndex];
+    pCodec = avcodec_find_decoder(pVideoStream->codecpar->codec_id);
     if (pCodec == nullptr) {
         LOGE("Can't find valid decoder !");
-        return HB_ERROR;
+        HBError = HB_ERROR;
+        goto EXIT_LABEL;
     }
     
-    AVCodecContext* pCodecCtx = avcodec_alloc_context3(pCodec);
+    pCodecCtx = avcodec_alloc_context3(pCodec);
     avcodec_parameters_to_context(pCodecCtx, pVideoStream->codecpar);
     
     av_dump_format(pFormatCtx, 0, pInputFilePath, 0);
     if ((HBError = avcodec_open2(pCodecCtx, pCodec, NULL)) < 0) {
         LOGE("Can't open video codec, %s", av_err2str(HBError));
-        return HB_ERROR;
+        HBError = HB_ERROR;
+        goto EXIT_LABEL;
     }
     
-    AVFrame *pTargetFrame = av_frame_alloc();
-    if (pTargetFrame == nullptr) {
+    pDstFrame = av_frame_alloc();
+    if (pDstFrame == nullptr) {
         LOGE("allock new frame room failed !");
-        return HB_ERROR;
+        HBError = HB_ERROR;
+        goto EXIT_LABEL;
     }
     
-    HBError = av_image_alloc(pTargetFrame->data, pTargetFrame->linesize, pCodecCtx->width, pCodecCtx->height, TARGET_IMAGE_PIX_FMT, 1);
+    HBError = av_image_alloc(pDstFrame->data, pDstFrame->linesize, pCodecCtx->width, pCodecCtx->height, TARGET_IMAGE_PIX_FMT, 1);
     if (HBError < 0) {
         LOGE("Video format alloc new image room failed !");
-        return HB_ERROR;
+        HBError = HB_ERROR;
+        goto EXIT_LABEL;
     }
     
-    AVFrame *pFrame = nullptr;
-    AVPacket* pNewPacket = av_packet_alloc();
+    pSrcFrame = nullptr;
+    pNewPacket = av_packet_alloc();
     while (av_read_frame(pFormatCtx, pNewPacket) == 0) {
         
         if (pNewPacket->stream_index == iVideoStreamIndex) {
@@ -94,39 +107,41 @@ int HBPickPictureFromVideo()
                 break;
             }
             
-            pFrame = av_frame_alloc();
-            if (!pFrame) {
+            pSrcFrame = av_frame_alloc();
+            if (!pSrcFrame) {
                 LOGE("Malloc new frame failed !");
-                return HB_ERROR;
+                HBError = HB_ERROR;
+                break;
             }
             
-            HBError = avcodec_receive_frame(pCodecCtx, pFrame);
+            HBError = avcodec_receive_frame(pCodecCtx, pSrcFrame);
             if (HBError != 0) {
                 if (HBError != AVERROR(EAGAIN)) {
                     LOGW("Decode process end!");
                     break;
                 }
-                av_frame_free(&pFrame);
+                av_frame_free(&pSrcFrame);
                 continue;
             }
             else {
-                _ProcessFrame(pFrame, pTargetFrame);
+                _ProcessFrame(pSrcFrame, pDstFrame);
                 break;
             }
         }
     }
-    
+
+EXIT_LABEL:
     /** 释放 stPacket 内部占用的内存 */
     av_packet_unref(pNewPacket);
 
-    av_frame_free(&pTargetFrame);
-    av_frame_free(&pFrame);
+    av_frame_free(&pDstFrame);
+    av_frame_free(&pSrcFrame);
     
     avcodec_close(pCodecCtx);
     
     avformat_close_input(&pFormatCtx);
     
-    return 0;
+    return HBError;
 }
 
 /** >0 表示正常完成转换， <= 0 表示没有政策发生格式转换 */
@@ -150,8 +165,7 @@ static void _ProcessFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame) {
         pDstFrame->width = pSrcFrame->width;
         pDstFrame->height = pSrcFrame->height;
         pDstFrame->format = TARGET_IMAGE_PIX_FMT;
-        LOGI("sws scale new frame info: w:%d, h:%d to w:%d, h:%d ", \
-             pSrcFrame->width, pSrcFrame->height, pDstFrame->width, pDstFrame->height);
+        LOGI("sws scale new frame info: w:%d, h:%d to w:%d, h:%d ", pSrcFrame->width, pSrcFrame->height, pDstFrame->width, pDstFrame->height);
         /** 文件输出 */
         // (char const *filename, int w, int h, int comp, const void  *data, int stride_in_bytes)
 //        stbi_write_png(PIC_RESOURCE_ROOT_PATH"/newFrame.png", pDstFrame->width, pDstFrame->height, 1, pDstFrame->data, 1);
@@ -225,6 +239,7 @@ static void _ProcessFrame(AVFrame *pSrcFrame, AVFrame *pDstFrame) {
         }
     }
 }
+
 
 int PictureCSpictureDemo()
 {

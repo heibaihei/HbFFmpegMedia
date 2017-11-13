@@ -31,7 +31,7 @@ int main(int argc, const char * argv[]) {
     {
         /** ################################# >>> image */
         
-        HBPickPictureFromVideo();
+        HBPickImageFrameFromVideo();
         
         /** ################################# <<< image */
     }
@@ -50,8 +50,6 @@ int main(int argc, const char * argv[]) {
     
 /** Examples */
 //    examples_filtering_video(argc, argv);
-
-//    HBPickPictureFromVideo();
     
 /** ################################# >>> Audio */
 //    { /** Audio decode */
