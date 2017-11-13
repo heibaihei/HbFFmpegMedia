@@ -9671,7 +9671,6 @@
 				A181BC341EA1F682004861DA /* main.cpp */,
 				A16159AE1F70ACBC001D54EA /* Example */,
 				A1F706131F656F9F003A6010 /* CSModule */,
-				A181BC6A1F6516D100B34FD0 /* CSCommon */,
 				A1091CDF1F59587000565177 /* video */,
 				A1FB662E1F19EBDC001B08F0 /* audio */,
 				A10B26D91EC9BCB0006D24C6 /* examples */,
@@ -9794,8 +9793,7 @@
 				A17202B11F69993E00662F18 /* CSAudioFifo.cpp */,
 				A17202B21F69993E00662F18 /* CSAudioFifo.h */,
 			);
-			name = CSCommon;
-			path = ../../../src/CSCommon;
+			path = CSCommon;
 			sourceTree = "<group>";
 		};
 		A181BC6B1EA217C9004861DA /* include */ = {
@@ -16986,6 +16984,7 @@
 		A1F706131F656F9F003A6010 /* CSModule */ = {
 			isa = PBXGroup;
 			children = (
+				A181BC6A1F6516D100B34FD0 /* CSCommon */,
 				A1245A8F1F65FD1900DB5D45 /* CSStrem */,
 				A1245A891F657F9000DB5D45 /* CSPlayer.cpp */,
 				A1245A8A1F657F9000DB5D45 /* CSPlayer.h */,
