@@ -40,6 +40,7 @@ typedef struct StreamThreadParam {
     
     ThreadIPCContext *mEncodeIPC;
     ThreadIPCContext *mWriteIPC;
+    ThreadIPCContext *mQueueIPC;
     
     bool mUpdateFlag;
     AVPacket *mBufferPacket;

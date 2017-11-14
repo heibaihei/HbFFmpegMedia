@@ -17,6 +17,7 @@ CSIStream::CSIStream(){
     mCodec = nullptr;
     mCodecCtx = nullptr;
     
+    mPushDataWithSyncMode = true;
     mStreamType = CS_STREAM_TYPE_NONE;
     mStreamIndex = -1;
     mSpeed = 0.1f;

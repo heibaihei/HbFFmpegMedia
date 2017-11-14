@@ -115,9 +115,24 @@ int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
     }
     
     ThreadIPCContext *pEncodeThreadIpcCtx = mStreamThreadParam->mEncodeIPC;
+    ThreadIPCContext *pQueueThreadIpcCtx = mStreamThreadParam->mQueueIPC;
+
+    int iQueueleftlen = frameQueue->queueLeft();
+    if (iQueueleftlen == 0) {
+        frameQueue->setQueueStat(QUEUE_OVERFLOW);
+        if (mPushDataWithSyncMode) {
+            while (frameQueue->queueLeft() == 0) {
+                pQueueThreadIpcCtx->condV();
+            }
+        }
+        else {
+            LOGD("Queue overflow \n");
+            return HB_ERROR;
+        }
+    }
+    
     int iInputNumOfSamples = (int)(DataSize / av_get_bytes_per_sample(mAudioParam->sample_fmt));
     mInTotalOfSamples += iInputNumOfSamples;
-    
     uint8_t* pTmpData = pData;
     uint8_t *pInputData[8] = {NULL};
     int iLineSize[8] = {0, 0};

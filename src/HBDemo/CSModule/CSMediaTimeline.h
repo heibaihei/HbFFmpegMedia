@@ -61,6 +61,8 @@ public:
     void setSrcAudioParam(AudioParams* pParam) { mSrcAudioParams = *pParam; }
     AudioParams* getsrcAudioParam() { return &mSrcAudioParams; }
     
+    void setCropParam(int posX, int posY, int cropWidth, int cropHeight);
+    
     /** 设置全局播放速度 */
     void setGlobalSpeed(float speed);
     
@@ -127,6 +129,8 @@ private:
     
     AudioParams    mTgtAudioParams;
     ImageParams    mTgtImageParams;
+    
+    CropParam      mCropParms;
 } CSTimeline;
     
 }

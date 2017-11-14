@@ -23,6 +23,7 @@ CSTimeline::CSTimeline(){
     memset(&mTgtAudioParams, 0x00, sizeof(AudioParams));
     memset(&mSrcImageParams, 0x00, sizeof(ImageParams));
     memset(&mTgtImageParams, 0x00, sizeof(ImageParams));
+    memset(&mCropParms, 0x00, sizeof(CropParam));
 }
 
 CSTimeline::~CSTimeline(){
@@ -207,6 +208,17 @@ int CSTimeline::writeTailer() {
         return HB_ERROR;
     }
     return HB_OK;
+}
+
+void CSTimeline::setCropParam(int posX, int posY, int cropWidth, int cropHeight) {
+    mCropParms.posX = posX;
+    mCropParms.posY = posY;
+    cropWidth = (cropWidth + 1) >> 1;
+    cropWidth = cropWidth << 1;
+    cropHeight = (cropHeight + 1) >> 1;
+    cropHeight = cropHeight << 1;
+    mCropParms.cropWidth = cropWidth;
+    mCropParms.cropHeight = cropHeight;
 }
 
 void CSTimeline::setGlobalSpeed(float speed){

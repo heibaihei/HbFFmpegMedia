@@ -33,13 +33,21 @@ int CSVStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
     long iImagePixBufferSize = mImageParam->mDataSize;
     FiFoQueue<AVFrame*> *frameQueue = mStreamThreadParam->mFrameQueue;
     FiFoQueue<AVFrame*> *frameRecycleQueue = mStreamThreadParam->mFrameRecycleQueue;
+    ThreadIPCContext *pEncodeIpcCtx = mStreamThreadParam->mEncodeIPC;
+    ThreadIPCContext *pQueueIpcCtx = mStreamThreadParam->mQueueIPC;
+    int iQueueleftLen = frameQueue->queueLeft();
     
-    if (frameQueue->queueLeft() == 0) {
+    if (iQueueleftLen == 0) {
         frameQueue->setQueueStat(QUEUE_OVERFLOW);
-        return HB_OK;
+        if (mPushDataWithSyncMode) {
+            while (frameQueue->queueLeft() == 0) {
+                pQueueIpcCtx->condV();
+            }
+        } else {
+            LOGF("Video frame be drop !");
+            return HB_ERROR;
+        }
     }
-    
-    ThreadIPCContext *pIpcCtx = mStreamThreadParam->mEncodeIPC;
     
     uint8_t *pOutData = NULL;
     AVFrame* pBufferFrame = nullptr;

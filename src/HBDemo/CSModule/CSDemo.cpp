@@ -84,11 +84,11 @@ public:
 }
 void CSModulePlayerDemo() {
     int ret = 0;
-    char *pOutputMediaFile = CS_MODULE_RESOURCE_ROOT_PATH"/100_output.mp4";
+    char *pOutputMediaFile = (char *)(CS_MODULE_RESOURCE_ROOT_PATH"/100_output.mp4");
     int inWidth = 480, inHeight = 480;
     int outWidth = 480, outHeight = 480;
-//    int cropX = inWidth-outWidth, cropY = inHeight-outHeight;
-//    int cropWidth = outWidth, cropHeight = outHeight;
+    int cropX = inWidth-outWidth, cropY = inHeight-outHeight;
+    int cropWidth = outWidth, cropHeight = outHeight;
     
     /** 输出媒体参数 */
     VideoRorate ouputImageRotate = MT_Rotate0;
@@ -154,8 +154,7 @@ void CSModulePlayerDemo() {
     inputAudioParams.sample_rate = inputSampleRate;
     pTimeline->setSrcAudioParam(&inputAudioParams);
 
-    /** 新增裁剪区域信息 */
-//    pMediaPlayer->setCropRegion(cropX, cropY, cropWidth, cropHeight);
+    pTimeline->setCropParam(cropX, cropY, cropWidth, cropHeight);
     
     pMediaPlayer->setTimeline(pTimeline);
     pMediaPlayer->setStateListener(&mediaPlayerlistener);

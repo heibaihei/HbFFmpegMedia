@@ -185,9 +185,10 @@ int initialStreamThreadParams(StreamThreadParam *pStreamThreadParam) {
     FiFoQueue<AVPacket *>*packetQueue = new FiFoQueue<AVPacket *>(MAX_PACKET_BUFFER);
     FiFoQueue<AVPacket *>*packetRecycleQueue = new FiFoQueue<AVPacket *>(MAX_PACKET_BUFFER);
     ThreadIPCContext *pEncodeIpcCtx = new ThreadIPCContext(0);
+    ThreadIPCContext *pQueueIpcCtx = new ThreadIPCContext(0);
     
     if (!frameQueue || !frameRecycleQueue\
-        || !packetQueue || !packetRecycleQueue) {
+        || !packetQueue || !packetRecycleQueue || !pQueueIpcCtx) {
         LOGE("Stream thread initial failed, buffer queue malloc error !");
         return HB_ERROR;
     }
@@ -197,6 +198,7 @@ int initialStreamThreadParams(StreamThreadParam *pStreamThreadParam) {
     pStreamThreadParam->mPacketQueue = packetQueue;
     pStreamThreadParam->mPacketRecycleQueue = packetRecycleQueue;
     pStreamThreadParam->mEncodeIPC = pEncodeIpcCtx;
+    pStreamThreadParam->mQueueIPC = pQueueIpcCtx;
 
     return HB_OK;
 }
@@ -233,6 +235,11 @@ int releaseStreamThreadParams(StreamThreadParam *pStreamThreadParam) {
     if (pStreamThreadParam->mEncodeIPC) {
         pStreamThreadParam->mEncodeIPC->release();
         delete pStreamThreadParam->mEncodeIPC;
+    }
+    
+    if (pStreamThreadParam->mQueueIPC) {
+        pStreamThreadParam->mQueueIPC->release();
+        delete pStreamThreadParam->mQueueIPC;
     }
     
     return HB_OK;

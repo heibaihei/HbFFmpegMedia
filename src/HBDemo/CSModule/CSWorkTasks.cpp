@@ -28,10 +28,12 @@ void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
         return nullptr;
     }
     
+    bool bPushRawDataWithSyncMode = true;
     int iStreamIndex = pStreamThreadParam->mStreamIndex;
     ThreadContext *pThreadCtx = pStreamThreadParam->mThreadCtx;
     AVCodecContext* pCodecCtx = pStreamThreadParam->mCodecCtx;
     ThreadIPCContext* pEncodeIpcCtx = pStreamThreadParam->mEncodeIPC;
+    ThreadIPCContext *pQueueIpcCtx = pStreamThreadParam->mQueueIPC;
     ThreadIPCContext* pWriteIpcCtx = pStreamThreadParam->mWriteIPC;
     FiFoQueue<AVFrame *> *pFrameQueue = pStreamThreadParam->mFrameQueue;
     FiFoQueue<AVFrame *> *pFrameRecycleQueue = pStreamThreadParam->mFrameRecycleQueue;
@@ -64,18 +66,27 @@ void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
         
         iFrameQueueLen = pFrameQueue->queueLength();
         if (iFrameQueueLen > 0) {
-            if (pFrameQueue->getQueueStat() == QUEUE_OVERFLOW) {
-                /** 录制来不及了，需要执行跳帧逻辑 */
-                LOGE("Work task frame queue overflow, streamneed drop frames !");
-                pTargetFrame = pFrameQueue->get();
-                if (pTargetFrame) {
+            int queueleft = pFrameQueue->queueLeft();
+            pTargetFrame = pFrameQueue->get();
+            if (pTargetFrame == NULL) {
+                LOGV("Get frame error!\n");
+                continue;
+            }
+            
+            if ((pFrameQueue->getQueueStat() == QUEUE_OVERFLOW) \
+                || (queueleft == 0)) {
+                if (bPushRawDataWithSyncMode) {
+                    pQueueIpcCtx->condP();
+                }
+                else {
                     iDropFrameCnt++;
                     HBErr = pFrameRecycleQueue->push(pTargetFrame);
-                    if (HBErr <= 0)
+                    if (HBErr <= 0) {
+                        av_frame_free(&pTargetFrame);
                         LOGE("Work task frame recycle queue push frame failed !");
+                    }
+                    continue;
                 }
-                pFrameQueue->setQueueStat(QUEUE_FILLED);
-                continue;
             }
         }
         else {
@@ -83,15 +94,16 @@ void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
                 LOGE("Work task thread quit request !");
                 break;
             }
+            pQueueIpcCtx->condP();
             pEncodeIpcCtx->condV();
             continue;
         }
         
         gettimeofday(&start, NULL);
-        if (NULL != (pTargetFrame = pFrameQueue->get())) {
-            LOGE("Frame queue get frame failed !");
-            continue;
-        }
+//        if (NULL != (pTargetFrame = pFrameQueue->get())) {
+//            LOGE("Frame queue get frame failed !");
+//            continue;
+//        }
         
         HBErr = avcodec_send_frame(pCodecCtx, pTargetFrame);
         if (HBErr < 0) {
