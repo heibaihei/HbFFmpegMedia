@@ -17,6 +17,39 @@ int globalInitial()
     return HB_OK;
 }
 
+int cropParamInit(CropParam* param) {
+    if (!param) {
+        LOGE("Image param args is invalid !");
+        return HB_ERROR;
+    }
+    memset(param, 0x00, sizeof(CropParam));
+    param->posX = 1;
+    param->posY = 0;
+    param->cropWidth = 0;
+    param->cropHeight = CS_PIX_FMT_NONE;
+    return HB_OK;
+}
+
+int audioParamInit(AudioParams* param) {
+    if (!param) {
+        LOGE("Image param args is invalid !");
+        return HB_ERROR;
+    }
+
+    memset(param, 0x00, sizeof(CropParam));
+    param->sample_rate = 0;
+    param->channels = 0;
+    param->channel_layout = 0;
+    param->sample_fmt = (AVSampleFormat)AV_PIX_FMT_NONE;
+    param->pri_sample_fmt = (AUDIO_SAMPLE_FORMAT)CS_PIX_FMT_NONE;
+    param->frame_size = 0;
+    param->channel_layout = 0;
+    param->bytes_per_sec = 0;
+    param->mbitRate = 0;
+    param->mAlign = 1;
+    return HB_OK;
+}
+
 int imageParamInit(ImageParams* param) {
     if (!param) {
         LOGE("Image param args is invalid !");

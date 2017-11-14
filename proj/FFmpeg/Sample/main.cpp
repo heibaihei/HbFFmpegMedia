@@ -20,6 +20,7 @@
 #include "MTVideoTransToGif.h"
 #include "Picture/CSPicture.h"
 #include "Picture/HBPictureDemo.h"
+#include "CSDemo.h"
 #include "libyuv.h"
 #include <unistd.h>
 
@@ -30,7 +31,7 @@ int gMtmvLogLevel = LOG_LEVEL_DEBUG;
 int main(int argc, const char * argv[]) {
     {/** media demo */
         {/** Image */
-            HBPickImageFrameFromVideo();
+//            HBPickImageFrameFromVideo();
         }
         {/** Video */
 //            {/** 测试 mp4 文件转 gif 文件测试 demo */
@@ -44,7 +45,7 @@ int main(int argc, const char * argv[]) {
     }
     {/** Encapsulation */
         {/** CSTimeline */
-            
+            CSModulePlayerDemo();
             
         }
         

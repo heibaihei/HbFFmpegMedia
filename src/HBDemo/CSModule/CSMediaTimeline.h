@@ -104,12 +104,15 @@ protected:
      */
     int _addStream(CSIStream* pNewStream);
 
+    /** 准备输出媒体资源 */
+    int _prepareOutMedia();
+    
     /**
      * @func open 打开文件
      * @param filename 文件名
      * @return HB_OK 为正常, HB_ERROR 为异常
      */
-    int _open(const char *filename);
+    int _openOutputFile(const char *filename);
 private:
     /** 保存模式下使用到的参数: */
     /** 输出文件媒体格式, 在 Prepare 时对该成员进行初始化 */

@@ -8,6 +8,7 @@
 
 #include "CSPlayer.h"
 #include "CSMediaTimeline.h"
+#include "CSPlayerListener.h"
 
 namespace HBMedia {
 

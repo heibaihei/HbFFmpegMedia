@@ -32,6 +32,15 @@
 #define SAFE_RETAIN(p)           do { if(p) { (p)->retain(); } } while(0)
 #define BREAK_IF(cond)           if(cond) break
 
+typedef enum PlayerState_t{
+    S_PLAY_ERR   = -1,
+    S_PLAY_INIT  = 0,
+    S_PLAY_PROCESS = 1,
+    S_PLAY_ABORT = 2,
+    S_PLAY_PAUSE = 3,
+    S_PLAY_END   = 4,
+} PlayerState;
+
 typedef enum VideoRorate_t {
     MT_Rotate0      = 0,  // No rotation.
     MT_Rotate90     = 90,  // Rotate 90 degrees clockwise.

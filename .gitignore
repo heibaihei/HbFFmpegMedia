@@ -48,3 +48,4 @@ lib/ffmpeg/MacOS
 OutputPicture_YUYV422_480_480.raw
 resource/CSModule/100_audio_44100_s16le.pcm
 resource/CSModule/100_video_480_480_420p.yuv
+100_output.mp4

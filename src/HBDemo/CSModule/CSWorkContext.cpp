@@ -190,7 +190,7 @@ int initialStreamThreadParams(StreamThreadParam *pStreamThreadParam) {
     if (!frameQueue || !frameRecycleQueue\
         || !packetQueue || !packetRecycleQueue || !pQueueIpcCtx) {
         LOGE("Stream thread initial failed, buffer queue malloc error !");
-        return HB_ERROR;
+        goto STREAM_THREAD_PARAM_END_LABEL;
     }
     
     pStreamThreadParam->mFrameQueue = frameQueue;
@@ -199,8 +199,12 @@ int initialStreamThreadParams(StreamThreadParam *pStreamThreadParam) {
     pStreamThreadParam->mPacketRecycleQueue = packetRecycleQueue;
     pStreamThreadParam->mEncodeIPC = pEncodeIpcCtx;
     pStreamThreadParam->mQueueIPC = pQueueIpcCtx;
-
+    
     return HB_OK;
+    
+STREAM_THREAD_PARAM_END_LABEL:
+    releaseStreamThreadParams(pStreamThreadParam);
+    return HB_ERROR;
 }
 
 int releaseStreamThreadParams(StreamThreadParam *pStreamThreadParam) {

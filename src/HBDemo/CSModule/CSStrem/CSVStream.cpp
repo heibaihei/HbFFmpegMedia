@@ -93,33 +93,38 @@ int CSVStream::bindOpaque(void *handle) {
         LOGE("Video stream bind opaque failed !");
         return HB_ERROR;
     }
+    
+    char crf[4], rotate[4];
+    int HBErr = HB_OK;
+    AVDictionary *opts = NULL;
     mFmtCtx = (AVFormatContext *)handle;
     mStreamThreadParam = (StreamThreadParam *)av_mallocz(sizeof(StreamThreadParam));
     if (!mStreamThreadParam) {
         LOGE("Video stream create stream pthread params failed !");
-        return HB_ERROR;
+        goto BIND_VIDEO_STREAM_END_LABEL;
     }
     
-    int HBErr = initialStreamThreadParams(mStreamThreadParam);
+    HBErr = initialStreamThreadParams(mStreamThreadParam);
     if (HBErr != HB_OK) {
         LOGE("Initial stream thread params failed !");
-        return HB_ERROR;
+        goto BIND_VIDEO_STREAM_END_LABEL;
     }
     
     if (!mCodec) {
         mCodec = avcodec_find_encoder_by_name("libx264");
         if (!mCodec) {
             LOGE("Video stream find encoder by name failed !");
-            return HB_ERROR;
+            goto BIND_VIDEO_STREAM_END_LABEL;
         }
     }
     
     mStream = avformat_new_stream(mFmtCtx, mCodec);
     if (!mStream) {
         LOGE("Video stream create new stream failed !");
-        return HB_ERROR;
+        goto BIND_VIDEO_STREAM_END_LABEL;
     }
     
+    /** 默认视频流时间基采用 {1, 90000} */
     mStream->time_base.num = 1;
     mStream->time_base.den = 90000;
     
@@ -129,7 +134,7 @@ int CSVStream::bindOpaque(void *handle) {
     mCodecCtx = avcodec_alloc_context3(mCodec);
     if (!mCodecCtx) {
         LOGE("Video codec context alloc failed !");
-        return HB_ERROR;
+        goto BIND_VIDEO_STREAM_END_LABEL;
     }
     mCodecCtx->width = mImageParam->mWidth;
     mCodecCtx->height = mImageParam->mHeight;
@@ -148,7 +153,7 @@ int CSVStream::bindOpaque(void *handle) {
     if  (mFmtCtx->oformat->flags & AVFMT_GLOBALHEADER)
         mCodecCtx->flags |= CODEC_FLAG_GLOBAL_HEADER;
     
-    AVDictionary *opts = NULL;
+    
     av_dict_set(&opts, "profile", "baseline", 0);
     
     if (mCodecCtx->codec_id == AV_CODEC_ID_H264) {
@@ -160,19 +165,51 @@ int CSVStream::bindOpaque(void *handle) {
     HBErr = avcodec_open2(mCodecCtx, mCodec, &opts);
     if (HBErr < 0) {
         LOGE("Video stream codec open failed !<%s>", makeErrorStr(HBErr));
-        return HB_ERROR;
+        goto BIND_VIDEO_STREAM_END_LABEL;
     }
     av_dict_free(&opts);
     
     HBErr = avcodec_parameters_from_context(mStream->codecpar, mCodecCtx);
     if (HBErr < 0) {
         LOGE("Video stream copy context paramter error !");
-        return HB_ERROR;
+        goto BIND_VIDEO_STREAM_END_LABEL;
+    }
+    
+    if (mImageParam->mRotate > 0) {
+        HBErr = snprintf(rotate, sizeof(rotate), "%d", mImageParam->mRotate);
+        if (HBErr < 0) {
+            LOGE("Copy string rotate error!\n");
+        }
+        HBErr = av_dict_set(&mStream->metadata, "rotate", rotate, 0);
+        if (HBErr < 0) {
+            LOGE("Set video rotate error!\n");
+        }
     }
     
     mStreamThreadParam->mCodecCtx = mCodecCtx;
     mStreamThreadParam->mTimeBase = mStream->time_base;
+    mSrcFrame = av_frame_alloc();
+    if (!mSrcFrame) {
+        LOGE("Create buffer source frame failed !");
+        goto BIND_VIDEO_STREAM_END_LABEL;
+    }
+    
     return HB_OK;
+
+BIND_VIDEO_STREAM_END_LABEL:
+    if (mStreamThreadParam) {
+        releaseStreamThreadParams(mStreamThreadParam);
+        mStreamThreadParam = nullptr;
+    }
+    if (mCodecCtx) {
+        avcodec_free_context(&mCodecCtx);
+        mCodecCtx = nullptr;
+    }
+    mCodec = nullptr;
+    mStream = nullptr;
+    if (!mSrcFrame)
+        av_frame_free(&mSrcFrame);
+    return HB_ERROR;
 }
 
 int CSVStream::stop() {

@@ -19,11 +19,11 @@ CSTimeline::CSTimeline(){
     mGlobalSpeed = 1.0f;
     mFmtCtx = nullptr;
     mSaveFilePath = nullptr;
-    memset(&mSrcAudioParams, 0x00, sizeof(AudioParams));
-    memset(&mTgtAudioParams, 0x00, sizeof(AudioParams));
-    memset(&mSrcImageParams, 0x00, sizeof(ImageParams));
-    memset(&mTgtImageParams, 0x00, sizeof(ImageParams));
-    memset(&mCropParms, 0x00, sizeof(CropParam));
+    audioParamInit(&mSrcAudioParams);
+    audioParamInit(&mTgtAudioParams);
+    imageParamInit(&mSrcImageParams);
+    imageParamInit(&mTgtImageParams);
+    cropParamInit(&mCropParms);
 }
 
 CSTimeline::~CSTimeline(){
@@ -39,37 +39,9 @@ int CSTimeline::prepare() {
         return HB_ERROR;
     }
     
-    if (HB_OK != _open(mSaveFilePath)) {
-        LOGE("Timeline open file failed !");
+    if (_prepareOutMedia() != HB_OK) {
+        LOGE("Timeline prepare output media initial failed !");
         return HB_ERROR;
-    }
-    
-    CSIStream* pBaseStream = CSStreamFactory::CreateMediaStream(CS_STREAM_TYPE_VIDEO);
-    if (pBaseStream) {
-        CSVStream* pVideoStream = (CSVStream *)pBaseStream;
-        pVideoStream->setVideoParam(&mTgtImageParams);
-        if (HB_OK != pVideoStream->setEncoder("libx264")) {
-            LOGE("Timeline set video stream encoder failed !");
-            return HB_ERROR;
-        }
-        if (HB_OK != _addStream(pVideoStream)) {
-            LOGE("Timeline add video stream failed !");
-            return HB_ERROR;
-        }
-    }
-    
-    pBaseStream = CSStreamFactory::CreateMediaStream(CS_STREAM_TYPE_AUDIO);
-    if (pBaseStream) {
-        CSAStream* pAudioStream = (CSAStream*)pBaseStream;
-        pAudioStream->setAudioParam(&mTgtAudioParams);
-        if (HB_OK != pAudioStream->setEncoder("libfdk_aac")) {
-            LOGE("Timeline set audio stream encoder failed !");
-            return HB_ERROR;
-        }
-        if (HB_OK != _addStream(pAudioStream)) {
-            LOGE("Timeline add audio stream failed !");
-            return HB_ERROR;
-        }
     }
     
     /** 创建线程环境 */
@@ -130,7 +102,7 @@ int  CSTimeline::release(void) {
     return HB_OK;
 }
     
-int CSTimeline::_open(const char *filename) {
+int CSTimeline::_openOutputFile(const char *filename) {
     int HBErr = HB_OK;
     HBErr = avformat_alloc_output_context2(&mFmtCtx, NULL, NULL, filename);
     if (HBErr < 0) {
@@ -223,6 +195,44 @@ void CSTimeline::setCropParam(int posX, int posY, int cropWidth, int cropHeight)
 
 void CSTimeline::setGlobalSpeed(float speed){
     mGlobalSpeed = speed;
+}
+
+int CSTimeline::_prepareOutMedia() {
+    if (HB_OK != _openOutputFile(mSaveFilePath)) {
+        LOGE("Timeline open file failed !");
+        return HB_ERROR;
+    }
+    
+    /** TODO:此处可以改成，根据外部配置，设置添加媒体流的方式实现 */
+    CSIStream* pBaseStream = CSStreamFactory::CreateMediaStream(CS_STREAM_TYPE_VIDEO);
+    if (pBaseStream) {
+        CSVStream* pVideoStream = (CSVStream *)pBaseStream;
+        pVideoStream->setVideoParam(&mTgtImageParams);
+        if (HB_OK != pVideoStream->setEncoder("libx264")) {
+            LOGE("Timeline set video stream encoder failed !");
+            return HB_ERROR;
+        }
+        if (HB_OK != _addStream(pVideoStream)) {
+            LOGE("Timeline add video stream failed !");
+            return HB_ERROR;
+        }
+    }
+    
+    pBaseStream = CSStreamFactory::CreateMediaStream(CS_STREAM_TYPE_AUDIO);
+    if (pBaseStream) {
+        CSAStream* pAudioStream = (CSAStream*)pBaseStream;
+        pAudioStream->setAudioParam(&mTgtAudioParams);
+        if (HB_OK != pAudioStream->setEncoder("libfdk_aac")) {
+            LOGE("Timeline set audio stream encoder failed !");
+            return HB_ERROR;
+        }
+        if (HB_OK != _addStream(pAudioStream)) {
+            LOGE("Timeline add audio stream failed !");
+            return HB_ERROR;
+        }
+    }
+    
+    return HB_OK;
 }
 
 void CSTimeline::setOutputFile(char *file) {

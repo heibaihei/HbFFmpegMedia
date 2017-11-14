@@ -56,6 +56,7 @@ protected:
     int mStreamIndex;
     StreamThreadParam* mStreamThreadParam;
     ThreadIPCContext * mThreadIPCCtx;
+    AVFrame     *mSrcFrame;
     
     /** 以阻塞的方式往内部填充数据 */
     bool mPushDataWithSyncMode;

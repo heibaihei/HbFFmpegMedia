@@ -25,6 +25,13 @@ double mt_gettime_monotonic();
 int globalInitial();
 
 /**
+ *  裁剪参数初始化
+ */
+int cropParamInit(CropParam* param);
+
+int audioParamInit(AudioParams* param);
+
+/**
  *  图像参数初始化
  *  @param param 指向待初始化图像参数对象的指针
  *  @return HB_ERROR 初始化失败， HB_OK 初始化成功;

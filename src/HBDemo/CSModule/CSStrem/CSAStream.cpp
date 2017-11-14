@@ -28,30 +28,31 @@ int CSAStream::bindOpaque(void *handle) {
         return HB_ERROR;
     }
     
+    int HBErr = HB_OK;
     mFmtCtx = (AVFormatContext *)handle;
     mStreamThreadParam = (StreamThreadParam *)av_mallocz(sizeof(StreamThreadParam));
     if (!mStreamThreadParam) {
         LOGE("Audio stream create stream pthread params failed !");
-        return HB_ERROR;
+        goto BIND_AUDIO_STREAM_END_LABEL;
     }
-    int HBErr = initialStreamThreadParams(mStreamThreadParam);
+    HBErr = initialStreamThreadParams(mStreamThreadParam);
     if (HBErr != HB_OK) {
         LOGE("Initial stream thread params failed !");
-        return HB_ERROR;
+        goto BIND_AUDIO_STREAM_END_LABEL;
     }
     
     if (!mCodec) {
         mCodec = avcodec_find_encoder_by_name("libfdk_aac");
         if (!mCodec) {
             LOGE("Audio stream find encoder by name failed !");
-            return HB_ERROR;
+            goto BIND_AUDIO_STREAM_END_LABEL;
         }
     }
     
     mStream = avformat_new_stream(mFmtCtx, mCodec);
     if (!mStream) {
         LOGE("Video stream create new stream failed !");
-        return HB_ERROR;
+        goto BIND_AUDIO_STREAM_END_LABEL;
     }
     
     mStream->time_base.num = 1;
@@ -62,7 +63,7 @@ int CSAStream::bindOpaque(void *handle) {
     mCodecCtx = avcodec_alloc_context3(mCodec);
     if (!mCodecCtx) {
         LOGE("Audio codec context alloc failed !");
-        return HB_ERROR;
+        goto BIND_AUDIO_STREAM_END_LABEL;
     }
     
     mCodecCtx->channels = mAudioParam->channels;
@@ -77,13 +78,13 @@ int CSAStream::bindOpaque(void *handle) {
     HBErr = avcodec_open2(mCodecCtx, mCodec, NULL);
     if (!HBErr) {
         LOGE("Audio codec context alloc failed !");
-        return HB_ERROR;
+        goto BIND_AUDIO_STREAM_END_LABEL;
     }
     
     HBErr = avcodec_parameters_from_context(mStream->codecpar, mCodecCtx);
     if (HBErr < 0) {
         LOGE("Audio stream copy context paramter error !");
-        return HB_ERROR;
+        goto BIND_AUDIO_STREAM_END_LABEL;
     }
     
     mStreamThreadParam->mCodecCtx = mCodecCtx;
@@ -92,19 +93,40 @@ int CSAStream::bindOpaque(void *handle) {
     mSrcFrame = av_frame_alloc();
     if (!mSrcFrame) {
         LOGE("Aduio stream alloc audio source frame failed !");
-        return HB_ERROR;
+        goto BIND_AUDIO_STREAM_END_LABEL;
     }
     
     HBErr = initialAudioFrameWidthParams(&mSrcFrame, mAudioParam, mCodecCtx->frame_size);
     if (HBErr != HB_OK) {
         LOGE("Audio stream source frame initial failed !");
-        return HB_ERROR;
+        goto BIND_AUDIO_STREAM_END_LABEL;
     }
     mInTotalOfSamples = 0;
     mOutTotalOfSamples = 0;
     mOutTotalOfFrame = 0;
-    
+
+    mSrcFrame = av_frame_alloc();
+    if (!mSrcFrame) {
+        LOGE("Create buffer source frame failed !");
+        goto BIND_AUDIO_STREAM_END_LABEL;
+    }
     return HB_OK;
+    
+BIND_AUDIO_STREAM_END_LABEL:
+    if (mStreamThreadParam) {
+        releaseStreamThreadParams(mStreamThreadParam);
+        mStreamThreadParam = nullptr;
+    }
+    if (mCodecCtx) {
+        avcodec_free_context(&mCodecCtx);
+        mCodecCtx = nullptr;
+    }
+    
+    mCodec = nullptr;
+    mStream = nullptr;
+    if (!mSrcFrame)
+        av_frame_free(&mSrcFrame);
+    return HB_ERROR;
 }
 
 int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {

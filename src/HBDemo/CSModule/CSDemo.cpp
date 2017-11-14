@@ -87,18 +87,20 @@ void CSModulePlayerDemo() {
     char *pOutputMediaFile = (char *)(CS_MODULE_RESOURCE_ROOT_PATH"/100_output.mp4");
     int inWidth = 480, inHeight = 480;
     int outWidth = 480, outHeight = 480;
-    int cropX = inWidth-outWidth, cropY = inHeight-outHeight;
+    
+    /** 以输入的左上角坐标为坐标原点 */
+    int cropX = 0, cropY = 0;
     int cropWidth = outWidth, cropHeight = outHeight;
     
     /** 输出媒体参数 */
     VideoRorate ouputImageRotate = MT_Rotate0;
     int outputChannels = 2;
     int outputSampleRate = 44100;
-    AUDIO_SAMPLE_FORMAT outputSampleFmt = CS_SAMPLE_FMT_S16;
+    AUDIO_SAMPLE_FORMAT outputSampleFmt = CS_SAMPLE_FMT_FLTP;
     IMAGE_PIX_FORMAT outputImagePixFormat = CS_PIX_FMT_YUV420P;
     
     /** 输入媒体参数 */
-    AUDIO_SAMPLE_FORMAT inputSampleFmt = CS_SAMPLE_FMT_FLTP;
+    AUDIO_SAMPLE_FORMAT inputSampleFmt = CS_SAMPLE_FMT_S16;
     int inputChannels = 2;
     int inputSampleRate = 44100;
     float crf = 58.0f;

@@ -9983,6 +9983,29 @@
 			path = ffplay;
 			sourceTree = "<group>";
 		};
+		A19B779B1FBB0C89001E3221 /* CSEffect */ = {
+			isa = PBXGroup;
+			children = (
+				A19B779C1FBB0C89001E3221 /* Audio */,
+				A19B779D1FBB0C89001E3221 /* Video */,
+			);
+			path = CSEffect;
+			sourceTree = "<group>";
+		};
+		A19B779C1FBB0C89001E3221 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		A19B779D1FBB0C89001E3221 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Video;
+			sourceTree = "<group>";
+		};
 		A1BE85611EB743BC004B839C /* HBCommon */ = {
 			isa = PBXGroup;
 			children = (
@@ -16991,6 +17014,7 @@
 			children = (
 				A1F4B09C1FB93192000FF69B /* CSDemo.cpp */,
 				A1F4B09D1FB93192000FF69B /* CSDemo.h */,
+				A19B779B1FBB0C89001E3221 /* CSEffect */,
 				A181BC6A1F6516D100B34FD0 /* CSCommon */,
 				A1245A8F1F65FD1900DB5D45 /* CSStrem */,
 				A1245A891F657F9000DB5D45 /* CSPlayer.cpp */,
