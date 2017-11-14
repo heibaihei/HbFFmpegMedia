@@ -74,6 +74,8 @@
 		A162628E1FB47AFF00217831 /* HBPictureDemo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A162628D1FB47AFF00217831 /* HBPictureDemo.cpp */; };
 		A17202B31F69993E00662F18 /* CSAudioFifo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17202B11F69993E00662F18 /* CSAudioFifo.cpp */; };
 		A175D0121F945D9100A7F5A4 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A175D0111F945D9000A7F5A4 /* libmp3lame.a */; };
+		A17F02851FBB52C8009B03F0 /* CSAudioUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17F02831FBB52C8009B03F0 /* CSAudioUtil.cpp */; };
+		A17F028F1FBB52F5009B03F0 /* CSVideoUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17F028D1FBB52F5009B03F0 /* CSVideoUtil.cpp */; };
 		A181BC2D1EA1F4CF004861DA /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A181BC2C1EA1F4CF004861DA /* main.c */; };
 		A181BC351EA1F682004861DA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC341EA1F682004861DA /* main.cpp */; };
 		A181BC421EA21430004861DA /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC411EA21430004861DA /* libSDL2.a */; };
@@ -3045,6 +3047,10 @@
 		A17202B11F69993E00662F18 /* CSAudioFifo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioFifo.cpp; sourceTree = "<group>"; };
 		A17202B21F69993E00662F18 /* CSAudioFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioFifo.h; sourceTree = "<group>"; };
 		A175D0111F945D9000A7F5A4 /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmp3lame.a; path = ../../lib/lame/lib/libmp3lame.a; sourceTree = "<group>"; };
+		A17F02831FBB52C8009B03F0 /* CSAudioUtil.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioUtil.cpp; sourceTree = "<group>"; };
+		A17F02841FBB52C8009B03F0 /* CSAudioUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSAudioUtil.h; sourceTree = "<group>"; };
+		A17F028D1FBB52F5009B03F0 /* CSVideoUtil.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoUtil.cpp; sourceTree = "<group>"; };
+		A17F028E1FBB52F5009B03F0 /* CSVideoUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSVideoUtil.h; sourceTree = "<group>"; };
 		A181BC2C1EA1F4CF004861DA /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../../src/main.c; sourceTree = "<group>"; };
 		A181BC321EA1F682004861DA /* Sample */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Sample; sourceTree = BUILT_PRODUCTS_DIR; };
 		A181BC341EA1F682004861DA /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -10010,6 +10016,10 @@
 		A19B779B1FBB0C89001E3221 /* CSEffect */ = {
 			isa = PBXGroup;
 			children = (
+				A17F028D1FBB52F5009B03F0 /* CSVideoUtil.cpp */,
+				A17F028E1FBB52F5009B03F0 /* CSVideoUtil.h */,
+				A17F02831FBB52C8009B03F0 /* CSAudioUtil.cpp */,
+				A17F02841FBB52C8009B03F0 /* CSAudioUtil.h */,
 				A19B779C1FBB0C89001E3221 /* Audio */,
 				A19B779D1FBB0C89001E3221 /* Video */,
 			);
@@ -17374,6 +17384,7 @@
 				A19A67E11EB3457500DE8F11 /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,
 				A181BC681EA21788004861DA /* simplest_ffmpeg_demuxer.cpp in Sources */,
 				A15BB0F51F4321C600AFE839 /* CSAudioResample.cpp in Sources */,
+				A17F02851FBB52C8009B03F0 /* CSAudioUtil.cpp in Sources */,
 				A1245A951F65FD3300DB5D45 /* CSVStream.cpp in Sources */,
 				A19A67C31EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp in Sources */,
 				A19A67E01EB3457500DE8F11 /* simplest_ffmpeg_video_encoder.cpp in Sources */,
@@ -17425,6 +17436,7 @@
 				A19A67CD1EB3433900DE8F11 /* simplest_ffmpeg_muxer.cpp in Sources */,
 				A19A67DA1EB3445600DE8F11 /* simplest_ffmpeg_video_filter.cpp in Sources */,
 				A1091CEB1F595BD900565177 /* CSVideoDecoder.cpp in Sources */,
+				A17F028F1FBB52F5009B03F0 /* CSVideoUtil.cpp in Sources */,
 				A183E2ED1F1F0028003700C3 /* AudioEncoder.cpp in Sources */,
 				A1FB66411F19EBDC001B08F0 /* audio_player.cpp in Sources */,
 				A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */,
