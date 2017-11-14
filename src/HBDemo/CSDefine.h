@@ -32,6 +32,30 @@
 #define SAFE_RETAIN(p)           do { if(p) { (p)->retain(); } } while(0)
 #define BREAK_IF(cond)           if(cond) break
 
+#define SOUND_TOUCH_MODULE_EXCLUDE  1
+#define LIBYUV_MODULE_EXCLUDE  1
+
+typedef enum ErrorCode {
+    AV_STAT_ERR     = -100,
+    AV_NOT_INIT     = -99,
+    AV_FILE_ERR     = -98,
+    AV_STREAM_ERR   = -97,
+    AV_MALLOC_ERR   = -96,
+    AV_DECODE_ERR   = -95,
+    AV_SEEK_ERR     = -94,
+    AV_PARM_ERR     = -93,
+    AV_NOT_FOUND    = -92,
+    AV_SET_ERR      = -91,
+    AV_CONFIG_ERR   = -90,
+    AV_ENCODE_ERR   = -89,
+    AV_TS_ERR       = -88,
+    AV_FIFO_ERR     = -87,
+    AV_NOT_SUPPORT  = -86,
+    AV_NOT_ENOUGH   = -85,
+    AV_TRANSFER_ERR = -84,
+    AV_EXIT_NORMAL       = 1,
+} ErrorCode;
+
 typedef enum PlayerState_t{
     S_PLAY_ERR   = -1,
     S_PLAY_INIT  = 0,
@@ -40,6 +64,22 @@ typedef enum PlayerState_t{
     S_PLAY_PAUSE = 3,
     S_PLAY_END   = 4,
 } PlayerState;
+
+/*音频效果配置参数*/
+typedef struct AudioEffectParam {
+    float atempo;           // 速率（0.25～5）
+    float pitch;            // 音调（0.25～2）
+} AudioEffectParam;
+
+typedef enum VideoEffectType {
+    CS_VIDEO_SCALE_EFFECT   = 0,
+    CS_VIDEO_CROP_ROTATE    = 1,
+} VideoEffectType;
+
+typedef enum AudioEffectType{
+    CS_AUDIO_TEMPO_PITCH = 0,
+    CS_AUDIO_RESAMPLER   = 1,
+} AudioEffectType;
 
 typedef enum VideoRorate_t {
     MT_Rotate0      = 0,  // No rotation.
@@ -56,6 +96,10 @@ typedef struct CropParam_t {
     int cropHeight;
     int lineSize[4];
 } CropParam;
+
+typedef struct VideoEffectParam {
+    CropParam *cropParam;
+} VideoEffectParam;
 
 // 视频裁剪参数
 typedef struct ScaleParam_t {

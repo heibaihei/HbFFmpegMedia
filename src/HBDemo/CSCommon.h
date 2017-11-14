@@ -38,6 +38,10 @@ int audioParamInit(AudioParams* param);
  */
 int imageParamInit(ImageParams* param);
 
+enum AVSampleFormat getAudioInnerFormat(enum AUDIO_SAMPLE_FORMAT outFormat);
+
+enum AUDIO_SAMPLE_FORMAT getAudioOuterFormat(enum AVSampleFormat outFormat);
+
 /**
  *  将 IMAGE_PIX_FORMAT 格式转换成 ffmpeg 内部的图像格式，实现对封装格式的抽象封装
  *

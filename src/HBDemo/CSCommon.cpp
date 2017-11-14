@@ -158,3 +158,56 @@ char* getMediaDataTypeDescript(MEDIA_DATA_TYPE dataType) {
             exit(0);
     }
 }
+
+enum AVSampleFormat getAudioInnerFormat(enum AUDIO_SAMPLE_FORMAT outFormat)
+{
+    switch (outFormat) {
+        case CS_SAMPLE_FMT_U8:
+            return AV_SAMPLE_FMT_U8;
+        case CS_SAMPLE_FMT_S16:
+            return AV_SAMPLE_FMT_S16;
+        case CS_SAMPLE_FMT_S32:
+            return AV_SAMPLE_FMT_S32;
+        case CS_SAMPLE_FMT_FLT:
+            return AV_SAMPLE_FMT_FLT;
+        case CS_SAMPLE_FMT_DBL:
+            return AV_SAMPLE_FMT_DBL;
+        case CS_SAMPLE_FMT_U8P:
+            return AV_SAMPLE_FMT_U8P;
+        case CS_SAMPLE_FMT_S16P:
+            return AV_SAMPLE_FMT_S16P;
+        case CS_SAMPLE_FMT_S32P:
+            return AV_SAMPLE_FMT_S32P;
+        case CS_SAMPLE_FMT_FLTP:
+            return AV_SAMPLE_FMT_FLTP;
+        default:
+            return AV_SAMPLE_FMT_NONE;
+    }
+}
+
+enum AUDIO_SAMPLE_FORMAT getAudioOuterFormat(enum AVSampleFormat outFormat)
+{
+    switch (outFormat) {
+        case AV_SAMPLE_FMT_U8:
+            return CS_SAMPLE_FMT_U8;
+        case AV_SAMPLE_FMT_S16:
+            return CS_SAMPLE_FMT_S16;
+        case AV_SAMPLE_FMT_S32:
+            return CS_SAMPLE_FMT_S32;
+        case AV_SAMPLE_FMT_FLT:
+            return CS_SAMPLE_FMT_FLT;
+        case AV_SAMPLE_FMT_DBL:
+            return CS_SAMPLE_FMT_DBL;
+        case AV_SAMPLE_FMT_U8P:
+            return CS_SAMPLE_FMT_U8P;
+        case AV_SAMPLE_FMT_S16P:
+            return CS_SAMPLE_FMT_S16P;
+        case AV_SAMPLE_FMT_S32P:
+            return CS_SAMPLE_FMT_S32P;
+        case AV_SAMPLE_FMT_FLTP:
+            return CS_SAMPLE_FMT_FLTP;
+        default:
+            return CS_SAMPLE_FMT_NONE;
+    }
+}
+
