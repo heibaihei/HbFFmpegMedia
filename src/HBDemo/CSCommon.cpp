@@ -211,3 +211,18 @@ enum AUDIO_SAMPLE_FORMAT getAudioOuterFormat(enum AVSampleFormat outFormat)
     }
 }
 
+bool needRescaleVideo(ImageParams *inParam, ImageParams *outParam)
+{
+    return !((inParam->mWidth == outParam->mWidth) &&
+             (inParam->mHeight == outParam->mHeight) &&
+             (inParam->mPixFmt == outParam->mPixFmt));
+}
+
+bool needResampleAudio(AudioParams *param1, AudioParams *param2)
+{
+    return !((param1->channels == param2->channels &&
+              param1->sample_fmt == param2->sample_fmt &&
+              param1->sample_rate == param2->sample_rate));
+}
+
+

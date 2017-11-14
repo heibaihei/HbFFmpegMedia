@@ -11,7 +11,8 @@
 
 #include <stdio.h>
 #include "CSIStream.h"
-
+#include "CSAudioBaseEffect.h"
+#include "CSAudioUtil.h"
 
 namespace HBMedia {
     
@@ -37,6 +38,13 @@ public:
 protected:
     
 private:
+    float times;
+    int  mFrameBufferSize;
+    uint8_t *mSoundDataBuffer;
+    CSAudioUtil *mFrameUtils;
+    
+    AudioParams mDstAudioParams;
+    AudioParams mSrcAudioParams;
     
     long mInTotalOfSamples;
     long mOutTotalOfSamples;

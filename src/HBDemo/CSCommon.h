@@ -24,6 +24,10 @@ double mt_gettime_monotonic();
  */
 int globalInitial();
 
+bool needRescaleVideo(ImageParams *inParam, ImageParams *outParam);
+
+bool needResampleAudio(AudioParams *param1, AudioParams *param2);
+
 /**
  *  裁剪参数初始化
  */

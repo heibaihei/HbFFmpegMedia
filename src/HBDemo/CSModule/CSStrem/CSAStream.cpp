@@ -8,6 +8,9 @@
 
 #include "CSAStream.h"
 #include "CSAudioFifo.h"
+#include "CSAudioEffectFactory.h"
+
+#define CS_RECORD_AUDIO_BUFFER  (81920)
 
 namespace HBMedia {
     
@@ -29,6 +32,8 @@ int CSAStream::bindOpaque(void *handle) {
     }
     
     int HBErr = HB_OK;
+    bool isNeedResample = false;
+    CSAudioBaseEffect *pResamplerEffect = NULL;
     mFmtCtx = (AVFormatContext *)handle;
     mStreamThreadParam = (StreamThreadParam *)av_mallocz(sizeof(StreamThreadParam));
     if (!mStreamThreadParam) {
@@ -89,6 +94,55 @@ int CSAStream::bindOpaque(void *handle) {
     
     mStreamThreadParam->mCodecCtx = mCodecCtx;
     mStreamThreadParam->mTimeBase = mStream->time_base;
+    mFrameBufferSize = mCodecCtx->frame_size;
+    
+    mSoundDataBuffer = (uint8_t *)av_malloc(CS_RECORD_AUDIO_BUFFER);
+    if (mSoundDataBuffer == NULL) {
+        LOGE("Alloc audio data error!\n");
+        goto BIND_AUDIO_STREAM_END_LABEL;
+    }
+    
+    mFrameUtils = new CSAudioUtil();
+    if (mFrameUtils == NULL) {
+        HBErr = AV_MALLOC_ERR;
+        LOGE("New audio frame utils error!\n");
+        goto BIND_AUDIO_STREAM_END_LABEL;
+    }
+    HBErr = mFrameUtils->init();
+    if (HBErr < 0) {
+        LOGE("Init Frame utils error!\n");
+        goto BIND_AUDIO_STREAM_END_LABEL;
+    }
+    
+    if (times - 1.0 > 0.001 || times - 1.0 < -0.001) {
+        CSAudioBaseEffect *pAudioEffect = CSAudioEffectFactory::getAudioEffect(CS_AUDIO_TEMPO_PITCH);
+        if (pAudioEffect == NULL) {
+            LOGE("Get audio effect error!\n");
+            goto BIND_AUDIO_STREAM_END_LABEL;
+        }
+        AudioEffectParam param;
+        param.atempo = times;
+        pAudioEffect->setEffectParam(&param);
+        pAudioEffect->setInParam(&mSrcAudioParams);
+        pAudioEffect->init();
+        mFrameUtils->addEffect(pAudioEffect);
+        
+    }
+    
+    isNeedResample = needResampleAudio(&mSrcAudioParams, &mDstAudioParams);
+    if (isNeedResample) {
+        pResamplerEffect = CSAudioEffectFactory::getAudioEffect(CS_AUDIO_RESAMPLER);
+        if (pResamplerEffect == NULL) {
+            av_log(NULL, AV_LOG_ERROR, "New Audio reampler error!\n");
+            goto BIND_AUDIO_STREAM_END_LABEL;
+        }
+        pResamplerEffect->setInParam(&mSrcAudioParams);
+        pResamplerEffect->setOutParam(&mDstAudioParams);
+        HBErr = pResamplerEffect->init();
+        if (HBErr < 0)
+            goto BIND_AUDIO_STREAM_END_LABEL;
+        mFrameUtils->addEffect(pResamplerEffect);
+    }
     
     mSrcFrame = av_frame_alloc();
     if (!mSrcFrame) {
