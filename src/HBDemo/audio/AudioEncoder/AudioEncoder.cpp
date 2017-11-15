@@ -21,7 +21,7 @@ int initialOutputFrame(AVFrame** frame, AudioParams *pAudioParam, int AudioSampl
     }
     
     newOutputFrame->nb_samples = AudioSamples;
-    newOutputFrame->format = pAudioParam->sample_fmt;
+    newOutputFrame->format = getAudioInnerFormat(pAudioParam->pri_sample_fmt);
     newOutputFrame->sample_rate = pAudioParam->sample_rate;
     newOutputFrame->channels = pAudioParam->channels;
     newOutputFrame->channel_layout = (uint64_t)av_get_default_channel_layout(pAudioParam->channels);
@@ -69,7 +69,7 @@ int audioComponentInitial(AVFormatContext** pOutputFormatCtx, AVStream** pOutput
     AVCodecContext* audioCodecCtx = avcodec_alloc_context3(audioCodec);
     audioCodecCtx->codec_id = audioCodec->id;
     audioCodecCtx->codec_type = AVMEDIA_TYPE_AUDIO;
-    audioCodecCtx->sample_fmt = targetAudioParam->sample_fmt;
+    audioCodecCtx->sample_fmt = getAudioInnerFormat(targetAudioParam->pri_sample_fmt);
     audioCodecCtx->sample_rate = targetAudioParam->sample_rate;
     audioCodecCtx->channels = targetAudioParam->channels;
     audioCodecCtx->channel_layout = av_get_default_channel_layout(audioCodecCtx->channels);

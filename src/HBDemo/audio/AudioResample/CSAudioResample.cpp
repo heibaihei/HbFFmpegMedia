@@ -28,7 +28,7 @@ CSAudioResample::~CSAudioResample()
 int CSAudioResample::audioSetSourceParams(int channels , enum AVSampleFormat sample_fmt, int sample_rate)
 {
     mSrcAudioParams.channels = channels;
-    mSrcAudioParams.sample_fmt = sample_fmt;
+    mSrcAudioParams.pri_sample_fmt = getAudioOuterFormat(sample_fmt);
     mSrcAudioParams.sample_rate = sample_rate;
     return HB_OK;
 }
@@ -36,7 +36,7 @@ int CSAudioResample::audioSetSourceParams(int channels , enum AVSampleFormat sam
 int CSAudioResample::audioSetDestParams(int channels , enum AVSampleFormat sample_fmt, int sample_rate)
 {
     mTargetAudioParams.channels = channels;
-    mTargetAudioParams.sample_fmt = sample_fmt;
+    mTargetAudioParams.pri_sample_fmt = getAudioOuterFormat(sample_fmt);
     mTargetAudioParams.sample_rate = sample_rate;
     return HB_OK;
 }
@@ -51,7 +51,9 @@ int CSAudioResample::audioResampleOpen()
         return HB_ERROR;
     }
     
-    mPAudioSwrCtx = swr_alloc_set_opts(mPAudioSwrCtx, mTargetAudioParams.channel_layout, mTargetAudioParams.sample_fmt, mTargetAudioParams.sample_rate, av_get_default_channel_layout(mSrcAudioParams.channels), mSrcAudioParams.sample_fmt, mSrcAudioParams.sample_rate, 0, NULL);
+    mPAudioSwrCtx = swr_alloc_set_opts(mPAudioSwrCtx, mTargetAudioParams.channel_layout, \
+                            getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt), mTargetAudioParams.sample_rate, \
+                            av_get_default_channel_layout(mSrcAudioParams.channels), getAudioInnerFormat(mSrcAudioParams.pri_sample_fmt), mSrcAudioParams.sample_rate, 0, NULL);
     
     swr_init(mPAudioSwrCtx);
     return HB_OK;
@@ -73,7 +75,7 @@ int CSAudioResample::doResample(uint8_t **OutData, uint8_t **InData, int InSampl
     }
     
     int outputSamplesPerChannel = ((InSamples * mTargetAudioParams.sample_rate) / mSrcAudioParams.sample_rate);
-    *OutData = (uint8_t*)av_mallocz(av_samples_get_buffer_size(NULL, mTargetAudioParams.channels, outputSamplesPerChannel, mTargetAudioParams.sample_fmt, 1));
+    *OutData = (uint8_t*)av_mallocz(av_samples_get_buffer_size(NULL, mTargetAudioParams.channels, outputSamplesPerChannel, getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt), 1));
     if (!(OutData)) {
         LOGE("Fast malloc output sample buffer failed !");
         return HB_ERROR;
@@ -89,7 +91,7 @@ int CSAudioResample::checkDstAudioParamValid(int channels , enum AVSampleFormat 
 {
     if (0 != swr_is_initialized(mPAudioSwrCtx)) {
         /** 非0 表示已经完成初始化，此时需要进行 audioResampleOpen 的操作 */
-        if (mTargetAudioParams.channels == channels && mTargetAudioParams.sample_fmt != sample_fmt && mTargetAudioParams.sample_rate && sample_rate)
+        if (mTargetAudioParams.channels == channels && getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt) != sample_fmt && mTargetAudioParams.sample_rate && sample_rate)
             return HB_OK;
     }
     return HB_ERROR;
@@ -99,7 +101,7 @@ int CSAudioResample::checkSrcAudioParamValid(int channels , enum AVSampleFormat 
 {
     if (0 != swr_is_initialized(mPAudioSwrCtx)) {
         /** 非0 表示已经完成初始化，此时需要进行 audioResampleOpen 的操作 */
-        if (mSrcAudioParams.channels == channels && mSrcAudioParams.sample_fmt != sample_fmt && mSrcAudioParams.sample_rate && sample_rate)
+        if (mSrcAudioParams.channels == channels && getAudioInnerFormat(mSrcAudioParams.pri_sample_fmt) != sample_fmt && mSrcAudioParams.sample_rate && sample_rate)
             return HB_OK;
     }
     return HB_ERROR;

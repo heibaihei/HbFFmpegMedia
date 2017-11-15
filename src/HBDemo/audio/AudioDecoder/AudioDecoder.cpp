@@ -38,9 +38,9 @@ static int audioSwrConvertComponentInitial(struct SwrContext** pAudioConvertCtx,
     if (targetAudioParams->channel_layout != audioCodeCtx->channel_layout \
         || targetAudioParams->channels != audioCodeCtx->channels \
         || targetAudioParams->sample_rate != audioCodeCtx->sample_rate \
-        || targetAudioParams->sample_fmt != audioCodeCtx->sample_fmt) {
+        || getAudioInnerFormat(targetAudioParams->pri_sample_fmt) != audioCodeCtx->sample_fmt) {
         audioConvertCtx = swr_alloc();
-        audioConvertCtx = swr_alloc_set_opts(audioConvertCtx, targetAudioParams->channel_layout, targetAudioParams->sample_fmt, targetAudioParams->sample_rate,
+        audioConvertCtx = swr_alloc_set_opts(audioConvertCtx, targetAudioParams->channel_layout, getAudioInnerFormat(targetAudioParams->pri_sample_fmt), targetAudioParams->sample_rate,
                                            av_get_default_channel_layout(audioCodeCtx->channels), audioCodeCtx->sample_fmt, audioCodeCtx->sample_rate, 0, NULL);
 
         swr_init(audioConvertCtx);
@@ -183,14 +183,14 @@ int HBAudioDecoder(char *strInputFileName, char*strOutputFileName, AudioDataType
                         pOutputFrame->nb_samples = (int)av_rescale_rnd((pFrame->nb_samples + swr_get_delay(audioConvertCtx, outputAudioParams->sample_rate)), \
                                                            outputAudioParams->sample_rate, pFrame->sample_rate, AV_ROUND_UP);
                         hbError = av_samples_alloc(pOutputFrame->data, &(pOutputFrame->linesize[0]), \
-                                           outputAudioParams->channels, pOutputFrame->nb_samples, outputAudioParams->sample_fmt, 1);
+                                           outputAudioParams->channels, pOutputFrame->nb_samples, getAudioInnerFormat(outputAudioParams->pri_sample_fmt), 1);
                         if (hbError < 0) {
                             LOGE("av samples alloc failed !");
                             return -1;
                         }
                         audioSwrPerChannelSamples = swr_convert(audioConvertCtx, \
                                                         pOutputFrame->data, pOutputFrame->nb_samples, (const uint8_t **)pFrame->data, pFrame->nb_samples);
-                        iOutputAudioDataByteSizes = audioSwrPerChannelSamples * outputAudioParams->channels * av_get_bytes_per_sample(outputAudioParams->sample_fmt);
+                        iOutputAudioDataByteSizes = audioSwrPerChannelSamples * outputAudioParams->channels * av_get_bytes_per_sample(getAudioInnerFormat(outputAudioParams->pri_sample_fmt));
                     }
                     else {
                         pOutputFrame = pFrame;

@@ -7,6 +7,7 @@
 //
 
 #include "CSAudioFifo.h"
+#include "CSCommon.h"
 
 /** 音频管道 */
 int initialFifo(AVAudioFifo **fifo, enum AVSampleFormat fmt, int channels, int size) {
@@ -52,7 +53,7 @@ int initialAudioFrameWidthParams(AVFrame **frame,
     }
     
     pTempFrame->nb_samples     = samples;
-    pTempFrame->format         = parm->sample_fmt;
+    pTempFrame->format         = getAudioInnerFormat(parm->pri_sample_fmt);
     pTempFrame->sample_rate    = parm->sample_rate;
     pTempFrame->channels       = parm->channels;
     pTempFrame->channel_layout = av_get_default_channel_layout(parm->channels);

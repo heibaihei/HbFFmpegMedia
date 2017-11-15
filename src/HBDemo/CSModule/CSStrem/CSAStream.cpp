@@ -73,7 +73,7 @@ int CSAStream::bindOpaque(void *handle) {
     
     mCodecCtx->channels = mAudioParam->channels;
     mCodecCtx->bit_rate = mAudioParam->mbitRate;
-    mCodecCtx->sample_fmt = mAudioParam->sample_fmt;
+    mCodecCtx->sample_fmt = getAudioInnerFormat(mAudioParam->pri_sample_fmt);
     mCodecCtx->channel_layout = av_get_default_channel_layout(mAudioParam->channels);
     mCodecCtx->sample_rate = mAudioParam->sample_rate;
     
@@ -207,7 +207,7 @@ int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
         }
     }
     
-    int iInputNumOfSamples = (int)(DataSize / av_get_bytes_per_sample(mAudioParam->sample_fmt));
+    int iInputNumOfSamples = (int)(DataSize / av_get_bytes_per_sample(getAudioInnerFormat(mAudioParam->pri_sample_fmt)));
     mInTotalOfSamples += iInputNumOfSamples;
     uint8_t* pTmpData = pData;
     uint8_t *pInputData[8] = {NULL};
@@ -216,7 +216,7 @@ int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
     int iOutLineSize[8] = {0};
     
     int HBErr = av_samples_fill_arrays(pInputData, iLineSize, pTmpData, \
-                    mAudioParam->channels, iInputNumOfSamples, mAudioParam->sample_fmt, mAudioParam->mAlign);
+                    mAudioParam->channels, iInputNumOfSamples, getAudioInnerFormat(mAudioParam->pri_sample_fmt), mAudioParam->mAlign);
     if (HBErr < 0) {
         LOGE("Audio stream fille sample arrays failed !");
         return HB_ERROR;
@@ -234,7 +234,7 @@ int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
     
     
     int iChannels = mAudioParam->channels;
-    AVSampleFormat eSampleFmt = mAudioParam->sample_fmt;
+    AVSampleFormat eSampleFmt = getAudioInnerFormat(mAudioParam->pri_sample_fmt);
     int iSampleRate = mAudioParam->sample_rate;
     
     AVFrame* pBufferFrame = nullptr;
@@ -288,7 +288,7 @@ int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
 
 void CSAStream::setAudioParam(AudioParams* param) {
     mAudioParam = param;
-    int HBErr = initialFifo(&mAudioFifo, mAudioParam->sample_fmt, mAudioParam->channels, 1);
+    int HBErr = initialFifo(&mAudioFifo, getAudioInnerFormat(mAudioParam->pri_sample_fmt), mAudioParam->channels, 1);
     if (HBErr < 0)
         LOGE("Initial fifo error !");
 }

@@ -58,7 +58,7 @@ int  CSAudioEncoder::audioEncoderInitial()
     mPOutputAudioCodecCtx = avcodec_alloc_context3(mPOutputAudioCodec);
     mPOutputAudioCodecCtx->codec_id = mPOutputAudioCodec->id;
     mPOutputAudioCodecCtx->codec_type = AVMEDIA_TYPE_AUDIO;
-    mPOutputAudioCodecCtx->sample_fmt = mTargetAudioParams.sample_fmt;
+    mPOutputAudioCodecCtx->sample_fmt = getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt);
     mPOutputAudioCodecCtx->sample_rate = mTargetAudioParams.sample_rate;
     mPOutputAudioCodecCtx->channels = mTargetAudioParams.channels;
     mPOutputAudioCodecCtx->channel_layout = av_get_default_channel_layout(mPOutputAudioCodecCtx->channels);
@@ -271,7 +271,7 @@ int CSAudioEncoder::_initialOutputFrame(AVFrame** frame, AudioParams *pAudioPara
     }
     
     newOutputFrame->nb_samples = AudioSamples;
-    newOutputFrame->format = pAudioParam->sample_fmt;
+    newOutputFrame->format = getAudioInnerFormat(pAudioParam->pri_sample_fmt);
     newOutputFrame->sample_rate = pAudioParam->sample_rate;
     newOutputFrame->channels = pAudioParam->channels;
     newOutputFrame->channel_layout = (uint64_t)av_get_default_channel_layout(pAudioParam->channels);

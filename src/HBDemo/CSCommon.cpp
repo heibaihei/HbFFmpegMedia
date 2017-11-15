@@ -40,8 +40,7 @@ int audioParamInit(AudioParams* param) {
     param->sample_rate = 0;
     param->channels = 0;
     param->channel_layout = 0;
-    param->sample_fmt = (AVSampleFormat)AV_PIX_FMT_NONE;
-    param->pri_sample_fmt = (AUDIO_SAMPLE_FORMAT)CS_PIX_FMT_NONE;
+    param->pri_sample_fmt = CS_SAMPLE_FMT_NONE;
     param->frame_size = 0;
     param->channel_layout = 0;
     param->bytes_per_sec = 0;
@@ -221,7 +220,7 @@ bool needRescaleVideo(ImageParams *inParam, ImageParams *outParam)
 bool needResampleAudio(AudioParams *param1, AudioParams *param2)
 {
     return !((param1->channels == param2->channels &&
-              param1->sample_fmt == param2->sample_fmt &&
+              param1->pri_sample_fmt == param2->pri_sample_fmt &&
               param1->sample_rate == param2->sample_rate));
 }
 

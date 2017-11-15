@@ -173,7 +173,6 @@ typedef struct _AudioParams {
     int sample_rate;
     int channels;
     int64_t channel_layout;
-    AVSampleFormat sample_fmt;
     AUDIO_SAMPLE_FORMAT pri_sample_fmt;
     int frame_size;
     int bytes_per_sec;

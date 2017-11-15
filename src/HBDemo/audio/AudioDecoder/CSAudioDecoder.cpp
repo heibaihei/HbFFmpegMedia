@@ -113,14 +113,14 @@ int  CSAudioDecoder::audioDecoderInitial()
     /** 初始化音频转码器 */
     mAudioResample = new CSAudioResample(&mTargetAudioParams);
     mAudioResample->audioSetSourceParams(mPInputAudioCodecCtx->channels, mPInputAudioCodecCtx->sample_fmt, mPInputAudioCodecCtx->sample_rate);
-    mAudioResample->audioSetDestParams(mTargetAudioParams.channels, mTargetAudioParams.sample_fmt, mTargetAudioParams.sample_rate);
+    mAudioResample->audioSetDestParams(mTargetAudioParams.channels, getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt), mTargetAudioParams.sample_rate);
     
     /** 初始化包的缓冲队列 */
     packet_queue_init(&mPacketCacheList);
     packet_queue_start(&mPacketCacheList);
     
     /** 初始化音频数据缓冲管道 */
-    mAudioFifo = av_audio_fifo_alloc(mTargetAudioParams.sample_fmt, mTargetAudioParams.channels, mTargetAudioParams.frame_size);
+    mAudioFifo = av_audio_fifo_alloc(getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt), mTargetAudioParams.channels, mTargetAudioParams.frame_size);
     
     av_dump_format(mPInputAudioFormatCtx, mAudioStreamIndex, mInputAudioMediaFile, false);
     return HB_OK;
@@ -291,7 +291,7 @@ int  CSAudioDecoder::CSIOPushDataBuffer(uint8_t* data, int samples)
     int audioFrameDataLineSize[AV_NUM_DATA_POINTERS] = {0, 0, 0, 0, 0, 0, 0, 0};
     uint8_t *audioFrameData[AV_NUM_DATA_POINTERS] = {NULL};
     
-    ret = av_samples_fill_arrays(audioFrameData, audioFrameDataLineSize, data, mTargetAudioParams.channels, samples, mTargetAudioParams.sample_fmt, 1);
+    ret = av_samples_fill_arrays(audioFrameData, audioFrameDataLineSize, data, mTargetAudioParams.channels, samples, getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt), 1);
     if (ret < 0) {
         LOGE("Audio samples fill arrays failed <%s>!", makeErrorStr(ret));
         return HB_ERROR;
