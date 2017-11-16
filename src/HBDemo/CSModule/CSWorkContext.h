@@ -46,8 +46,11 @@ typedef struct StreamThreadParam {
     AVPacket *mBufferPacket;
     int64_t mMinPacketPTS;
     
+    /** 当前媒体流对应索引 */
     int mStreamIndex;
+    /** 当前媒体流时间基 */
     AVRational mTimeBase;
+    
     /** 指向当前流线程参数对应的线程上下文 */
     ThreadContext *mThreadCtx;
 } StreamThreadParam;

@@ -27,9 +27,10 @@ typedef enum ThreadStat_t {
 typedef void *(CALLBACK)(void *handle, int stat);
 
 typedef struct ThreadParam_t {
-    void *mThreadArgs;        /** 线程参数 */
-    ThreadStat mStatus;/** 线程运行状态 */
-    CALLBACK mThreadCB;        /** 线程要执行的回调接口 */
+    void *mThreadArgs;        /** 当前线程对应的媒体流参数 */
+                              /** 正常对应: StreamThreadParam */
+    ThreadStat mStatus;       /** 线程运行状态 */
+    CALLBACK mThreadCB;       /** 线程要执行的回调接口 */
 } ThreadParam_t;
 
 typedef void *(*ThreadFunc)(void *arg);
@@ -63,7 +64,7 @@ private:
     /** 线程要执行的线程代码块 */
     ThreadFunc mThreadFunc;
     
-    /** 线程执行需要的参数 */
+    /** 线程执行需要的参数, 指向对应的线程参数 */
     ThreadParam_t *mThreadArg;
     
     /** 线程ID */
