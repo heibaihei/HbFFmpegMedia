@@ -32,8 +32,8 @@
 #define SAFE_RETAIN(p)           do { if(p) { (p)->retain(); } } while(0)
 #define BREAK_IF(cond)           if(cond) break
 
-#define SOUND_TOUCH_MODULE_EXCLUDE  1
-#define LIBYUV_MODULE_EXCLUDE  1
+//#define SOUND_TOUCH_MODULE_EXCLUDE  1
+//#define LIBYUV_MODULE_EXCLUDE  1
 
 typedef enum ErrorCode {
     AV_STAT_ERR     = -100,

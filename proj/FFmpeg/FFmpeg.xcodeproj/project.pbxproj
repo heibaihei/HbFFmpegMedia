@@ -100,7 +100,6 @@
 		A195CBBC1FBB0EA700F708F9 /* CSAudioEffectFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A195CBBA1FBB0EA700F708F9 /* CSAudioEffectFactory.cpp */; };
 		A195CBC61FBB102400F708F9 /* CSAudioResamplerEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A195CBC41FBB102400F708F9 /* CSAudioResamplerEffect.cpp */; };
 		A195CBC91FBB109B00F708F9 /* CSAudioShiftEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A195CBC71FBB109B00F708F9 /* CSAudioShiftEffect.cpp */; };
-		A195CBCB1FBB189400F708F9 /* libSoundTouch.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A195CBCA1FBB189300F708F9 /* libSoundTouch.dylib */; };
 		A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67B91EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp */; };
 		A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67BB1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp */; };
 		A19A67C31EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19A67C21EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp */; };
@@ -116,6 +115,7 @@
 		A19A67F91EB3475E00DE8F11 /* HBFfplay.c in Sources */ = {isa = PBXBuildFile; fileRef = A19A67F71EB3475E00DE8F11 /* HBFfplay.c */; };
 		A19A67FB1EB3483900DE8F11 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A19A67FA1EB3483900DE8F11 /* main.c */; };
 		A19E9C711F716075000EAF8C /* decoding_encoding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16159B11F70AD05001D54EA /* decoding_encoding.cpp */; };
+		A1AE0C8B1FBDF932007D82DE /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1AE0C831FBDF932007D82DE /* libjpeg.a */; };
 		A1BE85571EB742F7004B839C /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC411EA21430004861DA /* libSDL2.a */; };
 		A1BE85581EB7433C004B839C /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC431EA2145E004861DA /* libavcodec.a */; };
 		A1BE85591EB74340004B839C /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC451EA21460004861DA /* libavdevice.a */; };
@@ -166,6 +166,7 @@
 		A1BE85A61EB75F00004B839C /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC531EA21474004861DA /* libswscale.a */; };
 		A1BE85A91EB75F29004B839C /* ffserver_config.c in Sources */ = {isa = PBXBuildFile; fileRef = A1BE85A71EB75F29004B839C /* ffserver_config.c */; };
 		A1BE85AA1EB75F4C004B839C /* cmdutils.c in Sources */ = {isa = PBXBuildFile; fileRef = A1BE85621EB743C7004B839C /* cmdutils.c */; };
+		A1C31AF91FBC1B40001C4258 /* libSoundTouch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C31AF81FBC1B40001C4258 /* libSoundTouch.a */; };
 		A1D1CDBC1FAB473D0027C8AE /* MTVideoTransToGif.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1D1CDBA1FAB473C0027C8AE /* MTVideoTransToGif.cpp */; };
 		A1E5CBA01F274AE100A02704 /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E5CB9F1F274AE100A02704 /* libfdk-aac.a */; };
 		A1E5CBA21F276AA500A02704 /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E5CBA11F276AA500A02704 /* libx264.a */; };
@@ -3113,6 +3114,7 @@
 		A19A67F81EB3475E00DE8F11 /* HBFfplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBFfplay.h; path = ../../../src/HBFfplay/HBFfplay.h; sourceTree = "<group>"; };
 		A19A67FA1EB3483900DE8F11 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		A19B77A61FBB0D78001E3221 /* CSAudioBaseEffect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSAudioBaseEffect.h; sourceTree = "<group>"; };
+		A1AE0C831FBDF932007D82DE /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg.a; path = ../../lib/libjpeg/lib/libjpeg.a; sourceTree = "<group>"; };
 		A1BAF0141F5EF79000C3062C /* CSUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSUtil.h; path = ../../../include/CSUtil.h; sourceTree = "<group>"; };
 		A1BE85621EB743C7004B839C /* cmdutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cmdutils.c; path = "../../ffmpeg-3.2/cmdutils.c"; sourceTree = "<group>"; };
 		A1BE85631EB743C7004B839C /* cmdutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cmdutils.h; path = "../../ffmpeg-3.2/cmdutils.h"; sourceTree = "<group>"; };
@@ -3132,6 +3134,7 @@
 		A1BE85A71EB75F29004B839C /* ffserver_config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ffserver_config.c; path = "../../ffmpeg-3.2/ffserver_config.c"; sourceTree = "<group>"; };
 		A1BE85A81EB75F29004B839C /* ffserver_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ffserver_config.h; path = "../../ffmpeg-3.2/ffserver_config.h"; sourceTree = "<group>"; };
 		A1C142DC1F4DC2D400B2C5C5 /* ReadMe */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ReadMe; path = ../../../ReadMe; sourceTree = "<group>"; };
+		A1C31AF81FBC1B40001C4258 /* libSoundTouch.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSoundTouch.a; path = ../../../soundtouch/output/Mac/lib/libSoundTouch.a; sourceTree = "<group>"; };
 		A1D1CDBA1FAB473C0027C8AE /* MTVideoTransToGif.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MTVideoTransToGif.cpp; sourceTree = "<group>"; };
 		A1D1CDBB1FAB473C0027C8AE /* MTVideoTransToGif.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTVideoTransToGif.h; sourceTree = "<group>"; };
 		A1E5CB9F1F274AE100A02704 /* libfdk-aac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfdk-aac.a"; path = "../../lib/fdk-aac/lib/libfdk-aac.a"; sourceTree = "<group>"; };
@@ -9380,7 +9383,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A195CBCB1FBB189400F708F9 /* libSoundTouch.dylib in Frameworks */,
+				A1AE0C8B1FBDF932007D82DE /* libjpeg.a in Frameworks */,
+				A1C31AF91FBC1B40001C4258 /* libSoundTouch.a in Frameworks */,
 				A162628B1FB4785E00217831 /* libyuv.a in Frameworks */,
 				A1FC23BD1F277D1000024371 /* AudioToolbox.framework in Frameworks */,
 				A1FC23BA1F277BD200024371 /* libbz2.tbd in Frameworks */,
@@ -9736,6 +9740,8 @@
 		A181BC401EA2142F004861DA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A1AE0C831FBDF932007D82DE /* libjpeg.a */,
+				A1C31AF81FBC1B40001C4258 /* libSoundTouch.a */,
 				A195CBCA1FBB189300F708F9 /* libSoundTouch.dylib */,
 				A175D0111F945D9000A7F5A4 /* libmp3lame.a */,
 				A1FC23BB1F277BEB00024371 /* libobjc.tbd */,
@@ -20182,6 +20188,7 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../../lib/libjpeg/include\"",
 					"\"$(SRCROOT)/../../../soundtouch/output/Mac/include/soundtouch\"",
 					"\"$(SRCROOT)/../../thirdparty/test/libyuv/include\"",
 					"\"$(SRCROOT)/../../lib/ffmpeg/MacOS/include\"",
@@ -20193,6 +20200,7 @@
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../../lib/libjpeg/lib\"",
 					"\"$(SRCROOT)/../../../soundtouch/output/Mac/lib\"",
 					"\"$(SRCROOT)/../../lib/ffmpeg/MacOS/lib\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
@@ -20210,6 +20218,7 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../../lib/libjpeg/include\"",
 					"\"$(SRCROOT)/../../../soundtouch/output/Mac/include/soundtouch\"",
 					"\"$(SRCROOT)/../../thirdparty/test/libyuv/include\"",
 					"\"$(SRCROOT)/../../lib/ffmpeg/MacOS/include\"",
@@ -20221,6 +20230,7 @@
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../../lib/libjpeg/lib\"",
 					"\"$(SRCROOT)/../../../soundtouch/output/Mac/lib\"",
 					"\"$(SRCROOT)/../../lib/ffmpeg/MacOS/lib\"",
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
