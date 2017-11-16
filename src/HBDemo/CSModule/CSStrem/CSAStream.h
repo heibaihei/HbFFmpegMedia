@@ -28,8 +28,6 @@ public:
     
     void setAudioParam(AudioParams* param);
     
-    int setEncoder(const char *CodecName);
-    
     virtual int stop() override;
     
     virtual int release() override;

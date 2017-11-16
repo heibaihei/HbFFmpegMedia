@@ -44,6 +44,14 @@ public:
     void setSpeed(float speed) { mSpeed = speed; }
     float getSpeed() { return mSpeed; }
     
+    /*
+     * @func 通过编码器的名称来配置编码器
+     * @arg codecname 编码器
+     * @return 0 为正常, 其他为异常
+     */
+    int setEncoder(const char *CodecName);
+    int setEncoder(const AVCodecID CodecID);
+    
 protected:
     AVFormatContext* mFmtCtx;
     AVStream*        mStream;

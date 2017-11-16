@@ -293,16 +293,6 @@ void CSAStream::setAudioParam(AudioParams* param) {
         LOGE("Initial fifo error !");
 }
 
-int CSAStream::setEncoder(const char *CodecName) {
-    mCodec = avcodec_find_encoder_by_name(CodecName);
-    if (mCodec == NULL) {
-        LOGE("CSVStream find encoder failed !");
-        return HB_ERROR;
-    }
-    
-    return HB_OK;
-}
-
 int CSAStream::stop() {
     return HB_OK;
 }

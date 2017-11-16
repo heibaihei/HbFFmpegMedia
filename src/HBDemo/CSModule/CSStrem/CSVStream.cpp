@@ -225,16 +225,6 @@ int CSVStream::release() {
     return HB_OK;
 }
 
-int CSVStream::setEncoder(const char *CodecName) {
-    mCodec = avcodec_find_encoder_by_name(CodecName);
-    if (mCodec == NULL) {
-        LOGE("CSVStream find encoder failed !");
-        return HB_ERROR;
-    }
-    
-    return HB_OK;
-}
-
 void CSVStream::setVideoParam(ImageParams* param) {
     mImageParam = param;
 }

@@ -30,13 +30,6 @@ public:
     void setVideoParam(ImageParams* param);
     ImageParams* getVideoParam() { return mImageParam; };
     
-    /*
-    * @func 通过编码器的名称来配置编码器
-    * @arg codecname 编码器
-    * @return 0 为正常, 其他为异常
-    */
-    int setEncoder(const char *CodecName);
-    
     virtual int stop() override;
     
     virtual int release() override;

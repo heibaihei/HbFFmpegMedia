@@ -27,4 +27,24 @@ CSIStream::~CSIStream(){
     
 }
 
+int CSIStream::setEncoder(const char *CodecName) {
+    mCodec = avcodec_find_encoder_by_name(CodecName);
+    if (mCodec == NULL) {
+        LOGE("Stream find encoder failed !");
+        return HB_ERROR;
+    }
+    
+    return HB_OK;
+}
+
+int CSIStream::setEncoder(const AVCodecID CodecID) {
+    mCodec = avcodec_find_encoder(CodecID);
+    if (mCodec == NULL) {
+        LOGE("Stream find encoder failed !");
+        return HB_ERROR;
+    }
+    
+    return HB_OK;
+}
+
 }
