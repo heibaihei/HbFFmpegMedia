@@ -28,7 +28,7 @@ typedef void *(CALLBACK)(void *handle, int stat);
 
 typedef struct ThreadParam_t {
     void *mThreadArgs;        /** 当前线程对应的媒体流参数 */
-                              /** 正常对应: StreamThreadParam */
+                              /** 正常对应: StreamThreadParam、WorkContextParam */
     ThreadStat mStatus;       /** 线程运行状态 */
     CALLBACK mThreadCB;       /** 线程要执行的回调接口 */
 } ThreadParam_t;

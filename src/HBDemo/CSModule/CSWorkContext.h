@@ -43,6 +43,7 @@ typedef struct StreamThreadParam {
     ThreadIPCContext *mQueueIPC;
     
     bool mUpdateFlag;
+    /** 指向当前用于缓冲的 packet 缓冲区 */
     AVPacket *mBufferPacket;
     int64_t mMinPacketPTS;
     
@@ -65,7 +66,10 @@ typedef struct WorkContextParam {
     
     /** 数据输出线程以及对应的通信对象 */
     ThreadContext    *mWorkThread;
+    
     ThreadIPCContext *mWorkIPCCtx;
+    
+    /** 存放与当前线程相关的流参数 */
     std::vector<StreamThreadParam *> mStreamPthreadParamList;
 } WorkContextParam;
 

@@ -160,6 +160,7 @@ void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
         pWriteIpcCtx->condP();
     }
     
+    /** 进入刷帧模式 */
     HBErr = avcodec_send_frame(pCodecCtx, NULL);
     if (HBErr < 0)
         LOGE("Work task send data to codec failed !");
@@ -208,30 +209,33 @@ void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
     WorkContextParam *pWorkContextParam = (WorkContextParam *)(pThreadParams->mThreadArgs);
     AVFormatContext *pOutFmt = pWorkContextParam->mTargetFormatCtx;
     ThreadIPCContext *pWriteIpcCtx = pWorkContextParam->mWorkIPCCtx;
-    ThreadContext *pThreadCtx = pWorkContextParam->mWorkThread;
+    ThreadContext *pCurWorkThreadCtx = pWorkContextParam->mWorkThread;
     
-    if (!pWorkContextParam || !pOutFmt || !pWriteIpcCtx || !pThreadCtx) {
+    if (!pWorkContextParam || !pOutFmt || !pWriteIpcCtx || !pCurWorkThreadCtx) {
         LOGE("Work task write params failed !");
         return nullptr;
     }
     
-    int iStreamParamsQueueSize = (int)pWorkContextParam->mStreamPthreadParamList.size();
-    if (iStreamParamsQueueSize <= 0) {
+    int iStreamThreadParamsSize = (int)pWorkContextParam->mStreamPthreadParamList.size();
+    if (iStreamThreadParamsSize <= 0) {
         LOGE("Work task stream params size invalid !");
         return nullptr;
     }
     
-    StreamThreadParam **streamThreadArrys = new StreamThreadParam*[iStreamParamsQueueSize];
-    FiFoQueue<AVPacket *> **packetQueueArray = new FiFoQueue<AVPacket *> *[iStreamParamsQueueSize];
-    FiFoQueue<AVPacket *> **packetRecyleQueueArray = new FiFoQueue<AVPacket *> *[iStreamParamsQueueSize];
-    if (!streamThreadArrys || !packetQueueArray || !packetRecyleQueueArray) {
-        LOGE("Work task allock run context failed ! <StreamThreadParam:%p> <Packet:%p> <Packet:%p>", streamThreadArrys, packetQueueArray, packetRecyleQueueArray);
+    StreamThreadParam **pStreamThreadParamArrys = new StreamThreadParam*[iStreamThreadParamsSize];
+    FiFoQueue<AVPacket *> **pPacketQueueArray = new FiFoQueue<AVPacket *> *[iStreamThreadParamsSize];
+    FiFoQueue<AVPacket *> **pPacketRecyleQueueArray = new FiFoQueue<AVPacket *> *[iStreamThreadParamsSize];
+
+    if (!pStreamThreadParamArrys || !pPacketQueueArray || !pPacketRecyleQueueArray) {
+        LOGE("Work task allock run context failed ! <StreamThreadParam:%p> <Packet:%p> <Packet:%p>", \
+                        pStreamThreadParamArrys, pPacketQueueArray, pPacketRecyleQueueArray);
         return nullptr;
     }
-    for (int i=0; i<iStreamParamsQueueSize; i++) {
-        streamThreadArrys[i] = pWorkContextParam->mStreamPthreadParamList[i];
-        packetQueueArray[i] = streamThreadArrys[i]->mPacketQueue;
-        packetRecyleQueueArray[i] = streamThreadArrys[i]->mPacketRecycleQueue;
+
+    for (int i=0; i<iStreamThreadParamsSize; i++) {
+        pStreamThreadParamArrys[i] = pWorkContextParam->mStreamPthreadParamList[i];
+        pPacketQueueArray[i] = pStreamThreadParamArrys[i]->mPacketQueue;
+        pPacketRecyleQueueArray[i] = pStreamThreadParamArrys[i]->mPacketRecycleQueue;
     }
     
     bool bIsWrite = false;
@@ -240,11 +244,12 @@ void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
     ThreadStat eThreadState = THREAD_IDLE;
     AVPacket *pPacket = nullptr;
     long iStreamsPacketCnt[8] = {0};
+    
     while (true) {
-        eThreadState = pThreadCtx->getThreadState();
+        eThreadState = pCurWorkThreadCtx->getThreadState();
         if (eThreadState == THREAD_FORCEQUIT) {
-            for (int i=0; i < iStreamParamsQueueSize; i++) {
-                HBErr = clearPacketQueue(packetQueueArray[i]);
+            for (int i=0; i < iStreamThreadParamsSize; i++) {
+                HBErr = clearPacketQueue(pPacketQueueArray[i]);
                 if (HBErr < 0)
                     LOGE("Work stask clear packet queue failed !");
             }
@@ -253,10 +258,10 @@ void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
         
         bIsWrite = false;
         iMinPTS = INT64_MAX;
-        for (int i=0; i<iStreamParamsQueueSize; i++) {
-            if (packetQueueArray[i]->queueLength() > 0) {
+        for (int i=0; i<iStreamThreadParamsSize; i++) {
+            if (pPacketQueueArray[i]->queueLength() > 0) {
                 bIsWrite = true;
-                iQueueLastPTS = streamThreadArrys[i]->mMinPacketPTS;
+                iQueueLastPTS = pStreamThreadParamArrys[i]->mMinPacketPTS;
                 if (iMinPTS > iQueueLastPTS) {
                     iBestPacketIndex = i;
                     iMinPTS = iQueueLastPTS;
@@ -264,25 +269,25 @@ void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
             }
         }
         
-        if (_CheckIsExitThread(streamThreadArrys, iStreamParamsQueueSize) \
+        if (_CheckIsExitThread(pStreamThreadParamArrys, iStreamThreadParamsSize) \
             && eThreadState == THREAD_STOP && !bIsWrite) {
             LOGW("Work task write thread exit !");
             break;
         }
         else if (bIsWrite == false) {
-            if (_CheckIsExitThread(streamThreadArrys, iStreamParamsQueueSize))
+            if (_CheckIsExitThread(pStreamThreadParamArrys, iStreamThreadParamsSize))
                 LOGW("Work task encode thread all exit");
             pWriteIpcCtx->condV();
             continue;
         }
         
-        HBErr = updateQueue(streamThreadArrys[iBestPacketIndex]);
+        HBErr = updateQueue(pStreamThreadParamArrys[iBestPacketIndex]);
         if (HBErr != HB_OK) {
             LOGE("Work task update queue failed !");
             continue;
         }
         
-        pPacket = streamThreadArrys[iBestPacketIndex]->mBufferPacket;
+        pPacket = pStreamThreadParamArrys[iBestPacketIndex]->mBufferPacket;
         if (!pPacket) {
             LOGE("Work task buffer packet is null !");
             continue;
@@ -290,21 +295,22 @@ void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
         iStreamsPacketCnt[pPacket->stream_index]++;
         HBErr = av_interleaved_write_frame(pOutFmt, pPacket);
         if (HBErr < 0) {
-//            av_packet_unref(pPacket);
-            packetRecyleQueueArray[iBestPacketIndex]->push(pPacket);
             LOGE("Work task write data to file error ! %s", makeErrorStr(HBErr));
+            if (pPacketRecyleQueueArray[iBestPacketIndex]->push(pPacket) <= 0)
+                av_packet_free(&pPacket);
             break;
         }
         av_packet_unref(pPacket);
-        packetRecyleQueueArray[iBestPacketIndex]->push(pPacket);
+        if (pPacketRecyleQueueArray[iBestPacketIndex]->push(pPacket) <= 0)
+            av_packet_free(&pPacket);
     }
     
-    if (packetQueueArray)
-        delete []packetQueueArray;
-    if (packetRecyleQueueArray)
-        delete []packetRecyleQueueArray;
-    if (streamThreadArrys)
-        delete []streamThreadArrys;
+    if (pPacketQueueArray)
+        delete []pPacketQueueArray;
+    if (pPacketRecyleQueueArray)
+        delete []pPacketRecyleQueueArray;
+    if (pStreamThreadParamArrys)
+        delete []pStreamThreadParamArrys;
     
     LOGE("Work task write thread exit !");
     return nullptr;
