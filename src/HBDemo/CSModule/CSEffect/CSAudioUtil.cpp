@@ -9,7 +9,7 @@
 #include "CSAudioUtil.h"
 
 #ifndef AUDIO_EFFECT_BUFFER_MAX_SIZE
-#define AUDIO_EFFECT_BUFFER_MAX_SIZE 81920  // 最大缓存数
+#define AUDIO_EFFECT_BUFFER_MAX_SIZE (81920)  // 最大缓存数
 #endif
 
 #ifndef AUDIO_EFFECT_BUFFER_SIZE
@@ -24,7 +24,7 @@ namespace HBMedia {
     
 CSAudioUtil::CSAudioUtil()
 {
-    audioEffectBuf = NULL;
+    mAudioEffectBuffer = NULL;
 }
 
 CSAudioUtil::~CSAudioUtil()
@@ -33,16 +33,16 @@ CSAudioUtil::~CSAudioUtil()
 
 int CSAudioUtil::init()
 {
-    if (audioEffectBuf) {
-        free(audioEffectBuf);
+    if (mAudioEffectBuffer)
+        free(mAudioEffectBuffer);
+    
+    mAudioEffectBuffer = (uint8_t *)malloc(AUDIO_EFFECT_BUFFER_MAX_SIZE);
+    if (mAudioEffectBuffer == NULL) {
+        LOGE("Audio util create effect buffer failed !");
+        return HB_ERROR;
     }
     
-    audioEffectBuf = (uint8_t *)malloc(AUDIO_EFFECT_BUFFER_MAX_SIZE);
-    if (audioEffectBuf == NULL) {
-        return AV_MALLOC_ERR;
-    }
-    
-    return 0;
+    return HB_OK;
 }
 
 int CSAudioUtil::addEffect(CSAudioBaseEffect *audioEffect)
@@ -51,7 +51,7 @@ int CSAudioUtil::addEffect(CSAudioBaseEffect *audioEffect)
         return AV_PARM_ERR;
     }
     
-    audioEffectList.push_back(audioEffect);
+    mAudioDoEffectList.push_back(audioEffect);
     
     return 0;
 }
@@ -67,7 +67,7 @@ int CSAudioUtil::transfer(uint8_t *inData, int inSamples, uint8_t *outData, int 
     CSAudioBaseEffect *audioEffect;
     bool isOutSwitch = false;
     
-    effectCnt = audioEffectList.size();
+    effectCnt = mAudioDoEffectList.size();
     if (effectCnt <= 0) {
         return AV_NOT_FOUND;
     }
@@ -80,14 +80,14 @@ int CSAudioUtil::transfer(uint8_t *inData, int inSamples, uint8_t *outData, int 
     inAudioSamples = inSamples;
     
     if ((effectCnt & 0x01) == 0) {
-        outAudioDataSamples = audioEffectBuf;
+        outAudioDataSamples = mAudioEffectBuffer;
         outAudioSamples = AUDIO_EFFECT_BUFFER_MAX_SIZE;
     } else {
         outAudioDataSamples = outData;
         outAudioSamples = outMaxSamples;
     }
     
-    for (std::vector <CSAudioBaseEffect *>::iterator it = audioEffectList.begin(); it != audioEffectList.end(); it++) {
+    for (std::vector <CSAudioBaseEffect *>::iterator it = mAudioDoEffectList.begin(); it != mAudioDoEffectList.end(); it++) {
         
         audioEffect = *it;
 #if AUDIO_EFFECT_DEBUG
@@ -102,7 +102,7 @@ int CSAudioUtil::transfer(uint8_t *inData, int inSamples, uint8_t *outData, int 
         inAudioSamples = ret;
         
         if (isOutSwitch) {
-            outAudioDataSamples = audioEffectBuf;
+            outAudioDataSamples = mAudioEffectBuffer;
             outAudioSamples = AUDIO_EFFECT_BUFFER_MAX_SIZE;
             isOutSwitch = false;
         } else {
@@ -129,25 +129,25 @@ int CSAudioUtil::flush(uint8_t *outData, int outMaxSamples)
     bool isOutSwitch = false;
     int i;
     
-    effectCnt = audioEffectList.size();
+    effectCnt = mAudioDoEffectList.size();
     if (effectCnt <= 0) {
         return AV_NOT_INIT;
     }
     
-    audioEffect = audioEffectList[0];
+    audioEffect = mAudioDoEffectList[0];
     if (effectCnt == 1) {
         return audioEffect->flush(outData, outMaxSamples);
     }
     
     if ((effectCnt & 0x01) == 0) {
-        inAudioDataSamples = audioEffectBuf;
+        inAudioDataSamples = mAudioEffectBuffer;
         inAudioSamples = AUDIO_EFFECT_BUFFER_MAX_SIZE;
         outAudioDataSamples = outData;
         outAudioSamples = outMaxSamples;
     } else {
         inAudioDataSamples = outData;
         inAudioSamples = outMaxSamples;
-        outAudioDataSamples = audioEffectBuf;
+        outAudioDataSamples = mAudioEffectBuffer;
         outAudioSamples = AUDIO_EFFECT_BUFFER_MAX_SIZE;
     }
     ret = audioEffect->flush(inAudioDataSamples, inAudioSamples);
@@ -157,7 +157,7 @@ int CSAudioUtil::flush(uint8_t *outData, int outMaxSamples)
     inAudioSamples = ret;
     
     for (i=1; i < effectCnt; i++) {
-        audioEffect = audioEffectList[i];
+        audioEffect = mAudioDoEffectList[i];
 #if AUDIO_EFFECT_DEBUG
         printf("Effect: %s\n",audioEffect->getDescripe());
 #endif
@@ -176,7 +176,7 @@ int CSAudioUtil::flush(uint8_t *outData, int outMaxSamples)
             outAudioSamples = outMaxSamples;
             isOutSwitch = false;
         } else {
-            outAudioDataSamples = audioEffectBuf;
+            outAudioDataSamples = mAudioEffectBuffer;
             outAudioSamples = AUDIO_EFFECT_BUFFER_MAX_SIZE;
             isOutSwitch = true;
         }
@@ -192,7 +192,7 @@ int CSAudioUtil::release()
 {
     CSAudioBaseEffect *audioEffect;
     
-    for (std::vector <CSAudioBaseEffect *>::iterator it = audioEffectList.begin(); it != audioEffectList.end(); it++) {
+    for (std::vector <CSAudioBaseEffect *>::iterator it = mAudioDoEffectList.begin(); it != mAudioDoEffectList.end(); it++) {
         audioEffect = *it;
         if (audioEffect) {
             audioEffect->release();
@@ -200,11 +200,11 @@ int CSAudioUtil::release()
         }
     }
     
-    std::vector<CSAudioBaseEffect *>().swap(audioEffectList);
+    std::vector<CSAudioBaseEffect *>().swap(mAudioDoEffectList);
     
-    if (audioEffectBuf) {
-        free(audioEffectBuf);
-        audioEffectBuf = NULL;
+    if (mAudioEffectBuffer) {
+        free(mAudioEffectBuffer);
+        mAudioEffectBuffer = NULL;
     }
     
     return 0;

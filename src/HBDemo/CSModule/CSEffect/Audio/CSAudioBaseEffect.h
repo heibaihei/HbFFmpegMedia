@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "CSDefine.h"
+#include "CSLog.h"
 
 namespace HBMedia {
     /*

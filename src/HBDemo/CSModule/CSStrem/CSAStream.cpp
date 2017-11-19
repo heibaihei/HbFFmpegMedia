@@ -15,6 +15,7 @@
 namespace HBMedia {
     
 CSAStream::CSAStream(){
+    mTimes = 1.0;
     mAudioParam = nullptr;
     mInTotalOfSamples = 0;
     mOutTotalOfSamples = 0;
@@ -118,14 +119,14 @@ int CSAStream::bindOpaque(void *handle) {
         goto BIND_AUDIO_STREAM_END_LABEL;
     }
     
-    if (times - 1.0 > 0.001 || times - 1.0 < -0.001) {
+    if (mTimes - 1.0 > 0.001 || mTimes - 1.0 < -0.001) {
         CSAudioBaseEffect *pAudioEffect = CSAudioEffectFactory::getAudioEffect(CS_AUDIO_TEMPO_PITCH);
         if (pAudioEffect == NULL) {
             LOGE("Get audio effect error!\n");
             goto BIND_AUDIO_STREAM_END_LABEL;
         }
         AudioEffectParam param;
-        param.atempo = times;
+        param.atempo = mTimes;
         pAudioEffect->setEffectParam(&param);
         pAudioEffect->setInParam(&mSrcAudioParams);
         pAudioEffect->init();

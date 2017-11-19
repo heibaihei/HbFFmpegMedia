@@ -36,7 +36,7 @@ public:
 protected:
     
 private:
-    float times;
+    float mTimes;
     int  mFrameBufferSize;
     uint8_t *mSoundDataBuffer;
     CSAudioUtil *mFrameUtils;
@@ -50,6 +50,7 @@ private:
     
     AVFrame     *mSrcFrame;
     AVAudioFifo *mAudioFifo;
+    /** 本身媒体流信息 */
     AudioParams *mAudioParam;
 } CSAStream;
     

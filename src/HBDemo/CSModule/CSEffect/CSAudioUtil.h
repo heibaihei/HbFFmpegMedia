@@ -27,7 +27,7 @@ public:
     /*
      * @func 初始化工具类
      * @arg void
-     * @return 0 为正常, 其他为异常
+     * @return HB_OK 为正常, 其他为异常
      */
     int init();
     
@@ -62,8 +62,8 @@ public:
     
 private:
     
-    std::vector<CSAudioBaseEffect *>audioEffectList;
-    uint8_t *audioEffectBuf;
+    std::vector<CSAudioBaseEffect *>mAudioDoEffectList;
+    uint8_t *mAudioEffectBuffer;
 };
     
 }
