@@ -102,9 +102,9 @@ int  CSTimeline::release(void) {
     return HB_OK;
 }
     
-int CSTimeline::_openOutputFile(const char *filename) {
+int CSTimeline::_ConstructOutputMedia() {
     int HBErr = HB_OK;
-    HBErr = avformat_alloc_output_context2(&mFmtCtx, NULL, NULL, filename);
+    HBErr = avformat_alloc_output_context2(&mFmtCtx, NULL, NULL, mSaveFilePath);
     if (HBErr < 0) {
         LOGE("Timeline alloc ouput avformat context failed ! <%s", makeErrorStr(HBErr));
         return HB_ERROR;
@@ -198,7 +198,7 @@ void CSTimeline::setGlobalSpeed(float speed){
 }
 
 int CSTimeline::_prepareOutMedia() {
-    if (HB_OK != _openOutputFile(mSaveFilePath)) {
+    if (HB_OK != _ConstructOutputMedia()) {
         LOGE("Timeline open file failed !");
         return HB_ERROR;
     }

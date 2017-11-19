@@ -52,3 +52,5 @@ resource/CSModule/100_video_480_480_420p.yuv
 thirdparty/jpeg-9b/.deps
 lib/libjpeg/share
 lib/libjpeg/bin
+proj/FFmpeg/.idea
+proj/FFmpeg/FFmpeg.xcodeproj/project.xcworkspace/xcuserdata/zj-db0519.xcuserdatad

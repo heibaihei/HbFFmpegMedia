@@ -20,6 +20,8 @@
 static void *_audioReadThread(void *arg);
 static void *_videoReadThread(void *arg);
 
+static int _constructTimeline(HBMedia::CSTimeline* pTimeline);
+
 namespace HBMedia {
 
 class MediaListener:public HBMedia::MediaStateListener {
@@ -84,33 +86,11 @@ public:
 }
 void CSModulePlayerDemo() {
     int ret = 0;
-    char *pOutputMediaFile = (char *)(CS_MODULE_RESOURCE_ROOT_PATH"/100_output.mp4");
-    int inWidth = 480, inHeight = 480;
-    int outWidth = 480, outHeight = 480;
-    
-    /** 以输入的左上角坐标为坐标原点 */
-    int cropX = 0, cropY = 0;
-    int cropWidth = outWidth, cropHeight = outHeight;
-    
-    /** 输出媒体参数 */
-    VideoRorate ouputImageRotate = MT_Rotate0;
-    int outputChannels = 2;
-    int outputSampleRate = 44100;
-    AUDIO_SAMPLE_FORMAT outputSampleFmt = CS_SAMPLE_FMT_FLTP;
-    IMAGE_PIX_FORMAT outputImagePixFormat = CS_PIX_FMT_YUV420P;
-    
-    /** 输入媒体参数 */
-    AUDIO_SAMPLE_FORMAT inputSampleFmt = CS_SAMPLE_FMT_S16;
-    int inputChannels = 2;
-    int inputSampleRate = 44100;
-    float crf = 58.0f;
-    IMAGE_PIX_FORMAT inputImagePixFormat = CS_PIX_FMT_YUV420P;
     
     /** 线程信息 */
+    HBMedia::MediaListener mediaPlayerlistener;
     pthread_t audioReadThreadId;
     pthread_t videoReadThreadId;
-    HBMedia::MediaListener mediaPlayerlistener;
-    
     HBMedia::CSTimeline* pTimeline = nullptr;
     HBMedia::CSPlayer::CSPlayer *pMediaPlayer = new HBMedia::CSPlayer::CSPlayer();
     if (!pMediaPlayer) {
@@ -118,45 +98,17 @@ void CSModulePlayerDemo() {
         goto PLAYER_DEMO_EXIT_LABEL;
     }
     
+    /** 初始化 timeline */
     pTimeline = new HBMedia::CSTimeline();
     if (!pTimeline) {
         LOGE("create new media timeline failed !");
         goto PLAYER_DEMO_EXIT_LABEL;
     }
-    
-    pTimeline->setOutputFile(pOutputMediaFile);
-    pTimeline->setGlobalSpeed(1.0f);
-    
-    ImageParams outputImageParam;
-    outputImageParam.mBitRate = 2000000;
-    outputImageParam.mVideoCRF = crf;
-    outputImageParam.mWidth = outWidth;
-    outputImageParam.mHeight = outHeight;
-    outputImageParam.mPixFmt = outputImagePixFormat;
-    outputImageParam.mAlign = 1;
-    outputImageParam.mRotate = ouputImageRotate;
-    pTimeline->setDstImageParam(&outputImageParam);
-    
-    ImageParams inputImageParam;
-    inputImageParam.mWidth = inWidth;
-    inputImageParam.mHeight = inHeight;
-    inputImageParam.mPixFmt = inputImagePixFormat;
-    inputImageParam.mAlign = 1;
-    pTimeline->setSrcImageParam(&inputImageParam);
-    
-    AudioParams outputAudioParams;
-    outputAudioParams.channels = outputChannels;
-    outputAudioParams.pri_sample_fmt = outputSampleFmt;
-    outputAudioParams.sample_rate = outputSampleRate;
-    pTimeline->setTgtAudioParam(&outputAudioParams);
-    
-    AudioParams inputAudioParams;
-    inputAudioParams.channels = inputChannels;
-    inputAudioParams.pri_sample_fmt = inputSampleFmt;
-    inputAudioParams.sample_rate = inputSampleRate;
-    pTimeline->setSrcAudioParam(&inputAudioParams);
-
-    pTimeline->setCropParam(cropX, cropY, cropWidth, cropHeight);
+    if (_constructTimeline(pTimeline) != HB_OK) {
+        LOGE("Construce timeline failed !");
+        delete pTimeline;
+        goto PLAYER_DEMO_EXIT_LABEL;
+    }
     
     pMediaPlayer->setTimeline(pTimeline);
     pMediaPlayer->setStateListener(&mediaPlayerlistener);
@@ -298,4 +250,67 @@ VIDEO_READ_THREAD_EXIT_LABEL:
     
     return NULL;
 }
+
+static int _constructTimeline(HBMedia::CSTimeline* pTimeline) {
+    char *pOutputMediaFile = (char *)(CS_MODULE_RESOURCE_ROOT_PATH"/100_output.mp4");
+    int inWidth = 480, inHeight = 480;
+    int outWidth = 480, outHeight = 480;
+    
+    /** 以输入的左上角坐标为坐标原点 */
+    int cropX = 0, cropY = 0;
+    int cropWidth = outWidth, cropHeight = outHeight;
+    
+    /** 输出媒体参数 */
+    VideoRorate ouputImageRotate = MT_Rotate0;
+    int outputChannels = 2;
+    int outputSampleRate = 44100;
+    AUDIO_SAMPLE_FORMAT outputSampleFmt = CS_SAMPLE_FMT_FLTP;
+    IMAGE_PIX_FORMAT outputImagePixFormat = CS_PIX_FMT_YUV420P;
+    
+    /** 输入媒体参数 */
+    int inputChannels = 2;
+    int inputSampleRate = 44100;
+    float crf = 58.0f;
+    AUDIO_SAMPLE_FORMAT inputSampleFmt = CS_SAMPLE_FMT_S16;
+    IMAGE_PIX_FORMAT inputImagePixFormat = CS_PIX_FMT_YUV420P;
+    
+    ImageParams inputImageParam;
+    inputImageParam.mWidth = inWidth;
+    inputImageParam.mHeight = inHeight;
+    inputImageParam.mPixFmt = inputImagePixFormat;
+    inputImageParam.mAlign = 1;
+    pTimeline->setSrcImageParam(&inputImageParam);
+    
+    AudioParams inputAudioParams;
+    inputAudioParams.channels = inputChannels;
+    inputAudioParams.pri_sample_fmt = inputSampleFmt;
+    inputAudioParams.sample_rate = inputSampleRate;
+    pTimeline->setSrcAudioParam(&inputAudioParams);
+    
+    ImageParams outputImageParam;
+    outputImageParam.mBitRate = 2000000;
+    outputImageParam.mVideoCRF = crf;
+    outputImageParam.mWidth = outWidth;
+    outputImageParam.mHeight = outHeight;
+    outputImageParam.mPixFmt = outputImagePixFormat;
+    outputImageParam.mAlign = 1;
+    outputImageParam.mRotate = ouputImageRotate;
+    pTimeline->setDstImageParam(&outputImageParam);
+    
+    AudioParams outputAudioParams;
+    outputAudioParams.channels = outputChannels;
+    outputAudioParams.pri_sample_fmt = outputSampleFmt;
+    outputAudioParams.sample_rate = outputSampleRate;
+    pTimeline->setTgtAudioParam(&outputAudioParams);
+    
+    pTimeline->setCropParam(cropX, cropY, cropWidth, cropHeight);
+    
+    pTimeline->setOutputFile(pOutputMediaFile);
+    pTimeline->setGlobalSpeed(1.0f);
+    /****************** */
+    
+    return HB_OK;
+}
+
+
 

@@ -71,7 +71,7 @@ int CSVideoScaleEffect::setOutParam(ImageParams *param)
     
     scaleParam.outWidth = param->mWidth;
     scaleParam.outHeight = param->mHeight;
-    videoOutSize = param->mDataSize;
+    videoOutSize = param->mPreImagePixBufferSize;
     
     
     return 0;

@@ -61,7 +61,7 @@ int imageParamInit(ImageParams* param) {
     param->mHeight = 0;
     param->mPixFmt = CS_PIX_FMT_NONE;
     param->mFormatType = NULL;
-    param->mDataSize = 0;
+    param->mPreImagePixBufferSize = 0;
     return HB_OK;
 }
 

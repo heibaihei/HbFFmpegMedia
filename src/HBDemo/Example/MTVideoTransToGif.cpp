@@ -43,7 +43,7 @@ void ImageParamsInitial(ImageParams *pParams) {
         pParams->mHeight = 0;
         pParams->mFormatType = nullptr;
         pParams->mAlign = 1;
-        pParams->mDataSize = 0;
+        pParams->mPreImagePixBufferSize = 0;
         pParams->mBitRate = 0;
         pParams->mRotate = 0;
         pParams->mFrameRate = 0.0;
@@ -407,7 +407,7 @@ int VideoFormatTranser::_InputMediaInitial() {
     mInputImageParams.mHeight = pVideoStream->codecpar->height;
     mInputImageParams.mPixFmt = getImageExternFormat((AVPixelFormat)(pVideoStream->codecpar->format));
     mInputImageParams.mFrameRate = pVideoStream->avg_frame_rate.num * 1.0 / pVideoStream->avg_frame_rate.den;
-    mInputImageParams.mDataSize = av_image_get_buffer_size((AVPixelFormat)(pVideoStream->codecpar->format), \
+    mInputImageParams.mPreImagePixBufferSize = av_image_get_buffer_size((AVPixelFormat)(pVideoStream->codecpar->format), \
                                        mInputImageParams.mWidth, mInputImageParams.mHeight, mInputImageParams.mAlign);
     
     av_dump_format(pFormatCtx, mPMediaDecoder->mVideoStreamIndex, mInputMediaFile, 0);
@@ -545,7 +545,7 @@ int VideoFormatTranser::_OutputMediaInitial() {
     mOutputImageParams.mHeight = pVideoStream->codecpar->height;
     mOutputImageParams.mPixFmt = getImageExternFormat((AVPixelFormat)(pVideoStream->codecpar->format));
     mOutputImageParams.mFrameRate = pVideoStream->avg_frame_rate.num * 1.0 / pVideoStream->avg_frame_rate.den;
-    mOutputImageParams.mDataSize = av_image_get_buffer_size((AVPixelFormat)(pVideoStream->codecpar->format), \
+    mOutputImageParams.mPreImagePixBufferSize = av_image_get_buffer_size((AVPixelFormat)(pVideoStream->codecpar->format), \
                                       mOutputImageParams.mWidth, mOutputImageParams.mHeight, mOutputImageParams.mAlign);
     av_dump_format(pFormatCtx, mPMediaEncoder->mVideoStreamIndex, mOutputMediaFile, 1);
     return HB_OK;

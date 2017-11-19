@@ -20,6 +20,7 @@ CSVStream::CSVStream(){
     mImageParam = nullptr;
     mCodecID = DEFAULT_VIDEO_CODEC_ID;
     mQueueFrameNums = DEFAULT_MAX_FRAME_QUEUE_SIZE;
+    mStreamType = CS_STREAM_TYPE_VIDEO;
 }
 
 CSVStream::~CSVStream(){
@@ -30,7 +31,7 @@ void CSVStream::EchoStreamInfo() {
 }
 
 int CSVStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
-    long iImagePixBufferSize = mImageParam->mDataSize;
+    long iImagePixBufferSize = mImageParam->mPreImagePixBufferSize;
     FiFoQueue<AVFrame*> *frameQueue = mStreamThreadParam->mFrameQueue;
     FiFoQueue<AVFrame*> *frameRecycleQueue = mStreamThreadParam->mFrameRecycleQueue;
     ThreadIPCContext *pEncodeIpcCtx = mStreamThreadParam->mEncodeIPC;

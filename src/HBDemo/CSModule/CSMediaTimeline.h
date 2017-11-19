@@ -108,11 +108,10 @@ protected:
     int _prepareOutMedia();
     
     /**
-     * @func open 打开文件
-     * @param filename 文件名
+     * @func open 打开输出媒体文件
      * @return HB_OK 为正常, HB_ERROR 为异常
      */
-    int _openOutputFile(const char *filename);
+    int _ConstructOutputMedia();
 private:
     /** 保存模式下使用到的参数: */
     /** 输出文件媒体格式, 在 Prepare 时对该成员进行初始化 */
@@ -122,17 +121,13 @@ private:
     std::vector<CSIStream *> mStreamsList;
     
     float mGlobalSpeed;
-    
-    /** 预览模式下使用到的参数： */
-    
+
     /** 公共参数： */
     CSWorkContext* mWorkCtx;
     AudioParams    mSrcAudioParams;
     ImageParams    mSrcImageParams;
-    
     AudioParams    mTgtAudioParams;
     ImageParams    mTgtImageParams;
-    
     CropParam      mCropParms;
 } CSTimeline;
     

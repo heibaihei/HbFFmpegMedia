@@ -60,15 +60,15 @@ int CSPicture::prepare() {
     }
     
     /** 计算输入输出的图像空间 */
-    mSrcPicParam.mDataSize = av_image_get_buffer_size(getImageInnerFormat(mSrcPicParam.mPixFmt), mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
-    mTrgPicParam.mDataSize = av_image_get_buffer_size(getImageInnerFormat(mTrgPicParam.mPixFmt), mTrgPicParam.mWidth, mTrgPicParam.mHeight, mTrgPicParam.mAlign);
-    if (!mSrcPicParam.mDataSize || !mTrgPicParam.mDataSize) {
-        LOGE("Get picture per frame sizes failed, In:%d, Out:%d", mSrcPicParam.mDataSize, mTrgPicParam.mDataSize);
+    mSrcPicParam.mPreImagePixBufferSize = av_image_get_buffer_size(getImageInnerFormat(mSrcPicParam.mPixFmt), mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
+    mTrgPicParam.mPreImagePixBufferSize = av_image_get_buffer_size(getImageInnerFormat(mTrgPicParam.mPixFmt), mTrgPicParam.mWidth, mTrgPicParam.mHeight, mTrgPicParam.mAlign);
+    if (!mSrcPicParam.mPreImagePixBufferSize || !mTrgPicParam.mPreImagePixBufferSize) {
+        LOGE("Get picture per frame sizes failed, In:%d, Out:%d", mSrcPicParam.mPreImagePixBufferSize, mTrgPicParam.mPreImagePixBufferSize);
         return HB_ERROR;
     }
     
-    mInDataBuffer = (uint8_t *)av_mallocz(mSrcPicParam.mDataSize);
-    mOutDataBuffer = (uint8_t *)av_mallocz(mTrgPicParam.mDataSize);
+    mInDataBuffer = (uint8_t *)av_mallocz(mSrcPicParam.mPreImagePixBufferSize);
+    mOutDataBuffer = (uint8_t *)av_mallocz(mTrgPicParam.mPreImagePixBufferSize);
     if (!mInDataBuffer || !mOutDataBuffer) {
         LOGE("Malloc picture room failed, In:%p, Out:%p", mInDataBuffer, mOutDataBuffer);
         return HB_ERROR;
@@ -334,7 +334,7 @@ int  CSPicture::sendImageData(uint8_t** pData, int* pDataSizes) {
                     return HB_ERROR;
                 }
                 
-                if (fwrite(mOutDataBuffer, mTrgPicParam.mDataSize, 1, mTrgPicFileHandle) <= 0) {
+                if (fwrite(mOutDataBuffer, mTrgPicParam.mPreImagePixBufferSize, 1, mTrgPicFileHandle) <= 0) {
                     LOGE("Write picture data failed !");
                     return HB_ERROR;
                 }
@@ -383,7 +383,7 @@ int  CSPicture::receiveImageData(uint8_t** pData, int* pDataSizes) {
                     goto READ_PIC_DATA_END_LABEL;
                 }
                 
-                if (fread(mInDataBuffer, 1, mSrcPicParam.mDataSize, mSrcPicFileHandle) <= 0) {
+                if (fread(mInDataBuffer, 1, mSrcPicParam.mPreImagePixBufferSize, mSrcPicFileHandle) <= 0) {
                     if (feof(mSrcPicFileHandle))
                         HbErr = HB_EOF;
                     else
@@ -411,7 +411,7 @@ int  CSPicture::receiveImageData(uint8_t** pData, int* pDataSizes) {
     }
     
     *pData = mInDataBuffer;
-    *pDataSizes = mSrcPicParam.mDataSize;
+    *pDataSizes = mSrcPicParam.mPreImagePixBufferSize;
     return HB_OK;
     
 READ_PIC_DATA_END_LABEL:
@@ -525,7 +525,7 @@ int  CSPicture::pictureSwscale(uint8_t** pData, int* pDataSizes) {
     }
     else {
         *pData = mOutDataBuffer;
-        *pDataSizes = mTrgPicParam.mDataSize;
+        *pDataSizes = mTrgPicParam.mPreImagePixBufferSize;
     }
 
     if (pictureConvertCtx) {
@@ -615,7 +615,7 @@ void CSPicture::_EchoPictureMediaInfo() {
         LOGI(" width:%f", mSrcPicParam.mWidth);
         LOGI(" height:%f", mSrcPicParam.mHeight);
         LOGI(" Align:%s", (mSrcPicParam.mAlign == 1 ? "Yes":"No"));
-        LOGI(" Per image size:%d", mSrcPicParam.mDataSize);
+        LOGI(" Per image size:%d", mSrcPicParam.mPreImagePixBufferSize);
         LOGI("<<< =================================================\r\n");
     }
     
@@ -630,7 +630,7 @@ void CSPicture::_EchoPictureMediaInfo() {
         LOGI(" width:%f", mTrgPicParam.mWidth);
         LOGI(" height:%f", mTrgPicParam.mHeight);
         LOGI(" Align:%s", (mTrgPicParam.mAlign == 1 ? "Yes":"No"));
-        LOGI(" Per image size:%d", mTrgPicParam.mDataSize);
+        LOGI(" Per image size:%d", mTrgPicParam.mPreImagePixBufferSize);
         LOGI("<<< =================================================\r\n");
     }
     
@@ -674,7 +674,7 @@ int  CSPicture::pictureDecode(uint8_t** pData, int* pDataSizes) {
                 break;
             }
             
-            av_image_copy_to_buffer(mInDataBuffer, mSrcPicParam.mDataSize, pNewFrame->data, pNewFrame->linesize, getImageInnerFormat(mSrcPicParam.mPixFmt), mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
+            av_image_copy_to_buffer(mInDataBuffer, mSrcPicParam.mPreImagePixBufferSize, pNewFrame->data, pNewFrame->linesize, getImageInnerFormat(mSrcPicParam.mPixFmt), mSrcPicParam.mWidth, mSrcPicParam.mHeight, mSrcPicParam.mAlign);
             
             *pData = mInDataBuffer;
             av_frame_unref(pNewFrame);

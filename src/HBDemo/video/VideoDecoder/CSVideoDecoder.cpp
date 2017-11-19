@@ -191,7 +191,7 @@ int  CSVideoDecoder::selectVideoFrame() {
                 HBError = avcodec_receive_frame(mPInputVideoCodecCtx, pNewFrame);
                 if (HBError == 0) {
                     
-                    if (videoDoSwscale(pNewFrame->data, &(mSrcVideoParams.mDataSize)) != HB_OK) {
+                    if (videoDoSwscale(pNewFrame->data, &(mSrcVideoParams.mPreImagePixBufferSize)) != HB_OK) {
                         LOGE("Video do swscale failed !");
                         av_frame_unref(pNewFrame);
                         return HB_ERROR;
@@ -324,7 +324,7 @@ int CSVideoDecoder::videoDecoderOpen() {
     packet_queue_put_flush_pkt(&mFrameCacheList);
     
     /** 初始化原视频参数 : mSrcVideoParams */
-    mSrcVideoParams.mDataSize = av_image_get_buffer_size(getImageInnerFormat(mSrcVideoParams.mPixFmt), \
+    mSrcVideoParams.mPreImagePixBufferSize = av_image_get_buffer_size(getImageInnerFormat(mSrcVideoParams.mPixFmt), \
                                                          mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, mSrcVideoParams.mAlign);
     return HB_OK;
 }

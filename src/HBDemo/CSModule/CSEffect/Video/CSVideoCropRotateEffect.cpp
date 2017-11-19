@@ -49,7 +49,7 @@ int CSVideoCropRotateEffect::setInParam(ImageParams *param)
     inVideoParam.mWidth = param->mWidth;
     inVideoParam.mHeight = param->mHeight;
     inVideoParam.mPixFmt = param->mPixFmt;
-    inVideoParam.mDataSize = param->mDataSize;
+    inVideoParam.mPreImagePixBufferSize = param->mPreImagePixBufferSize;
     
     switch (param->mPixFmt) {
         case CS_PIX_FMT_NV21:
@@ -88,7 +88,7 @@ int CSVideoCropRotateEffect::setOutParam(ImageParams *param)
     outVideoParam.mWidth = param->mWidth;
     outVideoParam.mHeight = param->mHeight;
     outVideoParam.mPixFmt = param->mPixFmt;
-    outVideoParam.mDataSize = param->mDataSize;
+    outVideoParam.mPreImagePixBufferSize = param->mPreImagePixBufferSize;
     outVideoParam.mRotate = param->mRotate;
     
     return 0;
@@ -143,7 +143,7 @@ int CSVideoCropRotateEffect::init()
 
 size_t CSVideoCropRotateEffect::getBufSize()
 {
-    return outVideoParam.mDataSize;
+    return outVideoParam.mPreImagePixBufferSize;
 }
 
 /*
@@ -181,7 +181,7 @@ size_t CSVideoCropRotateEffect::transfer(uint8_t *inData, size_t inSize, uint8_t
         return AV_TRANSFER_ERR;
     }
     
-    ret = outVideoParam.mDataSize;
+    ret = outVideoParam.mPreImagePixBufferSize;
     
     return ret;
 }

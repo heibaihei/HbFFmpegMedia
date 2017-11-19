@@ -19,6 +19,7 @@ CSAStream::CSAStream(){
     mInTotalOfSamples = 0;
     mOutTotalOfSamples = 0;
     mOutTotalOfFrame = 0;
+    mStreamType = CS_STREAM_TYPE_AUDIO;
 }
 
 CSAStream::~CSAStream(){

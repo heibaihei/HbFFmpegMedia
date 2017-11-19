@@ -161,7 +161,7 @@ typedef struct _ImageParams {
     char *mFormatType;
     int   mAlign;
     /** 对应像素格式下，每个帧的空间大小 */
-    int   mDataSize;
+    int   mPreImagePixBufferSize;
     int64_t   mBitRate;
     float  mVideoCRF;
     float mFrameRate;
