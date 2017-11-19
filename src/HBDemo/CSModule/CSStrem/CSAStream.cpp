@@ -41,6 +41,7 @@ int CSAStream::bindOpaque(void *handle) {
         LOGE("Audio stream create stream pthread params failed !");
         goto BIND_AUDIO_STREAM_END_LABEL;
     }
+    
     HBErr = initialStreamThreadParams(mStreamThreadParam);
     if (HBErr != HB_OK) {
         LOGE("Initial stream thread params failed !");
@@ -73,17 +74,17 @@ int CSAStream::bindOpaque(void *handle) {
     }
     
     mCodecCtx->channels = mAudioParam->channels;
+    mCodecCtx->channel_layout = av_get_default_channel_layout(mCodecCtx->channels);
     mCodecCtx->bit_rate = mAudioParam->mbitRate;
     mCodecCtx->sample_fmt = getAudioInnerFormat(mAudioParam->pri_sample_fmt);
-    mCodecCtx->channel_layout = av_get_default_channel_layout(mAudioParam->channels);
     mCodecCtx->sample_rate = mAudioParam->sample_rate;
     
     if (mFmtCtx->oformat->flags &AVFMT_GLOBALHEADER) {
         mCodecCtx->flags |= CODEC_FLAG_GLOBAL_HEADER;
     }
     HBErr = avcodec_open2(mCodecCtx, mCodec, NULL);
-    if (!HBErr) {
-        LOGE("Audio codec context alloc failed !");
+    if (HBErr != 0) {
+        LOGE("Audio codec context alloc failed, %s!", av_err2str(HBErr));
         goto BIND_AUDIO_STREAM_END_LABEL;
     }
     
@@ -93,10 +94,12 @@ int CSAStream::bindOpaque(void *handle) {
         goto BIND_AUDIO_STREAM_END_LABEL;
     }
     
-    mStreamThreadParam->mCodecCtx = mCodecCtx;
     mStreamThreadParam->mTimeBase = mStream->time_base;
-    mFrameBufferSize = mCodecCtx->frame_size;
+    mStreamThreadParam->mCodecCtx = mCodecCtx;
     
+    mAudioParam->frame_size = mCodecCtx->frame_size;
+    mFrameBufferSize = mCodecCtx->frame_size;
+
     mSoundDataBuffer = (uint8_t *)av_malloc(CS_RECORD_AUDIO_BUFFER);
     if (mSoundDataBuffer == NULL) {
         LOGE("Alloc audio data error!\n");

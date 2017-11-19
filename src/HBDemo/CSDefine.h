@@ -174,8 +174,11 @@ typedef struct _AudioParams {
     int channels;
     int64_t channel_layout;
     AUDIO_SAMPLE_FORMAT pri_sample_fmt;
-    int frame_size;
+    
+    /** frame_size & bytes_per_sec 使用意义待定 */
+    int frame_size; /** 对应编码格式一帧有多少个samples */
     int bytes_per_sec;
+    
     long mbitRate;
     int   mAlign;
 } AudioParams;

@@ -20,6 +20,7 @@
 namespace HBMedia {
     
 typedef class CSIStream {
+    friend class CSTimeline;
 public:
     CSIStream();
     virtual ~CSIStream();
@@ -62,6 +63,7 @@ protected:
     float       mSpeed;
     STREAM_TYPE mStreamType;
     int mStreamIndex;
+    /** 当前流的媒体信息，用于线程间通信使用 */
     StreamThreadParam* mStreamThreadParam;
     ThreadIPCContext * mThreadIPCCtx;
     AVFrame     *mSrcFrame;

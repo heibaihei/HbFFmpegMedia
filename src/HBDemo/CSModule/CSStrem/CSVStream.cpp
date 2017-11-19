@@ -125,7 +125,7 @@ int CSVStream::bindOpaque(void *handle) {
         goto BIND_VIDEO_STREAM_END_LABEL;
     }
     
-    /** 默认视频流时间基采用 {1, 90000} */
+    /** 默认视频流时间基采用 {1, 90000} [常规做法]*/
     mStream->time_base.num = 1;
     mStream->time_base.den = 90000;
     
@@ -137,10 +137,11 @@ int CSVStream::bindOpaque(void *handle) {
         LOGE("Video codec context alloc failed !");
         goto BIND_VIDEO_STREAM_END_LABEL;
     }
+    mCodecCtx->codec_id = mCodec->id;
+    mCodecCtx->codec_type = mCodec->type;
+    mCodecCtx->pix_fmt = getImageInnerFormat(mImageParam->mPixFmt);
     mCodecCtx->width = mImageParam->mWidth;
     mCodecCtx->height = mImageParam->mHeight;
-    mCodecCtx->pix_fmt = getImageInnerFormat(mImageParam->mPixFmt);
-    mCodecCtx->codec_id = mCodec->id;
     mCodecCtx->gop_size = 250;
     mCodecCtx->framerate.den = 30;
     mCodecCtx->framerate.num = 1;
@@ -154,7 +155,6 @@ int CSVStream::bindOpaque(void *handle) {
     if  (mFmtCtx->oformat->flags & AVFMT_GLOBALHEADER)
         mCodecCtx->flags |= CODEC_FLAG_GLOBAL_HEADER;
     
-    
     av_dict_set(&opts, "profile", "baseline", 0);
     
     if (mCodecCtx->codec_id == AV_CODEC_ID_H264) {
@@ -164,7 +164,7 @@ int CSVStream::bindOpaque(void *handle) {
     }
     av_dict_set(&opts, "threads", "auto", 0);
     HBErr = avcodec_open2(mCodecCtx, mCodec, &opts);
-    if (HBErr < 0) {
+    if (HBErr != 0) {
         LOGE("Video stream codec open failed !<%s>", makeErrorStr(HBErr));
         goto BIND_VIDEO_STREAM_END_LABEL;
     }

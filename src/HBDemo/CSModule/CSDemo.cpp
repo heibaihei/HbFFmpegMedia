@@ -263,7 +263,7 @@ static int _constructTimeline(HBMedia::CSTimeline* pTimeline) {
     /** 输出媒体参数 */
     VideoRorate ouputImageRotate = MT_Rotate0;
     int outputChannels = 2;
-    int outputSampleRate = 44100;
+    int outputSampleRate = 48000;
     AUDIO_SAMPLE_FORMAT outputSampleFmt = CS_SAMPLE_FMT_FLTP;
     IMAGE_PIX_FORMAT outputImagePixFormat = CS_PIX_FMT_YUV420P;
     
@@ -283,6 +283,7 @@ static int _constructTimeline(HBMedia::CSTimeline* pTimeline) {
     
     AudioParams inputAudioParams;
     inputAudioParams.channels = inputChannels;
+    inputAudioParams.channel_layout = av_get_default_channel_layout(inputAudioParams.channels);
     inputAudioParams.pri_sample_fmt = inputSampleFmt;
     inputAudioParams.sample_rate = inputSampleRate;
     pTimeline->setSrcAudioParam(&inputAudioParams);
@@ -299,6 +300,7 @@ static int _constructTimeline(HBMedia::CSTimeline* pTimeline) {
     
     AudioParams outputAudioParams;
     outputAudioParams.channels = outputChannels;
+    outputAudioParams.channel_layout = av_get_default_channel_layout(outputAudioParams.channels);
     outputAudioParams.pri_sample_fmt = outputSampleFmt;
     outputAudioParams.sample_rate = outputSampleRate;
     pTimeline->setTgtAudioParam(&outputAudioParams);

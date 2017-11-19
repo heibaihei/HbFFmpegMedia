@@ -101,7 +101,19 @@ int  CSTimeline::release(void) {
     std::vector<CSIStream*>().swap(mStreamsList);
     return HB_OK;
 }
-    
+
+int CSTimeline::_getOutputSpecialStreamIndex(STREAM_TYPE streamType) {
+
+    CSIStream *pStream = nullptr;
+    std::vector<CSIStream *>::iterator pCurIteratpr = mStreamsList.begin();
+    for (pCurIteratpr = mStreamsList.begin(); pCurIteratpr != mStreamsList.end(); pCurIteratpr++) {
+        pStream = *pCurIteratpr;
+        if (pStream->mStreamType == streamType)
+            return pStream->mStreamIndex;
+    }
+    return 0;
+}
+
 int CSTimeline::_ConstructOutputMedia() {
     int HBErr = HB_OK;
     HBErr = avformat_alloc_output_context2(&mFmtCtx, NULL, NULL, mSaveFilePath);
@@ -204,6 +216,8 @@ int CSTimeline::_prepareOutMedia() {
     }
     
     /** TODO:此处可以改成，根据外部配置，设置添加媒体流的方式实现 */
+    mTgtImageParams.mPreImagePixBufferSize = av_image_get_buffer_size(getImageInnerFormat(mTgtImageParams.mPixFmt), \
+                      mTgtImageParams.mWidth, mTgtImageParams.mHeight, mTgtImageParams.mAlign);
     CSIStream* pBaseStream = CSStreamFactory::CreateMediaStream(CS_STREAM_TYPE_VIDEO);
     if (pBaseStream) {
         CSVStream* pVideoStream = (CSVStream *)pBaseStream;
@@ -218,11 +232,13 @@ int CSTimeline::_prepareOutMedia() {
         }
     }
     
+    if (mTgtAudioParams.mbitRate <= 0)
+        mTgtAudioParams.mbitRate = 96000;
     pBaseStream = CSStreamFactory::CreateMediaStream(CS_STREAM_TYPE_AUDIO);
     if (pBaseStream) {
         CSAStream* pAudioStream = (CSAStream*)pBaseStream;
         pAudioStream->setAudioParam(&mTgtAudioParams);
-        if (HB_OK != pAudioStream->setEncoder("libfdk_aac")) {
+        if (HB_OK != pAudioStream->setEncoder(AV_CODEC_ID_AAC)) {/** "libfdk_aac" */
             LOGE("Timeline set audio stream encoder failed !");
             return HB_ERROR;
         }

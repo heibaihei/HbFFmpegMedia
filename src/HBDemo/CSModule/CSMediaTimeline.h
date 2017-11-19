@@ -112,6 +112,13 @@ protected:
      * @return HB_OK 为正常, HB_ERROR 为异常
      */
     int _ConstructOutputMedia();
+    
+    /**
+     *  @func _getOutputSpecialStreamIndex
+     *  @return 根据传入的媒体类型返回对应的媒体流在输出媒体中的流索引
+     */
+    int _getOutputSpecialStreamIndex(STREAM_TYPE streamType);
+    
 private:
     /** 保存模式下使用到的参数: */
     /** 输出文件媒体格式, 在 Prepare 时对该成员进行初始化 */
@@ -126,6 +133,8 @@ private:
     CSWorkContext* mWorkCtx;
     AudioParams    mSrcAudioParams;
     ImageParams    mSrcImageParams;
+    
+    /** 输出的多媒体信息 */
     AudioParams    mTgtAudioParams;
     ImageParams    mTgtImageParams;
     CropParam      mCropParms;
