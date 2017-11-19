@@ -82,7 +82,7 @@ int CSVStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
     pBufferFrame->pts = (1/mSpeed) * av_rescale_q(TimeStamp*1000, AV_TIME_BASE_Q, mStream->time_base);
     
     int HBErr = frameQueue->push(pBufferFrame);
-    if (HBErr < 0)
+    if (HBErr <= 0)
         LOGE("Video stream push raw data failed !");
     
     return HBErr;
