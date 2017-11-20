@@ -70,8 +70,7 @@ void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
         iFrameQueueLen = pFrameQueue->queueLength();
         if (iFrameQueueLen > 0) {
             int queueleft = pFrameQueue->queueLeft();
-            pTargetFrame = pFrameQueue->get();
-            if (pTargetFrame == NULL) {
+            if (!(pTargetFrame = pFrameQueue->get())) {
                 LOGV("Get frame error!\n");
                 continue;
             }
@@ -84,8 +83,7 @@ void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
                 }
                 else {
                     iDropFrameCnt++;
-                    HBErr = pFrameRecycleQueue->push(pTargetFrame);
-                    if (HBErr <= 0) {
+                    if ((pFrameRecycleQueue->push(pTargetFrame)) <= 0) {
                         av_frame_free(&pTargetFrame);
                         LOGE("Work task frame recycle queue push frame failed !");
                     }
@@ -108,14 +106,13 @@ void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
         HBErr = avcodec_send_frame(pCodecCtx, pTargetFrame);
         if (HBErr < 0) {
             LOGE("Work task send data co codec context failed, %s !", av_err2str(HBErr));
-            HBErr = pPacketRecycleQueue->push(pPacket);
-            if (HBErr <= 0)
+            if (pPacket && ((pPacketRecycleQueue->push(pPacket)) <= 0))
                 av_packet_free(&pPacket);
             break;
         }
         
         if (!(pPacketRecycleQueue && (pPacket = pPacketRecycleQueue->get()))) {
-            if ((pPacket = av_packet_alloc()) == nullptr) {
+            if (!(pPacket = av_packet_alloc())) {
                 LOGE("Work task alloc packet failed !");
                 break;
             }
@@ -134,13 +131,13 @@ void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
         }
         
         /** 得到编码好的数据包，计算当前得到的数据包的: PTS 时间 */
-        pStreamThreadParam->mMinPacketPTS = av_rescale_q(pTargetFrame->pts, pStreamThreadParam->mTimeBase, AV_TIME_BASE_Q);
-        LOGI("Work task stream-%d, PTS:%lld frame queue length:%d, left:%d", iStreamIndex, \
+        pStreamThreadParam->mMinPacketPTS = av_rescale_q(pTargetFrame->pts, \
+                                    pStreamThreadParam->mTimeBase, AV_TIME_BASE_Q);
+        LOGI("Work task stream.index:%d, frame.pts:%lld, raw.frames:%d, empty.frames:%d", iStreamIndex, \
              pStreamThreadParam->mMinPacketPTS, pFrameQueue->queueLength(),pFrameQueue->queueLeft());
         
-        HBErr = pFrameRecycleQueue->push(pTargetFrame);
-        if (HBErr <= 0) {
-            LOGW("Work task push frame to frame queue failed !");
+        if ((pFrameRecycleQueue->push(pTargetFrame)) <= 0) {
+            LOGW("Work task push a empty frame to recycle queue failed !");
             av_freep(&pTargetFrame->opaque);
             av_frame_free(&pTargetFrame);
         }
@@ -148,16 +145,17 @@ void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
         pPacket->stream_index = iStreamIndex;
         gettimeofday(&end, NULL);
         
-        HBErr = pPacketQueue->push(pPacket);
-        if (HBErr <= 0) {
+        if ((pPacketQueue->push(pPacket)) <= 0) {
             av_packet_free(&pPacket);
             LOGE("Work task push a packet to queue error, left:%d !", pPacketQueue->queueLeft());
         }
         
+        LOGD("[Huangcl - test] >>> push a new video packet");
         pWriteIpcCtx->condP();
     }
     
     /** 进入刷帧模式 */
+    LOGE("Work task beging flushing encoder codec buffer ...");
     HBErr = avcodec_send_frame(pCodecCtx, NULL);
     if (HBErr < 0)
         LOGE("Work task send data to codec failed !");
@@ -246,8 +244,7 @@ void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
         eThreadState = pCurWorkThreadCtx->getThreadState();
         if (eThreadState == THREAD_FORCEQUIT) {
             for (int i=0; i < iStreamThreadParamsSize; i++) {
-                HBErr = clearPacketQueue(pPacketQueueArray[i]);
-                if (HBErr < 0)
+                if (clearPacketQueue(pPacketQueueArray[i]) < 0)
                     LOGE("Work stask clear packet queue failed !");
             }
             break;
@@ -282,28 +279,28 @@ void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
             continue;
         }
         
-        HBErr = updateQueue(pStreamThreadParamArrys[iBestPacketIndex]);
-        if (HBErr != HB_OK) {
+        if ((updateQueue(pStreamThreadParamArrys[iBestPacketIndex])) != HB_OK) {
             LOGE("Work task update queue failed !");
             continue;
         }
         
-        pPacket = pStreamThreadParamArrys[iBestPacketIndex]->mBufferPacket;
-        if (!pPacket) {
+        if (!(pPacket = pStreamThreadParamArrys[iBestPacketIndex]->mBufferPacket)) {
             LOGE("Work task buffer packet is null !");
             continue;
         }
+        
         iStreamsPacketCnt[pPacket->stream_index]++;
-        HBErr = av_interleaved_write_frame(pOutFmt, pPacket);
-        if (HBErr < 0) {
+        if ((av_interleaved_write_frame(pOutFmt, pPacket)) != 0) {
             LOGE("Work task write data to file error ! %s", makeErrorStr(HBErr));
             if (pPacketRecyleQueueArray[iBestPacketIndex]->push(pPacket) <= 0)
                 av_packet_free(&pPacket);
             break;
         }
+        /** 缓冲 packet 数据节点 */
         av_packet_unref(pPacket);
-        if (pPacketRecyleQueueArray[iBestPacketIndex]->push(pPacket) <= 0)
+        if (pPacketRecyleQueueArray[iBestPacketIndex]->push(pPacket) <= 0) {
             av_packet_free(&pPacket);
+        }
     }
     
     if (pPacketQueueArray)

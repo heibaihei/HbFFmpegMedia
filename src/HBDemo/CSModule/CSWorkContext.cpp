@@ -156,27 +156,28 @@ int CSWorkContext::pushStream(CSIStream* pStream) {
     return HB_OK;
 }
 
-int updateQueue(StreamThreadParam *streamParam) {
-    if (!streamParam) {
+int updateQueue(StreamThreadParam *pStreamParam) {
+    if (!pStreamParam) {
         LOGE("Updata stream packet queue failed !");
         return HB_ERROR;
     }
     
     AVPacket *pPacket = nullptr;
-    FiFoQueue<AVPacket *> *pPacketQueue = streamParam->mPacketQueue;
-    streamParam->mUpdateFlag = false;
-    if (pPacketQueue->queueLength() == 0)
+    FiFoQueue<AVPacket *> *pPacketQueue = pStreamParam->mPacketQueue;
+    pStreamParam->mUpdateFlag = false;
+    if (pPacketQueue->queueLength() <= 0) {
+        LOGI("Work task get packet queue failed !");
         return HB_ERROR;
+    }
     
-    pPacket = pPacketQueue->get();
-    if (!pPacket) {
-        streamParam->mBufferPacket = nullptr;
+    if (!(pPacket = pPacketQueue->get())) {
+        pStreamParam->mBufferPacket = nullptr;
         LOGE("Update queue buffer packet is null !");
         return HB_ERROR;
     }
     
-    streamParam->mBufferPacket= pPacket;
-    streamParam->mUpdateFlag = true;
+    pStreamParam->mBufferPacket= pPacket;
+    pStreamParam->mUpdateFlag = true;
     return HB_OK;
 }
 

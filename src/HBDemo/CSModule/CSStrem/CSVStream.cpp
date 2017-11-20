@@ -68,8 +68,7 @@ int CSVStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
             return HB_ERROR;
         }
         pBufferFrame->opaque = pOutData;
-        int HBErr = av_image_fill_arrays(pBufferFrame->data, pBufferFrame->linesize, pOutData, getImageInnerFormat(mImageParam->mPixFmt), mImageParam->mWidth, mImageParam->mHeight, mImageParam->mAlign);
-        if (HBErr < 0) {
+        if (av_image_fill_arrays(pBufferFrame->data, pBufferFrame->linesize, pOutData, getImageInnerFormat(mImageParam->mPixFmt), mImageParam->mWidth, mImageParam->mHeight, mImageParam->mAlign) < 0) {
             LOGE("Image fill arry failed !");
             return HB_ERROR;
         }
@@ -79,15 +78,24 @@ int CSVStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
         pBufferFrame->height = mImageParam->mHeight;
     }
     
-    /** TODO: huangcl: 如果需要进行转换格式，需要在这里添加格式转换 */
+    /**
+     *  TODO: huangcl: 如果需要进行转换格式，需要在这里添加格式转换
+     *  已经考虑转移到外部进行图像格式转换
+     */
     memcpy(pOutData, pData, DataSize);
+    
+    /** 进行 PTS 时间转换 */
     pBufferFrame->pts = (1/mSpeed) * av_rescale_q(TimeStamp*1000, AV_TIME_BASE_Q, mStream->time_base);
-    
-    int HBErr = pFrameQueue->push(pBufferFrame);
-    if (HBErr <= 0)
+    if (pFrameQueue->push(pBufferFrame) <= 0) {
+        av_freep(&pBufferFrame->opaque);
+        av_frame_free(&pBufferFrame);
         LOGE("Video stream push raw data failed !");
+        return HB_ERROR;
+    }
     
-    return HBErr;
+    LOGD("[Huangcl - test] >>> push a new video frame !");
+    pEncodeIpcCtx->condP();
+    return HB_OK;
 }
 
 int CSVStream::bindOpaque(void *handle) {

@@ -46,7 +46,7 @@ typedef struct StreamThreadParam {
     ThreadIPCContext *mQueueIPC;
     
     bool mUpdateFlag;
-    /** 指向当前用于缓冲的 packet 缓冲区 */
+    /** 指向当前缓冲的 packet 数据 */
     AVPacket *mBufferPacket;
     int64_t mMinPacketPTS;
     
