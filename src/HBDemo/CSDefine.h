@@ -172,7 +172,7 @@ typedef struct _ImageParams {
 } ImageParams;
 
 typedef struct _AudioParams {
-    int sample_rate;
+    int sample_rate;  /** 采样率 */
     int channels;
     int64_t channel_layout;
     AUDIO_SAMPLE_FORMAT pri_sample_fmt;
@@ -181,7 +181,7 @@ typedef struct _AudioParams {
     int frame_size; /** 对应编码格式一帧有多少个samples */
     int bytes_per_sec;
     
-    long mbitRate;
+    long mbitRate;  /** 比特率 */
     int   mAlign;
 } AudioParams;
 

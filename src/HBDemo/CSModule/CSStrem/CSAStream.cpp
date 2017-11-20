@@ -31,6 +31,7 @@ int CSAStream::bindOpaque(void *handle) {
     }
     
     int HBErr = HB_OK;
+    mOutTotalOfFrame = 0;
     mFmtCtx = (AVFormatContext *)handle;
     mStreamThreadParam = (StreamThreadParam *)av_mallocz(sizeof(StreamThreadParam));
     if (!mStreamThreadParam) {
@@ -136,20 +137,15 @@ BIND_AUDIO_STREAM_END_LABEL:
 }
 
 int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
-    FiFoQueue<AVFrame*> *frameQueue = mStreamThreadParam->mFrameQueue;
-    if (frameQueue->queueLeft() == 0) {
-        LOGE("Audio stream frame queue overflow !");
-        return HB_ERROR;
-    }
-    
+    FiFoQueue<AVFrame*> *pFrameQueue = mStreamThreadParam->mFrameQueue;
+    FiFoQueue<AVFrame*> *pFrameRecycleQueue = mStreamThreadParam->mFrameRecycleQueue;
     ThreadIPCContext *pEncodeThreadIpcCtx = mStreamThreadParam->mEncodeIPC;
     ThreadIPCContext *pQueueThreadIpcCtx = mStreamThreadParam->mQueueIPC;
 
-    int iQueueleftlen = frameQueue->queueLeft();
-    if (iQueueleftlen == 0) {
-        frameQueue->setQueueStat(QUEUE_OVERFLOW);
+    if (pFrameQueue->queueLeft() == 0) {
+        pFrameQueue->setQueueStat(QUEUE_OVERFLOW);
         if (mPushDataWithSyncMode) {
-            while (frameQueue->queueLeft() == 0) {
+            while (pFrameQueue->queueLeft() == 0) {
                 pQueueThreadIpcCtx->condV();
             }
         }
@@ -159,83 +155,97 @@ int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
         }
     }
     
-    int iInputNumOfSamples = (int)(DataSize / av_get_bytes_per_sample(getAudioInnerFormat(mAudioParam->pri_sample_fmt)));
-    mInTotalOfSamples += iInputNumOfSamples;
+    int inputSamples = (int)(DataSize / \
+              (mAudioParam->channels * av_get_bytes_per_sample(getAudioInnerFormat(mAudioParam->pri_sample_fmt))));
+    mInTotalOfSamples += inputSamples;
     uint8_t* pTmpData = pData;
     uint8_t *pInputData[8] = {NULL};
-    int iLineSize[8] = {0, 0};
+    int iInputDataLineSize[8] = {0, 0};
     uint8_t *pOutputData[8] = {NULL};
-    int iOutLineSize[8] = {0};
+    int iOutputDataLineSize[8] = {0};
     
-    int HBErr = av_samples_fill_arrays(pInputData, iLineSize, pTmpData, \
-                    mAudioParam->channels, iInputNumOfSamples, getAudioInnerFormat(mAudioParam->pri_sample_fmt), mAudioParam->mAlign);
+    int HBErr = av_samples_fill_arrays(pOutputData, iOutputDataLineSize, pTmpData, \
+                    mAudioParam->channels, inputSamples, getAudioInnerFormat(mAudioParam->pri_sample_fmt), mAudioParam->mAlign);
     if (HBErr < 0) {
         LOGE("Audio stream fille sample arrays failed !");
         return HB_ERROR;
     }
     
-    /** 是否需要插入重采样的处理 */
-    int actualAudioSamples = iInputNumOfSamples;
-    memcpy(pOutputData, pInputData, sizeof(pOutputData));
-    
-    HBErr = pushSamplesToFifo(mAudioFifo, pOutputData, actualAudioSamples);
+    HBErr = pushSamplesToFifo(mAudioFifo, pOutputData, inputSamples);
     if (HBErr < 0) {
         LOGE("Audio stream push sample into fifo failed !");
         return HB_ERROR;
     }
     
-    
     int iChannels = mAudioParam->channels;
     AVSampleFormat eSampleFmt = getAudioInnerFormat(mAudioParam->pri_sample_fmt);
-    int iSampleRate = mAudioParam->sample_rate;
-    
+    int  iBufferSize = 0, actualAudioSamples = 0;
     AVFrame* pBufferFrame = nullptr;
-    FiFoQueue<AVFrame *> *pFrameRecycleQueue = mStreamThreadParam->mFrameRecycleQueue;
     while (true) {
+        pBufferFrame = nullptr;
         int iFifoSize = av_audio_fifo_size(mAudioFifo);
         if (iFifoSize < mAudioParam->frame_size) {
             break;
         }
         
         actualAudioSamples = FFMIN(iFifoSize, mAudioParam->frame_size);
-        int iBufferSize = av_samples_get_buffer_size(NULL, \
-                                                     iChannels, actualAudioSamples, eSampleFmt, mAudioParam->mAlign);
+        iBufferSize = av_samples_get_buffer_size(NULL, iChannels, actualAudioSamples, eSampleFmt, mAudioParam->mAlign);
+        if (iBufferSize <= 0) {
+            LOGE("Get sample size error [size:%d] !\n", iBufferSize);
+            break;
+        }
         if (!pFrameRecycleQueue || !(pBufferFrame = pFrameRecycleQueue->get())) {
-            pBufferFrame = av_frame_alloc();
-            if (!pBufferFrame) {
+            if (!(pBufferFrame = av_frame_alloc())) {
                 LOGE("Audio stream alloc frame failed !");
-                return HB_ERROR;
+                HBErr = HB_ERROR;
+                goto AUDIO_STREAM_END_LABEL;
             }
-            
+            pBufferFrame->opaque = nullptr;
             uint8_t* pOutDataBuffer = (uint8_t*)av_mallocz(iBufferSize);
             if (!pOutDataBuffer) {
                 LOGE("Audio stream allock audio data failed !");
-                return HB_ERROR;
+                HBErr = HB_ERROR;
+                goto AUDIO_STREAM_END_LABEL;
             }
             
-            HBErr = av_samples_fill_arrays(pBufferFrame->data, pBufferFrame->linesize, pOutDataBuffer, iChannels, actualAudioSamples, eSampleFmt, mAudioParam->mAlign);
+            HBErr = av_samples_fill_arrays(pBufferFrame->data, pBufferFrame->linesize, \
+                        pOutDataBuffer, iChannels, actualAudioSamples, eSampleFmt, mAudioParam->mAlign);
             if (HBErr < 0) {
                 LOGE("Audio stream fill sample fata error !");
-                return HB_ERROR;
+                HBErr = HB_ERROR;
+                goto AUDIO_STREAM_END_LABEL;
             }
             pBufferFrame->nb_samples = actualAudioSamples;
             pBufferFrame->opaque = pOutDataBuffer;
         }
         
         HBErr = av_audio_fifo_read(mAudioFifo, (void**)pBufferFrame->data, actualAudioSamples);
-        if (HBErr <= actualAudioSamples) {
-            return HB_ERROR;
+        if (HBErr < actualAudioSamples) {
+            LOGE("Read size:%d from audio fifo buffer failed !", actualAudioSamples);
+            HBErr = HB_ERROR;
+            goto AUDIO_STREAM_END_LABEL;
         }
         mOutTotalOfSamples += HBErr;
+        /** 计算音频帧的 pts 时间 */
         pBufferFrame->pts = actualAudioSamples * mOutTotalOfFrame * mAudioParam->sample_rate;
         mOutTotalOfFrame++;
         
-        frameQueue->push(pBufferFrame);
-        
+        if (pFrameQueue->push(pBufferFrame) <= 0) {
+            LOGE("Push frame to frame queue error!\n");
+            HBErr = HB_ERROR;
+            goto AUDIO_STREAM_END_LABEL;
+        }
         pEncodeThreadIpcCtx->condP();
     }
+    HBErr = HB_OK;
     
-    return HB_OK;
+AUDIO_STREAM_END_LABEL:
+    if (pBufferFrame) {
+        if (pBufferFrame->opaque)
+            av_freep(&pBufferFrame->opaque);
+        av_frame_free(&pBufferFrame);
+    }
+    return HBErr;
 }
 
 void CSAStream::setAudioParam(AudioParams* param) {

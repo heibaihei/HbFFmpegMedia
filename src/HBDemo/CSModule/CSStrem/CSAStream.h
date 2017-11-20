@@ -37,9 +37,9 @@ protected:
     
 private:
     /** 以下三个变量去留待定 */
-    long mInTotalOfSamples;
+    long mInTotalOfSamples;  /** 统计输入的音频采样数 */
     long mOutTotalOfSamples;
-    long mOutTotalOfFrame;
+    long mOutTotalOfFrame;   /** 表示当前输出音频帧数 */
     
     AVFrame     *mSrcFrame;
     AVAudioFifo *mAudioFifo;
