@@ -55,10 +55,9 @@ int CSPlayer::release(void) {
 }
 
 int CSPlayer::writeExternData(uint8_t data[], size_t dataSize, int index, long timeStamp) {
-    if (mTimeline) {
-        mTimeline->sendRawData(data, dataSize, index, timeStamp);
-    }
-    return HB_OK;
+    if (mTimeline)
+        return mTimeline->sendRawData(data, dataSize, index, timeStamp);
+    return HB_ERROR;
 }
 
 void CSPlayer::setStateListener(MediaStateListener *listener) {

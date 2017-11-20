@@ -137,7 +137,7 @@ int CSVStream::bindOpaque(void *handle) {
     /** 默认视频流时间基采用 {1, 90000} [常规做法]*/
     mStream->time_base.num = 1;
     mStream->time_base.den = 90000;
-    
+    mStreamIndex = mStream->index;
     mStreamThreadParam->mStreamIndex = mStream->index;
     LOGI("Video stream create success, index:%d", mStream->index);
     

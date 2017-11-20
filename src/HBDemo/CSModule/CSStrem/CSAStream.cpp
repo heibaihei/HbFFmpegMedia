@@ -58,11 +58,12 @@ int CSAStream::bindOpaque(void *handle) {
         goto BIND_AUDIO_STREAM_END_LABEL;
     }
     
-    mStream->time_base.num = 1;
-    mStream->time_base.den = mAudioParam->sample_rate;
+    mStreamIndex = mStream->index;
     mStreamThreadParam->mStreamIndex = mStream->index;
     LOGI("Audio stream create success, index:%d", mStream->index);
     
+    mStream->time_base.num = 1;
+    mStream->time_base.den = mAudioParam->sample_rate;
     mCodecCtx = avcodec_alloc_context3(mCodec);
     if (!mCodecCtx) {
         LOGE("Audio codec context alloc failed !");

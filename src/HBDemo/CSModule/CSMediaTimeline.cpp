@@ -135,7 +135,7 @@ int CSTimeline::_getOutputSpecialStreamIndex(STREAM_TYPE streamType) {
         if (pStream->mStreamType == streamType)
             return pStream->mStreamIndex;
     }
-    return 0;
+    return -1;
 }
 
 int CSTimeline::_ConstructOutputMedia() {

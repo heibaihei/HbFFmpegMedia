@@ -31,6 +31,7 @@ public:
     bool getSaveMode() { return mbSaveMode; }
     
     void setTimeline(CSTimeline* pNewTimeline) { mTimeline = pNewTimeline; }
+    CSTimeline* getTimeline() { return mTimeline; }
     /**
      *  完成媒体流的构建后，调用准备接口
      *  @return HB_OK 为正常, HB_ERROR 为异常;

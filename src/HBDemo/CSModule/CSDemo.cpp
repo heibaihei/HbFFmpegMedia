@@ -124,11 +124,11 @@ void CSModulePlayerDemo() {
         goto PLAYER_DEMO_EXIT_LABEL;
     }
     
-//    ret = pthread_create(&audioReadThreadId, NULL, _audioReadThread, pMediaPlayer);
-//    if (ret < 0) {
-//        LOGE("Create audio thread error!\n");
-//        goto PLAYER_DEMO_EXIT_LABEL;
-//    }
+    ret = pthread_create(&audioReadThreadId, NULL, _audioReadThread, pMediaPlayer);
+    if (ret < 0) {
+        LOGE("Create audio thread error!\n");
+        goto PLAYER_DEMO_EXIT_LABEL;
+    }
     
     ret = pthread_create(&videoReadThreadId, NULL, _videoReadThread, pMediaPlayer);
     if (ret < 0) {
@@ -161,30 +161,30 @@ static void *_audioReadThread(void *arg)
     HBMedia::CSPlayer::CSPlayer *pMediaPlayer = (HBMedia::CSPlayer::CSPlayer *)arg;
     
     pPcmFileHandle = fopen(pInputPcmFile, "r");
-    if (!pPcmFileHandle)
+    if (!pPcmFileHandle) {
         LOGE("[Test] ===> Open pcm input file %s error!\n", pInputPcmFile);
-    else
-        bStartFlag = true;
+        goto AUDIO_READ_THREAD_EXIT_LABEL;
+    }
     
-    pDecodedBuffer = (uint8_t *)malloc(SINGLE_SAMPLES);
-    if (!pDecodedBuffer) {
+    if (!(pDecodedBuffer = (uint8_t *)malloc(SINGLE_SAMPLES))) {
         LOGE("[Test] ===> Malloc decode buffer failed !");
         goto AUDIO_READ_THREAD_EXIT_LABEL;
     }
     
+    bStartFlag = true;
     LOGI("[Test] ===> Create audio test thread !");
     while (bStartFlag) {
         gettimeofday(&start, NULL);
-        ret = fread((void *)pDecodedBuffer, SINGLE_SAMPLES, 1, pPcmFileHandle);
-        if (ret <= 0) {
+        if ((fread(pDecodedBuffer, 1, SINGLE_SAMPLES, pPcmFileHandle)) <= 0) {
             LOGE("[Test] ===> Read pcm data from input file error !");
             break;
         }
         
-        ret = pMediaPlayer->writeExternData(pDecodedBuffer, SINGLE_SAMPLES, 1, audioTimestamp);
-        if (ret < 0) {
+        if (HB_OK != (pMediaPlayer->writeExternData(pDecodedBuffer, \
+                              SINGLE_SAMPLES, \
+                              pMediaPlayer->getTimeline()->_getOutputSpecialStreamIndex(CS_STREAM_TYPE_AUDIO),\
+                              audioTimestamp)))
             LOGE("[Test] ===> Audio Write data error![%d]\n", ret);
-        }
         
         usleep(1500);
         gettimeofday(&end, NULL);
@@ -235,7 +235,8 @@ static void *_videoReadThread(void *arg)
             break;
         }
         usleep(2000);
-        ret = pMediaPlayer->writeExternData(pDecodedBuffer, iDecodedBufferLen, 0, videoTimestamp);
+        ret = pMediaPlayer->writeExternData(pDecodedBuffer, iDecodedBufferLen, \
+                             pMediaPlayer->getTimeline()->_getOutputSpecialStreamIndex(CS_STREAM_TYPE_VIDEO), videoTimestamp);
         if (ret < 0) {
             LOGE("[Test] ===> Video Write data error![%d]\n", ret);
         }

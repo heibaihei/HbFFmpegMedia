@@ -79,6 +79,12 @@ public:
      */
     int  release(void);
     
+    /**
+     *  @func _getOutputSpecialStreamIndex
+     *  @return 根据传入的媒体类型返回对应的媒体流在输出媒体中的流索引
+     */
+    int _getOutputSpecialStreamIndex(STREAM_TYPE streamType);
+    
     /** For test */
     void joinExportThread();
 protected:
@@ -122,12 +128,6 @@ protected:
      * @return HB_OK 为正常, HB_ERROR 为异常
      */
     int _ConstructOutputMedia();
-    
-    /**
-     *  @func _getOutputSpecialStreamIndex
-     *  @return 根据传入的媒体类型返回对应的媒体流在输出媒体中的流索引
-     */
-    int _getOutputSpecialStreamIndex(STREAM_TYPE streamType);
     
 private:
     /** 保存模式下使用到的参数: */
