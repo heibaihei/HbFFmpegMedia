@@ -36,14 +36,7 @@ public:
 protected:
     
 private:
-    float mTimes;
-    int  mFrameBufferSize;
-    uint8_t *mSoundDataBuffer;
-    CSAudioUtil *mFrameUtils;
-    
-    AudioParams mDstAudioParams;
-    AudioParams mSrcAudioParams;
-    
+    /** 以下三个变量去留待定 */
     long mInTotalOfSamples;
     long mOutTotalOfSamples;
     long mOutTotalOfFrame;

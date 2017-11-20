@@ -44,7 +44,7 @@ int audioParamInit(AudioParams* param) {
     param->frame_size = 0;
     param->channel_layout = 0;
     param->bytes_per_sec = 0;
-    param->mbitRate = 0;
+    param->mbitRate = 96000;
     param->mAlign = 1;
     return HB_OK;
 }

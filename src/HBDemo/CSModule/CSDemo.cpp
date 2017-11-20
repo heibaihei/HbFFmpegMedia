@@ -275,6 +275,7 @@ static int _constructTimeline(HBMedia::CSTimeline* pTimeline) {
     IMAGE_PIX_FORMAT inputImagePixFormat = CS_PIX_FMT_YUV420P;
     
     ImageParams inputImageParam;
+    imageParamInit(&inputImageParam);
     inputImageParam.mWidth = inWidth;
     inputImageParam.mHeight = inHeight;
     inputImageParam.mPixFmt = inputImagePixFormat;
@@ -282,6 +283,7 @@ static int _constructTimeline(HBMedia::CSTimeline* pTimeline) {
     pTimeline->setSrcImageParam(&inputImageParam);
     
     AudioParams inputAudioParams;
+    audioParamInit(&inputAudioParams);
     inputAudioParams.channels = inputChannels;
     inputAudioParams.channel_layout = av_get_default_channel_layout(inputAudioParams.channels);
     inputAudioParams.pri_sample_fmt = inputSampleFmt;
@@ -289,6 +291,7 @@ static int _constructTimeline(HBMedia::CSTimeline* pTimeline) {
     pTimeline->setSrcAudioParam(&inputAudioParams);
     
     ImageParams outputImageParam;
+    imageParamInit(&outputImageParam);
     outputImageParam.mBitRate = 2000000;
     outputImageParam.mVideoCRF = crf;
     outputImageParam.mWidth = outWidth;
@@ -299,6 +302,7 @@ static int _constructTimeline(HBMedia::CSTimeline* pTimeline) {
     pTimeline->setDstImageParam(&outputImageParam);
     
     AudioParams outputAudioParams;
+    audioParamInit(&outputAudioParams);
     outputAudioParams.channels = outputChannels;
     outputAudioParams.channel_layout = av_get_default_channel_layout(outputAudioParams.channels);
     outputAudioParams.pri_sample_fmt = outputSampleFmt;

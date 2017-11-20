@@ -21,6 +21,7 @@ namespace HBMedia {
 
 /** 类前置生命处 */
 class CSIStream;
+class CSAudioUtil;
 class ThreadContext;
 class CSWorkContext;
 
@@ -107,6 +108,13 @@ protected:
     /** 准备输出媒体资源 */
     int _prepareOutMedia();
     
+    /** 准备输入媒体资源 */
+    int _prepareInMedia();
+    
+    int _prepareMediaTransferUtils();
+    int _audioTransferUtils();
+    int _videoTransferUtils();
+    
     /**
      * @func open 打开输出媒体文件
      * @return HB_OK 为正常, HB_ERROR 为异常
@@ -126,6 +134,11 @@ private:
     char            *mSaveFilePath;
     /** 输出文件中的媒体流信息 */
     std::vector<CSIStream *> mStreamsList;
+    
+    /** 对要输出的音频数据进行转码、变调、变速等处理 */
+    float mTimes;
+    uint8_t *mSoundDataBuffer;
+    CSAudioUtil *mAudioEffectUtils;
     
     float mGlobalSpeed;
 

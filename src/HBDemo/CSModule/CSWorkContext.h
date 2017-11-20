@@ -103,7 +103,7 @@ protected:
     int _createOutputWorker();
     
 private:
-    /** 存放当前的线程环境 */
+    /** 存放当前的线程环境, 一个ThreadContext 就代表一个线程 */
     std::vector<ThreadContext *> mThreadContextList;
     WorkContextParam   *mWorkContextParam;
 } CSWorkContext;

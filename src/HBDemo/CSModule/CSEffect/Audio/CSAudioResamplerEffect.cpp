@@ -13,9 +13,9 @@ namespace HBMedia {
 
 CSAudioResamplerEffect::CSAudioResamplerEffect()
 {
-    swrCtx = NULL;
-    memset(&inParam, 0, sizeof(AudioParams));
-    memset(&outParam, 0, sizeof(AudioParams));
+    mSwrCtx = NULL;
+    audioParamInit(&mInAudioParam);
+    audioParamInit(&mOutAudioParam);
 }
 
 CSAudioResamplerEffect::~CSAudioResamplerEffect()
@@ -30,61 +30,52 @@ const char *CSAudioResamplerEffect::getDescripe()
 
 int CSAudioResamplerEffect::setInParam(AudioParams *param)
 {
-    if (param->channels <= 0 || param->pri_sample_fmt <= CS_SAMPLE_FMT_NONE
+    if (!param || param->channels <= 0 || param->pri_sample_fmt <= CS_SAMPLE_FMT_NONE
         || param->sample_rate <= 8000) {
-        return AV_PARM_ERR;
+        LOGE("Set audio resample effect input params failed !");
+        return HB_ERROR;
     }
     
-    memcpy(&inParam, param, sizeof(AudioParams));
-    
-    return 0;
+    memcpy(&mInAudioParam, param, sizeof(AudioParams));
+    return HB_OK;
 }
 
 int CSAudioResamplerEffect::setOutParam(AudioParams *param)
 {
-    if (param->channels <= 0 || param->pri_sample_fmt <= CS_SAMPLE_FMT_NONE
+    if (!param || param->channels <= 0 || param->pri_sample_fmt <= CS_SAMPLE_FMT_NONE
         || param->sample_rate <= 8000) {
-        return AV_PARM_ERR;
+        LOGE("Set audio resample effect output params failed !");
+        return HB_ERROR;
     }
     
-    memcpy(&outParam, param, sizeof(AudioParams));
-    
-    return 0;
+    memcpy(&mOutAudioParam, param, sizeof(AudioParams));
+    return HB_OK;
 }
 
 
 int CSAudioResamplerEffect::init()
 {
-    int64_t inChannelLayout;
-    int64_t outChannelLayout;
-    AVSampleFormat inSampleFmt;
-    AVSampleFormat outSampleFmt;
+    AVSampleFormat inSampleFmt = getAudioInnerFormat(mInAudioParam.pri_sample_fmt);
+    AVSampleFormat outSampleFmt = getAudioInnerFormat(mOutAudioParam.pri_sample_fmt);
     
-    inChannelLayout = av_get_default_channel_layout(inParam.channels);
-    outChannelLayout = av_get_default_channel_layout(outParam.channels);
-    inSampleFmt = getAudioInnerFormat(inParam.pri_sample_fmt);
-    outSampleFmt = getAudioInnerFormat(outParam.pri_sample_fmt);
-    
-    swrCtx = swr_alloc_set_opts(swrCtx,
-                                outChannelLayout,
+    mSwrCtx = swr_alloc_set_opts(mSwrCtx,
+                                av_get_default_channel_layout(mOutAudioParam.channels),
                                 outSampleFmt,
-                                outParam.sample_rate,
-                                inChannelLayout,
+                                mOutAudioParam.sample_rate,
+                                av_get_default_channel_layout(mInAudioParam.channels),
                                 inSampleFmt,
-                                inParam.sample_rate, 0, NULL);
+                                mInAudioParam.sample_rate, 0, NULL);
     
-    if (!swrCtx || swr_init(swrCtx) < 0) {
-        av_log(NULL, AV_LOG_ERROR,
-               "Cannot create sample rate converter for conversion of %d Hz %s %d channels to %d Hz %s %d channels!",
-               inParam.sample_rate, av_get_sample_fmt_name(inSampleFmt)
-               , inParam.channels, outParam.sample_rate
-               , av_get_sample_fmt_name(outSampleFmt)
-               , outParam.channels);
-        swr_free(&swrCtx);
-        return AV_MALLOC_ERR;
+    if (!mSwrCtx || swr_init(mSwrCtx) < 0) {
+        LOGE("Cannot create sample rate converter for conversion of %d Hz %s %d channels to %d Hz %s %d channels!", mInAudioParam.sample_rate, av_get_sample_fmt_name(inSampleFmt) \
+               , mInAudioParam.channels, mOutAudioParam.sample_rate \
+               , av_get_sample_fmt_name(outSampleFmt) \
+               , mOutAudioParam.channels);
+        swr_free(&mSwrCtx);
+        return HB_ERROR;
     }
 
-    return 0;
+    return HB_OK;
 }
 
 int CSAudioResamplerEffect::transfer(uint8_t *inData, int inSamples, uint8_t *outData, int outSamples)
@@ -96,19 +87,19 @@ int CSAudioResamplerEffect::transfer(uint8_t *inData, int inSamples, uint8_t *ou
     int outLinesize[8] = {0};
     
     ret = av_samples_fill_arrays(inputData, lineSize, (uint8_t *)inData, \
-                        inParam.channels, (int)inSamples, getAudioInnerFormat(inParam.pri_sample_fmt), 1);
+                        mInAudioParam.channels, (int)inSamples, getAudioInnerFormat(mInAudioParam.pri_sample_fmt), 1);
     if (ret < 0) {
         av_log(NULL, AV_LOG_ERROR, "Fill sample error![%s]\n", makeErrorStr(ret));
         goto TAR_OUT;
     }
     
-    ret = av_samples_fill_arrays(outputData, outLinesize, (uint8_t *)outData, outParam.channels, (int)outSamples, getAudioInnerFormat(outParam.pri_sample_fmt), 1);
+    ret = av_samples_fill_arrays(outputData, outLinesize, (uint8_t *)outData, mOutAudioParam.channels, (int)outSamples, getAudioInnerFormat(mOutAudioParam.pri_sample_fmt), 1);
     if (ret < 0) {
         av_log(NULL, AV_LOG_ERROR, "Fill sample error![%s]\n", makeErrorStr(ret));
         goto TAR_OUT;
     }
     
-    ret = swr_convert(swrCtx, outputData, outSamples, (const uint8_t **)inputData, inSamples);
+    ret = swr_convert(mSwrCtx, outputData, outSamples, (const uint8_t **)inputData, inSamples);
     if (ret < 0) {
         av_log(NULL, AV_LOG_ERROR, "swr_convert() failed [%s]\n", makeErrorStr(ret));
         goto TAR_OUT;
@@ -125,13 +116,13 @@ int CSAudioResamplerEffect::flush(uint8_t *outData, int outSamples)
     int outLinesize[8]={0};
     int ret;
     
-    ret = av_samples_fill_arrays(outputData, outLinesize, (uint8_t *)outData, outParam.channels, (int)outSamples, getAudioInnerFormat(outParam.pri_sample_fmt), 1);
+    ret = av_samples_fill_arrays(outputData, outLinesize, (uint8_t *)outData, mOutAudioParam.channels, (int)outSamples, getAudioInnerFormat(mOutAudioParam.pri_sample_fmt), 1);
     if (ret < 0) {
         av_log(NULL, AV_LOG_ERROR, "Fill sample error![%s]\n", makeErrorStr(ret));
         goto TAR_OUT;
     }
     
-    ret = swr_convert(swrCtx, outputData, outSamples, NULL, 0);
+    ret = swr_convert(mSwrCtx, outputData, outSamples, NULL, 0);
     if (ret < 0) {
         av_log(NULL, AV_LOG_ERROR, "swr_convert() failed [%s]\n", makeErrorStr(ret));
         goto TAR_OUT;
@@ -145,8 +136,8 @@ TAR_OUT:
 int CSAudioResamplerEffect::release()
 {
     
-    if (swrCtx) {
-        swr_free(&swrCtx);
+    if (mSwrCtx) {
+        swr_free(&mSwrCtx);
     }
     
     return 0;

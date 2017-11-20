@@ -47,7 +47,7 @@ int CSWorkContext::prepare(void *args) {
 
 int CSWorkContext::_createOutputWorker() {
     ThreadContext *pThreadCtx = new ThreadContext();
-    if (pThreadCtx) {
+    if (!pThreadCtx) {
         LOGE("Work context create thread context failed !");
         return HB_ERROR;
     }

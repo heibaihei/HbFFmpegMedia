@@ -7,6 +7,8 @@
 //
 
 #include "CSAudioEffectFactory.h"
+#include "CSAudioResamplerEffect.h"
+#include "CSAudioShiftEffect.h"
 
 namespace HBMedia {
     
@@ -23,19 +25,19 @@ namespace HBMedia {
     {
         CSAudioBaseEffect *audioEffect = NULL;
         
-//        switch (type) {
-//            case MT_AUDIO_TEMPO_PITCH:
-//                audioEffect = new AudioTempoPitch();
-//                break;
-//                //#if CONFIG_RESAMPLING_AUDIO_EXAMPLE
-//            case MT_AUDIO_RESAMPLER:
-//                audioEffect = new AudioResamplerEffect();
-//                break;
-//                //#endif
-//            default:
-//
-//                break;
-//        }
+        switch (type) {
+            case CS_AUDIO_TEMPO_PITCH:
+                audioEffect = new CSAudioShiftEffect();
+                break;
+
+            case CS_AUDIO_RESAMPLER:
+                audioEffect = new CSAudioResamplerEffect();
+                break;
+
+            default:
+
+                break;
+        }
         
         return audioEffect;
     }

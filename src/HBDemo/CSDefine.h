@@ -24,6 +24,8 @@
 #define DECODE_STATE_DECODE_ABORT    0X0008
 #define DECODE_STATE_FLUSH_MODE      0X0010
 
+#define CS_RECORD_AUDIO_BUFFER  (81920)
+
 #define SAFE_DELETE(p)           do { if(p) { delete (p); (p) = nullptr;} } while(0)
 #define SAFE_DELETE_ARRAY(p)     do { if(p) { delete[] (p); (p) = nullptr; } } while(0)
 #define SAFE_FREE(p)             do { if(p) { free(p); (p) = nullptr; } } while(0)

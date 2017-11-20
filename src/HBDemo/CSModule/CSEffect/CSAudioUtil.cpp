@@ -48,12 +48,12 @@ int CSAudioUtil::init()
 int CSAudioUtil::addEffect(CSAudioBaseEffect *audioEffect)
 {
     if (audioEffect == NULL) {
-        return AV_PARM_ERR;
+        LOGE("Audio util add effect failed, the param id invalid !");
+        return HB_ERROR;
     }
     
     mAudioDoEffectList.push_back(audioEffect);
-    
-    return 0;
+    return HB_OK;
 }
 
 int CSAudioUtil::transfer(uint8_t *inData, int inSamples, uint8_t *outData, int outMaxSamples)

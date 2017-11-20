@@ -12,12 +12,16 @@
 #include "CSVStream.h"
 #include "CSAStream.h"
 #include "CSWorkContext.h"
+#include "CSAudioEffectFactory.h"
 
 namespace HBMedia {
 
 CSTimeline::CSTimeline(){
+    mTimes = 1.0f;
     mGlobalSpeed = 1.0f;
     mFmtCtx = nullptr;
+    mSoundDataBuffer = nullptr;
+    mAudioEffectUtils = nullptr;
     mSaveFilePath = nullptr;
     audioParamInit(&mSrcAudioParams);
     audioParamInit(&mTgtAudioParams);
@@ -39,8 +43,18 @@ int CSTimeline::prepare() {
         return HB_ERROR;
     }
     
+    if (_prepareInMedia() != HB_OK) {
+        LOGE("Timeline prepare input media initial failed !");
+        return HB_ERROR;
+    }
+    
     if (_prepareOutMedia() != HB_OK) {
         LOGE("Timeline prepare output media initial failed !");
+        return HB_ERROR;
+    }
+    
+    if (_prepareMediaTransferUtils() != HB_OK) {
+        LOGE("Timeline prepare transfer media utils failed !");
         return HB_ERROR;
     }
     
@@ -99,6 +113,15 @@ int  CSTimeline::release(void) {
     }
     mStreamsList.clear();
     std::vector<CSIStream*>().swap(mStreamsList);
+    
+    if (mAudioEffectUtils) {
+        mAudioEffectUtils->release();
+        SAFE_DELETE(mAudioEffectUtils);
+    }
+    
+    if (mSoundDataBuffer)
+        av_free(mSoundDataBuffer);
+    
     return HB_OK;
 }
 
@@ -207,6 +230,104 @@ void CSTimeline::setCropParam(int posX, int posY, int cropWidth, int cropHeight)
 
 void CSTimeline::setGlobalSpeed(float speed){
     mGlobalSpeed = speed;
+}
+
+int CSTimeline::_prepareInMedia() {
+    
+    return HB_OK;
+}
+
+int CSTimeline::_audioTransferUtils() {
+    int HBErr = HB_OK;
+    bool isNeedResample = false;
+    
+    mSoundDataBuffer = (uint8_t *)av_malloc(CS_RECORD_AUDIO_BUFFER);
+    if (mSoundDataBuffer == NULL) {
+        HBErr = HB_ERROR;
+        LOGE("Alloc audio data trander buffer !\n");
+        goto AUDIO_TRANSFER_UTILS_END_LABEL;
+    }
+    
+    mAudioEffectUtils = new CSAudioUtil();
+    if (mAudioEffectUtils == NULL) {
+        HBErr = HB_ERROR;
+        LOGE("New audio frame utils error!\n");
+        goto AUDIO_TRANSFER_UTILS_END_LABEL;
+    }
+    
+    HBErr = mAudioEffectUtils->init();
+    if (HBErr < 0) {
+        HBErr = HB_ERROR;
+        LOGE("Init audio effect utils error!\n");
+        goto AUDIO_TRANSFER_UTILS_END_LABEL;
+    }
+    
+    if (mTimes - 1.0 > 0.001 || mTimes - 1.0 < -0.001) {
+        CSAudioBaseEffect *pAudioTempoPitchEffect = CSAudioEffectFactory::getAudioEffect(CS_AUDIO_TEMPO_PITCH);
+        if (!pAudioTempoPitchEffect) {
+            LOGE("Get audio [CS_AUDIO_TEMPO_PITCH] effect error!\n");
+            goto AUDIO_TRANSFER_UTILS_END_LABEL;
+        }
+        AudioEffectParam param;
+        param.atempo = mTimes;
+        pAudioTempoPitchEffect->setEffectParam(&param);
+        pAudioTempoPitchEffect->setInParam(&mSrcAudioParams);
+        HBErr = pAudioTempoPitchEffect->init();
+        if (HBErr < 0) {
+            LOGE("Audio shift effect initial failed !");
+            SAFE_DELETE(pAudioTempoPitchEffect);
+            goto AUDIO_TRANSFER_UTILS_END_LABEL;
+        }
+        mAudioEffectUtils->addEffect(pAudioTempoPitchEffect);
+    }
+    
+    isNeedResample = needResampleAudio(&mSrcAudioParams, &mTgtAudioParams);
+    if (isNeedResample) {
+        CSAudioBaseEffect *pAudioResamplerEffect = CSAudioEffectFactory::getAudioEffect(CS_AUDIO_RESAMPLER);
+        if (!pAudioResamplerEffect) {
+            LOGE("Get audio [CS_AUDIO_RESAMPLER] effect error!\n");
+            goto AUDIO_TRANSFER_UTILS_END_LABEL;
+        }
+        pAudioResamplerEffect->setInParam(&mSrcAudioParams);
+        pAudioResamplerEffect->setOutParam(&mTgtAudioParams);
+        HBErr = pAudioResamplerEffect->init();
+        if (HBErr < 0) {
+            LOGE("Audio resample effect initial failed !");
+            SAFE_DELETE(pAudioResamplerEffect);
+            goto AUDIO_TRANSFER_UTILS_END_LABEL;
+        }
+        mAudioEffectUtils->addEffect(pAudioResamplerEffect);
+    }
+    
+    return HB_OK;
+AUDIO_TRANSFER_UTILS_END_LABEL:
+    if (mSoundDataBuffer)
+        av_freep(mSoundDataBuffer);
+    
+    if (mAudioEffectUtils) {
+        mAudioEffectUtils->release();
+        SAFE_DELETE(mAudioEffectUtils);
+    }
+    
+    return HBErr;
+}
+
+int CSTimeline::_videoTransferUtils() {
+    
+    return HB_OK;
+}
+
+int CSTimeline::_prepareMediaTransferUtils() {
+    if (_audioTransferUtils() != HB_OK) {
+        LOGE("audio transfer utils initial failed !");
+        return HB_ERROR;
+    }
+    
+    if (_videoTransferUtils() != HB_OK) {
+        LOGE("audio transfer utils initial failed !");
+        return HB_ERROR;
+    }
+    return HB_OK;
 }
 
 int CSTimeline::_prepareOutMedia() {

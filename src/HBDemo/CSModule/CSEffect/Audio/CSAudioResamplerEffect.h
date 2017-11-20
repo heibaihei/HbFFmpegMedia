@@ -35,11 +35,9 @@ public:
     int release();
     
 private:
-    AudioParams inParam;
-    AudioParams outParam;
-    AudioParams audioParam;
-    AudioEffectParam effectParam;
-    struct SwrContext *swrCtx;
+    AudioParams mInAudioParam;
+    AudioParams mOutAudioParam;
+    struct SwrContext *mSwrCtx;
 };
 
 }
