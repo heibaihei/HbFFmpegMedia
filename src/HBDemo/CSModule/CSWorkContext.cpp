@@ -65,7 +65,8 @@ int CSWorkContext::_createOutputWorker() {
 
 int CSWorkContext::start() {
     ThreadContext *pThreadCtx = nullptr;
-    for (std::vector<ThreadContext *>::iterator pNode; pNode != mThreadContextList.end(); pNode++) {
+    for (std::vector<ThreadContext *>::iterator pNode = mThreadContextList.begin(); \
+         pNode != mThreadContextList.end(); pNode++) {
         pThreadCtx = *pNode;
         pThreadCtx->start();
     }

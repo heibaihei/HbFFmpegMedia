@@ -72,6 +72,7 @@ int CSTimeline::prepare() {
 
 int CSTimeline::start(void) {
     CSIStream *pBaseStream = nullptr;
+    /** 根据输出流媒体中媒体流添加到 工作上下文中，创建对应的线程 */
     for (std::vector<CSIStream *>::iterator pNode = mStreamsList.begin(); pNode != mStreamsList.end(); pNode++) {
         pBaseStream = (CSIStream *)(*pNode);
         if (HB_OK != mWorkCtx->pushStream(pBaseStream)) {

@@ -12,7 +12,9 @@
 namespace HBMedia {
 
 ThreadContext::ThreadContext() {
-    mThreadArg = NULL;
+    mThreadArg = nullptr;
+    mThreadID = nullptr;
+    mThreadIPC = nullptr;
 }
 
 ThreadContext::~ThreadContext() {

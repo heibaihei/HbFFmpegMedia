@@ -62,11 +62,13 @@ typedef struct StreamThreadParam {
  */
 typedef struct WorkContextParam {
     int mThreadNum;
+    /** 目标输出的媒体上下文信息 */
     AVFormatContext  *mTargetFormatCtx;
     
-    /** 数据输出线程以及对应的通信对象 */
+    /** 当前工作线程 */
     ThreadContext    *mWorkThread;
     
+    /** 数据输出线程以及对应的通信对象 */
     ThreadIPCContext *mWorkIPCCtx;
     
     /** 存放与当前线程相关的流参数 */
