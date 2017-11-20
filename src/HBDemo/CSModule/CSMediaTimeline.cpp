@@ -176,6 +176,10 @@ int CSTimeline::sendRawData(uint8_t* pData, long DataSize, int StreamIdex, int64
         return HB_ERROR;
     }
     
+    /**
+     *  如需格式转换，需要在此处对输入的媒体格式进行响应的格式转换输出
+     */
+    
     CSIStream* pStream = mStreamsList[StreamIdex];
     if (!pStream || pStream->sendRawData(pData, DataSize, TimeStamp) != HB_OK) {
         LOGE("Timeline send raw data to stream failed !");

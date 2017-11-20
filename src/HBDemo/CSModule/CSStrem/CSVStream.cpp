@@ -32,17 +32,18 @@ void CSVStream::EchoStreamInfo() {
 
 int CSVStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
     long iImagePixBufferSize = mImageParam->mPreImagePixBufferSize;
-    FiFoQueue<AVFrame*> *frameQueue = mStreamThreadParam->mFrameQueue;
+    FiFoQueue<AVFrame*> *pFrameQueue = mStreamThreadParam->mFrameQueue;
     FiFoQueue<AVFrame*> *frameRecycleQueue = mStreamThreadParam->mFrameRecycleQueue;
     ThreadIPCContext *pEncodeIpcCtx = mStreamThreadParam->mEncodeIPC;
     ThreadIPCContext *pQueueIpcCtx = mStreamThreadParam->mQueueIPC;
-    int iQueueleftLen = frameQueue->queueLeft();
     
+    int iQueueleftLen = pFrameQueue->queueLeft();
     if (iQueueleftLen == 0) {
-        frameQueue->setQueueStat(QUEUE_OVERFLOW);
+        pFrameQueue->setQueueStat(QUEUE_OVERFLOW);
         if (mPushDataWithSyncMode) {
-            while (frameQueue->queueLeft() == 0) {
+            while (pFrameQueue->queueLeft() == 0) {
                 pQueueIpcCtx->condV();
+                LOGE("[video]condV queue len %d queue left %d\n", pFrameQueue->queueLength(), pFrameQueue->queueLeft());
             }
         } else {
             LOGF("Video frame be drop !");
@@ -82,7 +83,7 @@ int CSVStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
     memcpy(pOutData, pData, DataSize);
     pBufferFrame->pts = (1/mSpeed) * av_rescale_q(TimeStamp*1000, AV_TIME_BASE_Q, mStream->time_base);
     
-    int HBErr = frameQueue->push(pBufferFrame);
+    int HBErr = pFrameQueue->push(pBufferFrame);
     if (HBErr <= 0)
         LOGE("Video stream push raw data failed !");
     
