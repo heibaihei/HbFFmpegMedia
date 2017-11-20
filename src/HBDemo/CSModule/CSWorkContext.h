@@ -38,8 +38,11 @@ typedef struct StreamThreadParam {
     FiFoQueue<AVPacket*> *mPacketQueue;
     FiFoQueue<AVPacket*> *mPacketRecycleQueue;
     
+    /** 编码线程IPC */
     ThreadIPCContext *mEncodeIPC;
+    /** 输出线程IPC */
     ThreadIPCContext *mWriteIPC;
+    /** 等待线程IPC */
     ThreadIPCContext *mQueueIPC;
     
     bool mUpdateFlag;
@@ -66,12 +69,12 @@ typedef struct WorkContextParam {
     AVFormatContext  *mTargetFormatCtx;
     
     /** 当前工作线程 */
-    ThreadContext    *mWorkThread;
+    ThreadContext    *mExportThread;
     
     /** 数据输出线程以及对应的通信对象 */
-    ThreadIPCContext *mWorkIPCCtx;
+    ThreadIPCContext *mExportThreadIPCCtx;
     
-    /** 存放与当前线程相关的流参数 */
+    /** 存放与当前线程相关的流参数, 有多少个媒体流，就有多少媒体线程参数 */
     std::vector<StreamThreadParam *> mStreamPthreadParamList;
 } WorkContextParam;
 
@@ -100,6 +103,8 @@ public:
     
     int flush();
     
+    /** huangcl: For test */
+    void joinExportThread();
 protected:
     /** 创建输出线程 */
     int _createOutputWorker();

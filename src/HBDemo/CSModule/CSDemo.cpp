@@ -124,11 +124,11 @@ void CSModulePlayerDemo() {
         goto PLAYER_DEMO_EXIT_LABEL;
     }
     
-    ret = pthread_create(&audioReadThreadId, NULL, _audioReadThread, pMediaPlayer);
-    if (ret < 0) {
-        LOGE("Create audio thread error!\n");
-        goto PLAYER_DEMO_EXIT_LABEL;
-    }
+//    ret = pthread_create(&audioReadThreadId, NULL, _audioReadThread, pMediaPlayer);
+//    if (ret < 0) {
+//        LOGE("Create audio thread error!\n");
+//        goto PLAYER_DEMO_EXIT_LABEL;
+//    }
     
     ret = pthread_create(&videoReadThreadId, NULL, _videoReadThread, pMediaPlayer);
     if (ret < 0) {
@@ -136,10 +136,13 @@ void CSModulePlayerDemo() {
         goto PLAYER_DEMO_EXIT_LABEL;
     }
     
+    /** 等测试线程退出 */
     pthread_join(audioReadThreadId, NULL);
     pthread_join(videoReadThreadId, NULL);
-    
+
 PLAYER_DEMO_EXIT_LABEL:
+    if (pTimeline)
+        pTimeline->joinExportThread();
     if (pMediaPlayer)
         pMediaPlayer->stop();
     SAFE_DELETE(pMediaPlayer);
@@ -205,7 +208,7 @@ static void *_videoReadThread(void *arg)
     int ret = HB_OK;
     FILE *pInputYuvHandle = nullptr;
     const char *pInputYuvFile = CS_MODULE_RESOURCE_ROOT_PATH"/100_video_480_480_420p.yuv";
-    long iDecodedBufferLen = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, 480, 480, 0);
+    long iDecodedBufferLen = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, 480, 480, 1);
     int64_t videoTimestamp = 0;
     uint8_t *pDecodedBuffer = nullptr;
     struct timeval start, end;

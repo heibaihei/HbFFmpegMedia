@@ -31,13 +31,11 @@ void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
     bool bPushRawDataWithSyncMode = true;
     int iStreamIndex = pStreamThreadParam->mStreamIndex;
     ThreadContext *pThreadCtx = pStreamThreadParam->mThreadCtx;
-    
-    AVCodecContext* pCodecCtx = pStreamThreadParam->mCodecCtx;
-    
     ThreadIPCContext* pEncodeIpcCtx = pStreamThreadParam->mEncodeIPC;
     ThreadIPCContext *pQueueIpcCtx = pStreamThreadParam->mQueueIPC;
     ThreadIPCContext* pWriteIpcCtx = pStreamThreadParam->mWriteIPC;
     
+    AVCodecContext* pCodecCtx = pStreamThreadParam->mCodecCtx;
     FiFoQueue<AVFrame *> *pFrameQueue = pStreamThreadParam->mFrameQueue;
     FiFoQueue<AVFrame *> *pFrameRecycleQueue = pStreamThreadParam->mFrameRecycleQueue;
     FiFoQueue<AVPacket *> *pPacketQueue = pStreamThreadParam->mPacketQueue;
@@ -59,11 +57,10 @@ void *CSWorkTasks::WorkTask_EncodeFrameRawData(void *arg) {
     ThreadStat eThreadState = THREAD_IDLE;
     struct timeval start, end;
     
-    
     while (true) {
         eThreadState = pThreadCtx->getThreadState();
         if (eThreadState == THREAD_FORCEQUIT) {
-            pFrameQueue ->setQueueStat(QUEUE_INVAILD);
+            pFrameQueue->setQueueStat(QUEUE_INVAILD);
             if (clearFrameQueue(pFrameQueue) != HB_OK)
                 LOGE("Work task clear frame queue error !");
             LOGE("Work task (encode) force quit !");
@@ -206,12 +203,12 @@ void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
     }
     
     ThreadParam_t *pThreadParams = (ThreadParam_t *)arg;
+    
     WorkContextParam *pWorkContextParam = (WorkContextParam *)(pThreadParams->mThreadArgs);
     AVFormatContext *pOutFmt = pWorkContextParam->mTargetFormatCtx;
-    ThreadIPCContext *pWriteIpcCtx = pWorkContextParam->mWorkIPCCtx;
-    ThreadContext *pCurWorkThreadCtx = pWorkContextParam->mWorkThread;
-    
-    if (!pWorkContextParam || !pOutFmt || !pWriteIpcCtx || !pCurWorkThreadCtx) {
+    ThreadIPCContext *pCurWorkThreadIpcCtx = pWorkContextParam->mExportThreadIPCCtx;
+    ThreadContext *pCurWorkThreadCtx = pWorkContextParam->mExportThread;
+    if (!pWorkContextParam || !pOutFmt || !pCurWorkThreadIpcCtx || !pCurWorkThreadCtx) {
         LOGE("Work task write params failed !");
         return nullptr;
     }
@@ -261,6 +258,7 @@ void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
         for (int i=0; i<iStreamThreadParamsSize; i++) {
             if (pPacketQueueArray[i]->queueLength() > 0) {
                 bIsWrite = true;
+                /** 根据当前较小的packet pts 决定下一个应该写入的媒体流数据 */
                 iQueueLastPTS = pStreamThreadParamArrys[i]->mMinPacketPTS;
                 if (iMinPTS > iQueueLastPTS) {
                     iBestPacketIndex = i;
@@ -275,9 +273,12 @@ void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
             break;
         }
         else if (bIsWrite == false) {
-            if (_CheckIsExitThread(pStreamThreadParamArrys, iStreamThreadParamsSize))
+            if (_CheckIsExitThread(pStreamThreadParamArrys, iStreamThreadParamsSize)) {
                 LOGW("Work task encode thread all exit");
-            pWriteIpcCtx->condV();
+                /** huangcl TODO: 此处是否已经退出，还要继续等？ */
+            }
+            
+            pCurWorkThreadIpcCtx->condV();
             continue;
         }
         
@@ -316,6 +317,9 @@ void *CSWorkTasks::WorkTask_WritePacketData(void *arg) {
     return nullptr;
 }
 
+/**
+ *  检查线程状态，只要有一个线程没有退出，就返回 false, 表示还有工作线程尚未退出
+ */
 bool _CheckIsExitThread(StreamThreadParam **streamThreadParamsArry, int Size)
 {
     ThreadContext *pThreadCtx = nullptr;

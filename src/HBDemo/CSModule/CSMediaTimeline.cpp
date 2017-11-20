@@ -171,7 +171,7 @@ int CSTimeline::initial() {
 }
 
 int CSTimeline::sendRawData(uint8_t* pData, long DataSize, int StreamIdex, int64_t TimeStamp) {
-    if (!pData || DataSize<=0 || StreamIdex < mStreamsList.size() || TimeStamp <0) {
+    if (!pData || DataSize<=0 || StreamIdex >= mStreamsList.size() || TimeStamp <0) {
         LOGE("Timeline send raw data failed !<Data:%p><Size:%ld><Stream:%d><:TimeStamp%lld>", pData, DataSize, StreamIdex, TimeStamp);
         return HB_ERROR;
     }
@@ -371,6 +371,11 @@ int CSTimeline::_prepareOutMedia() {
     }
     
     return HB_OK;
+}
+
+void CSTimeline::joinExportThread() {
+    if (mWorkCtx)
+        mWorkCtx->joinExportThread();
 }
 
 void CSTimeline::setOutputFile(char *file) {

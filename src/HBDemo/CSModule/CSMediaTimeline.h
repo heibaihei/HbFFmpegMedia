@@ -79,6 +79,8 @@ public:
      */
     int  release(void);
     
+    /** For test */
+    void joinExportThread();
 protected:
     /** 保存模式下使用到的参数: */
     

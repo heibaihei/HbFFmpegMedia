@@ -35,8 +35,8 @@ int CSWorkContext::prepare(void *args) {
         return HB_ERROR;
     }
     mWorkContextParam->mTargetFormatCtx = outputFormatCtx;
-    mWorkContextParam->mWorkIPCCtx = new ThreadIPCContext(0);
-    if (!mWorkContextParam->mWorkIPCCtx) {
+    mWorkContextParam->mExportThreadIPCCtx = new ThreadIPCContext(0);
+    if (!mWorkContextParam->mExportThreadIPCCtx) {
         LOGE("Work context create IPC context failed !");
         return HB_ERROR;
     }
@@ -52,7 +52,7 @@ int CSWorkContext::_createOutputWorker() {
         return HB_ERROR;
     }
     
-    mWorkContextParam->mWorkThread = pThreadCtx;
+    mWorkContextParam->mExportThread = pThreadCtx;
     int HBErr = pThreadCtx->setFunction(CSWorkTasks::WorkTask_WritePacketData, mWorkContextParam);
     if (HBErr != HB_OK) {
         LOGE("Work context set work func failed !");
@@ -105,9 +105,9 @@ int CSWorkContext::stop() {
     if (mWorkContextParam) {
         mWorkContextParam->mStreamPthreadParamList.clear();
         std::vector<StreamThreadParam*>().swap(mWorkContextParam->mStreamPthreadParamList);
-        if (mWorkContextParam->mWorkIPCCtx) {
-            mWorkContextParam->mWorkIPCCtx->release();
-            delete mWorkContextParam->mWorkIPCCtx;
+        if (mWorkContextParam->mExportThreadIPCCtx) {
+            mWorkContextParam->mExportThreadIPCCtx->release();
+            delete mWorkContextParam->mExportThreadIPCCtx;
         }
     }
     
@@ -120,6 +120,11 @@ int CSWorkContext::release() {
 
 int CSWorkContext::flush() {
     return HB_OK;
+}
+
+void CSWorkContext::joinExportThread() {
+    if (mWorkContextParam && mWorkContextParam->mExportThread)
+        mWorkContextParam->mExportThread->join();
 }
 
 int CSWorkContext::pushStream(CSIStream* pStream) {
@@ -141,7 +146,7 @@ int CSWorkContext::pushStream(CSIStream* pStream) {
     }
     
     pStreamPthreadParam->mThreadCtx = pThreadCtx;
-    pStreamPthreadParam->mWriteIPC = mWorkContextParam->mWorkIPCCtx;
+    pStreamPthreadParam->mWriteIPC = mWorkContextParam->mExportThreadIPCCtx;
     pStreamPthreadParam->mThreadCtx->setFunction(CSWorkTasks::WorkTask_EncodeFrameRawData, pStreamPthreadParam);
     
     mWorkContextParam->mThreadNum++;
