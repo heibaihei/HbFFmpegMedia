@@ -37,6 +37,11 @@
 //#define SOUND_TOUCH_MODULE_EXCLUDE  1
 //#define LIBYUV_MODULE_EXCLUDE  1
 
+typedef struct KeyFramePts {
+    int64_t audioPts;
+    int64_t videoPts;
+}KeyFramePts;
+
 typedef enum ErrorCode {
     AV_STAT_ERR     = -100,
     AV_NOT_INIT     = -99,

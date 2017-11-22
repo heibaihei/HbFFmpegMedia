@@ -13,6 +13,7 @@
 		A1091CE81F595BC200565177 /* CSVideoEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1091CE61F595BC200565177 /* CSVideoEncoder.cpp */; };
 		A1091CEB1F595BD900565177 /* CSVideoDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1091CE91F595BD900565177 /* CSVideoDecoder.cpp */; };
 		A1091CEE1F595BF500565177 /* CSVideoScale.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1091CEC1F595BF500565177 /* CSVideoScale.cpp */; };
+		A10E13251FC4277200CE5F4E /* CSVideoReverse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10E13231FC4277200CE5F4E /* CSVideoReverse.cpp */; };
 		A1245A8B1F657F9000DB5D45 /* CSPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A891F657F9000DB5D45 /* CSPlayer.cpp */; };
 		A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A901F65FD1900DB5D45 /* CSIStream.cpp */; };
 		A1245A951F65FD3300DB5D45 /* CSVStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A931F65FD3300DB5D45 /* CSVStream.cpp */; };
@@ -2931,6 +2932,8 @@
 		A1091CEA1F595BD900565177 /* CSVideoDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVideoDecoder.h; sourceTree = "<group>"; };
 		A1091CEC1F595BF500565177 /* CSVideoScale.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoScale.cpp; sourceTree = "<group>"; };
 		A1091CED1F595BF500565177 /* CSVideoScale.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSVideoScale.hpp; sourceTree = "<group>"; };
+		A10E13231FC4277200CE5F4E /* CSVideoReverse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoReverse.cpp; sourceTree = "<group>"; };
+		A10E13241FC4277200CE5F4E /* CSVideoReverse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSVideoReverse.h; sourceTree = "<group>"; };
 		A1245A891F657F9000DB5D45 /* CSPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSPlayer.cpp; sourceTree = "<group>"; };
 		A1245A8A1F657F9000DB5D45 /* CSPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPlayer.h; sourceTree = "<group>"; };
 		A1245A901F65FD1900DB5D45 /* CSIStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSIStream.cpp; sourceTree = "<group>"; };
@@ -9487,6 +9490,8 @@
 				A1091CE01F5958AF00565177 /* CSVideo.cpp */,
 				A1091CE11F5958AF00565177 /* CSVideo.h */,
 				A13B35671F6FEA6C00D3D494 /* CSVideoTool.cpp */,
+				A10E13231FC4277200CE5F4E /* CSVideoReverse.cpp */,
+				A10E13241FC4277200CE5F4E /* CSVideoReverse.h */,
 			);
 			name = video;
 			path = ../../../src/HBDemo/video;
@@ -17444,6 +17449,7 @@
 				A1091CEB1F595BD900565177 /* CSVideoDecoder.cpp in Sources */,
 				A17F028F1FBB52F5009B03F0 /* CSVideoUtil.cpp in Sources */,
 				A183E2ED1F1F0028003700C3 /* AudioEncoder.cpp in Sources */,
+				A10E13251FC4277200CE5F4E /* CSVideoReverse.cpp in Sources */,
 				A1FB66411F19EBDC001B08F0 /* audio_player.cpp in Sources */,
 				A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */,
 				A10365CB1F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp in Sources */,
