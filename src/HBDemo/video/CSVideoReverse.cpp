@@ -13,10 +13,17 @@ CSVideoFilter::CSVideoFilter() {
     mVideoOutputFile = nullptr;
     mInFmtCtx = nullptr;
     mInVideoStream = nullptr;
+    mInAudioStream = nullptr;
     mInVideoCodecCtx = nullptr;
+    mOutFilterCtx = nullptr;
     mStartTime = 0.0;
     mEndTime = 0.0;
     mEndVideoPts = 0.0;
+    mFrameCount = 0;
+    mOutFmtCtx = nullptr;
+    mOutVideoStream = nullptr;
+    mOutAudioStream = nullptr;
+    mOutVideoCodecCtx = nullptr;
 }
 
 CSVideoFilter::~CSVideoFilter() {
@@ -29,6 +36,16 @@ CSVideoFilter::~CSVideoFilter() {
 int CSVideoFilter::prepare() {
     if (_prepareInMedia() != HB_OK) {
         LOGE("Prepare input media faidled !");
+        return HB_ERROR;
+    }
+
+    if (_prepareOutMedia() != HB_OK) {
+        LOGE("Prepare input media faidled !");
+        return HB_ERROR;
+    }
+
+    if (_filterInitial() != HB_OK) {
+        LOGE("Video filter prepare intial failed !");
         return HB_ERROR;
     }
     
@@ -45,6 +62,58 @@ int CSVideoFilter::prepare() {
     return HB_OK;
 }
 
+int CSVideoFilter::_filterInitial() {
+    int HBErr = HB_OK;
+    enum AVMediaType mediaType = AVMEDIA_TYPE_UNKNOWN;
+    mOutFilterCtx = (FilterCtx *) av_malloc_array(mInFmtCtx->nb_streams, sizeof(FilterCtx));
+    if (!mOutFilterCtx) {
+        HBErr = HB_ERROR;
+        goto FILTER_INITIAL_END_LABEL;
+    }
+    memset(mOutFilterCtx, 0x00, (mInFmtCtx->nb_streams * sizeof(FilterCtx)));
+
+    for (int i=0; i< mInFmtCtx->nb_streams; i++) {
+        AVStream *pStream = mInFmtCtx->streams[i];
+        mediaType = pStream->codecpar->codec_type;
+        if (mediaType == AVMEDIA_TYPE_AUDIO) {
+
+
+        }
+        else if (mediaType == AVMEDIA_TYPE_VIDEO) {
+
+        }
+    }
+
+FILTER_INITIAL_END_LABEL:
+
+    return HB_OK;
+}
+
+int CSVideoFilter::_videoFilterInitial()
+{
+    return HB_OK;
+}
+
+int CSVideoFilter::_audioFilterInitial()
+{
+    return HB_OK;
+}
+
+int CSVideoFilter::_prepareOutMedia() {
+    int HBError = avformat_alloc_output_context2(&mOutFmtCtx, NULL, NULL, mVideoOutputFile);
+    if (HBError < 0) {
+        LOGE("AVformat alloc output meida context failed, %s", av_err2str(HBError));
+        HBError = HB_ERROR;
+        goto PREPARE_OUT_MEDIA_END_LABEL;
+    }
+
+
+
+    return HB_OK;
+PREPARE_OUT_MEDIA_END_LABEL:
+    avformat_close_input(&mOutFmtCtx);
+    return HBError;
+}
 int CSVideoFilter::_prepareInMedia() {
     AVCodec *pCodec = nullptr;
     int HBError = avformat_open_input(&mInFmtCtx, mVideoInputFile, NULL, NULL);
@@ -63,11 +132,14 @@ int CSVideoFilter::_prepareInMedia() {
     for (int i = 0; i<mInFmtCtx->nb_streams; i++) {
         if (mInFmtCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             mInVideoStream = mInFmtCtx->streams[i];
-            break;
+        }
+        else if (mInFmtCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
+            mInAudioStream = mInFmtCtx->streams[i];
         }
     }
-    if (!mInVideoStream) {
-        LOGE("Cant't find valid video stream !");
+    
+    if (!mInVideoStream || !mInAudioStream) {
+        LOGE("Cant't find valid video and audio stream !");
         return HB_ERROR;
     }
     
@@ -88,8 +160,8 @@ int CSVideoFilter::_prepareInMedia() {
     return HB_OK;
 }
 
-int CSVideoFilter::insertFrameQueue(std::vector<FrameInfo *> &frameQueue, AVFrame *pFrame, int mediaStreamIndex, enum AVMediaType mediaType) {
-    
+int CSVideoFilter::pushFrameQueue(std::vector<FrameInfo *> &frameQueue, AVFrame *pFrame, int mediaStreamIndex, enum AVMediaType mediaType) {
+
     FrameInfo *pNewFrameInfo = new FrameInfo;
     if (!pNewFrameInfo) {
         LOGE("Create new frame info failed !");
@@ -109,29 +181,31 @@ int CSVideoFilter::_partReverse(int streamIndex, int64_t StartTime, int64_t EndT
     AVFrame *pNewFrame = nullptr;
     AVStream *pCurStream = nullptr;
     AVRational externDefaultTimebase = {1, AV_TIME_BASE};
-    int64_t reverseStartPts = av_rescale_q((int64_t)mStartTime * AV_TIME_BASE, externDefaultTimebase, mInVideoStream->time_base);
-    int64_t reverseEndPts = av_rescale_q((int64_t)mEndTime * AV_TIME_BASE, externDefaultTimebase, mInVideoStream->time_base);
+    int64_t reverseStartPts = av_rescale_q((int64_t) mStartTime * AV_TIME_BASE, externDefaultTimebase, mInVideoStream->time_base);
+    int64_t reverseEndPts = av_rescale_q((int64_t) mEndTime * AV_TIME_BASE, externDefaultTimebase, mInVideoStream->time_base);
     std::vector<FrameInfo *> frameQueue;
     std::vector<FrameInfo *>::iterator pFrameQueueIterator;
     if (reverseEndPts != 0 && StartTime > reverseEndPts) {
         HBError = HB_ERROR;
         goto PART_REVERSE_END_LABEL;
     }
-    
+
     HBError = av_seek_frame(mInFmtCtx, streamIndex, StartTime, AVSEEK_FLAG_BACKWARD);
-    if (HBError >=0 ) {
+    if (HBError >= 0) {
         LOGE("seek to start pos failed, %s", av_err2str(HBError));
         HBError = HB_ERROR;
         goto PART_REVERSE_END_LABEL;
     }
-    
+    avcodec_flush_buffers(mInVideoCodecCtx);
+
     pNewFrame = av_frame_alloc();
     if (!pNewFrame) {
         LOGE("Alloc new frame room failed !");
         HBError = HB_ERROR;
         goto PART_REVERSE_END_LABEL;
     }
-    
+
+    pNewFrame = av_frame_alloc();
     av_init_packet(&pNewPacket);
     while (true) {
         HBError = av_read_frame(mInFmtCtx, &pNewPacket);
@@ -140,21 +214,23 @@ int CSVideoFilter::_partReverse(int streamIndex, int64_t StartTime, int64_t EndT
             HBError = HB_ERROR;
             break;
         }
-        
+
         pCurStream = mInFmtCtx->streams[pNewPacket.stream_index];
         if (pCurStream->codecpar->codec_type != AVMEDIA_TYPE_VIDEO \
-            && pCurStream->codecpar->codec_type != AVMEDIA_TYPE_AUDIO) {
+ && pCurStream->codecpar->codec_type != AVMEDIA_TYPE_AUDIO) {
             av_packet_unref(&pNewPacket);
             continue;
         }
-        
+
         HBError = avcodec_send_packet(mInVideoCodecCtx, &pNewPacket);
         if (HBError != 0) {
+            LOGE("AVcode send new packet into video codec context failed, %s", av_err2str(HBError));
+            av_packet_unref(&pNewPacket);
             if (HBError == AVERROR(EAGAIN))
-                LOGE("Not enought packet into codec");
+                continue;
             break;
         }
-        pNewFrame = av_frame_alloc();
+
         HBError = avcodec_receive_frame(mInVideoCodecCtx, pNewFrame);
         if (HBError == 0) {
             pNewFrame->pts = av_frame_get_best_effort_timestamp(pNewFrame);
@@ -163,27 +239,92 @@ int CSVideoFilter::_partReverse(int streamIndex, int64_t StartTime, int64_t EndT
                 if (mEndVideoPts < pNewFrame->pts)
                     mEndVideoPts = pNewFrame->pts;
                 /** 将帧数据插入到帧队列中去 */
-                insertFrameQueue(frameQueue, \
+                pushFrameQueue(frameQueue, \
                         pNewFrame, streamIndex, pCurStream->codecpar->codec_type);
             }
             av_frame_unref(pNewFrame);
+        } else {
+            av_frame_unref(pNewFrame);
+            if (HBError != AVERROR(EAGAIN)) {
+                LOGE("Receive decoded frame failed, %s", av_err2str(HBError));
+                break;
+            }
         }
         av_packet_unref(&pNewPacket);
     }
-    
-    for (pFrameQueueIterator = frameQueue.begin(); \
-         pFrameQueueIterator != frameQueue.end(); pFrameQueueIterator++) {
-//        enum AVMediaType = (*pFrameQueueIterator)->MediaType;
-        
-        /** 利用 filter 进行取帧 */
-        
-        
+
+    /** 刷帧 */
+    HBError = avcodec_send_packet(mInVideoCodecCtx, nullptr);
+    if (HBError != 0) {
+        LOGE("AVcode flush video codec context failed, %s", av_err2str(HBError));
     }
+
+    while (true) {
+        HBError = avcodec_receive_frame(mInVideoCodecCtx, pNewFrame);
+        if (HBError == 0) {
+            pNewFrame->pts = av_frame_get_best_effort_timestamp(pNewFrame);
+            if (pNewFrame->pts >= reverseStartPts && \
+                pNewFrame->pts <= reverseEndPts) {
+                if (mEndVideoPts < pNewFrame->pts)
+                    mEndVideoPts = pNewFrame->pts;
+                /** 将帧数据插入到帧队列中去 */
+                pushFrameQueue(frameQueue, \
+                        pNewFrame, streamIndex, pCurStream->codecpar->codec_type);
+            }
+            av_frame_unref(pNewFrame);
+        } else {
+            av_frame_unref(pNewFrame);
+            break;
+        }
+    }
+
+    av_frame_free(&pNewFrame);
     
-    
+    if (_exportReverseMedia(frameQueue) != HB_OK) {
+        LOGE("Export reverse media failed !");
+        HBError = HB_ERROR;
+    }
+
 PART_REVERSE_END_LABEL:
-    
     return HBError;
+}
+
+int CSVideoFilter::_exportReverseMedia(std::vector<FrameInfo *>& frameQueue) {
+
+    std::vector<FrameInfo *>::iterator frameInfoIterator = frameQueue.begin();
+    AVRational externDefaultTimebase = {1, AV_TIME_BASE};
+    int64_t reverseStartPts = av_rescale_q((int64_t) mStartTime * AV_TIME_BASE, externDefaultTimebase, mInVideoStream->time_base);
+    int64_t reverseEndPts = av_rescale_q((int64_t) mEndTime * AV_TIME_BASE, externDefaultTimebase, mInVideoStream->time_base);
+    int64_t duration = reverseEndPts;
+    if (reverseEndPts > mEndVideoPts)
+        duration = mEndVideoPts;
+
+    AVFrame *pNewFrame = av_frame_alloc();
+    if (!pNewFrame) {
+        LOGE("Allock new empty frame room failed !");
+        return HB_ERROR;
+    }
+
+    enum AVMediaType eCurFrmaeMediaType;
+    int  curStreamIndex = -1;
+    for (; frameInfoIterator != frameQueue.end(); frameInfoIterator++) {
+        eCurFrmaeMediaType = (*frameInfoIterator)->MediaType;
+        if (eCurFrmaeMediaType == AVMEDIA_TYPE_VIDEO) {
+            (*frameInfoIterator)->pMediaFrame->pts = mEndVideoPts - (*frameInfoIterator)->pMediaFrame->pts;
+        } else if (eCurFrmaeMediaType == AVMEDIA_TYPE_AUDIO) {
+
+            (*frameInfoIterator)->pMediaFrame->pts = mFrameCount * mInAudioStream->time_base.den / mInAudioStream->time_base.num * av_q2d(mInAudioStream->r_frame_rate);
+            mFrameCount++;
+        }
+
+        curStreamIndex = (*frameInfoIterator)->StreamIndex;
+
+
+    }
+
+
+
+    return HB_OK;
 }
 
 int CSVideoFilter::_doReverse() {
@@ -191,11 +332,18 @@ int CSVideoFilter::_doReverse() {
         LOGE("get invalid key frame pts info !");
         return HB_ERROR;
     }
-    
+
+    KeyFramePts* pLastKeyFramePtsNode = nullptr;
     std::vector <KeyFramePts *>::iterator KeyFrameIterator = mKeyFramePtsVector.begin();
-    for (; KeyFrameIterator != mKeyFramePtsVector.end(); KeyFrameIterator++) {
+    for (KeyFrameIterator = mKeyFramePtsVector.begin(); KeyFrameIterator != mKeyFramePtsVector.end(); KeyFrameIterator++) {
+
         KeyFramePts* pKeyFramePtsNode = *KeyFrameIterator;
-        _partReverse(mInVideoStream->index, pKeyFramePtsNode->videoPts, 0);
+        if (_partReverse(mInVideoStream->index, pKeyFramePtsNode->videoPts, (pLastKeyFramePtsNode ? pLastKeyFramePtsNode->videoPts : 0)) != HB_OK) {
+            LOGE("do param reverse failed !");
+            break;
+        }
+
+        pLastKeyFramePtsNode = pKeyFramePtsNode;
     }
     
     return HB_OK;
@@ -213,25 +361,27 @@ int CSVideoFilter::_collectKeyFramePts() {
     
     av_seek_frame(mInFmtCtx, mInVideoStream->index, startTime, AVSEEK_FLAG_BACKWARD);
 
+    enum AVMediaType curMediaType = AVMEDIA_TYPE_UNKNOWN;
     AVPacket tmpPacket;
     while (true) {
         av_init_packet(&tmpPacket);
         HBError = av_read_frame(mInFmtCtx, &tmpPacket);
         if (HBError != 0) {
-            LOGE("read frame failed, %s", av_err2str(HBError));
+            LOGE("Can't read frame from intput fmtctx, %s", av_err2str(HBError));
             break;
         }
-        
-        if (mInFmtCtx->streams[tmpPacket.stream_index]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+
+        curMediaType = mInFmtCtx->streams[tmpPacket.stream_index]->codecpar->codec_type;
+        if (curMediaType == AVMEDIA_TYPE_VIDEO) {
             if (tmpPacket.flags & AV_PKT_FLAG_KEY) {
                 pKeyFramePTS = new KeyFramePts;
                 if (!pKeyFramePTS) {
                     HBError = HB_ERROR;
                     goto COLLECT_KEY_FRAME_PTS_END_LABEL;
                 }
-                
-                pKeyFramePTS->audioPts = curAudioPts;
+
                 pKeyFramePTS->videoPts = tmpPacket.pts;
+                pKeyFramePTS->audioPts = curAudioPts;
                 
                 /** 后解析的帧往前插 */
                 mKeyFramePtsVector.insert(mKeyFramePtsVector.begin(), pKeyFramePTS);
@@ -241,9 +391,10 @@ int CSVideoFilter::_collectKeyFramePts() {
                 }
             }
         }
-        else if (mInFmtCtx->streams[tmpPacket.stream_index]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
-            curAudioPts  =tmpPacket.pts;
+        else if (curMediaType == AVMEDIA_TYPE_AUDIO) {
+            curAudioPts = tmpPacket.pts;
         }
+        
         av_packet_unref(&tmpPacket);
     }
     

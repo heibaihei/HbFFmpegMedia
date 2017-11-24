@@ -40,7 +40,7 @@
 typedef struct KeyFramePts {
     int64_t audioPts;
     int64_t videoPts;
-}KeyFramePts;
+} KeyFramePts;
 
 typedef enum ErrorCode {
     AV_STAT_ERR     = -100,

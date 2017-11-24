@@ -45,10 +45,8 @@ int main(int argc, const char * argv[]) {
     }
     {/** Encapsulation */
         {/** CSTimeline */
-            CSModulePlayerDemo();
-            
+//            CSModulePlayerDemo();
         }
-        
     }
 
     

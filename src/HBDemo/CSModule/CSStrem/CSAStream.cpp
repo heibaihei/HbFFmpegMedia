@@ -227,7 +227,7 @@ int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
         }
         mOutTotalOfSamples += HBErr;
         /** 计算音频帧的 pts 时间 */
-        pBufferFrame->pts = actualAudioSamples * mOutTotalOfFrame * (mAudioParam->sample_rate * 1.0 / mAudioParam->sample_rate);
+        pBufferFrame->pts = (actualAudioSamples * mOutTotalOfFrame / mAudioParam->sample_rate) * av_q2d(mStream->time_base);
         mOutTotalOfFrame++;
         
         if (pFrameQueue->push(pBufferFrame) <= 0) {
