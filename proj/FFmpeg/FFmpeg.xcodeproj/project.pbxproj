@@ -18,6 +18,7 @@
 		A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A901F65FD1900DB5D45 /* CSIStream.cpp */; };
 		A1245A951F65FD3300DB5D45 /* CSVStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A931F65FD3300DB5D45 /* CSVStream.cpp */; };
 		A1245A981F65FD4A00DB5D45 /* CSAStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A961F65FD4A00DB5D45 /* CSAStream.cpp */; };
+		A131A0D01FC8FC98002E5B8E /* CSMediaBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A0C71FC8FC98002E5B8E /* CSMediaBase.cpp */; };
 		A13A69751F3ED3F900FC6376 /* HBAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A13A69741F3ED3F900FC6376 /* HBAudio.cpp */; };
 		A13B34F31F6FC27400D3D494 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A13B34F21F6FC27400D3D494 /* main.cpp */; };
 		A13B353B1F6FC2CE00D3D494 /* ADD_WaterMark.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A13B34F81F6FC2CE00D3D494 /* ADD_WaterMark.cpp */; };
@@ -2813,6 +2814,7 @@
 		A1FC23BA1F277BD200024371 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FC23B91F277BD200024371 /* libbz2.tbd */; };
 		A1FC23BD1F277D1000024371 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E5CBA71F276C8500A02704 /* AudioToolbox.framework */; };
 		A1FC872A1F1D9BFA004D8A63 /* CSCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1FC87291F1D9BFA004D8A63 /* CSCommon.cpp */; };
+		A8722835E69DA1AB1A91E0AE /* CSMediaBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8722BAFED3F67D70E60999C /* CSMediaBase.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2943,6 +2945,8 @@
 		A1245A961F65FD4A00DB5D45 /* CSAStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAStream.cpp; sourceTree = "<group>"; };
 		A1245A971F65FD4A00DB5D45 /* CSAStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAStream.h; sourceTree = "<group>"; };
 		A12912111EC756E7008847CE /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		A131A0C71FC8FC98002E5B8E /* CSMediaBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSMediaBase.cpp; sourceTree = "<group>"; };
+		A131A0C81FC8FC98002E5B8E /* CSMediaBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMediaBase.h; sourceTree = "<group>"; };
 		A13339F31FB4B128000FC31D /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 		A13339F41FB4B128000FC31D /* stb_image_write.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image_write.h; sourceTree = "<group>"; };
 		A1373F211FB9F9AE00A76367 /* CSPlayerListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSPlayerListener.h; sourceTree = "<group>"; };
@@ -9360,6 +9364,8 @@
 		A1FC23B91F277BD200024371 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		A1FC23BB1F277BEB00024371 /* libobjc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libobjc.tbd; path = usr/lib/libobjc.tbd; sourceTree = SDKROOT; };
 		A1FC87291F1D9BFA004D8A63 /* CSCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSCommon.cpp; path = ../../../src/HBDemo/CSCommon.cpp; sourceTree = "<group>"; };
+		A87221113A09537AA07AAD52 /* CSMediaBase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSMediaBase.hpp; sourceTree = "<group>"; };
+		A8722BAFED3F67D70E60999C /* CSMediaBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSMediaBase.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -9563,6 +9569,16 @@
 			path = CSStrem;
 			sourceTree = "<group>";
 		};
+		A131A0C61FC8FC98002E5B8E /* CSMediaBase */ = {
+			isa = PBXGroup;
+			children = (
+				A131A0C71FC8FC98002E5B8E /* CSMediaBase.cpp */,
+				A131A0C81FC8FC98002E5B8E /* CSMediaBase.h */,
+			);
+			name = CSMediaBase;
+			path = ../../../src/HBDemo/CSMediaBase;
+			sourceTree = "<group>";
+		};
 		A13339F21FB4B128000FC31D /* stb */ = {
 			isa = PBXGroup;
 			children = (
@@ -9712,6 +9728,7 @@
 			isa = PBXGroup;
 			children = (
 				A181BC341EA1F682004861DA /* main.cpp */,
+				A131A0C61FC8FC98002E5B8E /* CSMediaBase */,
 				A16159AE1F70ACBC001D54EA /* Example */,
 				A1F706131F656F9F003A6010 /* CSModule */,
 				A1091CDF1F59587000565177 /* video */,
@@ -9738,6 +9755,7 @@
 				A181BC5B1EA21756004861DA /* HBFilterWater.h */,
 				A181BC5C1EA21756004861DA /* HBSeperateFormat.c */,
 				A181BC5D1EA21756004861DA /* HBSeperateFormat.h */,
+				A87222E10292059B580779E6 /* CSMediaBase */,
 			);
 			path = Sample;
 			sourceTree = "<group>";
@@ -17131,6 +17149,16 @@
 			path = AudioPlayer;
 			sourceTree = "<group>";
 		};
+		A87222E10292059B580779E6 /* CSMediaBase */ = {
+			isa = PBXGroup;
+			children = (
+				A8722BAFED3F67D70E60999C /* CSMediaBase.cpp */,
+				A87221113A09537AA07AAD52 /* CSMediaBase.hpp */,
+			);
+			name = CSMediaBase;
+			path = ../../../src/HBDemo/CSMediaBase;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -17404,6 +17432,7 @@
 				A195CBC61FBB102400F708F9 /* CSAudioResamplerEffect.cpp in Sources */,
 				A1F6019F1F66C98C00168C96 /* CSStreamFactory.cpp in Sources */,
 				A17202B31F69993E00662F18 /* CSAudioFifo.cpp in Sources */,
+				A131A0D01FC8FC98002E5B8E /* CSMediaBase.cpp in Sources */,
 				A19A67EB1EB3465D00DE8F11 /* simplest_ffmpeg_mem_transcoder.cpp in Sources */,
 				A15632BA1F94B07200F0140F /* FilteringVideo.cpp in Sources */,
 				A181BC351EA1F682004861DA /* main.cpp in Sources */,
@@ -17457,6 +17486,7 @@
 				A15BB0E81F42912400AFE839 /* CSAudioDecoder.cpp in Sources */,
 				A1091CEE1F595BF500565177 /* CSVideoScale.cpp in Sources */,
 				A156FEF31EA25C7000258C1E /* FFmpegSwscale.cpp in Sources */,
+				A8722835E69DA1AB1A91E0AE /* CSMediaBase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
