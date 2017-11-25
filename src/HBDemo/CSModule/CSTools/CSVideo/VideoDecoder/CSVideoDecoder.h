@@ -17,6 +17,9 @@
 
 namespace HBMedia {
 
+/** 结构功能解析: 
+ *  解码数据，如果不是以文件的方式输出，则内部默认持有数据帧缓冲队列，供外部提取，以阻塞等待的方式
+ */
 typedef class CSVideoDecoder : public CSMediaBase
 {
 public:

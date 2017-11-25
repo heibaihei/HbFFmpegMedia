@@ -11,6 +11,11 @@
 
 int CSVideoDemo_VideoDecoder() {
     HBMedia::CSVideoDecoder* pVideoDecoder = new HBMedia::CSVideoDecoder();
+    pVideoDecoder->setInMediaType(MD_TYPE_COMPRESS);
+    pVideoDecoder->setOutMediaType(MD_TYPE_RAW_BY_FILE);
+    pVideoDecoder->setInMediaFile((char *)VIDEO_RESOURCE_ROOT_PATH"/100.mp4");
+    pVideoDecoder->setOutMediaFile((char *)VIDEO_RESOURCE_ROOT_PATH"/decode/100_raw.mp4");
+    
     pVideoDecoder->prepare();
     pVideoDecoder->start();
     pVideoDecoder->stop();

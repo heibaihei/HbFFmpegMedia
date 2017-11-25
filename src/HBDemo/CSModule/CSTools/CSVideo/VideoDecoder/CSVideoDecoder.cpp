@@ -41,27 +41,28 @@ int CSVideoDecoder::prepare() {
     
     if (_mediaParamInitial() != HB_OK) {
         LOGE("Check Video decoder param failed !");
-        return HB_ERROR;
+        goto VIDEO_DECODER_PREPARE_END_LABEL;
     }
-    
+
     if (videoDecoderInitial() != HB_OK) {
         LOGE("Video decoder initial failed !");
-        return HB_ERROR;
+        goto VIDEO_DECODER_PREPARE_END_LABEL;
     }
     
     if (videoDecoderOpen() != HB_OK) {
         LOGE("Video decoder open failed !");
-        return HB_ERROR;
+        goto VIDEO_DECODER_PREPARE_END_LABEL;
     }
     
     if (videoSwscalePrepare() != HB_OK) {
         LOGE("Video swscale initail failed !");
-        return HB_ERROR;
+        goto VIDEO_DECODER_PREPARE_END_LABEL;
     }
-    
+
+    return HB_OK;
 VIDEO_DECODER_PREPARE_END_LABEL:
     
-    return HB_OK;
+    return HB_ERROR;
 }
     
 int CSVideoDecoder::stop() {
@@ -190,7 +191,7 @@ int  CSVideoDecoder::selectVideoFrame() {
                     }
                     else {
                         /** 此处得到转换后的视频数据：mTargetVideoFrameBuffer */
-                        if (mTrgPicFileHandle) {
+                        if (mTrgMediaFileHandle) {
                             /** 说明以视频裸文件的数据方式输出 */
                         }
                         else {
@@ -238,11 +239,11 @@ int  CSVideoDecoder::CSIOPushDataBuffer(uint8_t* data, int samples) {
     
 int  CSVideoDecoder::videoDecoderInitial() {
     int HBError = -1;
-    
+
     memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
-    
+
     mPInVideoFormatCtx = avformat_alloc_context();
-    HBError = avformat_open_input(&mPInVideoFormatCtx, mSrcPicMediaFile, NULL, NULL);
+    HBError = avformat_open_input(&mPInVideoFormatCtx, mSrcMediaFile, NULL, NULL);
     if (HBError != 0) {
         LOGE("Video decoder couldn't open input file. <%d> <%s>", HBError, av_err2str(HBError));
         return HB_ERROR;
@@ -286,7 +287,7 @@ int  CSVideoDecoder::videoDecoderInitial() {
     /** 初始化音频数据缓冲管道 */
     packet_queue_init(&mFrameCacheList);
     
-    av_dump_format(mPInVideoFormatCtx, mVideoStreamIndex, mSrcPicMediaFile, false);
+    av_dump_format(mPInVideoFormatCtx, mVideoStreamIndex, mSrcMediaFile, false);
     return HB_OK;
 }
 
@@ -300,6 +301,14 @@ int  CSVideoDecoder::videoDecoderRelease() {
 
 int CSVideoDecoder::videoDecoderOpen() {
     int HBError = -1;
+
+    if (mOutMediaType == MD_TYPE_RAW_BY_FILE) {
+        mTrgMediaFileHandle = fopen(mTrgMediaFile, "wb");
+        if (!mTrgMediaFileHandle) {
+            LOGE("Audio decoder couldn't open output file.");
+            return HB_ERROR;
+        }
+    }
     
     packet_queue_start(&mPacketCacheList);
     packet_queue_start(&mFrameCacheList);
@@ -350,7 +359,7 @@ int  CSVideoDecoder::_mediaParamInitial() {
 
     switch (mInMediaType) {
         case MD_TYPE_UNKNOWN: {
-            if (mSrcPicMediaFile)
+            if (mSrcMediaFile)
                 mInMediaType = MD_TYPE_COMPRESS;
             else {
                 LOGE("[%s] >>> [Type:%s] Audio decoder input file is invalid !", __func__, getMediaDataTypeDescript(mInMediaType));
@@ -359,22 +368,39 @@ int  CSVideoDecoder::_mediaParamInitial() {
         }
             break;
         case MD_TYPE_COMPRESS:
-            if (!mSrcPicMediaFile) {
+            if (!mSrcMediaFile) {
                 LOGE("[%s] >>> [Type:%s]Audio decoder input file is invalid !", __func__, getMediaDataTypeDescript(mInMediaType));
                 return HB_ERROR;
             }
             break;
         default:
             LOGE("Unknown media type !");
-    }
-
-    if (mTrgPicMediaFile) {
-        mTrgPicFileHandle = fopen(mTrgPicMediaFile, "wb");
-        if (!mTrgPicFileHandle) {
-            LOGE("Audio decoder couldn't open output file.");
             return HB_ERROR;
-        }
     }
+    
+    switch (mOutMediaType) {
+        case MD_TYPE_UNKNOWN: {
+            if (mTrgMediaFile)
+                mOutMediaType = MD_TYPE_RAW_BY_FILE;
+            else
+                mOutMediaType = MD_TYPE_RAW_BY_MEMORY;
+        }
+            break;
+        case MD_TYPE_RAW_BY_FILE:
+            if (!mTrgMediaFile) {
+                LOGE("[%s] >>> [Type:%s]Audio decoder output file is invalid !", __func__, getMediaDataTypeDescript(mOutMediaType));
+                return HB_ERROR;
+            }
+            break;
+        case MD_TYPE_COMPRESS:
+            LOGE("Cur work mode is not support this output type !");
+            return HB_ERROR;
+            
+        default:
+            LOGE("Unknown media type !");
+            return HB_ERROR;
+    }
+    
     return HB_OK;
 }
 

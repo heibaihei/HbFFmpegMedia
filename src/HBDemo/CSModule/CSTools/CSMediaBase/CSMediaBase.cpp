@@ -10,27 +10,40 @@
 
 namespace HBMedia {
 
-    CSMediaBase::CSMediaBase() {
-        mInMediaType = MD_TYPE_UNKNOWN;
-        mOutMediaType = MD_TYPE_UNKNOWN;
-        mSrcPicMediaFile = nullptr;
-        mSrcPicFileHandle = nullptr;
-        mTrgPicMediaFile = nullptr;
-        mTrgPicFileHandle = nullptr;
-        mPInVideoFormatCtx = nullptr;
-        mPOutVideoFormatCtx = nullptr;
-    }
+CSMediaBase::CSMediaBase() {
+    mInMediaType = MD_TYPE_UNKNOWN;
+    mOutMediaType = MD_TYPE_UNKNOWN;
+    mSrcMediaFile = nullptr;
+    mSrcMediaFileHandle = nullptr;
+    mTrgMediaFile = nullptr;
+    mTrgMediaFileHandle = nullptr;
+    mPInVideoFormatCtx = nullptr;
+    mPOutVideoFormatCtx = nullptr;
+}
 
-    CSMediaBase::~CSMediaBase() {
-        if (mSrcPicMediaFile)
-            av_freep(&mSrcPicMediaFile);
-        if (mTrgPicMediaFile)
-            av_freep(&mTrgPicMediaFile);
-    }
+CSMediaBase::~CSMediaBase() {
+    if (mSrcMediaFile)
+        av_freep(&mSrcMediaFile);
+    if (mTrgMediaFile)
+        av_freep(&mTrgMediaFile);
+}
 
-    int CSMediaBase::baseInitial() {
-        av_register_all();
-        avformat_network_init();
-        return HB_OK;
-    }
+int CSMediaBase::baseInitial() {
+    av_register_all();
+    avformat_network_init();
+    return HB_OK;
+}
+
+void CSMediaBase::setInMediaFile(char *file) {
+    if (mSrcMediaFile)
+        av_freep(&mSrcMediaFile);
+    mSrcMediaFile = av_strdup(file);
+}
+
+void CSMediaBase::setOutMediaFile(char *file) {
+    if (mTrgMediaFile)
+        av_freep(&mTrgMediaFile);
+    mTrgMediaFile = av_strdup(file);
+}
+
 }

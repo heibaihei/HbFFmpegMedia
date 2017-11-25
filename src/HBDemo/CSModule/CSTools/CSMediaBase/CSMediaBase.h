@@ -47,31 +47,34 @@ namespace HBMedia {
         /**
          *  配置输入的媒体文件
          */
-        void setInputPicMediaFile(char *file);
-        char *getInputPicMediaFile() { return mSrcPicMediaFile; };
+        void setInMediaFile(char *file);
+        char *getInMediaFile() { return mSrcMediaFile; }
 
         /**
          *  配置输出的媒体文件
          */
-        void setOutputPicMediaFile(char *file);
-        char *getOutputPicMediaFile() { return mTrgPicMediaFile; }
+        void setOutMediaFile(char *file);
+        char *getOutMediaFile() { return mTrgMediaFile; }
 
     protected:
+        int 
+
+
         /**
          *  媒体数据输入信息
          */
         MEDIA_DATA_TYPE  mInMediaType;
         AVFormatContext *mPInVideoFormatCtx;
-        char            *mSrcPicMediaFile;
-        FILE            *mSrcPicFileHandle;
+        char            *mSrcMediaFile;
+        FILE            *mSrcMediaFileHandle;
 
         /**
          *  媒体数据输出信息
          */
         MEDIA_DATA_TYPE  mOutMediaType;
         AVFormatContext *mPOutVideoFormatCtx;
-        char            *mTrgPicMediaFile;
-        FILE            *mTrgPicFileHandle;
+        char            *mTrgMediaFile;
+        FILE            *mTrgMediaFileHandle;
     } CSMediaBase;
 }
 #endif /* CSMediaBase_h */

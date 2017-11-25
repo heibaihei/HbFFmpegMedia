@@ -14,6 +14,8 @@
 #include "CSCommon.h"
 #include "CSMediaBase.h"
 
+#define VIDEO_RESOURCE_ROOT_PATH       "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/video"
+
 int TVideoFasterTranfor(int argc, const char *argv[]);
 
 /**
