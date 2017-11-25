@@ -24,7 +24,6 @@ CSVideoDecoder::CSVideoDecoder() {
     mPInputVideoCodec = nullptr;
     mPVideoConvertCtx = nullptr;
 
-    mTargetVideoFrameBufferSize = 0;
     mTargetVideoFrameBuffer = nullptr;
 }
 
@@ -44,24 +43,25 @@ int CSVideoDecoder::prepare() {
         goto VIDEO_DECODER_PREPARE_END_LABEL;
     }
 
-    if (videoDecoderInitial() != HB_OK) {
+    if (_DecoderInitial() != HB_OK) {
         LOGE("Video decoder initial failed !");
         goto VIDEO_DECODER_PREPARE_END_LABEL;
     }
     
-    if (videoDecoderOpen() != HB_OK) {
+    if (_ExportInitial() != HB_OK) {
         LOGE("Video decoder open failed !");
         goto VIDEO_DECODER_PREPARE_END_LABEL;
     }
     
-    if (videoSwscalePrepare() != HB_OK) {
+    if (_SwscaleInitial() != HB_OK) {
         LOGE("Video swscale initail failed !");
         goto VIDEO_DECODER_PREPARE_END_LABEL;
     }
 
     return HB_OK;
-VIDEO_DECODER_PREPARE_END_LABEL:
     
+VIDEO_DECODER_PREPARE_END_LABEL:
+    release();
     return HB_ERROR;
 }
     
@@ -197,8 +197,8 @@ int  CSVideoDecoder::selectVideoFrame() {
                         else {
                             /** 进行数据拷贝 */
                             AVFrame* pTmpFrame = av_frame_alloc();
-                            uint8_t* pTargetData = (uint8_t *)av_mallocz(mTargetVideoFrameBufferSize);
-                            memcpy(pTargetData, mTargetVideoFrameBuffer, mTargetVideoFrameBufferSize);
+                            uint8_t* pTargetData = (uint8_t *)av_mallocz(mTargetVideoParams.mPreImagePixBufferSize);
+                            memcpy(pTargetData, mTargetVideoFrameBuffer, mTargetVideoParams.mPreImagePixBufferSize);
                             
                             av_image_fill_arrays(pTmpFrame->data, pTmpFrame->linesize, pTargetData, getImageInnerFormat(mTargetVideoParams.mPixFmt), mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
                             pTmpFrame->width = mTargetVideoParams.mWidth;
@@ -237,58 +237,76 @@ int  CSVideoDecoder::CSIOPushDataBuffer(uint8_t* data, int samples) {
     return HB_OK;
 }
     
-int  CSVideoDecoder::videoDecoderInitial() {
-    int HBError = -1;
-
-    memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
-
-    mPInVideoFormatCtx = avformat_alloc_context();
-    HBError = avformat_open_input(&mPInVideoFormatCtx, mSrcMediaFile, NULL, NULL);
-    if (HBError != 0) {
-        LOGE("Video decoder couldn't open input file. <%d> <%s>", HBError, av_err2str(HBError));
-        return HB_ERROR;
-    }
+int  CSVideoDecoder::_DecoderInitial() {
     
-    HBError = avformat_find_stream_info(mPInVideoFormatCtx, NULL);
-    if (HBError < 0) {
-        LOGE("Video decoder couldn't find stream information. <%s>", av_err2str(HBError));
-        return HB_ERROR;
-    }
-    
-    mVideoStreamIndex = INVALID_STREAM_INDEX;
-    for (int i=0; i<mPInVideoFormatCtx->nb_streams; i++) {
-        if (mPInVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-            mVideoStreamIndex = i;
-            break;
+    if (mInMediaType == MD_TYPE_COMPRESS) {
+        int HBError = HB_OK;
+        AVStream* pVideoStream = nullptr;
+        mPInputVideoCodecCtx = nullptr;
+        memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
+        
+        if (CSMediaBase::_InMediaInitial() != HB_OK) {
+            LOGE("Media base in media initial failed !");
+            goto VIDEO_DECODER_INITIAL_END_LABEL;
         }
+        
+        mVideoStreamIndex = av_find_best_stream(mPInVideoFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
+        if (mVideoStreamIndex < 0) {
+            LOGW("Video decoder counldn't find valid audio stream, %s", av_err2str(mVideoStreamIndex));
+            goto VIDEO_DECODER_INITIAL_END_LABEL;
+        }
+        
+        pVideoStream = mPInVideoFormatCtx->streams[mVideoStreamIndex];
+        mPInputVideoCodec = avcodec_find_decoder(pVideoStream->codecpar->codec_id);
+        if (!mPInputVideoCodec) {
+            LOGE("Codec <%d> not found !", pVideoStream->codecpar->codec_id);
+            goto VIDEO_DECODER_INITIAL_END_LABEL;
+        }
+        
+        mPInputVideoCodecCtx = avcodec_alloc_context3(mPInputVideoCodec);
+        if (!mPInputVideoCodecCtx) {
+            LOGE("Codec ctx <%d> not found !", pVideoStream->codecpar->codec_id);
+            goto VIDEO_DECODER_INITIAL_END_LABEL;
+        }
+        avcodec_parameters_to_context(mPInputVideoCodecCtx, pVideoStream->codecpar);
+        
+        HBError = avcodec_open2(mPInputVideoCodecCtx, mPInputVideoCodec, NULL);
+        if (HBError != 0) {
+            LOGE("Could not open input codec context. <%s>", av_err2str(HBError));
+            goto VIDEO_DECODER_INITIAL_END_LABEL;
+        }
+        
+        /** 初始化原参数信息 */
+        mSrcVideoParams.mPreImagePixBufferSize = av_image_get_buffer_size(mPInputVideoCodecCtx->pix_fmt, \
+                                          mPInputVideoCodecCtx->width, mPInputVideoCodecCtx->height, mSrcVideoParams.mAlign);
+        mSrcVideoParams.mWidth = mPInputVideoCodecCtx->width;
+        mSrcVideoParams.mHeight = mPInputVideoCodecCtx->height;
+        mSrcVideoParams.mPixFmt = getImageExternFormat(mPInputVideoCodecCtx->pix_fmt);
+        
+        av_dump_format(mPInVideoFormatCtx, mVideoStreamIndex, mSrcMediaFile, false);
     }
-    if (mVideoStreamIndex == INVALID_STREAM_INDEX) {
-        LOGW("Video decoder counldn't find valid audio stream !");
-        return HB_ERROR;
+    
+    /** 数据队列初始化 */
+    {
+        packet_queue_init(&mPacketCacheList);
+        packet_queue_init(&mFrameCacheList);
+
+        packet_queue_start(&mPacketCacheList);
+        packet_queue_start(&mFrameCacheList);
+
+        packet_queue_flush(&mPacketCacheList);
+        packet_queue_put_flush_pkt(&mPacketCacheList);
+        packet_queue_flush(&mFrameCacheList);
+        packet_queue_put_flush_pkt(&mFrameCacheList);
     }
-    
-    AVStream* pVideoStream = mPInVideoFormatCtx->streams[mVideoStreamIndex];
-    mPInputVideoCodec = avcodec_find_decoder(pVideoStream->codecpar->codec_id);
-    if (!mPInputVideoCodec) {
-        LOGE("Codec <%d> not found !", pVideoStream->codecpar->codec_id);
-        return HB_ERROR;
-    }
-    
-    mPInputVideoCodecCtx = avcodec_alloc_context3(mPInputVideoCodec);
-    if (!mPInputVideoCodecCtx) {
-        LOGE("Codec ctx <%d> not found !", pVideoStream->codecpar->codec_id);
-        return HB_ERROR;
-    }
-    avcodec_parameters_to_context(mPInputVideoCodecCtx, pVideoStream->codecpar);
-    
-    /** 初始化包的缓冲队列 */
-    packet_queue_init(&mPacketCacheList);
-    
-    /** 初始化音频数据缓冲管道 */
-    packet_queue_init(&mFrameCacheList);
-    
-    av_dump_format(mPInVideoFormatCtx, mVideoStreamIndex, mSrcMediaFile, false);
     return HB_OK;
+    
+VIDEO_DECODER_INITIAL_END_LABEL:
+    if (mPInputVideoCodec)
+        avcodec_free_context(&mPInputVideoCodecCtx);
+    mPInputVideoCodec = nullptr;
+    CSMediaBase::release();
+    return HB_ERROR;
 }
 
 int  CSVideoDecoder::videoDecoderClose() {
@@ -299,58 +317,55 @@ int  CSVideoDecoder::videoDecoderRelease() {
     return HB_OK;
 }
 
-int CSVideoDecoder::videoDecoderOpen() {
-    int HBError = -1;
-
-    if (mOutMediaType == MD_TYPE_RAW_BY_FILE) {
-        mTrgMediaFileHandle = fopen(mTrgMediaFile, "wb");
-        if (!mTrgMediaFileHandle) {
-            LOGE("Audio decoder couldn't open output file.");
-            return HB_ERROR;
+int CSVideoDecoder::_SwscaleInitial() {
+    if (mTargetVideoParams.mPixFmt == CS_PIX_FMT_NONE)
+        mTargetVideoParams.mPixFmt = mSrcVideoParams.mPixFmt;
+    if (mTargetVideoParams.mWidth == 0 || mTargetVideoParams.mHeight == 0) {
+        mTargetVideoParams.mWidth = mSrcVideoParams.mWidth;
+        mTargetVideoParams.mHeight = mSrcVideoParams.mHeight;
+    }
+    mTargetVideoParams.mPreImagePixBufferSize = av_image_get_buffer_size(getImageInnerFormat(mTargetVideoParams.mPixFmt),\
+                                             mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
+    if (!mTargetVideoParams.mPreImagePixBufferSize) {
+        LOGE("Get target image buffer size failed, size:%d !", mTargetVideoParams.mPreImagePixBufferSize);
+        goto VIDEO_SWSCALE_INITIAL_END_LABEL;
+    }
+    mPVideoConvertCtx = nullptr;
+    mIsNeedTransfer = false;
+    if (mTargetVideoParams.mPixFmt != mSrcVideoParams.mPixFmt \
+        || mTargetVideoParams.mWidth != mSrcVideoParams.mWidth \
+        || mTargetVideoParams.mHeight != mSrcVideoParams.mHeight) {
+        mIsNeedTransfer = true;
+        
+        mPVideoConvertCtx = sws_getContext(mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, getImageInnerFormat(mSrcVideoParams.mPixFmt), \
+                                           mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, getImageInnerFormat(mTargetVideoParams.mPixFmt), \
+                                           SWS_BICUBIC, NULL, NULL, NULL);
+        if (!mPVideoConvertCtx) {
+            LOGE("Create video sws context failed !");
+            goto VIDEO_SWSCALE_INITIAL_END_LABEL;
         }
-    }
-    
-    packet_queue_start(&mPacketCacheList);
-    packet_queue_start(&mFrameCacheList);
-    
-    HBError = avcodec_open2(mPInputVideoCodecCtx, mPInputVideoCodec, NULL);
-    if (HBError < 0) {
-        LOGE("Could not open codec. <%s>", av_err2str(HBError));
-        return HB_ERROR;
-    }
-    
-    packet_queue_flush(&mPacketCacheList);
-    packet_queue_put_flush_pkt(&mPacketCacheList);
-    packet_queue_flush(&mFrameCacheList);
-    packet_queue_put_flush_pkt(&mFrameCacheList);
-    
-    /** 初始化原视频参数 : mSrcVideoParams */
-    mSrcVideoParams.mPreImagePixBufferSize = av_image_get_buffer_size(getImageInnerFormat(mSrcVideoParams.mPixFmt), \
-                                                         mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, mSrcVideoParams.mAlign);
-    return HB_OK;
-}
-
-int CSVideoDecoder::videoSwscalePrepare() {
-    mPVideoConvertCtx = sws_getContext(mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, getImageInnerFormat(mSrcVideoParams.mPixFmt), mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, getImageInnerFormat(mTargetVideoParams.mPixFmt), SWS_BICUBIC, NULL, NULL, NULL);
-    if (!mPVideoConvertCtx) {
-        LOGE("Create video sws context failed !");
-        return HB_ERROR;
-    }
-    
-    mTargetVideoFrameBufferSize = av_image_get_buffer_size(getImageInnerFormat(mTargetVideoParams.mPixFmt), \
-        mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
-    if (!mTargetVideoFrameBufferSize) {
-        LOGE("Video get Sws target frame buffer size failed<%d> !", mTargetVideoFrameBufferSize);
-        return HB_ERROR;
-    }
-    
-    mTargetVideoFrameBuffer = (uint8_t *)av_mallocz(mTargetVideoFrameBufferSize);
-    if (!mTargetVideoFrameBuffer) {
-        LOGE("Video get Sws target frame buffer failed !");
-        return HB_ERROR;
+        
+        mTargetVideoFrameBuffer = (uint8_t *)av_mallocz(mTargetVideoParams.mPreImagePixBufferSize);
+        if (!mTargetVideoFrameBuffer) {
+            LOGE("Video get Sws target frame buffer failed !");
+            goto VIDEO_SWSCALE_INITIAL_END_LABEL;
+        }
+        
     }
     
     return HB_OK;
+VIDEO_SWSCALE_INITIAL_END_LABEL:
+    if (mPVideoConvertCtx) {
+        sws_freeContext(mPVideoConvertCtx);
+        mPVideoConvertCtx = nullptr;
+    }
+    
+    if (mTargetVideoFrameBuffer) {
+        av_freep(mTargetVideoFrameBuffer);
+        mTargetVideoFrameBuffer = nullptr;
+    }
+    
+    return HB_ERROR;
 }
 
 int  CSVideoDecoder::_mediaParamInitial() {
@@ -401,6 +416,40 @@ int  CSVideoDecoder::_mediaParamInitial() {
             return HB_ERROR;
     }
     
+    return HB_OK;
+}
+
+int CSVideoDecoder::_ExportInitial() {
+    switch (mOutMediaType) {
+        case MD_TYPE_RAW_BY_FILE:
+            {
+                if (CSMediaBase::_OutMediaInitial() != HB_OK) {
+                    LOGE("Base media initial output media initial failed !");
+                    return HB_ERROR;
+                }
+            }
+            break;
+        default:
+            LOGE("output media initial failed, cur media type:%s", getMediaDataTypeDescript(mOutMediaType));
+            return HB_ERROR;
+    }
+
+    return HB_OK;
+}
+
+int CSVideoDecoder::release() {
+    if (mPInputVideoCodec)
+        avcodec_free_context(&mPInputVideoCodecCtx);
+    mPInputVideoCodec = nullptr;
+    if (mPVideoConvertCtx) {
+        sws_freeContext(mPVideoConvertCtx);
+        mPVideoConvertCtx = nullptr;
+    }
+    if (mTargetVideoFrameBuffer) {
+        av_freep(mTargetVideoFrameBuffer);
+        mTargetVideoFrameBuffer = nullptr;
+    }
+    CSMediaBase::release();
     return HB_OK;
 }
 

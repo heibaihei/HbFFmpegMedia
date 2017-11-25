@@ -30,7 +30,7 @@ namespace HBMedia {
 
         virtual int stop() = 0;
 
-        virtual int release() = 0;
+        virtual int release();
 
         /**
          *  配置输入媒体类型
@@ -57,9 +57,12 @@ namespace HBMedia {
         char *getOutMediaFile() { return mTrgMediaFile; }
 
     protected:
-        int 
+        int _InMediaInitial();
 
+        int _OutMediaInitial();
 
+        bool mIsNeedTransfer;
+        
         /**
          *  媒体数据输入信息
          */

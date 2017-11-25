@@ -35,7 +35,8 @@ public:
     
     virtual int stop();
     
-    virtual int release() { return HB_OK; };
+    virtual int release();
+
     /**
      *  音频读包
      *  @return HB_OK 执行正常
@@ -58,9 +59,10 @@ protected:
     /**
      *  解码器初始化、启动、关闭、释放
      */
-    int  videoDecoderInitial();
-    int  videoDecoderOpen();
-    int  videoSwscalePrepare();
+    int  _DecoderInitial();
+    int  _ExportInitial();
+    int  _SwscaleInitial();
+    
     int  videoDecoderClose();
     int  videoDecoderRelease();
     
@@ -81,12 +83,10 @@ private:
     AVCodec* mPInputVideoCodec;
     
     /** Ture 表示需要进行转码，否则无需进行转码 */
-    bool mIsNeedTransfer;
     SwsContext *mPVideoConvertCtx;
     
-    int mTargetVideoFrameBufferSize;
+//    int mTargetVideoFrameBufferSize;
     uint8_t *mTargetVideoFrameBuffer;
-    
     
     PacketQueue mPacketCacheList;
     PacketQueue mFrameCacheList;
