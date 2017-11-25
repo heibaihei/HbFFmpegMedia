@@ -68,20 +68,13 @@ private:
     int  _mediaParamInitial();
     
 private:
-    int mPKTSerial;
     int mVideoStreamIndex;
     ImageParams mTargetVideoParams;
     ImageParams mSrcVideoParams;
+    
     AVCodecContext* mPInputVideoCodecCtx;
     AVCodec* mPInputVideoCodec;
-
     SwsContext *mPVideoConvertCtx;
-    
-    uint8_t *mTargetVideoFrameBuffer;
-    
-    PacketQueue mPacketCacheList;
-    PacketQueue mFrameCacheList;
-    
     FiFoQueue<AVFrame *> *mFrameQueue;
     
     /** 解码器状态 */

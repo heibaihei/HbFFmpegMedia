@@ -105,13 +105,11 @@ CSVideoDecoder::CSVideoDecoder() {
 
     mIsNeedTransfer = false;
     mVideoStreamIndex = INVALID_STREAM_INDEX;
-    mPKTSerial = 0;
     mPInVideoFormatCtx = nullptr;
 
     mPInputVideoCodecCtx = nullptr;
     mPInputVideoCodec = nullptr;
     mPVideoConvertCtx = nullptr;
-    mTargetVideoFrameBuffer = nullptr;
     mFrameQueue = new FiFoQueue<AVFrame *>(S_MAX_BUFFER_CACHE);
     mDecodeThreadCtx.setFunction(nullptr, nullptr);
 }
@@ -269,19 +267,6 @@ int  CSVideoDecoder::_DecoderInitial() {
         av_dump_format(mPInVideoFormatCtx, mVideoStreamIndex, mSrcMediaFile, false);
     }
     
-    /** 数据队列初始化 */
-    {
-        packet_queue_init(&mPacketCacheList);
-        packet_queue_init(&mFrameCacheList);
-
-        packet_queue_start(&mPacketCacheList);
-        packet_queue_start(&mFrameCacheList);
-
-        packet_queue_flush(&mPacketCacheList);
-        packet_queue_put_flush_pkt(&mPacketCacheList);
-        packet_queue_flush(&mFrameCacheList);
-        packet_queue_put_flush_pkt(&mFrameCacheList);
-    }
     return HB_OK;
     
 VIDEO_DECODER_INITIAL_END_LABEL:
@@ -305,7 +290,7 @@ int CSVideoDecoder::_SwscaleInitial() {
         LOGE("Get target image buffer size failed, size:%d !", mTargetVideoParams.mPreImagePixBufferSize);
         goto VIDEO_SWSCALE_INITIAL_END_LABEL;
     }
-    mTargetVideoFrameBuffer = nullptr;
+
     mPVideoConvertCtx = nullptr;
     mIsNeedTransfer = false;
     if (mTargetVideoParams.mPixFmt != mSrcVideoParams.mPixFmt \
@@ -320,13 +305,6 @@ int CSVideoDecoder::_SwscaleInitial() {
             LOGE("Create video sws context failed !");
             goto VIDEO_SWSCALE_INITIAL_END_LABEL;
         }
-        
-        mTargetVideoFrameBuffer = (uint8_t *)av_mallocz(mTargetVideoParams.mPreImagePixBufferSize);
-        if (!mTargetVideoFrameBuffer) {
-            LOGE("Video get Sws target frame buffer failed !");
-            goto VIDEO_SWSCALE_INITIAL_END_LABEL;
-        }
-        
     }
     
     return HB_OK;
@@ -334,11 +312,6 @@ VIDEO_SWSCALE_INITIAL_END_LABEL:
     if (mPVideoConvertCtx) {
         sws_freeContext(mPVideoConvertCtx);
         mPVideoConvertCtx = nullptr;
-    }
-    
-    if (mTargetVideoFrameBuffer) {
-        av_freep(mTargetVideoFrameBuffer);
-        mTargetVideoFrameBuffer = nullptr;
     }
     
     return HB_ERROR;
@@ -420,10 +393,6 @@ int CSVideoDecoder::release() {
     if (mPVideoConvertCtx) {
         sws_freeContext(mPVideoConvertCtx);
         mPVideoConvertCtx = nullptr;
-    }
-    if (mTargetVideoFrameBuffer) {
-        av_freep(mTargetVideoFrameBuffer);
-        mTargetVideoFrameBuffer = nullptr;
     }
     CSMediaBase::release();
     return HB_OK;
