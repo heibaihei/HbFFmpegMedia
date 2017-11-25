@@ -51,22 +51,6 @@ public:
     
 protected:
     static void* ThreadFunc_Video_Decoder(void *arg);
-    /**
-     *  音频读包
-     *  @return HB_OK 执行正常
-     *          HB_ERROR 执行发生异常
-     */
-    int  readVideoPacket();
-    
-    /**
-     *  音频解帧
-     */
-    int  selectVideoFrame();
-    
-    /**
-     *  将音频数据写入音频缓冲区
-     */
-    int  CSIOPushDataBuffer(uint8_t* data, int samples);
     
     /**
      *  解码器初始化、启动、关闭、释放
@@ -76,8 +60,6 @@ protected:
     int  _SwscaleInitial();
 
     int  _DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame);
-
-    int  videoDoSwscale(uint8_t** inData, int*inDataSize);
     
 private:
     /**
