@@ -10,6 +10,7 @@
 
 namespace HBMedia {
 
+int CSVideoDecoder::S_MAX_BUFFER_CACHE = 8;
 void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
     if (!arg) {
         LOGE("Video decoder args is invalid !");
@@ -29,6 +30,10 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                 pDecoder->mDecodeStateFlag |= DECODE_STATE_READPKT_END;
                 av_packet_free(&pNewPacket);
                 pNewPacket = nullptr;
+                continue;
+            }
+            if (pNewPacket->stream_index == pDecoder->mVideoStreamIndex) {
+                av_packet_unref(pNewPacket);
                 continue;
             }
         }
@@ -82,6 +87,7 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
             av_frame_unref(pNewFrame);
 
             /** 执行 pTmpFrame 入队操作 */
+            pDecoder->mFrameQueue->push(pTmpFrame);
         }
     }
     
@@ -106,7 +112,7 @@ CSVideoDecoder::CSVideoDecoder() {
     mPInputVideoCodec = nullptr;
     mPVideoConvertCtx = nullptr;
     mTargetVideoFrameBuffer = nullptr;
-    
+    mFrameQueue = new FiFoQueue<AVFrame *>(S_MAX_BUFFER_CACHE);
     mDecodeThreadCtx.setFunction(nullptr, nullptr);
 }
 
@@ -327,8 +333,45 @@ DECODE_END_LABEL:
 }
 
 int  CSVideoDecoder::_DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame) {
-
+    if (!pOutFrame) {
+        LOGE("Video decoder do swscale invalid args !");
+        return HB_ERROR;
+    }
+    
+    uint8_t *pTargetImageBuffer = nullptr;
+    *pOutFrame = av_frame_alloc();
+    if (!(*pOutFrame)) {
+        LOGE("Alloc new output frame failed !");
+        goto DO_SWSCALE_END_LABEL;
+    }
+    
+    pTargetImageBuffer = (uint8_t *)av_mallocz(mTargetVideoParams.mPreImagePixBufferSize);
+    if (!pTargetImageBuffer) {
+        LOGE("malloc target image buffer failed !");
+        goto DO_SWSCALE_END_LABEL;
+    }
+    
+    av_image_fill_arrays((*pOutFrame)->data, (*pOutFrame)->linesize,\
+                         pTargetImageBuffer, getImageInnerFormat(mTargetVideoParams.mPixFmt),\
+                         mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
+    
+    pTargetImageBuffer = nullptr;
+    if (sws_scale(mPVideoConvertCtx, pInFrame->data, pInFrame->linesize,\
+                  0, mSrcVideoParams.mHeight, (*pOutFrame)->data, (*pOutFrame)->linesize) <= 0) {
+        LOGE("swscale to target frame format failed !");
+        goto DO_SWSCALE_END_LABEL;
+    }
     return HB_OK;
+    
+DO_SWSCALE_END_LABEL:
+    if (*pOutFrame) {
+        av_frame_free(pOutFrame);
+        *pOutFrame = nullptr;
+    }
+    if (pTargetImageBuffer)
+        av_free(pTargetImageBuffer);
+    
+    return HB_ERROR;
 }
 int  CSVideoDecoder::CSIOPushDataBuffer(uint8_t* data, int samples) {
     return HB_OK;

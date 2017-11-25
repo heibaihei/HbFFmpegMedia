@@ -18,6 +18,7 @@
 #include "CSMediaBase.h"
 #include "CSThreadContext.h"
 #include "frame.h"
+#include "CSFiFoQueue.h"
 
 namespace HBMedia {
 
@@ -27,6 +28,7 @@ namespace HBMedia {
 typedef class CSVideoDecoder : public CSMediaBase
 {
 public:
+    static int S_MAX_BUFFER_CACHE;
     CSVideoDecoder();
     ~CSVideoDecoder();
     
@@ -90,13 +92,15 @@ private:
     ImageParams mSrcVideoParams;
     AVCodecContext* mPInputVideoCodecCtx;
     AVCodec* mPInputVideoCodec;
-    
+
     SwsContext *mPVideoConvertCtx;
     
     uint8_t *mTargetVideoFrameBuffer;
     
     PacketQueue mPacketCacheList;
     PacketQueue mFrameCacheList;
+    
+    FiFoQueue<AVFrame *> *mFrameQueue;
     
     /** 解码器状态 */
     unsigned long long mDecodeStateFlag;
