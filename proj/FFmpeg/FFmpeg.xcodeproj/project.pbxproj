@@ -2814,7 +2814,6 @@
 		A1FC23BA1F277BD200024371 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FC23B91F277BD200024371 /* libbz2.tbd */; };
 		A1FC23BD1F277D1000024371 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E5CBA71F276C8500A02704 /* AudioToolbox.framework */; };
 		A1FC872A1F1D9BFA004D8A63 /* CSCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1FC87291F1D9BFA004D8A63 /* CSCommon.cpp */; };
-		A8722835E69DA1AB1A91E0AE /* CSMediaBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8722BAFED3F67D70E60999C /* CSMediaBase.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -9364,8 +9363,6 @@
 		A1FC23B91F277BD200024371 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		A1FC23BB1F277BEB00024371 /* libobjc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libobjc.tbd; path = usr/lib/libobjc.tbd; sourceTree = SDKROOT; };
 		A1FC87291F1D9BFA004D8A63 /* CSCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSCommon.cpp; path = ../../../src/HBDemo/CSCommon.cpp; sourceTree = "<group>"; };
-		A87221113A09537AA07AAD52 /* CSMediaBase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSMediaBase.hpp; sourceTree = "<group>"; };
-		A8722BAFED3F67D70E60999C /* CSMediaBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSMediaBase.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -9755,7 +9752,6 @@
 				A181BC5B1EA21756004861DA /* HBFilterWater.h */,
 				A181BC5C1EA21756004861DA /* HBSeperateFormat.c */,
 				A181BC5D1EA21756004861DA /* HBSeperateFormat.h */,
-				A87222E10292059B580779E6 /* CSMediaBase */,
 			);
 			path = Sample;
 			sourceTree = "<group>";
@@ -17149,16 +17145,6 @@
 			path = AudioPlayer;
 			sourceTree = "<group>";
 		};
-		A87222E10292059B580779E6 /* CSMediaBase */ = {
-			isa = PBXGroup;
-			children = (
-				A8722BAFED3F67D70E60999C /* CSMediaBase.cpp */,
-				A87221113A09537AA07AAD52 /* CSMediaBase.hpp */,
-			);
-			name = CSMediaBase;
-			path = ../../../src/HBDemo/CSMediaBase;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -17486,7 +17472,6 @@
 				A15BB0E81F42912400AFE839 /* CSAudioDecoder.cpp in Sources */,
 				A1091CEE1F595BF500565177 /* CSVideoScale.cpp in Sources */,
 				A156FEF31EA25C7000258C1E /* FFmpegSwscale.cpp in Sources */,
-				A8722835E69DA1AB1A91E0AE /* CSMediaBase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

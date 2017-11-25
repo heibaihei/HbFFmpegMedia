@@ -6,4 +6,22 @@
 //  Copyright © 2017 meitu. All rights reserved.
 //
 
-#include "CSMediaBase.hpp"
+#include "CSMediaBase.h"
+
+namespace HBMedia {
+
+    CSMediaBase::CSMediaBase() {
+        mSrcPicMediaFile = nullptr;
+        mSrcPicFileHandle = nullptr;
+
+        mTrgPicMediaFile = nullptr;
+        mTrgPicFileHandle = nullptr;
+    }
+
+    CSMediaBase::~CSMediaBase() {
+        if (mSrcPicMediaFile)
+            av_freep(&mSrcPicMediaFile);
+        if (mTrgPicMediaFile)
+            av_freep(&mTrgPicMediaFile);
+    }
+}
