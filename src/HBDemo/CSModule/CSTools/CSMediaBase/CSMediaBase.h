@@ -42,7 +42,7 @@ namespace HBMedia {
         void setOutputPicMediaFile(char *file);
         char *getOutputPicMediaFile() { return mTrgPicMediaFile; }
 
-    private:
+    protected:
         /**
          *  媒体数据输入信息
          */

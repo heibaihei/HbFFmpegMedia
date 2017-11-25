@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "CSDefine.h"
 #include "CSCommon.h"
-
+#include "CSMediaBase.h"
 
 int TVideoFasterTranfor(int argc, const char *argv[]);
 

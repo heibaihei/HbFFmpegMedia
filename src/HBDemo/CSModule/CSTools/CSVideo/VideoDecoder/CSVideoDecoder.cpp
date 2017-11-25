@@ -11,10 +11,6 @@
 namespace HBMedia {
 
 CSVideoDecoder::CSVideoDecoder(ImageParams& params) {
-    mVideoOutputFile = nullptr;
-    mVideoOutputFileHandle = nullptr;
-    mVideoInputFile = nullptr;
-    mVideoInputFileHandle = nullptr;
     memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
     memset(&mSrcVideoParams, 0x00, sizeof(ImageParams));
     mTargetVideoParams = params;
@@ -29,10 +25,6 @@ CSVideoDecoder::CSVideoDecoder(ImageParams& params) {
 }
 
 CSVideoDecoder::~CSVideoDecoder() {
-    if (mVideoInputFile)
-        av_freep(&mVideoInputFile);
-    if (mVideoOutputFile)
-        av_freep(&mVideoOutputFile);
 }
 
 int CSVideoDecoder::videoBaseInitial() {
@@ -198,7 +190,7 @@ int  CSVideoDecoder::selectVideoFrame() {
                     }
                     else {
                         /** 此处得到转换后的视频数据：mTargetVideoFrameBuffer */
-                        if (mVideoOutputFileHandle) {
+                        if (mTrgPicFileHandle) {
                             /** 说明以视频裸文件的数据方式输出 */
                         }
                         else {
@@ -250,7 +242,7 @@ int  CSVideoDecoder::videoDecoderInitial() {
     memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
     
     mPInputVideoFormatCtx = avformat_alloc_context();
-    HBError = avformat_open_input(&mPInputVideoFormatCtx, mVideoInputFile, NULL, NULL);
+    HBError = avformat_open_input(&mPInputVideoFormatCtx, mSrcPicMediaFile, NULL, NULL);
     if (HBError != 0) {
         LOGE("Video decoder couldn't open input file. <%d> <%s>", HBError, av_err2str(HBError));
         return HB_ERROR;
@@ -294,7 +286,7 @@ int  CSVideoDecoder::videoDecoderInitial() {
     /** 初始化音频数据缓冲管道 */
     packet_queue_init(&mFrameCacheList);
     
-    av_dump_format(mPInputVideoFormatCtx, mVideoStreamIndex, mVideoInputFile, false);
+    av_dump_format(mPInputVideoFormatCtx, mVideoStreamIndex, mSrcPicMediaFile, false);
     return HB_OK;
 }
 
@@ -354,37 +346,19 @@ int CSVideoDecoder::videoSwscalePrepare() {
 
 int  CSVideoDecoder::_checkVideoParamValid() {
     
-    if (!mVideoInputFile) {
+    if (!mSrcPicMediaFile) {
         LOGE("Audio decoder input file is invalid !");
         return HB_ERROR;
     }
     
-    if (mVideoOutputFile) {
-        mVideoOutputFileHandle = fopen(mVideoOutputFile, "wb");
-        if (!mVideoOutputFileHandle) {
+    if (mTrgPicMediaFile) {
+        mTrgPicFileHandle = fopen(mTrgPicMediaFile, "wb");
+        if (!mTrgPicFileHandle) {
             LOGE("Audio decoder couldn't open output file.");
             return HB_ERROR;
         }
     }
     return HB_OK;
-}
-    
-void CSVideoDecoder::setInputVideoMediaFile(char *file) {
-    if (mVideoInputFile)
-        av_freep(&mVideoInputFile);
-    mVideoInputFile = av_strdup(file);
-}
-char *CSVideoDecoder::getInputVideoMediaFile() {
-    return mVideoInputFile;
-}
-void CSVideoDecoder::setOutputVideoMediaFile(char *file) {
-    if (mVideoOutputFile)
-        av_freep(&mVideoOutputFile);
-    mVideoOutputFile = av_strdup(file);
-}
-
-char *CSVideoDecoder::getOutputVideoMediaFile() {
-    return mVideoOutputFile;
 }
 
 }

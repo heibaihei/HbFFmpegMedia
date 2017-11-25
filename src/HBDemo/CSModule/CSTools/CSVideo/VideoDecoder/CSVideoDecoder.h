@@ -17,31 +17,22 @@
 
 namespace HBMedia {
 
-typedef class CSVideoDecoder
+typedef class CSVideoDecoder : public CSMediaBase
 {
 public:
     CSVideoDecoder(ImageParams& params);
     ~CSVideoDecoder();
     
     /**
-     *  配置输入的音频文件
-     */
-    void setInputVideoMediaFile(char *file);
-    char *getInputVideoMediaFile();
-    
-    /**
-     *  配置输出的音频文件
-     */
-    void setOutputVideoMediaFile(char *file);
-    char *getOutputVideoMediaFile();
-    
-    /**
      *  准备工作，对外接口
      */
-    int prepare();
+    virtual int prepare();
     
-    int stop();
+    virtual int start() { return HB_OK; };
     
+    virtual int stop();
+    
+    virtual int release() { return HB_OK; };
     /**
      *  音频读包
      *  @return HB_OK 执行正常
@@ -94,12 +85,6 @@ private:
     
     PacketQueue mPacketCacheList;
     PacketQueue mFrameCacheList;
-    
-    char *mVideoOutputFile;
-    FILE *mVideoOutputFileHandle;
-    
-    char *mVideoInputFile;
-    FILE *mVideoInputFileHandle;
     
     unsigned long long mDecodeStateFlag;
 } CSVideoDecoder;
