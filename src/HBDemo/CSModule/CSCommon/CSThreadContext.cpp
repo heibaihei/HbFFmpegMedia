@@ -25,9 +25,12 @@ ThreadContext::~ThreadContext() {
 }
 
 int ThreadContext::setFunction(ThreadFunc function, void *arg) {
-    mThreadArg = (ThreadParam_t *)malloc(sizeof(*mThreadArg));
-    if (mThreadArg == NULL) {
-        return HB_ERROR;
+    if (!mThreadArg) {
+        mThreadArg = (ThreadParam_t *)malloc(sizeof(*mThreadArg));
+        if (mThreadArg == NULL) {
+            LOGE("Malloc thread arg failed !");
+            return HB_ERROR;
+        }
     }
     
     mThreadFunc = function;
@@ -48,7 +51,7 @@ int ThreadContext::bindIPC(ThreadIPCContext *pv) {
 int ThreadContext::start() {
     int ret = pthread_create(&mThreadID, NULL, mThreadFunc, mThreadArg);
     if (ret < 0) {
-        return ret;
+        return HB_ERROR;
     }
 
     mThreadArg->mStatus = THREAD_RUNNING;

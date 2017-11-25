@@ -10,6 +10,88 @@
 
 namespace HBMedia {
 
+void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
+    if (!arg) {
+        LOGE("Video decoder args is invalid !");
+        return nullptr;
+    }
+    int HBError = HB_OK;
+    CSVideoDecoder* pDecoder = (CSVideoDecoder *)arg;
+    AVPacket *pNewPacket = av_packet_alloc();
+    AVFrame  *pNewFrame = av_frame_alloc();
+    while (!(pDecoder->mDecodeStateFlag & DECODE_STATE_DECODE_END)) {
+        
+        if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_READPKT_END)) {
+            HBError = av_read_frame(pDecoder->mPInVideoFormatCtx, pNewPacket);
+            if (HBError != 0) {
+                if (HBError != AVERROR_EOF)
+                    pDecoder->mDecodeStateFlag |= DECODE_STATE_READPKT_ABORT;
+                pDecoder->mDecodeStateFlag |= DECODE_STATE_READPKT_END;
+                av_packet_free(&pNewPacket);
+                pNewPacket = nullptr;
+                continue;
+            }
+        }
+        
+        if (!pNewPacket) {
+            HBError = avcodec_send_packet(pDecoder->mPInputVideoCodecCtx, pNewPacket);
+            if (HBError != 0) {
+                if (HBError != AVERROR(EAGAIN)) {
+                    pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_ABORT;
+                    pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_END;
+                }
+                continue;
+            }
+            av_packet_unref(pNewPacket);
+        }
+        else if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_FLUSH_MODE)) {
+            pDecoder->mDecodeStateFlag |= DECODE_STATE_FLUSH_MODE;
+            avcodec_send_packet(pDecoder->mPInputVideoCodecCtx, nullptr);
+        }
+        
+        while (true) {
+            HBError = avcodec_receive_frame(pDecoder->mPInputVideoCodecCtx, pNewFrame);
+            if (HBError != 0) {
+                if (HBError != AVERROR(EAGAIN)) {
+                    av_frame_unref(pNewFrame);
+                    pDecoder->mDecodeStateFlag = DECODE_STATE_DECODE_ABORT;
+                }
+                if (pDecoder->mDecodeStateFlag & DECODE_STATE_FLUSH_MODE)
+                    pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_END;
+                break;
+            }
+            
+            /** 得到帧数据 */
+            AVFrame *pTmpFrame = nullptr;
+            if (pDecoder->mIsNeedTransfer) {
+                /** 执行格式转换 */
+                if (pDecoder->_DoSwscale(pNewFrame, &pTmpFrame) != HB_OK) {
+                    av_frame_unref(pNewFrame);
+                    continue;
+                }
+            }
+            else {
+                pTmpFrame = av_frame_clone(pNewFrame);
+                if (!pTmpFrame) {
+                    av_frame_unref(pNewFrame);
+                    LOGE("Clone target frame failed !");
+                    continue;
+                }
+                
+            }
+            av_frame_unref(pNewFrame);
+
+            /** 执行 pTmpFrame 入队操作 */
+        }
+    }
+    
+    
+    av_packet_free(&pNewPacket);
+    av_frame_free(&pNewFrame);
+    
+    return arg;
+}
+
 CSVideoDecoder::CSVideoDecoder() {
     memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
     imageParamInit(&mSrcVideoParams);
@@ -23,8 +105,9 @@ CSVideoDecoder::CSVideoDecoder() {
     mPInputVideoCodecCtx = nullptr;
     mPInputVideoCodec = nullptr;
     mPVideoConvertCtx = nullptr;
-
     mTargetVideoFrameBuffer = nullptr;
+    
+    mDecodeThreadCtx.setFunction(nullptr, nullptr);
 }
 
 CSVideoDecoder::~CSVideoDecoder() {
@@ -65,17 +148,27 @@ VIDEO_DECODER_PREPARE_END_LABEL:
     return HB_ERROR;
 }
     
+int CSVideoDecoder::start() {
+    if (HB_OK != mDecodeThreadCtx.setFunction(ThreadFunc_Video_Decoder, this)) {
+        LOGE("Initial decode thread context failed !");
+        return HB_ERROR;
+    }
+    
+    if (mDecodeThreadCtx.start() != HB_OK) {
+        LOGE("Start decoder thread context failed !");
+        return HB_ERROR;
+    }
+    
+    return HB_OK;
+}
+    
 int CSVideoDecoder::stop() {
-    if (videoDecoderClose() != HB_OK) {
-        LOGE("Video decoder close failed !");
-        return HB_ERROR;
-    }
     
-    if (videoDecoderRelease() !=HB_OK) {
-        LOGE("Video decoder release failed !");
-        return HB_ERROR;
-    }
-    
+    return HB_OK;
+}
+
+int CSVideoDecoder::syncWait() {
+    mDecodeThreadCtx.join();
     return HB_OK;
 }
 
@@ -232,7 +325,11 @@ DECODE_END_LABEL:
     av_packet_free(&pNewPacket);
     return HB_OK;
 }
-    
+
+int  CSVideoDecoder::_DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame) {
+
+    return HB_OK;
+}
 int  CSVideoDecoder::CSIOPushDataBuffer(uint8_t* data, int samples) {
     return HB_OK;
 }
@@ -309,14 +406,6 @@ VIDEO_DECODER_INITIAL_END_LABEL:
     return HB_ERROR;
 }
 
-int  CSVideoDecoder::videoDecoderClose() {
-    return HB_OK;
-}
-
-int  CSVideoDecoder::videoDecoderRelease() {
-    return HB_OK;
-}
-
 int CSVideoDecoder::_SwscaleInitial() {
     if (mTargetVideoParams.mPixFmt == CS_PIX_FMT_NONE)
         mTargetVideoParams.mPixFmt = mSrcVideoParams.mPixFmt;
@@ -330,6 +419,7 @@ int CSVideoDecoder::_SwscaleInitial() {
         LOGE("Get target image buffer size failed, size:%d !", mTargetVideoParams.mPreImagePixBufferSize);
         goto VIDEO_SWSCALE_INITIAL_END_LABEL;
     }
+    mTargetVideoFrameBuffer = nullptr;
     mPVideoConvertCtx = nullptr;
     mIsNeedTransfer = false;
     if (mTargetVideoParams.mPixFmt != mSrcVideoParams.mPixFmt \
