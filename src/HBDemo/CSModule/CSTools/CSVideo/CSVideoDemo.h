@@ -16,4 +16,9 @@
 
 int TVideoFasterTranfor(int argc, const char *argv[]);
 
+/**
+ *  视频媒体文件解码
+ */
+int CSVideoDemo_VideoDecoder();
+
 #endif /* CSVideo_h */

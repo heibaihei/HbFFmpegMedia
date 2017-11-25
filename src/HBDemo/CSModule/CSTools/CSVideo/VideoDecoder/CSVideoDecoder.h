@@ -20,7 +20,7 @@ namespace HBMedia {
 typedef class CSVideoDecoder : public CSMediaBase
 {
 public:
-    CSVideoDecoder(ImageParams& params);
+    CSVideoDecoder();
     ~CSVideoDecoder();
     
     /**
@@ -65,10 +65,10 @@ protected:
     
 private:
     /**
-     *  检验音频参数的有效性
+     *  媒体参数初始化，重置;
      */
-    int  _checkVideoParamValid();
-
+    int  _mediaParamInitial();
+    
 private:
     int mPKTSerial;
     int mVideoStreamIndex;
@@ -76,7 +76,11 @@ private:
     ImageParams mSrcVideoParams;
     AVCodecContext* mPInputVideoCodecCtx;
     AVCodec* mPInputVideoCodec;
+    
+    /** Ture 表示需要进行转码，否则无需进行转码 */
+    bool mIsNeedTransfer;
     SwsContext *mPVideoConvertCtx;
+    
     int mTargetVideoFrameBufferSize;
     uint8_t *mTargetVideoFrameBuffer;
     

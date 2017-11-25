@@ -15,9 +15,9 @@ namespace HBMedia {
         mOutMediaType = MD_TYPE_UNKNOWN;
         mSrcPicMediaFile = nullptr;
         mSrcPicFileHandle = nullptr;
-        mPInVideoFormatCtx = nullptr;
         mTrgPicMediaFile = nullptr;
         mTrgPicFileHandle = nullptr;
+        mPInVideoFormatCtx = nullptr;
         mPOutVideoFormatCtx = nullptr;
     }
 

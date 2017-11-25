@@ -2976,6 +2976,7 @@
 		A131A11E1FC9013E002E5B8E /* HBPictureDemo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HBPictureDemo.cpp; sourceTree = "<group>"; };
 		A131A1221FC904D6002E5B8E /* CSMediaBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSMediaBase.cpp; sourceTree = "<group>"; };
 		A131A1231FC904D6002E5B8E /* CSMediaBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMediaBase.h; sourceTree = "<group>"; };
+		A131A1251FC91079002E5B8E /* CSModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSModule.h; sourceTree = "<group>"; };
 		A1373F211FB9F9AE00A76367 /* CSPlayerListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSPlayerListener.h; sourceTree = "<group>"; };
 		A13A995B1F70D33A00F88E3A /* HBExample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HBExample.h; path = ../../../src/HBDemo/Example/HBExample.h; sourceTree = "<group>"; };
 		A13B34F01F6FC27400D3D494 /* MultiMediaTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MultiMediaTool; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -17127,6 +17128,7 @@
 		A1F706131F656F9F003A6010 /* CSModule */ = {
 			isa = PBXGroup;
 			children = (
+				A131A1251FC91079002E5B8E /* CSModule.h */,
 				A131A0DF1FC90055002E5B8E /* CSTools */,
 				A1F4B09C1FB93192000FF69B /* CSDemo.cpp */,
 				A1F4B09D1FB93192000FF69B /* CSDemo.h */,

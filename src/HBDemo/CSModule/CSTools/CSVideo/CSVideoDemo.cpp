@@ -7,3 +7,14 @@
 //
 
 #include "CSVideoDemo.h"
+#include "CSModule.h"
+
+int CSVideoDemo_VideoDecoder() {
+    HBMedia::CSVideoDecoder* pVideoDecoder = new HBMedia::CSVideoDecoder();
+    pVideoDecoder->prepare();
+    pVideoDecoder->start();
+    pVideoDecoder->stop();
+    pVideoDecoder->release();
+    
+    return HB_OK;
+}

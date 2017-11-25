@@ -179,8 +179,6 @@ int  CSPicture::picCommonInitial() {
 
             }
             break;
-        case MD_TYPE_RAW_BY_PROTOCOL:
-            break;
         case MD_TYPE_COMPRESS:
             /** 在后面编码模块中进行初始化 */
             break;
@@ -201,8 +199,6 @@ int  CSPicture::picCommonInitial() {
                     }
                 }
             }
-            break;
-        case MD_TYPE_RAW_BY_PROTOCOL:
             break;
         case MD_TYPE_COMPRESS:
             /** 在后面解码模块中进行初始化 */
@@ -341,7 +337,6 @@ int  CSPicture::sendImageData(uint8_t** pData, int* pDataSizes) {
             }
             break;
         case MD_TYPE_RAW_BY_MEMORY:
-        case MD_TYPE_RAW_BY_PROTOCOL:
             break;
         default:
             break;

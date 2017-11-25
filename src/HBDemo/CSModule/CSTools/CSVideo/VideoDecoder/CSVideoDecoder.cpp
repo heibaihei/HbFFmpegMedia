@@ -10,11 +10,12 @@
 
 namespace HBMedia {
 
-CSVideoDecoder::CSVideoDecoder(ImageParams& params) {
+CSVideoDecoder::CSVideoDecoder() {
     memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
     imageParamInit(&mSrcVideoParams);
-    mTargetVideoParams = params;
+    imageParamInit(&mTargetVideoParams);
 
+    mIsNeedTransfer = false;
     mVideoStreamIndex = INVALID_STREAM_INDEX;
     mPKTSerial = 0;
     mPInVideoFormatCtx = nullptr;
@@ -32,13 +33,13 @@ CSVideoDecoder::~CSVideoDecoder() {
 }
 
 int CSVideoDecoder::prepare() {
-
+    
     if (baseInitial() != HB_OK) {
         LOGE("Video base initial failed !");
-        return HB_ERROR;
+        goto VIDEO_DECODER_PREPARE_END_LABEL;
     }
     
-    if (_checkVideoParamValid() != HB_OK) {
+    if (_mediaParamInitial() != HB_OK) {
         LOGE("Check Video decoder param failed !");
         return HB_ERROR;
     }
@@ -57,6 +58,8 @@ int CSVideoDecoder::prepare() {
         LOGE("Video swscale initail failed !");
         return HB_ERROR;
     }
+    
+VIDEO_DECODER_PREPARE_END_LABEL:
     
     return HB_OK;
 }
@@ -341,13 +344,30 @@ int CSVideoDecoder::videoSwscalePrepare() {
     return HB_OK;
 }
 
-int  CSVideoDecoder::_checkVideoParamValid() {
-    
-    if (!mSrcPicMediaFile) {
-        LOGE("Audio decoder input file is invalid !");
-        return HB_ERROR;
+int  CSVideoDecoder::_mediaParamInitial() {
+
+    mIsNeedTransfer = false;
+
+    switch (mInMediaType) {
+        case MD_TYPE_UNKNOWN: {
+            if (mSrcPicMediaFile)
+                mInMediaType = MD_TYPE_COMPRESS;
+            else {
+                LOGE("[%s] >>> [Type:%s] Audio decoder input file is invalid !", __func__, getMediaDataTypeDescript(mInMediaType));
+                return HB_ERROR;
+            }
+        }
+            break;
+        case MD_TYPE_COMPRESS:
+            if (!mSrcPicMediaFile) {
+                LOGE("[%s] >>> [Type:%s]Audio decoder input file is invalid !", __func__, getMediaDataTypeDescript(mInMediaType));
+                return HB_ERROR;
+            }
+            break;
+        default:
+            LOGE("Unknown media type !");
     }
-    
+
     if (mTrgPicMediaFile) {
         mTrgPicFileHandle = fopen(mTrgPicMediaFile, "wb");
         if (!mTrgPicFileHandle) {

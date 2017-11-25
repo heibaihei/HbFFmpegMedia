@@ -149,8 +149,6 @@ char* getMediaDataTypeDescript(MEDIA_DATA_TYPE dataType) {
             return (char*)"MD_TYPE_RAW_BY_MEMORY";
         case MD_TYPE_COMPRESS:
             return (char*)"MD_TYPE_COMPRESS";
-        case MD_TYPE_RAW_BY_PROTOCOL:
-            return (char*)"MD_TYPE_RAW_BY_PROTOCOL";
         default:
             LOGE("Get image inner format failed !");
             exit(0);
