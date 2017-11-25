@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "CSVideo.h"
+#include "CSMediaBase.h"
 
 namespace HBMedia {
 
@@ -51,7 +51,6 @@ public:
     int  CSIOPushDataBuffer(uint8_t* data, int samples);
 
 protected:
-    int videoBaseInitial();
     
     /**
      *  解码器初始化、启动、关闭、释放
@@ -75,7 +74,6 @@ private:
     int mVideoStreamIndex;
     ImageParams mTargetVideoParams;
     ImageParams mSrcVideoParams;
-    AVFormatContext* mPInputVideoFormatCtx;
     AVCodecContext* mPInputVideoCodecCtx;
     AVCodec* mPInputVideoCodec;
     SwsContext *mPVideoConvertCtx;

@@ -12,7 +12,7 @@
 #include "CSLog.h"
 #include "CSCommon.h"
 #include "HBAudio.h"
-#include "CSVideo.h"
+#include "CSVideoDemo.h"
 #include "HBExample.h"
 #include "HBVideoConcat.h"
 #include "HBVideoChangeBgmMusic.h"

@@ -17,7 +17,7 @@
 		A131A0ED1FC900B0002E5B8E /* CSVideoReverse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A0E41FC900B0002E5B8E /* CSVideoReverse.cpp */; };
 		A131A0EE1FC900B0002E5B8E /* CSVideoScale.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A0E61FC900B0002E5B8E /* CSVideoScale.cpp */; };
 		A131A0EF1FC900B0002E5B8E /* CSVideoTool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A0E81FC900B0002E5B8E /* CSVideoTool.cpp */; };
-		A131A0F01FC900B0002E5B8E /* CSVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A0EB1FC900B0002E5B8E /* CSVideo.cpp */; };
+		A131A0F01FC900B0002E5B8E /* CSVideoDemo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A0EB1FC900B0002E5B8E /* CSVideoDemo.cpp */; };
 		A131A1101FC900FB002E5B8E /* HBAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A0F21FC900FB002E5B8E /* HBAudio.cpp */; };
 		A131A1111FC900FB002E5B8E /* CSAudioResample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A0F41FC900FB002E5B8E /* CSAudioResample.cpp */; };
 		A131A1121FC900FB002E5B8E /* audio_player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A0FA1FC900FB002E5B8E /* audio_player.cpp */; };
@@ -2940,8 +2940,8 @@
 		A131A0E71FC900B0002E5B8E /* CSVideoScale.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSVideoScale.hpp; sourceTree = "<group>"; };
 		A131A0E81FC900B0002E5B8E /* CSVideoTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoTool.cpp; sourceTree = "<group>"; };
 		A131A0E91FC900B0002E5B8E /* CSVideoReverse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVideoReverse.h; sourceTree = "<group>"; };
-		A131A0EA1FC900B0002E5B8E /* CSVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVideo.h; sourceTree = "<group>"; };
-		A131A0EB1FC900B0002E5B8E /* CSVideo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideo.cpp; sourceTree = "<group>"; };
+		A131A0EA1FC900B0002E5B8E /* CSVideoDemo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVideoDemo.h; sourceTree = "<group>"; };
+		A131A0EB1FC900B0002E5B8E /* CSVideoDemo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoDemo.cpp; sourceTree = "<group>"; };
 		A131A0F21FC900FB002E5B8E /* HBAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HBAudio.cpp; sourceTree = "<group>"; };
 		A131A0F41FC900FB002E5B8E /* CSAudioResample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioResample.cpp; sourceTree = "<group>"; };
 		A131A0F51FC900FB002E5B8E /* CSAudioResample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioResample.h; sourceTree = "<group>"; };
@@ -9546,8 +9546,8 @@
 				A131A0E51FC900B0002E5B8E /* VideoScale */,
 				A131A0E81FC900B0002E5B8E /* CSVideoTool.cpp */,
 				A131A0E91FC900B0002E5B8E /* CSVideoReverse.h */,
-				A131A0EA1FC900B0002E5B8E /* CSVideo.h */,
-				A131A0EB1FC900B0002E5B8E /* CSVideo.cpp */,
+				A131A0EA1FC900B0002E5B8E /* CSVideoDemo.h */,
+				A131A0EB1FC900B0002E5B8E /* CSVideoDemo.cpp */,
 			);
 			path = CSVideo;
 			sourceTree = "<group>";
@@ -17458,7 +17458,7 @@
 				A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */,
 				A181BC6F1F6517BD00B34FD0 /* CSThreadContext.cpp in Sources */,
 				A19A67D91EB3445600DE8F11 /* simplest_ffmpeg_video_filter_pure.cpp in Sources */,
-				A131A0F01FC900B0002E5B8E /* CSVideo.cpp in Sources */,
+				A131A0F01FC900B0002E5B8E /* CSVideoDemo.cpp in Sources */,
 				A1245A981F65FD4A00DB5D45 /* CSAStream.cpp in Sources */,
 				A1245A8B1F657F9000DB5D45 /* CSPlayer.cpp in Sources */,
 				A131A0EF1FC900B0002E5B8E /* CSVideoTool.cpp in Sources */,

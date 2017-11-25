@@ -12,31 +12,28 @@ namespace HBMedia {
 
 CSVideoDecoder::CSVideoDecoder(ImageParams& params) {
     memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
-    memset(&mSrcVideoParams, 0x00, sizeof(ImageParams));
+    imageParamInit(&mSrcVideoParams);
     mTargetVideoParams = params;
+
     mVideoStreamIndex = INVALID_STREAM_INDEX;
     mPKTSerial = 0;
-    mPInputVideoFormatCtx = nullptr;
+    mPInVideoFormatCtx = nullptr;
+
     mPInputVideoCodecCtx = nullptr;
     mPInputVideoCodec = nullptr;
     mPVideoConvertCtx = nullptr;
+
     mTargetVideoFrameBufferSize = 0;
     mTargetVideoFrameBuffer = nullptr;
 }
 
 CSVideoDecoder::~CSVideoDecoder() {
-}
 
-int CSVideoDecoder::videoBaseInitial() {
-    if (globalInitial() != HB_OK) {
-        LOGE("global initial failed !");
-        return HB_ERROR;
-    }
-    return HB_OK;
 }
 
 int CSVideoDecoder::prepare() {
-    if (videoBaseInitial() != HB_OK) {
+
+    if (baseInitial() != HB_OK) {
         LOGE("Video base initial failed !");
         return HB_ERROR;
     }
@@ -107,7 +104,7 @@ int  CSVideoDecoder::readVideoPacket() {
     
     AVPacket *pNewPacket = av_packet_alloc();
     while (true) {
-        HBError = av_read_frame(mPInputVideoFormatCtx, pNewPacket);
+        HBError = av_read_frame(mPInVideoFormatCtx, pNewPacket);
         if (HBError == 0) {
             if (pNewPacket->stream_index == mVideoStreamIndex) {
                 packet_queue_put(&mPacketCacheList, pNewPacket);
@@ -241,22 +238,22 @@ int  CSVideoDecoder::videoDecoderInitial() {
     
     memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
     
-    mPInputVideoFormatCtx = avformat_alloc_context();
-    HBError = avformat_open_input(&mPInputVideoFormatCtx, mSrcPicMediaFile, NULL, NULL);
+    mPInVideoFormatCtx = avformat_alloc_context();
+    HBError = avformat_open_input(&mPInVideoFormatCtx, mSrcPicMediaFile, NULL, NULL);
     if (HBError != 0) {
         LOGE("Video decoder couldn't open input file. <%d> <%s>", HBError, av_err2str(HBError));
         return HB_ERROR;
     }
     
-    HBError = avformat_find_stream_info(mPInputVideoFormatCtx, NULL);
+    HBError = avformat_find_stream_info(mPInVideoFormatCtx, NULL);
     if (HBError < 0) {
         LOGE("Video decoder couldn't find stream information. <%s>", av_err2str(HBError));
         return HB_ERROR;
     }
     
     mVideoStreamIndex = INVALID_STREAM_INDEX;
-    for (int i=0; i<mPInputVideoFormatCtx->nb_streams; i++) {
-        if (mPInputVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+    for (int i=0; i<mPInVideoFormatCtx->nb_streams; i++) {
+        if (mPInVideoFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             mVideoStreamIndex = i;
             break;
         }
@@ -266,7 +263,7 @@ int  CSVideoDecoder::videoDecoderInitial() {
         return HB_ERROR;
     }
     
-    AVStream* pVideoStream = mPInputVideoFormatCtx->streams[mVideoStreamIndex];
+    AVStream* pVideoStream = mPInVideoFormatCtx->streams[mVideoStreamIndex];
     mPInputVideoCodec = avcodec_find_decoder(pVideoStream->codecpar->codec_id);
     if (!mPInputVideoCodec) {
         LOGE("Codec <%d> not found !", pVideoStream->codecpar->codec_id);
@@ -286,7 +283,7 @@ int  CSVideoDecoder::videoDecoderInitial() {
     /** 初始化音频数据缓冲管道 */
     packet_queue_init(&mFrameCacheList);
     
-    av_dump_format(mPInputVideoFormatCtx, mVideoStreamIndex, mSrcPicMediaFile, false);
+    av_dump_format(mPInVideoFormatCtx, mVideoStreamIndex, mSrcPicMediaFile, false);
     return HB_OK;
 }
 

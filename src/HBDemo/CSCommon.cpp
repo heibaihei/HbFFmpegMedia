@@ -12,8 +12,7 @@ double mt_gettime_monotonic() {
 
 int globalInitial()
 {
-    av_register_all();
-    avformat_network_init();
+    
     return HB_OK;
 }
 

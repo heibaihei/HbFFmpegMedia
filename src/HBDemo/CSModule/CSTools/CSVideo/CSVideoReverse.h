@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include <vector>
-#include "CSVideo.h"
+#include "CSMediaBase.h"
 
 typedef struct FrameInfo{
     AVFrame *pMediaFrame;
