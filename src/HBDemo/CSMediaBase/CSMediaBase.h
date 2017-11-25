@@ -21,7 +21,7 @@ namespace HBMedia {
         CSMediaBase();
 
         ~CSMediaBase();
-        
+
         virtual int prepare() = 0;
 
         virtual int start() = 0;

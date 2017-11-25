@@ -18,8 +18,7 @@
 #include "HBVideoChangeBgmMusic.h"
 #include "FFmpegModule/Swscale/FFmpegSwscale.h"
 #include "MTVideoTransToGif.h"
-#include "Picture/CSPicture.h"
-#include "Picture/HBPictureDemo.h"
+#include "HBPictureDemo.h"
 #include "CSDemo.h"
 #include "libyuv.h"
 #include <unistd.h>
