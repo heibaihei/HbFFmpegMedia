@@ -13,18 +13,23 @@ namespace HBMedia {
 int CSVideoDecoder::S_MAX_BUFFER_CACHE = 8;
 void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
     if (!arg) {
-        LOGE("Video decoder args is invalid !");
+        LOGE("[Work task: <Decoder>] Thread param args is invalid !");
         return nullptr;
     }
+    
     int HBError = HB_OK;
-    CSVideoDecoder* pDecoder = (CSVideoDecoder *)arg;
+    
+    ThreadParam_t *pThreadParams = (ThreadParam_t *)arg;
+    CSVideoDecoder* pDecoder = (CSVideoDecoder *)(pThreadParams->mThreadArgs);
     AVPacket *pNewPacket = av_packet_alloc();
     AVFrame  *pNewFrame = av_frame_alloc();
     while (!(pDecoder->mDecodeStateFlag & DECODE_STATE_DECODE_END)) {
         
         if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_READPKT_END)) {
+            av_init_packet(pNewPacket);
             HBError = av_read_frame(pDecoder->mPInVideoFormatCtx, pNewPacket);
             if (HBError != 0) {
+                LOGE("[Work task: <Decoder>] Read frame failed, Err:%s", av_err2str(HBError));
                 if (HBError != AVERROR_EOF)
                     pDecoder->mDecodeStateFlag |= DECODE_STATE_READPKT_ABORT;
                 pDecoder->mDecodeStateFlag |= DECODE_STATE_READPKT_END;
@@ -32,22 +37,25 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                 pNewPacket = nullptr;
                 continue;
             }
-            if (pNewPacket->stream_index == pDecoder->mVideoStreamIndex) {
+            /** 拿到媒体数据包 */
+            if (pNewPacket->stream_index != pDecoder->mVideoStreamIndex) {
                 av_packet_unref(pNewPacket);
                 continue;
             }
+            /** 得到想要的指定数据类型的数据包 */
         }
         
-        if (!pNewPacket) {
+        if (pNewPacket) {
             HBError = avcodec_send_packet(pDecoder->mPInputVideoCodecCtx, pNewPacket);
+            av_packet_unref(pNewPacket);
             if (HBError != 0) {
                 if (HBError != AVERROR(EAGAIN)) {
+                    LOGE("[Work task: <Decoder>] Send packet failed, Err:%s", av_err2str(HBError));
                     pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_ABORT;
                     pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_END;
                 }
                 continue;
             }
-            av_packet_unref(pNewPacket);
         }
         else if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_FLUSH_MODE)) {
             pDecoder->mDecodeStateFlag |= DECODE_STATE_FLUSH_MODE;
@@ -91,7 +99,6 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
         }
     }
     
-    
     av_packet_free(&pNewPacket);
     av_frame_free(&pNewFrame);
     
@@ -103,7 +110,6 @@ CSVideoDecoder::CSVideoDecoder() {
     imageParamInit(&mSrcVideoParams);
     imageParamInit(&mTargetVideoParams);
 
-    mIsNeedTransfer = false;
     mVideoStreamIndex = INVALID_STREAM_INDEX;
     mPInVideoFormatCtx = nullptr;
 

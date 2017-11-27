@@ -58,10 +58,8 @@ protected:
     int  _DecoderInitial();
     int  _ExportInitial();
     int  _SwscaleInitial();
-
     int  _DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame);
-    
-private:
+
     /**
      *  媒体参数初始化，重置;
      */
@@ -78,7 +76,7 @@ private:
     FiFoQueue<AVFrame *> *mFrameQueue;
     
     /** 解码器状态 */
-    unsigned long long mDecodeStateFlag;
+    uint64_t mDecodeStateFlag;
     
     /** 解码线程上下文 */
     ThreadContext mDecodeThreadCtx;

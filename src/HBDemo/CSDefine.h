@@ -206,4 +206,6 @@ typedef enum STREAM_TYPE {
     CS_STREAM_TYPE_ALL       = 0x07,
 } STREAM_TYPE;
 
+#define CS_COMMON_RESOURCE_ROOT_PATH "/Users/zj-db0519/work/resource/folder"
+
 #endif

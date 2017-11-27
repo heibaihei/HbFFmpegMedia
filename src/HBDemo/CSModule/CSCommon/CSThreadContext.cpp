@@ -49,8 +49,8 @@ int ThreadContext::bindIPC(ThreadIPCContext *pv) {
 }
 
 int ThreadContext::start() {
-    int ret = pthread_create(&mThreadID, NULL, mThreadFunc, mThreadArg);
-    if (ret < 0) {
+    if (pthread_create(&mThreadID, NULL, mThreadFunc, mThreadArg) < 0) {
+        LOGE("Thread context create thread failed !");
         return HB_ERROR;
     }
 
