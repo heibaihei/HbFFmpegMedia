@@ -60,6 +60,7 @@ protected:
     int  _SwscaleInitial();
     int  _DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame);
 
+    int  _DoExport(AVFrame **pOutFrame);
     /**
      *  媒体参数初始化，重置;
      */
