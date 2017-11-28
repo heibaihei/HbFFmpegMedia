@@ -18,11 +18,7 @@ int CSVideoDemo_VideoDecoder() {
     
     pVideoDecoder->prepare();
     pVideoDecoder->start();
-    
-    while (!(pVideoDecoder->getStatus() & DECODE_STATE_DECODE_END)) {
-        usleep(100);
-    }
-    
+    pVideoDecoder->syncWait();
     pVideoDecoder->stop();
     pVideoDecoder->release();
     

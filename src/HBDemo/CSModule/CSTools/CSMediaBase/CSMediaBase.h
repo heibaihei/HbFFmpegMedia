@@ -80,6 +80,7 @@ namespace HBMedia {
         char            *mTrgMediaFile;
         FILE            *mTrgMediaFileHandle;
         
+        bool    mAbort;
         /** 解码器状态 */
         uint64_t mState;
     } CSMediaBase;

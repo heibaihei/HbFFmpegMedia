@@ -36,7 +36,7 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
     AVFrame  *pNewFrame = av_frame_alloc();
     AVFrame *pTargetFrame = nullptr;
     while (!(pDecoder->mState & DECODE_STATE_DECODE_END)) {
-//        EchoStatus(pDecoder->mDecodeStateFlag);
+
         if (!(pDecoder->mState & DECODE_STATE_DECODE_ABORT) \
             && !(pDecoder->mState & DECODE_STATE_READPKT_END))
         {
@@ -133,6 +133,9 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
     }
 
 VIDEO_DECODER_THREAD_END_LABEL:
+    if (!(pDecoder->mState & DECODE_STATE_DECODE_END)) {
+        pDecoder->mState |= (DECODE_STATE_DECODE_ABORT | DECODE_STATE_DECODE_END);
+    }
     EchoStatus(pDecoder->mState);
     if (pNewPacket)
         av_packet_free(&pNewPacket);
@@ -253,12 +256,18 @@ int CSVideoDecoder::start() {
 }
     
 int CSVideoDecoder::stop() {
-    
+    if (!(mState & DECODE_STATE_DECODE_END)) {
+        mAbort = true;
+    }
+    mDecodeThreadCtx.join();
     return HB_OK;
 }
 
 int CSVideoDecoder::syncWait() {
-    mDecodeThreadCtx.join();
+    while (!(mState & DECODE_STATE_DECODE_END)) {
+        usleep(100);
+    }
+    stop();
     return HB_OK;
 }
 

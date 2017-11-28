@@ -20,6 +20,8 @@ CSMediaBase::CSMediaBase() {
     mTrgMediaFileHandle = nullptr;
     mPInVideoFormatCtx = nullptr;
     mPOutVideoFormatCtx = nullptr;
+    memset(&mState, 0x00, sizeof(mState));
+    mAbort = false;
 }
 
 CSMediaBase::~CSMediaBase() {
@@ -30,6 +32,8 @@ CSMediaBase::~CSMediaBase() {
 }
 
 int CSMediaBase::baseInitial() {
+    mAbort = false;
+    memset(&mState, 0x00, sizeof(mState));
     av_register_all();
     avformat_network_init();
     return HB_OK;
