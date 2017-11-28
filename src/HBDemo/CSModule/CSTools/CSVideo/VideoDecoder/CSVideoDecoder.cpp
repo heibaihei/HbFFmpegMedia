@@ -34,20 +34,20 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
     CSVideoDecoder* pDecoder = (CSVideoDecoder *)(pThreadParams->mThreadArgs);
     AVPacket *pNewPacket = av_packet_alloc();
     AVFrame  *pNewFrame = av_frame_alloc();
-    while (!(pDecoder->mDecodeStateFlag & DECODE_STATE_DECODE_END)) {
-        
-        EchoStatus(pDecoder->mDecodeStateFlag);
-        
-        if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_DECODE_ABORT) \
-            && !(pDecoder->mDecodeStateFlag & DECODE_STATE_READPKT_END))
+    AVFrame *pTargetFrame = nullptr;
+    while (!(pDecoder->mState & DECODE_STATE_DECODE_END)) {
+//        EchoStatus(pDecoder->mDecodeStateFlag);
+        if (!(pDecoder->mState & DECODE_STATE_DECODE_ABORT) \
+            && !(pDecoder->mState & DECODE_STATE_READPKT_END))
         {
             av_init_packet(pNewPacket);
             HBError = av_read_frame(pDecoder->mPInVideoFormatCtx, pNewPacket);
             if (HBError != 0) {
-                LOGE("[Work task: <Decoder>] Read frame failed, Err:%s", av_err2str(HBError));
-                if (HBError != AVERROR_EOF)
-                    pDecoder->mDecodeStateFlag |= DECODE_STATE_READPKT_ABORT;
-                pDecoder->mDecodeStateFlag |= DECODE_STATE_READPKT_END;
+                if (HBError != AVERROR_EOF) {
+                    LOGE("[Work task: <Decoder>] Read frame failed, Err:%s", av_err2str(HBError));
+                    pDecoder->mState |= DECODE_STATE_READPKT_ABORT;
+                }
+                pDecoder->mState |= DECODE_STATE_READPKT_END;
                 av_packet_free(&pNewPacket);
                 pNewPacket = nullptr;
                 continue;
@@ -58,15 +58,14 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                 continue;
             }
             /** 得到想要的指定数据类型的数据包 */
-            
             if (pNewPacket) {
                 HBError = avcodec_send_packet(pDecoder->mPInputVideoCodecCtx, pNewPacket);
                 av_packet_unref(pNewPacket);
                 if (HBError != 0) {
                     if (HBError != AVERROR(EAGAIN)) {
                         LOGE("[Work task: <Decoder>] Send packet failed, Err:%s", av_err2str(HBError));
-                        pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_ABORT;
-                        pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_END;
+                        pDecoder->mState |= DECODE_STATE_DECODE_ABORT;
+                        pDecoder->mState |= DECODE_STATE_DECODE_END;
                     }
                     else
                         LOGE("[Work task: <Decoder>] Send packet require eagain, desc:%s", av_err2str(HBError));
@@ -78,30 +77,33 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
             if (pNewPacket)
                 av_packet_free(&pNewPacket);
             
-            if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_FLUSH_MODE)) {
-                if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_READPKT_END)) {
+            if (!(pDecoder->mState & DECODE_STATE_FLUSH_MODE)) {
+                if (!(pDecoder->mState & DECODE_STATE_READPKT_END)) {
                     LOGE("[Work task: <Decoder>] Flush decoder buffer, but the not reach the end of file !");
                 }
-                pDecoder->mDecodeStateFlag |= DECODE_STATE_FLUSH_MODE;
+                pDecoder->mState |= DECODE_STATE_FLUSH_MODE;
                 avcodec_send_packet(pDecoder->mPInputVideoCodecCtx, nullptr);
+                continue;
             }
         }
         
         while (true) {
             HBError = avcodec_receive_frame(pDecoder->mPInputVideoCodecCtx, pNewFrame);
             if (HBError != 0) {
-                LOGE("[Work task: <Decoder>] Receive frame, desc:%s", av_err2str(HBError));
                 if (HBError != AVERROR(EAGAIN)) {
+                    if (HBError != AVERROR_EOF) {
+                        LOGE("[Work task: <Decoder>] Receive frame, desc:%s", av_err2str(HBError));
+                        pDecoder->mState |= DECODE_STATE_DECODE_ABORT;
+                    }
                     av_frame_unref(pNewFrame);
-                    pDecoder->mDecodeStateFlag = DECODE_STATE_DECODE_ABORT;
                 }
-                if (pDecoder->mDecodeStateFlag & DECODE_STATE_FLUSH_MODE)
-                    pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_END;
+                if (pDecoder->mState & DECODE_STATE_FLUSH_MODE)
+                    pDecoder->mState |= DECODE_STATE_DECODE_END;
                 break;
             }
             
             /** 得到帧数据 */
-            AVFrame *pTargetFrame = nullptr;
+            pTargetFrame = nullptr;
             if (pDecoder->mIsNeedTransfer) {
                 /** 执行格式转换 */
                 if (pDecoder->_DoSwscale(pNewFrame, &pTargetFrame) != HB_OK) {
@@ -129,9 +131,21 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
             }
         }
     }
-    
-    av_packet_free(&pNewPacket);
-    av_frame_free(&pNewFrame);
+
+VIDEO_DECODER_THREAD_END_LABEL:
+    EchoStatus(pDecoder->mState);
+    if (pNewPacket)
+        av_packet_free(&pNewPacket);
+    if (pNewFrame) {
+        if (pNewFrame->opaque)
+            av_freep(pNewFrame->opaque);
+        av_frame_free(&pNewFrame);
+    }
+    if (pTargetFrame) {
+        if (pTargetFrame->opaque)
+            av_freep(pTargetFrame->opaque);
+        av_frame_free(&pTargetFrame);
+    }
     
     return arg;
 }
@@ -154,7 +168,7 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
             break;
         case MD_TYPE_RAW_BY_FILE:
         {
-            if (fwrite(pFrame->data[0], mTargetVideoParams.mPreImagePixBufferSize, 1, mTrgMediaFileHandle) <= 0) {
+            if (fwrite(pFrame->data[0], 1, mTargetVideoParams.mPreImagePixBufferSize, mTrgMediaFileHandle) <= 0) {
                 LOGE("[Work task: <Decoder>] Write output frame failed !");
                 return HB_ERROR;
             }
@@ -172,7 +186,7 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
 }
 
 CSVideoDecoder::CSVideoDecoder() {
-    memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
+    memset(&mState, 0x00, sizeof(mState));
     imageParamInit(&mSrcVideoParams);
     imageParamInit(&mTargetVideoParams);
 
@@ -296,7 +310,7 @@ int  CSVideoDecoder::_DecoderInitial() {
         int HBError = HB_OK;
         AVStream* pVideoStream = nullptr;
         mPInputVideoCodecCtx = nullptr;
-        memset(&mDecodeStateFlag, 0x00, sizeof(mDecodeStateFlag));
+        memset(&mState, 0x00, sizeof(mState));
         
         if (CSMediaBase::_InMediaInitial() != HB_OK) {
             LOGE("Media base in media initial failed !");

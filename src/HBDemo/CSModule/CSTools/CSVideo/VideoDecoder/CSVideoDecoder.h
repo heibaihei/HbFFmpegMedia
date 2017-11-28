@@ -76,9 +76,6 @@ private:
     SwsContext *mPVideoConvertCtx;
     FiFoQueue<AVFrame *> *mFrameQueue;
     
-    /** 解码器状态 */
-    uint64_t mDecodeStateFlag;
-    
     /** 解码线程上下文 */
     ThreadContext mDecodeThreadCtx;
 } CSVideoDecoder;

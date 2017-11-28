@@ -32,6 +32,7 @@ namespace HBMedia {
 
         virtual int release();
 
+        uint64_t getStatus() { return mState; }
         /**
          *  配置输入媒体类型
          */
@@ -78,6 +79,9 @@ namespace HBMedia {
         AVFormatContext *mPOutVideoFormatCtx;
         char            *mTrgMediaFile;
         FILE            *mTrgMediaFileHandle;
+        
+        /** 解码器状态 */
+        uint64_t mState;
     } CSMediaBase;
 }
 #endif /* CSMediaBase_h */
