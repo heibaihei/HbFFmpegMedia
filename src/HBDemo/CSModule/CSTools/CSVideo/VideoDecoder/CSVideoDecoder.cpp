@@ -9,6 +9,17 @@
 #include "CSVideoDecoder.h"
 
 namespace HBMedia {
+    
+static void EchoStatus(uint64_t status) {
+
+    bool bReadEnd = ((status & DECODE_STATE_READPKT_END) != 0 ? true : false);
+    bool bDecodeEnd = ((status & DECODE_STATE_DECODE_END) != 0 ? true : false);
+    bool bReadAbort = ((status & DECODE_STATE_READPKT_ABORT) != 0 ? true : false);
+    bool bDecodeAbort = ((status & DECODE_STATE_DECODE_ABORT) != 0 ? true : false);
+    bool bFlushMode = ((status & DECODE_STATE_FLUSH_MODE) != 0 ? true : false);
+    
+    LOGI("[Work task: <Decoder>] Status: Read<End:%d, Abort:%d> | <Flush:%d> | Decode<End:%d, Abort:%d>", bReadEnd, bReadAbort, bFlushMode, bDecodeEnd, bDecodeAbort);
+}
 
 int CSVideoDecoder::S_MAX_BUFFER_CACHE = 8;
 void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
@@ -25,8 +36,11 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
     AVFrame  *pNewFrame = av_frame_alloc();
     while (!(pDecoder->mDecodeStateFlag & DECODE_STATE_DECODE_END)) {
         
-        if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_READPKT_END) \
-            || !(pDecoder->mDecodeStateFlag & DECODE_STATE_DECODE_ABORT)) {
+        EchoStatus(pDecoder->mDecodeStateFlag);
+        
+        if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_DECODE_ABORT) \
+            && !(pDecoder->mDecodeStateFlag & DECODE_STATE_READPKT_END))
+        {
             av_init_packet(pNewPacket);
             HBError = av_read_frame(pDecoder->mPInVideoFormatCtx, pNewPacket);
             if (HBError != 0) {
@@ -44,33 +58,39 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                 continue;
             }
             /** 得到想要的指定数据类型的数据包 */
-        }
-        
-        if (pNewPacket && !(pDecoder->mDecodeStateFlag & DECODE_STATE_DECODE_ABORT)) {
-            HBError = avcodec_send_packet(pDecoder->mPInputVideoCodecCtx, pNewPacket);
-            av_packet_unref(pNewPacket);
-            if (HBError != 0) {
-                if (HBError != AVERROR(EAGAIN)) {
-                    LOGE("[Work task: <Decoder>] Send packet failed, Err:%s", av_err2str(HBError));
-                    pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_ABORT;
-                    pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_END;
+            
+            if (pNewPacket) {
+                HBError = avcodec_send_packet(pDecoder->mPInputVideoCodecCtx, pNewPacket);
+                av_packet_unref(pNewPacket);
+                if (HBError != 0) {
+                    if (HBError != AVERROR(EAGAIN)) {
+                        LOGE("[Work task: <Decoder>] Send packet failed, Err:%s", av_err2str(HBError));
+                        pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_ABORT;
+                        pDecoder->mDecodeStateFlag |= DECODE_STATE_DECODE_END;
+                    }
+                    else
+                        LOGE("[Work task: <Decoder>] Send packet require eagain, desc:%s", av_err2str(HBError));
+                    continue;
                 }
-                else
-                    LOGE("[Work task: <Decoder>] Send packet require eagain, desc:%s", av_err2str(HBError));
-                continue;
             }
         }
-        else if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_FLUSH_MODE)) {
-            if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_READPKT_END)) {
-                LOGE("[Work task: <Decoder>] Flush decoder buffer, but the not reach the end of file !");
+        else {
+            if (pNewPacket)
+                av_packet_free(&pNewPacket);
+            
+            if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_FLUSH_MODE)) {
+                if (!(pDecoder->mDecodeStateFlag & DECODE_STATE_READPKT_END)) {
+                    LOGE("[Work task: <Decoder>] Flush decoder buffer, but the not reach the end of file !");
+                }
+                pDecoder->mDecodeStateFlag |= DECODE_STATE_FLUSH_MODE;
+                avcodec_send_packet(pDecoder->mPInputVideoCodecCtx, nullptr);
             }
-            pDecoder->mDecodeStateFlag |= DECODE_STATE_FLUSH_MODE;
-            avcodec_send_packet(pDecoder->mPInputVideoCodecCtx, nullptr);
         }
         
         while (true) {
             HBError = avcodec_receive_frame(pDecoder->mPInputVideoCodecCtx, pNewFrame);
             if (HBError != 0) {
+                LOGE("[Work task: <Decoder>] Receive frame, desc:%s", av_err2str(HBError));
                 if (HBError != AVERROR(EAGAIN)) {
                     av_frame_unref(pNewFrame);
                     pDecoder->mDecodeStateFlag = DECODE_STATE_DECODE_ABORT;
