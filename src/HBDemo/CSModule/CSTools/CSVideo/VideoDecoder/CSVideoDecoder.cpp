@@ -167,11 +167,8 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
         case MD_TYPE_RAW_BY_MEMORY:
         {
             if (mTargetFrameQueue) {
-                if (mTargetFrameQueue->queueLeft() <= 0) {
-                    /** 阻塞等待空间帧缓冲区存在可用资源 */
-                    mEmptyFrameQueueIPC->condV();
-                }
-                
+                /** 阻塞等待空间帧缓冲区存在可用资源 */
+                mEmptyFrameQueueIPC->condV();
                 if (mTargetFrameQueue->push(*pOutFrame) > 0) {
                     mTargetFrameQueueIPC->condP();
                 }
@@ -260,7 +257,8 @@ int CSVideoDecoder::prepare() {
         LOGE("Video swscale initail failed !");
         goto VIDEO_DECODER_PREPARE_END_LABEL;
     }
-
+    
+    mState |= DECODE_STATE_PREPARED;
     return HB_OK;
     
 VIDEO_DECODER_PREPARE_END_LABEL:
@@ -269,6 +267,10 @@ VIDEO_DECODER_PREPARE_END_LABEL:
 }
     
 int CSVideoDecoder::start() {
+    if (!(mState & DECODE_STATE_PREPARED)) {
+        LOGE("Media decoder is not prepared !");
+        return HB_ERROR;
+    }
     if (HB_OK != mDecodeThreadCtx.setFunction(ThreadFunc_Video_Decoder, this)) {
         LOGE("Initial decode thread context failed !");
         return HB_ERROR;
@@ -291,6 +293,16 @@ int CSVideoDecoder::stop() {
     if (CSMediaBase::stop() != HB_OK) {
         LOGE("Media base stop failed !");
         return HB_ERROR;
+    }
+    
+    AVFrame *pFrame = nullptr;
+    while (mTargetFrameQueue->queueLength()) {
+        pFrame = mTargetFrameQueue->get();
+        if (pFrame) {
+            if (pFrame->opaque)
+                av_freep(pFrame);
+            av_frame_free(&pFrame);
+        }
     }
     
     if (release() != HB_OK) {
@@ -352,7 +364,7 @@ DO_SWSCALE_END_LABEL:
 
 int CSVideoDecoder::receiveFrame(AVFrame *OutFrame) {
     int HBError = HB_ERROR;
-    if (mOutMediaType != MD_TYPE_RAW_BY_MEMORY) {
+    if (!(mState & DECODE_STATE_PREPARED) || mOutMediaType != MD_TYPE_RAW_BY_MEMORY) {
         LOGE("Video Decoder >>> receive raw frame failed, invalid output media type !");
         return HBError;
     }
@@ -362,18 +374,17 @@ RETRY_RECEIVE_FRAME:
     HBError = HB_ERROR;
     if (mTargetFrameQueue && mTargetFrameQueue->queueLength() > 0) {
         if (!(OutFrame = mTargetFrameQueue->get())) {
-            LOGE("Video Decoder >>> receive failed failed, <frame:%d>!", mTargetFrameQueue->queueLength());
+            LOGE("Video Decoder [%d] >>> receive failed failed, <frame:%d>!", __LINE__, mTargetFrameQueue->queueLength());
             goto RETRY_RECEIVE_FRAME;
         }
         else {
             HBError = HB_OK;
-            LOGE("Video Decoder >>> receive failed failed, <frame:%d>!", mTargetFrameQueue->queueLength());
             mTargetFrameQueueIPC->condV();
             mEmptyFrameQueueIPC->condP();
         }
     }
-    else
-        LOGE("Video decoder >>> cur not valid decoder data !");
+//    else
+//        LOGE("Video decoder >>> cur not valid decoder data: %d!", mTargetFrameQueue->queueLength());
     return HBError;
 }
 
@@ -485,14 +496,14 @@ int  CSVideoDecoder::_mediaParamInitial() {
             if (mSrcMediaFile)
                 mInMediaType = MD_TYPE_COMPRESS;
             else {
-                LOGE("[%s] >>> [Type:%s] Audio decoder input file is invalid !", __func__, getMediaDataTypeDescript(mInMediaType));
+                LOGE("[%s] >>> [Type:%s] Video decoder input file is invalid !", __func__, getMediaDataTypeDescript(mInMediaType));
                 return HB_ERROR;
             }
         }
             break;
         case MD_TYPE_COMPRESS:
             if (!mSrcMediaFile) {
-                LOGE("[%s] >>> [Type:%s]Audio decoder input file is invalid !", __func__, getMediaDataTypeDescript(mInMediaType));
+                LOGE("[%s] >>> [Type:%s]Video decoder input file is invalid !", __func__, getMediaDataTypeDescript(mInMediaType));
                 return HB_ERROR;
             }
             break;
@@ -511,7 +522,13 @@ int  CSVideoDecoder::_mediaParamInitial() {
             break;
         case MD_TYPE_RAW_BY_FILE:
             if (!mTrgMediaFile) {
-                LOGE("[%s] >>> [Type:%s]Audio decoder output file is invalid !", __func__, getMediaDataTypeDescript(mOutMediaType));
+                LOGE("[%s] >>> [Type:%s]Video decoder output file is invalid !", __func__, getMediaDataTypeDescript(mOutMediaType));
+                return HB_ERROR;
+            }
+            break;
+        case MD_TYPE_RAW_BY_MEMORY:
+            if (!mTargetFrameQueue || !mEmptyFrameQueueIPC) {
+                LOGE("[%s] >>> [Type:%s]Video decoder output prepare failed !", __func__, getMediaDataTypeDescript(mOutMediaType));
                 return HB_ERROR;
             }
             break;

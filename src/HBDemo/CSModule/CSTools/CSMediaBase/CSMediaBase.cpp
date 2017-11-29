@@ -90,6 +90,8 @@ int CSMediaBase::stop(){
             }
         }
             break;
+        case MD_TYPE_RAW_BY_MEMORY:
+            break;
         default:
             LOGE("Base media output media type:%s is not support !", getMediaDataTypeDescript(mOutMediaType));
             return HB_ERROR;
@@ -121,6 +123,8 @@ int CSMediaBase::_OutMediaInitial() {
 
         }
         break;
+        case MD_TYPE_RAW_BY_MEMORY:
+            break;
         default:
             LOGE("Base media output media type:%s is not support !", getMediaDataTypeDescript(mOutMediaType));
             return HB_ERROR;

@@ -33,8 +33,18 @@ int CSVideoDemo_VideoDecoder() {
 
         pVideoDecoder->prepare();
         pVideoDecoder->start();
-        while (true) {
-            
+        AVFrame *pNewFrame = nullptr;
+        if (pVideoDecoder->getStatus() & DECODE_STATE_PREPARED) {
+            while (!(pVideoDecoder->getStatus() & DECODE_STATE_DECODE_END)) {
+                pNewFrame = nullptr;
+                if ((pVideoDecoder->receiveFrame(pNewFrame) == HB_OK) && pNewFrame) {
+                    if (pNewFrame->opaque)
+                        av_freep(pNewFrame->opaque);
+                    av_frame_free(&pNewFrame);
+                }
+                
+                usleep(10);
+            }
         }
         pVideoDecoder->stop();
         pVideoDecoder->release();
