@@ -44,6 +44,11 @@ public:
     virtual int release();
     
     /**
+     *  取帧
+     */
+    virtual int receiveFrame(AVFrame *OutFrame);
+    
+    /**
      *  同步等待解码器退出
      */
     virtual int syncWait();
@@ -72,7 +77,9 @@ private:
     AVCodecContext* mPInputVideoCodecCtx;
     AVCodec* mPInputVideoCodec;
     SwsContext *mPVideoConvertCtx;
+    
     FiFoQueue<AVFrame *> *mFrameQueue;
+    ThreadIPCContext     *mQueueIPC;
     
     /** 解码线程上下文 */
     ThreadContext mDecodeThreadCtx;

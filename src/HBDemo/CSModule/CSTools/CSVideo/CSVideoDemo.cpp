@@ -10,17 +10,35 @@
 #include "CSModule.h"
 
 int CSVideoDemo_VideoDecoder() {
-    HBMedia::CSVideoDecoder* pVideoDecoder = new HBMedia::CSVideoDecoder();
-    pVideoDecoder->setInMediaType(MD_TYPE_COMPRESS);
-    pVideoDecoder->setOutMediaType(MD_TYPE_RAW_BY_FILE);
-    pVideoDecoder->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/100.mp4");
-    pVideoDecoder->setOutMediaFile((char *)VIDEO_RESOURCE_ROOT_PATH"/decode/100_raw.mp4");
-    
-    pVideoDecoder->prepare();
-    pVideoDecoder->start();
-    pVideoDecoder->syncWait();
-    pVideoDecoder->stop();
-    pVideoDecoder->release();
+//    {
+//        /** 视频解码，将裸数据存储文件的方式输出解码数据 */
+//        HBMedia::CSVideoDecoder* pVideoDecoder = new HBMedia::CSVideoDecoder();
+//        pVideoDecoder->setInMediaType(MD_TYPE_COMPRESS);
+//        pVideoDecoder->setOutMediaType(MD_TYPE_RAW_BY_FILE);
+//        pVideoDecoder->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/100.mp4");
+//        pVideoDecoder->setOutMediaFile((char *)VIDEO_RESOURCE_ROOT_PATH"/decode/100_raw.mp4");
+//
+//        pVideoDecoder->prepare();
+//        pVideoDecoder->start();
+//        pVideoDecoder->syncWait();
+//        pVideoDecoder->stop();
+//        pVideoDecoder->release();
+//    }
+    {
+        /** 视频解码，将裸数据以内存缓存队列的方式输出解码数据，内部解码线程以最大的缓冲节点数缓冲解码后的数据，外部通过获取节点的方式进行取帧操作 */
+        HBMedia::CSVideoDecoder* pVideoDecoder = new HBMedia::CSVideoDecoder();
+        pVideoDecoder->setInMediaType(MD_TYPE_COMPRESS);
+        pVideoDecoder->setOutMediaType(MD_TYPE_RAW_BY_MEMORY);
+        pVideoDecoder->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/100.mp4");
+
+        pVideoDecoder->prepare();
+        pVideoDecoder->start();
+        while (true) {
+            
+        }
+        pVideoDecoder->stop();
+        pVideoDecoder->release();
+    }
     
     return HB_OK;
 }

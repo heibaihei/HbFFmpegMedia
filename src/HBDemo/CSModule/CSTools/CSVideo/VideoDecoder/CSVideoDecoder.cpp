@@ -37,6 +37,12 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
     AVFrame *pTargetFrame = nullptr;
     while (!(pDecoder->mState & DECODE_STATE_DECODE_END)) {
 
+        if (pDecoder->mAbort) {
+            pDecoder->mState |= (DECODE_STATE_DECODE_ABORT | DECODE_STATE_DECODE_END);
+            LOGE("[Work task: <Decoder>] Abort decoder process !");
+            break;
+        }
+        
         if (!(pDecoder->mState & DECODE_STATE_DECODE_ABORT) \
             && !(pDecoder->mState & DECODE_STATE_READPKT_END))
         {
@@ -133,9 +139,6 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
     }
 
 VIDEO_DECODER_THREAD_END_LABEL:
-    if (!(pDecoder->mState & DECODE_STATE_DECODE_END)) {
-        pDecoder->mState |= (DECODE_STATE_DECODE_ABORT | DECODE_STATE_DECODE_END);
-    }
     EchoStatus(pDecoder->mState);
     if (pNewPacket)
         av_packet_free(&pNewPacket);
@@ -163,9 +166,28 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
     switch (mOutMediaType) {
         case MD_TYPE_RAW_BY_MEMORY:
         {
-            if (mFrameQueue->push(*pOutFrame) > 0) {
-                LOGE("[Work task: <Decoder>] Push out frame failed !");
-                return HB_OK;
+            if (mFrameQueue) {
+                if (mFrameQueue->queueLeft() > 0) {
+                    if (mFrameQueue->push(*pOutFrame) > 0) {
+                        LOGE("[Work task: <Decoder>] Push a new frame !");
+                        mQueueIPC->condP();
+                        return HB_OK;
+                    }
+                    else {
+                        if (pFrame->opaque)
+                            av_freep(pFrame->opaque);
+                        av_frame_free(pOutFrame);
+                    }
+                }
+                else {
+                    mQueueIPC->condV();
+                }
+            }
+            else {
+                LOGE("[Work task: <Decoder>] Frame buffer queue is invalid !");
+                if (pFrame->opaque)
+                    av_freep(pFrame->opaque);
+                av_frame_free(pOutFrame);
             }
         }
             break;
@@ -200,6 +222,7 @@ CSVideoDecoder::CSVideoDecoder() {
     mPInputVideoCodec = nullptr;
     mPVideoConvertCtx = nullptr;
     mFrameQueue = new FiFoQueue<AVFrame *>(S_MAX_BUFFER_CACHE);
+    mQueueIPC = new ThreadIPCContext(0);
     mDecodeThreadCtx.setFunction(nullptr, nullptr);
 }
 
@@ -322,7 +345,32 @@ DO_SWSCALE_END_LABEL:
     
     return HB_ERROR;
 }
-    
+
+int CSVideoDecoder::receiveFrame(AVFrame *OutFrame) {
+    int HBError = HB_ERROR;
+    if (mOutMediaType != MD_TYPE_RAW_BY_MEMORY) {
+        LOGE("Video Decoder >>> receive raw frame failed, invalid output media type !");
+        return HBError;
+    }
+
+RETRY_RECEIVE_FRAME:
+    OutFrame = nullptr;
+    HBError = HB_ERROR;
+    if (mFrameQueue && mFrameQueue->queueLength() > 0) {
+        if (!(OutFrame = mFrameQueue->get())) {
+            LOGE("Video Decoder >>> receive failed failed !");
+            goto RETRY_RECEIVE_FRAME;
+        }
+        else {
+            HBError = HB_OK;
+            mQueueIPC->condV();
+        }
+    }
+    else
+        LOGE("Video decoder >>> cur not valid decoder data !");
+    return HBError;
+}
+
 int  CSVideoDecoder::_DecoderInitial() {
     
     if (mInMediaType == MD_TYPE_COMPRESS) {
@@ -482,6 +530,14 @@ int CSVideoDecoder::_ExportInitial() {
                     return HB_ERROR;
                 }
             }
+            break;
+        case MD_TYPE_RAW_BY_MEMORY:
+        {
+            if (!mQueueIPC || !mFrameQueue) {
+                LOGE("Video decoder output buffer module initial failed !");
+                return HB_ERROR;
+            }
+        }
             break;
         default:
             LOGE("output media initial failed, cur media type:%s", getMediaDataTypeDescript(mOutMediaType));
