@@ -34,6 +34,9 @@ public:
     /** 生产资源 */
     int condP();
     
+    /** 等待资源出现可用 */
+    int WaitV();
+    
     /** 消费资源 */
     int condV();
     

@@ -78,8 +78,9 @@ private:
     AVCodec* mPInputVideoCodec;
     SwsContext *mPVideoConvertCtx;
     
-    FiFoQueue<AVFrame *> *mFrameQueue;
-    ThreadIPCContext     *mQueueIPC;
+    FiFoQueue<AVFrame *> *mTargetFrameQueue;
+    ThreadIPCContext     *mTargetFrameQueueIPC;
+    ThreadIPCContext     *mEmptyFrameQueueIPC;
     
     /** 解码线程上下文 */
     ThreadContext mDecodeThreadCtx;

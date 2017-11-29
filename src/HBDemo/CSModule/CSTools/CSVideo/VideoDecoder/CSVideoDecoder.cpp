@@ -166,21 +166,21 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
     switch (mOutMediaType) {
         case MD_TYPE_RAW_BY_MEMORY:
         {
-            if (mFrameQueue) {
-                if (mFrameQueue->queueLeft() > 0) {
-                    if (mFrameQueue->push(*pOutFrame) > 0) {
-                        LOGE("[Work task: <Decoder>] Push a new frame !");
-                        mQueueIPC->condP();
-                        return HB_OK;
-                    }
-                    else {
-                        if (pFrame->opaque)
-                            av_freep(pFrame->opaque);
-                        av_frame_free(pOutFrame);
-                    }
+            if (mTargetFrameQueue) {
+                if (mTargetFrameQueue->queueLeft() <= 0) {
+                    /** 阻塞等待空间帧缓冲区存在可用资源 */
+                    mEmptyFrameQueueIPC->condV();
                 }
-                else {
-                    mQueueIPC->condV();
+                
+                if (mTargetFrameQueue->push(*pOutFrame) > 0) {
+                    mTargetFrameQueueIPC->condP();
+                }
+                else {/** push 帧失败 */
+                    LOGE("[Work task: <Decoder>] Push valid frame data to queue failed !");
+                    mEmptyFrameQueueIPC->condP();
+                    if (pFrame->opaque)
+                        av_freep(pFrame->opaque);
+                    av_frame_free(pOutFrame);
                 }
             }
             else {
@@ -188,7 +188,10 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
                 if (pFrame->opaque)
                     av_freep(pFrame->opaque);
                 av_frame_free(pOutFrame);
+                break;
             }
+            
+            return HB_OK;
         }
             break;
         case MD_TYPE_RAW_BY_FILE:
@@ -221,8 +224,9 @@ CSVideoDecoder::CSVideoDecoder() {
     mPInputVideoCodecCtx = nullptr;
     mPInputVideoCodec = nullptr;
     mPVideoConvertCtx = nullptr;
-    mFrameQueue = new FiFoQueue<AVFrame *>(S_MAX_BUFFER_CACHE);
-    mQueueIPC = new ThreadIPCContext(0);
+    mTargetFrameQueue = new FiFoQueue<AVFrame *>(S_MAX_BUFFER_CACHE);
+    mTargetFrameQueueIPC = new ThreadIPCContext(0);
+    mEmptyFrameQueueIPC = new ThreadIPCContext(S_MAX_BUFFER_CACHE);
     mDecodeThreadCtx.setFunction(nullptr, nullptr);
 }
 
@@ -356,14 +360,16 @@ int CSVideoDecoder::receiveFrame(AVFrame *OutFrame) {
 RETRY_RECEIVE_FRAME:
     OutFrame = nullptr;
     HBError = HB_ERROR;
-    if (mFrameQueue && mFrameQueue->queueLength() > 0) {
-        if (!(OutFrame = mFrameQueue->get())) {
-            LOGE("Video Decoder >>> receive failed failed !");
+    if (mTargetFrameQueue && mTargetFrameQueue->queueLength() > 0) {
+        if (!(OutFrame = mTargetFrameQueue->get())) {
+            LOGE("Video Decoder >>> receive failed failed, <frame:%d>!", mTargetFrameQueue->queueLength());
             goto RETRY_RECEIVE_FRAME;
         }
         else {
             HBError = HB_OK;
-            mQueueIPC->condV();
+            LOGE("Video Decoder >>> receive failed failed, <frame:%d>!", mTargetFrameQueue->queueLength());
+            mTargetFrameQueueIPC->condV();
+            mEmptyFrameQueueIPC->condP();
         }
     }
     else
@@ -533,7 +539,7 @@ int CSVideoDecoder::_ExportInitial() {
             break;
         case MD_TYPE_RAW_BY_MEMORY:
         {
-            if (!mQueueIPC || !mFrameQueue) {
+            if (!mTargetFrameQueueIPC || !mTargetFrameQueue) {
                 LOGE("Video decoder output buffer module initial failed !");
                 return HB_ERROR;
             }
