@@ -28,7 +28,7 @@ namespace HBMedia {
 
         virtual int start() = 0;
 
-        virtual int stop() = 0;
+        virtual int stop();
 
         virtual int release();
 

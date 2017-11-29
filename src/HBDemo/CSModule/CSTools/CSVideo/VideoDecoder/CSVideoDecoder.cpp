@@ -260,6 +260,16 @@ int CSVideoDecoder::stop() {
         mAbort = true;
     }
     mDecodeThreadCtx.join();
+    
+    if (CSMediaBase::stop() != HB_OK) {
+        LOGE("Media base stop failed !");
+        return HB_ERROR;
+    }
+    
+    if (release() != HB_OK) {
+        LOGE("decoder release failed !");
+        return HB_ERROR;
+    }
     return HB_OK;
 }
 

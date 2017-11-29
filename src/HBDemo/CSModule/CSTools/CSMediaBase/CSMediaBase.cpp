@@ -81,6 +81,34 @@ int CSMediaBase::release() {
     return HB_OK;
 }
 
+int CSMediaBase::stop(){
+    switch (mOutMediaType) {
+        case MD_TYPE_RAW_BY_FILE: {
+            if (mTrgMediaFileHandle) {
+                fclose(mTrgMediaFileHandle);
+                mTrgMediaFileHandle = nullptr;
+            }
+        }
+            break;
+        default:
+            LOGE("Base media output media type:%s is not support !", getMediaDataTypeDescript(mOutMediaType));
+            return HB_ERROR;
+    }
+    
+    switch (mInMediaType) {
+        case MD_TYPE_COMPRESS: {
+            if (mPInVideoFormatCtx) {
+                avformat_close_input(&mPInVideoFormatCtx);
+            }
+        }
+            break;
+        default:
+            LOGE("Base media input media type:%s is not support !", getMediaDataTypeDescript(mInMediaType));
+            return HB_ERROR;
+    }
+    return HB_OK;
+}
+
 int CSMediaBase::_OutMediaInitial() {
 
     switch (mOutMediaType) {
