@@ -9531,8 +9531,6 @@
 		A131A0DF1FC90055002E5B8E /* CSTools */ = {
 			isa = PBXGroup;
 			children = (
-				A1D1CDBA1FAB473C0027C8AE /* MTVideoTransfer.cpp */,
-				A1D1CDBB1FAB473C0027C8AE /* MTVideoTransfer.h */,
 				A131A1211FC904D6002E5B8E /* CSMediaBase */,
 				A131A1171FC9013E002E5B8E /* CSPicture */,
 				A131A0F11FC900FB002E5B8E /* CSAudio */,
@@ -9544,6 +9542,8 @@
 		A131A0E01FC900B0002E5B8E /* CSVideo */ = {
 			isa = PBXGroup;
 			children = (
+				A1D1CDBA1FAB473C0027C8AE /* MTVideoTransfer.cpp */,
+				A1D1CDBB1FAB473C0027C8AE /* MTVideoTransfer.h */,
 				A131A0E11FC900B0002E5B8E /* VideoDecoder */,
 				A131A0E41FC900B0002E5B8E /* CSVideoReverse.cpp */,
 				A131A0E51FC900B0002E5B8E /* VideoScale */,

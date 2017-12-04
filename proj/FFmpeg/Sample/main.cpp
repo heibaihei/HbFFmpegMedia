@@ -34,15 +34,11 @@ int main(int argc, const char * argv[]) {
         }
         {/** Video */
             {/** 视频解码 */
-                CSVideoDemo_VideoDecoder();
+//                CSVideoDemo_VideoDecoder();
             }
-//            {/** 测试 mp4 文件转 gif 文件测试 demo */
-//                FormatConvert::VideoFormatTranser *pVideoConverter = new FormatConvert::VideoFormatTranser();
-//                pVideoConverter->setInputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.mp4"));
-//                pVideoConverter->setOutputVideoMediaFile((char *)(PROJ_ROOT_PATH"/video/gif/100.gif"));
-//                pVideoConverter->prepare();
-//                pVideoConverter->doConvert();
-//            }
+            {/** 视频转码 */
+                CSVideoDemo_VideoTransfor();
+            }
         }
     }
     {/** Encapsulation */
