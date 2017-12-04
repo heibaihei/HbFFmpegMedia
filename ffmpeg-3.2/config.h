@@ -6,7 +6,7 @@
 #define CONFIG_THIS_YEAR 2016
 #define FFMPEG_DATADIR "/Users/zj-db0519/work/code/github/HbFFmpegMedia/proj/compile/mac/../../../lib/ffmpeg/MacOS/share/ffmpeg"
 #define AVCONV_DATADIR "/Users/zj-db0519/work/code/github/HbFFmpegMedia/proj/compile/mac/../../../lib/ffmpeg/MacOS/share/ffmpeg"
-#define CC_IDENT "Apple LLVM version 9.0.0 (clang-900.0.37)"
+#define CC_IDENT "Apple LLVM version 9.0.0 (clang-900.0.38)"
 #define av_restrict restrict
 #define EXTERN_PREFIX "_"
 #define EXTERN_ASM _
