@@ -36,6 +36,9 @@
 #define SAFE_RETAIN(p)           do { if(p) { (p)->retain(); } } while(0)
 #define BREAK_IF(cond)           if(cond) break
 
+#define S_EQ(s,t)         ((s) & (t))
+#define S_NOT_EQ(s,t)     (!((s) & (t)))
+
 //#define SOUND_TOUCH_MODULE_EXCLUDE  1
 //#define LIBYUV_MODULE_EXCLUDE  1
 

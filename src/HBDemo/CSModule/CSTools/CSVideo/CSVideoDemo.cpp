@@ -11,11 +11,12 @@
 #include "CSModule.h"
 
 int CSVideoDemo_VideoTransfor() {
-    {
-        /** 测试 mp4 文件转 gif 文件测试 demo */
+    
+    {   /** 测试 mp4 文件转 gif 文件测试 demo */
         FormatConvert::VideoFormatTranser *pVideoConverter = new FormatConvert::VideoFormatTranser();
-        pVideoConverter->setInputVideoMediaFile((char *)(CS_COMMON_RESOURCE_ROOT_PATH"/video/gif/100.mp4"));
-        pVideoConverter->setOutputVideoMediaFile((char *)(CS_COMMON_RESOURCE_ROOT_PATH"/video/gif/100.gif"));
+        pVideoConverter->setInputVideoMediaFile((char *)(VIDEO_RESOURCE_ROOT_PATH"/gif/100.mp4"));
+        pVideoConverter->setOutputVideoMediaFile((char *)(VIDEO_RESOURCE_ROOT_PATH"/gif/100.gif"));
+        pVideoConverter->setSyncMode(true);
         pVideoConverter->prepare();
         pVideoConverter->doConvert();
     }

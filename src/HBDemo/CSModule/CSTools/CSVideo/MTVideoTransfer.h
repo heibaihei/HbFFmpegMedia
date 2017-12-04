@@ -67,6 +67,8 @@ public:
      */
     int doConvert();
     
+    int setSyncMode(bool mode);
+    
 protected:
     /**
      *  释放空间
