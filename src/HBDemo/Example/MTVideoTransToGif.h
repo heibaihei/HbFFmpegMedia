@@ -14,6 +14,7 @@
 #include "CSLog.h"
 #include "CSDefine.h"
 #include "CSCommon.h"
+#include "CSFiFoQueue.h"
 
 typedef struct SwsContext SwsContext;
 
@@ -28,9 +29,16 @@ typedef struct MediaCoder {
     AVCodec* mPVideoCodec;
     int mVideoStreamIndex;
 } MediaCoder;
+    
+typedef struct ThreadIpcCtx {
+    bool mIsThreadPending;
+    pthread_mutex_t mThreadMux;
+    pthread_cond_t  mThreadCond;
+} ThreadIpcCtx;
 
 MediaCoder* AllocMediaCoder();
 void ImageParamsInitial(ImageParams *pParams);
+void ThreadIpcCtxInitial(ThreadIpcCtx *pIpcCtx);
     
 typedef class VideoFormatTranser {
 public:
@@ -88,8 +96,29 @@ protected:
      *      如果转码失败，则需要外部释放传入的 frame 内存空间；
      */
     int _ImageConvert(AVFrame** pInFrame);
-    
+
 private:
+    /** 解码线程 */
+    static void *DecodeThreadFunc(void *arg);
+    /** 编码线程 */
+    static void *EncodeThreadFunc(void *arg);
+    
+    int _WorkPthreadPrepare();
+    int _WorkPthreadDispose();
+private:
+    /** 是否使用同步的模式 */
+    bool mIsSyncMode;
+    pthread_t mDecodeThreadId;
+    pthread_t mEncodeThreadId;
+    
+    ThreadIpcCtx mReadThreadIpcCtx;
+    ThreadIpcCtx mDecodeThreadIpcCtx;
+    ThreadIpcCtx mEncodeThreadIpcCtx;
+    
+    FiFoQueue<AVPacket*> *mDecodePacketQueue;
+    FiFoQueue<AVFrame*>  *mEncodeFrameQueue;
+    FiFoQueue<AVPacket*> *mOutputPacketQueue;
+    
     /** 输入相关解码器媒体信息 */
     MediaCoder *mPMediaDecoder;
     MediaCoder *mPMediaEncoder;
