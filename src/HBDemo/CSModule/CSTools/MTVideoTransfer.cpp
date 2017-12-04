@@ -6,7 +6,7 @@
 //  Copyright © 2017年 meitu. All rights reserved.
 //
 
-#include "MTVideoTransToGif.h"
+#include "MTVideoTransfer.h"
 #include <pthread.h>
 #include <unistd.h>
 
@@ -862,7 +862,7 @@ int VideoFormatTranser::_OutputMediaInitial() {
     mOutputImageParams.mHeight = pVideoStream->codecpar->height;
     mOutputImageParams.mPixFmt = getImageExternFormat((AVPixelFormat)(pVideoStream->codecpar->format));
     mOutputImageParams.mFrameRate = mInputImageParams.mFrameRate;
-    mOutputImageParams.mDataSize = av_image_get_buffer_size((AVPixelFormat)(pVideoStream->codecpar->format), \
+    mOutputImageParams.mPreImagePixBufferSize = av_image_get_buffer_size((AVPixelFormat)(pVideoStream->codecpar->format), \
                                       mOutputImageParams.mWidth, mOutputImageParams.mHeight, mOutputImageParams.mAlign);
     av_dump_format(pFormatCtx, mPMediaEncoder->mVideoStreamIndex, mOutputMediaFile, 1);
     return HB_OK;
