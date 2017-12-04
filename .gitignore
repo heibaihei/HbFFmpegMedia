@@ -45,3 +45,7 @@ src/HBDemo/audio/AudioDecoder/100_s16_1_output.pcm
 proj/compile/ios/iOS-tools/iOS-build
 ffmpeg-3.2/doc
 lib/ffmpeg/MacOS/share
+thirdparty/jpeg-9b/.deps
+proj/FFmpeg/.idea
+lib/libjpeg/share/man
+proj/FFmpeg/FFmpeg.xcodeproj/project.xcworkspace/xcuserdata/zj-db0519.xcuserdatad

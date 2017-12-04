@@ -358,7 +358,7 @@ int VideoFormatTranser::doConvert() {
             {
                 if (mState & STATE_ENCODE_END) {
                     mState |= STATE_FINISHED;
-                    LOGE("Video format transer finished !");
+                    LOGW("Video format transer finished !");
                     continue;
                 }
                 mReadThreadIpcCtx.mIsThreadPending = true;
@@ -367,10 +367,11 @@ int VideoFormatTranser::doConvert() {
             }
             pthread_mutex_unlock(&(mReadThreadIpcCtx.mThreadMux));
         }
-        
+
         /** 读取原始数据 */
         pNewPacket = nullptr;
         if (!(mState & STATE_READ_END) \
+            && !(mState & STATE_DECODE_END) \
             && (mDecodePacketQueue->queueLeft() > 0))
         {
             pNewPacket = av_packet_alloc();
@@ -393,7 +394,6 @@ int VideoFormatTranser::doConvert() {
                 continue;
             }
         }
-        
         
         if (bNeedTranscode) {
             if (mIsSyncMode) {
@@ -648,8 +648,8 @@ int VideoFormatTranser::_ImageConvert(AVFrame** pInFrame) {
         goto IMAGE_CONVERT_END_LABEL;
     }
     /** 此部分操作待续 */
-    pNewFrame->width = (*pInFrame)->width;
-    pNewFrame->height = (*pInFrame)->height;
+    pNewFrame->width = mOutputImageParams.mWidth;
+    pNewFrame->height = mOutputImageParams.mHeight;
     pNewFrame->pts =  av_rescale_q((*pInFrame)->pts, \
                                    mPMediaDecoder->mPVideoStream->time_base, \
                                    mPMediaEncoder->mPVideoStream->time_base);
@@ -861,7 +861,7 @@ int VideoFormatTranser::_OutputMediaInitial() {
     mOutputImageParams.mWidth = pVideoStream->codecpar->width;
     mOutputImageParams.mHeight = pVideoStream->codecpar->height;
     mOutputImageParams.mPixFmt = getImageExternFormat((AVPixelFormat)(pVideoStream->codecpar->format));
-    mOutputImageParams.mFrameRate = pVideoStream->avg_frame_rate.num * 1.0 / pVideoStream->avg_frame_rate.den;
+    mOutputImageParams.mFrameRate = mInputImageParams.mFrameRate;
     mOutputImageParams.mDataSize = av_image_get_buffer_size((AVPixelFormat)(pVideoStream->codecpar->format), \
                                       mOutputImageParams.mWidth, mOutputImageParams.mHeight, mOutputImageParams.mAlign);
     av_dump_format(pFormatCtx, mPMediaEncoder->mVideoStreamIndex, mOutputMediaFile, 1);
