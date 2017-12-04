@@ -184,7 +184,7 @@ int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
             return HB_ERROR;
         }
         mOutTotalOfSamples += HBErr;
-        pBufferFrame->pts = actualAudioSamples * mOutTotalOfFrame * mAudioParam->sample_rate;
+        pBufferFrame->pts = actualAudioSamples * mOutTotalOfFrame;
         mOutTotalOfFrame++;
         
         frameQueue->push(pBufferFrame);
