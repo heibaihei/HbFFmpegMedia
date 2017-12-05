@@ -576,8 +576,11 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
     if (pNewFrame) {
         if (mPVideoConvertCtx) {
             if (_ImageConvert(&pNewFrame) != HB_OK) {
-                if (pNewFrame)
+                if (pNewFrame) {
+                    if (pNewFrame->opaque)
+                        SAFE_FREE(pNewFrame->opaque);
                     av_frame_free(&pNewFrame);
+                }
                 LOGE("image convert failed !");
                 return -1;
             }
@@ -588,7 +591,11 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
         HBError = avcodec_send_frame(mPMediaEncoder->mPVideoCodecCtx, pNewFrame);
         if (HBError != 0) {
             LOGE("image convert failed, %s", makeErrorStr(HBError));
+            
+            if (pNewFrame->opaque)
+                SAFE_FREE(pNewFrame->opaque);
             av_frame_free(&pNewFrame);
+            
             if (HBError != AVERROR(EAGAIN)) {
                 mState |= STATE_ENCODE_ABORT;
                 if (S_NOT_EQ(mState,STATE_DECODE_END)) {
@@ -598,6 +605,9 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
             }
             return -1;
         }
+        
+        if (pNewFrame->opaque)
+            SAFE_FREE(pNewFrame->opaque);
         av_frame_free(&pNewFrame);
     }
     else if (S_NOT_EQ(mState,STATE_ENCODE_FLUSHING) \
@@ -659,6 +669,7 @@ int VideoFormatTranser::_ImageConvert(AVFrame** pInFrame) {
         goto IMAGE_CONVERT_END_LABEL;
     }
     
+    pNewFrame->opaque = pNewFrame->data[0];
     if (sws_scale(mPVideoConvertCtx, (*pInFrame)->data, (*pInFrame)->linesize, 0, (*pInFrame)->height, \
                   pNewFrame->data, pNewFrame->linesize) <= 0) {
         LOGE("Image convert sws failed !");
@@ -672,13 +683,20 @@ int VideoFormatTranser::_ImageConvert(AVFrame** pInFrame) {
                                    mPMediaEncoder->mPVideoStream->time_base);
     pNewFrame->format = getImageInnerFormat(mOutputImageParams.mPixFmt);
     
-    av_frame_free(pInFrame);
+    if (pInFrame) {
+        if (*pInFrame && (*pInFrame)->opaque)
+            SAFE_FREE((*pInFrame)->opaque);
+        av_frame_free(pInFrame);
+    }
     *pInFrame = pNewFrame;
     return HB_OK;
     
 IMAGE_CONVERT_END_LABEL:
-    if (pNewFrame)
+    if (pNewFrame) {
+        if (pNewFrame->opaque)
+            SAFE_FREE(pNewFrame->opaque);
         av_frame_free(&pNewFrame);
+    }
     return HB_ERROR;
 }
 
