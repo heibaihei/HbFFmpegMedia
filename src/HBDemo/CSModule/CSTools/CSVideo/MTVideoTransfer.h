@@ -97,7 +97,7 @@ protected:
      *      如果转码成功，则内部会释放外部传入的 frame 内存，将转入的报文指向转码后的 frame;
      *      如果转码失败，则需要外部释放传入的 frame 内存空间；
      */
-    int _ImageConvert(AVFrame** pInFrame);
+    int _ImageConvert(AVFrame* pInFrame, AVFrame** pOutFrame = nullptr);
 
 private:
     /** 解码线程 */
