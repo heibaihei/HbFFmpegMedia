@@ -126,6 +126,7 @@ private:
     MediaCoder *mPMediaEncoder;
     SwsContext *mPVideoConvertCtx;
     
+    AVFrame*   mOriginalFrame;
     /** 输出以及输出图像参数 */
     ImageParams mInputImageParams;
     ImageParams mOutputImageParams;

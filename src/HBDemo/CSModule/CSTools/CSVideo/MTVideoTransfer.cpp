@@ -319,6 +319,8 @@ int VideoFormatTranser::prepare() {
         LOGE("Media sws initial failed !");
         goto PREPARE_END_LABEL;
     }
+    
+    mOriginalFrame = av_frame_alloc();
     mState |= STATE_PREPARED;
     return HB_OK;
     
@@ -511,6 +513,11 @@ int VideoFormatTranser::_release() {
     mPMediaDecoder->mPVideoStream = nullptr;
     mPMediaEncoder->mPVideoStream = nullptr;
     
+    if (mOriginalFrame) {
+        if (mOriginalFrame->opaque)
+            av_freep(mOriginalFrame->opaque);
+        av_frame_free(&mOriginalFrame);
+    }
     memset(&mState, 0x00, sizeof(mState));
     mState |= STATE_UNKNOWN;
     return HB_OK;
@@ -524,7 +531,7 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
     }
     
     AVFrame *pConvertFrame = nullptr, *pTargetFrame = nullptr;
-    AVFrame *pNewFrame = av_frame_alloc();
+    AVFrame *pNewFrame = mOriginalFrame;
 
     if (S_NOT_EQ(mState,STATE_DECODE_END))
     { /** 进入解码模块流程 */
@@ -561,7 +568,8 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
                 
                 if (S_EQ(mState,STATE_DECODE_END))
                     LOGW("Decode process end!");
-                av_frame_free(&pNewFrame);
+                
+                av_frame_unref(pNewFrame);
                 return -1;
             }
             break;
@@ -653,6 +661,9 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
     av_packet_free(pInPacket);
     *pInPacket = pNewPacket;
     return 0;
+    
+TRANS_MEDIA_END_LABEL:
+    return HBError;
 }
     
 int VideoFormatTranser::_ImageConvert(AVFrame* pInFrame, AVFrame** pOutFrame) {
