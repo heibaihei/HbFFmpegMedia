@@ -378,9 +378,8 @@ int VideoFormatTranser::doConvert() {
             && S_NOT_EQ(mState, STATE_DECODE_ABORT))
         {
             if (mIsSyncMode || (mDecodePacketQueue->queueLeft() > 0)) {
-                pNewPacket = av_packet_alloc();
-                if (!pNewPacket) {
-                    LOGE("do convert read frame failed !");
+                if (!(pNewPacket = av_packet_alloc())) {
+                    LOGE("%d do convert read frame failed !", __LINE__);
                     mState |= STATE_ABORT;
                     continue;
                 }
@@ -406,8 +405,8 @@ int VideoFormatTranser::doConvert() {
         
         if (bNeedTranscode) {
             if (mIsSyncMode) {
-                if (!pNewPacket && (pNewPacket = av_packet_alloc())) {
-                    LOGE("do convert read frame failed !");
+                if (!pNewPacket && !(pNewPacket = av_packet_alloc())) {
+                    LOGE("%d do convert read frame failed !", __LINE__);
                     mState |= STATE_ABORT;
                     continue;
                 }
@@ -429,7 +428,7 @@ int VideoFormatTranser::doConvert() {
                             LOGE("Push new raw packet to decode queue failed !");
                             av_packet_free(&pNewPacket);
                         }
-                        else if (!(mState & STATE_DECODE_END)) {
+                        else if (S_NOT_EQ(mState,STATE_DECODE_END)) {
                             pthread_mutex_lock(&(mDecodeThreadIpcCtx.mThreadMux));
                             if (mDecodeThreadIpcCtx.mIsThreadPending && (mDecodePacketQueue->queueLength() > 0))
                                 pthread_cond_signal(&mDecodeThreadIpcCtx.mThreadCond);
@@ -449,14 +448,14 @@ int VideoFormatTranser::doConvert() {
                     if (!pNewPacket) {
                         LOGE("Get target output avpacket from queue failed !");
                     }
-                    if ((mOutputPacketQueue->queueLeft() > 0) && !(mState & STATE_ENCODE_END)) {
+                    if ((mOutputPacketQueue->queueLeft() > 0) && S_NOT_EQ(mState,STATE_ENCODE_END)) {
                         pthread_mutex_lock(&(mEncodeThreadIpcCtx.mThreadMux));
                         if (mEncodeThreadIpcCtx.mIsThreadPending && (mOutputPacketQueue->queueLeft() > 0))
                             pthread_cond_signal(&mEncodeThreadIpcCtx.mThreadCond);/** 通知解码线程开始工作 */
                         pthread_mutex_unlock(&(mEncodeThreadIpcCtx.mThreadMux));
                     }
                 }
-                else if (mState & STATE_ENCODE_END) {
+                else if (S_EQ(mState,STATE_ENCODE_END)) {
                     mState |= STATE_FINISHED;
                 }
             }
@@ -525,8 +524,8 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
     }
     
     AVFrame* pNewFrame = nullptr;
-    if (S_NOT_EQ(mState,STATE_DECODE_END)) {
-        /** 进入解码模块流程 */
+    if (S_NOT_EQ(mState,STATE_DECODE_END))
+    { /** 进入解码模块流程 */
         if (S_NOT_EQ(mState,STATE_READ_END) && S_NOT_EQ(mState,STATE_DECODE_ABORT))
         {
             /** 只有读数据包未结束以及本身解码器没有发生异常，说明都要往里面丢数据 */
@@ -574,12 +573,14 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
     }
     
     /** 将解码数据进行图像转码 */
-    if (mPVideoConvertCtx && pNewFrame) {
-        if (_ImageConvert(&pNewFrame) != HB_OK) {
-            if (pNewFrame)
-                av_frame_free(&pNewFrame);
-            LOGE("image convert failed !");
-            return -1;
+    if (pNewFrame) {
+        if (mPVideoConvertCtx) {
+            if (_ImageConvert(&pNewFrame) != HB_OK) {
+                if (pNewFrame)
+                    av_frame_free(&pNewFrame);
+                LOGE("image convert failed !");
+                return -1;
+            }
         }
     }
     
@@ -969,13 +970,15 @@ int VideoFormatTranser::_WorkPthreadPrepare() {
 }
 
 int VideoFormatTranser::_WorkPthreadDispose() {
-
-    if (!mIsSyncMode && mDecodeThreadId) {
+    if (mIsSyncMode)
+        return HB_OK;
+    
+    if (mDecodeThreadId) {
         pthread_join(mDecodeThreadId, NULL);
         mDecodeThreadId = nullptr;
     }
     
-    if (!mIsSyncMode && mEncodeThreadId) {
+    if (mEncodeThreadId) {
         pthread_join(mEncodeThreadId, NULL);
         mEncodeThreadId = nullptr;
     }
