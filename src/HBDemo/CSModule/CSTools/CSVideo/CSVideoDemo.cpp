@@ -10,6 +10,11 @@
 #include "MTVideoTransfer.h"
 #include "CSModule.h"
 
+/**
+ *  视频裁剪： https://zhuanlan.zhihu.com/p/28008666
+ *
+ */
+
 int CSVideoDemo_VideoTransfor() {
     
     {   /** 测试 mp4 文件转 gif 文件测试 demo */

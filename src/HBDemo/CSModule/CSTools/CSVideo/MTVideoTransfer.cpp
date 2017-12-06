@@ -335,6 +335,7 @@ int VideoFormatTranser::doConvert() {
         return HB_ERROR;
     }
     
+    int iTargetOutputFrameCount = 0;
     int HBError = HB_ERROR;
     AVPacket *pNewPacket = nullptr;
     bool bNeedTranscode = ((mPVideoConvertCtx || (mPMediaDecoder->mPVideoCodec->id != mPMediaEncoder->mPVideoCodec->id)) ? true : false);
@@ -344,7 +345,7 @@ int VideoFormatTranser::doConvert() {
     }
     
     if (bNeedTranscode) {
-        if (_WorkPthreadPrepare() != HB_OK) {
+        if (!mIsSyncMode && _WorkPthreadPrepare() != HB_OK) {
             LOGE("work phtread prepare failed !");
             goto CONVERT_END_LABEL;
         }
@@ -352,25 +353,26 @@ int VideoFormatTranser::doConvert() {
 
     while (S_NOT_EQ(mState,STATE_ABORT) && S_NOT_EQ(mState,STATE_FINISHED)) {
         
-        if (S_EQ(mState, STATE_DECODE_END)) {
+        if (S_EQ(mState, STATE_ENCODE_END)) {
             mState |= STATE_FINISHED;
-            LOGW("Video format transer finished !");
             continue;
         }
             
-        if (!mIsSyncMode \
-            && mDecodePacketQueue->queueLeft() <= 0 \
-            && mOutputPacketQueue->queueLength() <= 0)
+        if (!mIsSyncMode)
         {   /** 如果编码以及解码线上两个地方都没有数据可用，则可以让当前线程陷入睡眠 */
-            pthread_mutex_lock(&(mReadThreadIpcCtx.mThreadMux));
-            if (mDecodePacketQueue->queueLeft() == 0 \
-                && mOutputPacketQueue->queueLength() == 0)
+            if (mDecodePacketQueue->queueLeft() <= 0 \
+                && mOutputPacketQueue->queueLength() <= 0)
             {
-                mReadThreadIpcCtx.mIsThreadPending = true;
-                pthread_cond_wait(&(mReadThreadIpcCtx.mThreadCond), &(mReadThreadIpcCtx.mThreadMux));
-                mReadThreadIpcCtx.mIsThreadPending = false;
+                pthread_mutex_lock(&(mReadThreadIpcCtx.mThreadMux));
+                if (mDecodePacketQueue->queueLeft() == 0 \
+                    && mOutputPacketQueue->queueLength() == 0)
+                {
+                    mReadThreadIpcCtx.mIsThreadPending = true;
+                    pthread_cond_wait(&(mReadThreadIpcCtx.mThreadCond), &(mReadThreadIpcCtx.mThreadMux));
+                    mReadThreadIpcCtx.mIsThreadPending = false;
+                }
+                pthread_mutex_unlock(&(mReadThreadIpcCtx.mThreadMux));
             }
-            pthread_mutex_unlock(&(mReadThreadIpcCtx.mThreadMux));
         }
 
         /** 读取原始数据 */
@@ -464,6 +466,7 @@ int VideoFormatTranser::doConvert() {
         }
         
         if (pNewPacket) {
+            iTargetOutputFrameCount++;
             HBError = av_interleaved_write_frame(mPMediaEncoder->mPVideoFormatCtx, pNewPacket);
             if (HBError < 0) {
                 LOGE("Write frame failed !");
@@ -476,6 +479,7 @@ int VideoFormatTranser::doConvert() {
     if ((HBError = av_write_trailer(mPMediaEncoder->mPVideoFormatCtx)) != 0)
         LOGE("AVformat wirte tailer failed, %s ", makeErrorStr(HBError));
     
+    LOGI("VideoFormatTransfer >>> output frame:%d", iTargetOutputFrameCount);
     av_packet_free(&pNewPacket);
     _release();
     return HB_OK;
@@ -531,7 +535,7 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
     }
     
     AVFrame *pConvertFrame = nullptr, *pTargetFrame = nullptr;
-    AVFrame *pNewFrame = mOriginalFrame;
+    AVFrame *pNewFrame = nullptr;
 
     if (S_NOT_EQ(mState,STATE_DECODE_END))
     { /** 进入解码模块流程 */
@@ -557,7 +561,7 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
         }
         
         while (true) {
-            HBError = avcodec_receive_frame(mPMediaDecoder->mPVideoCodecCtx, pNewFrame);
+            HBError = avcodec_receive_frame(mPMediaDecoder->mPVideoCodecCtx, mOriginalFrame);
             if (HBError != 0) {
                 if (S_EQ(mState,STATE_DECODE_FLUSHING))
                     mState |= STATE_DECODE_END;
@@ -569,16 +573,17 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
                 if (S_EQ(mState,STATE_DECODE_END))
                     LOGW("Decode process end!");
                 
-                av_frame_unref(pNewFrame);
+                av_frame_unref(mOriginalFrame);
                 return -1;
             }
             break;
         }
+        
+        pNewFrame = mOriginalFrame;
     }
     
-    /** 将解码数据进行图像转码 */
     pTargetFrame = nullptr;
-    if (pNewFrame) {
+    if (pNewFrame) { /** 进入图像解码模块 */
         pTargetFrame = pNewFrame;
         if (mPVideoConvertCtx) {
             pConvertFrame = nullptr;
@@ -590,13 +595,19 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
             pTargetFrame = pConvertFrame;
         }
     }
+    else {
+        if (S_NOT_EQ(mState,STATE_DECODE_END) && S_NOT_EQ(mState,STATE_ENCODE_ABORT)) {
+            LOGE("Video transfor get invalid frame, program error !");
+            mState |= STATE_ABORT;
+            return -2;
+        }
+    }
     
-    if (S_NOT_EQ(mState,STATE_DECODE_END) && S_NOT_EQ(mState,STATE_ENCODE_ABORT)) {
+    if (S_NOT_EQ(mState,STATE_DECODE_END) && S_NOT_EQ(mState,STATE_ENCODE_ABORT))
+    {   /** 进入图像编码模块 */
         HBError = avcodec_send_frame(mPMediaEncoder->mPVideoCodecCtx, pTargetFrame);
         if (HBError != 0) {
-            LOGE("image convert failed, %s", makeErrorStr(HBError));
-            
-            /** 情况帧空间 */
+            /** 释放帧空间 */
             if (pConvertFrame) {
                 if (pConvertFrame->opaque)
                     SAFE_FREE(pConvertFrame->opaque);
@@ -642,11 +653,11 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
         if (HBError != 0) {
             if ((HBError != AVERROR(EAGAIN))) {
                 if (S_EQ(mState,STATE_ENCODE_FLUSHING)) {
-                    LOGW("1 tran codec finished !%s", av_err2str(HBError));
+                    LOGW("Video format transfor finished, %s", av_err2str(HBError));
                     mState |= STATE_ENCODE_END;
                 }
                 else {
-                    LOGE("trans decode video frame failed !%s", av_err2str(HBError));
+                    LOGE("Video format transfor failed, %s", av_err2str(HBError));
                     mState |= STATE_ENCODE_ABORT;
                 }
                 mState |= STATE_ENCODE_END;
@@ -661,9 +672,6 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
     av_packet_free(pInPacket);
     *pInPacket = pNewPacket;
     return 0;
-    
-TRANS_MEDIA_END_LABEL:
-    return HBError;
 }
     
 int VideoFormatTranser::_ImageConvert(AVFrame* pInFrame, AVFrame** pOutFrame) {
