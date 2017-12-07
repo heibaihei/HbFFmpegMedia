@@ -46,13 +46,15 @@ enum AVSampleFormat getAudioInnerFormat(enum AUDIO_SAMPLE_FORMAT outFormat);
 
 enum AUDIO_SAMPLE_FORMAT getAudioOuterFormat(enum AVSampleFormat outFormat);
 
+char* getPictureTypeDescript(enum AVPictureType pictureType);
+
 /**
  *  将 IMAGE_PIX_FORMAT 格式转换成 ffmpeg 内部的图像格式，实现对封装格式的抽象封装
  *
  */
 enum AVPixelFormat getImageInnerFormat(IMAGE_PIX_FORMAT pixFormat);
 
-enum IMAGE_PIX_FORMAT getImageExternFormat(AVPixelFormat pixFormat);
+IMAGE_PIX_FORMAT getImageExternFormat(AVPixelFormat pixFormat);
 /**
  *  获取像素素材描述信息
  */

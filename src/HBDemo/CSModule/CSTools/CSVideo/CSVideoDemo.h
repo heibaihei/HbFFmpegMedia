@@ -28,4 +28,9 @@ int CSVideoDemo_VideoDecoder();
  */
 int CSVideoDemo_VideoTransfor();
 
+/**
+ *  视频媒体文件解析
+ */
+int CSVideoDemo_VideoAnalysis();
+
 #endif /* CSVideo_h */

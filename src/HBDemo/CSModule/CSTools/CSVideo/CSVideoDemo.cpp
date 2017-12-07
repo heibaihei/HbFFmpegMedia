@@ -28,6 +28,39 @@ int CSVideoDemo_VideoTransfor() {
     return HB_OK;
 }
 
+int CSVideoDemo_VideoAnalysis() {
+    {
+        /** 视频解码，将裸数据以内存缓存队列的方式输出解码数据，内部解码线程以最大的缓冲节点数缓冲解码后的数据，外部通过获取节点的方式进行取帧操作 */
+        HBMedia::CSVideoAnalysis* pVideoAnalysiser = new HBMedia::CSVideoAnalysis();
+        pVideoAnalysiser->setInMediaType(MD_TYPE_COMPRESS);
+        pVideoAnalysiser->setOutMediaType(MD_TYPE_RAW_BY_MEMORY);
+        pVideoAnalysiser->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/100.mp4");
+        
+        pVideoAnalysiser->prepare();
+        pVideoAnalysiser->start();
+        AVFrame *pNewFrame = nullptr;
+        if (pVideoAnalysiser->getStatus() & DECODE_STATE_PREPARED) {
+            while (!(pVideoAnalysiser->getStatus() & DECODE_STATE_DECODE_END)) {
+                pNewFrame = nullptr;
+                if ((pVideoAnalysiser->receiveFrame(&pNewFrame) == HB_OK) && pNewFrame) {
+                    
+                    /** 对传入的视频帧信息进行解析 */
+                    pVideoAnalysiser->analysisFrame(pNewFrame, AVMEDIA_TYPE_VIDEO);
+                    
+                    if (pNewFrame->opaque)
+                        av_freep(pNewFrame->opaque);
+                    av_frame_free(&pNewFrame);
+                }
+                
+                usleep(10);
+            }
+        }
+        pVideoAnalysiser->stop();
+        pVideoAnalysiser->release();
+    }
+    return HB_ERROR;
+}
+
 int CSVideoDemo_VideoDecoder() {
 //    {
 //        /** 视频解码，将裸数据存储文件的方式输出解码数据 */
@@ -56,7 +89,7 @@ int CSVideoDemo_VideoDecoder() {
         if (pVideoDecoder->getStatus() & DECODE_STATE_PREPARED) {
             while (!(pVideoDecoder->getStatus() & DECODE_STATE_DECODE_END)) {
                 pNewFrame = nullptr;
-                if ((pVideoDecoder->receiveFrame(pNewFrame) == HB_OK) && pNewFrame) {
+                if ((pVideoDecoder->receiveFrame(&pNewFrame) == HB_OK) && pNewFrame) {
                     if (pNewFrame->opaque)
                         av_freep(pNewFrame->opaque);
                     av_frame_free(&pNewFrame);

@@ -171,6 +171,7 @@
 		A1BE85AA1EB75F4C004B839C /* cmdutils.c in Sources */ = {isa = PBXBuildFile; fileRef = A1BE85621EB743C7004B839C /* cmdutils.c */; };
 		A1C31AF91FBC1B40001C4258 /* libSoundTouch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C31AF81FBC1B40001C4258 /* libSoundTouch.a */; };
 		A1D1CDBC1FAB473D0027C8AE /* MTVideoTransfer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1D1CDBA1FAB473C0027C8AE /* MTVideoTransfer.cpp */; };
+		A1DED09F1FD7C094005CD4EF /* CSVideoAnalysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1DED09D1FD7C094005CD4EF /* CSVideoAnalysis.cpp */; };
 		A1E5CBA01F274AE100A02704 /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E5CB9F1F274AE100A02704 /* libfdk-aac.a */; };
 		A1E5CBA21F276AA500A02704 /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E5CBA11F276AA500A02704 /* libx264.a */; };
 		A1F1408E1EA12AFE00939FF3 /* arch.mak in Sources */ = {isa = PBXBuildFile; fileRef = A1F128071EA12ADF00939FF3 /* arch.mak */; };
@@ -3157,6 +3158,8 @@
 		A1C31AF81FBC1B40001C4258 /* libSoundTouch.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSoundTouch.a; path = ../../../soundtouch/output/Mac/lib/libSoundTouch.a; sourceTree = "<group>"; };
 		A1D1CDBA1FAB473C0027C8AE /* MTVideoTransfer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MTVideoTransfer.cpp; sourceTree = "<group>"; };
 		A1D1CDBB1FAB473C0027C8AE /* MTVideoTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTVideoTransfer.h; sourceTree = "<group>"; };
+		A1DED09D1FD7C094005CD4EF /* CSVideoAnalysis.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoAnalysis.cpp; sourceTree = "<group>"; };
+		A1DED09E1FD7C094005CD4EF /* CSVideoAnalysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSVideoAnalysis.h; sourceTree = "<group>"; };
 		A1E5CB9F1F274AE100A02704 /* libfdk-aac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfdk-aac.a"; path = "../../lib/fdk-aac/lib/libfdk-aac.a"; sourceTree = "<group>"; };
 		A1E5CBA11F276AA500A02704 /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libx264.a; path = ../../lib/x264/lib/libx264.a; sourceTree = "<group>"; };
 		A1E5CBA31F276BCB00A02704 /* VideoDecodeAcceleration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoDecodeAcceleration.framework; path = System/Library/Frameworks/VideoDecodeAcceleration.framework; sourceTree = SDKROOT; };
@@ -9551,6 +9554,8 @@
 				A131A0E91FC900B0002E5B8E /* CSVideoReverse.h */,
 				A131A0EA1FC900B0002E5B8E /* CSVideoDemo.h */,
 				A131A0EB1FC900B0002E5B8E /* CSVideoDemo.cpp */,
+				A1DED09D1FD7C094005CD4EF /* CSVideoAnalysis.cpp */,
+				A1DED09E1FD7C094005CD4EF /* CSVideoAnalysis.h */,
 			);
 			path = CSVideo;
 			sourceTree = "<group>";
@@ -17433,6 +17438,7 @@
 				A1D1CDBC1FAB473D0027C8AE /* MTVideoTransfer.cpp in Sources */,
 				A195CBC91FBB109B00F708F9 /* CSAudioShiftEffect.cpp in Sources */,
 				A131A1101FC900FB002E5B8E /* HBAudio.cpp in Sources */,
+				A1DED09F1FD7C094005CD4EF /* CSVideoAnalysis.cpp in Sources */,
 				A131A1241FC904D6002E5B8E /* CSMediaBase.cpp in Sources */,
 				A181BC721F6517F400B34FD0 /* CSThreadIPCContext.cpp in Sources */,
 				A1F706161F656F9F003A6010 /* CSMediaTimeline.cpp in Sources */,

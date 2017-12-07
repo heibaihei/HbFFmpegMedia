@@ -46,7 +46,7 @@ public:
     /**
      *  取帧
      */
-    virtual int receiveFrame(AVFrame *OutFrame);
+    virtual int receiveFrame(AVFrame **OutFrame);
     
     /**
      *  同步等待解码器退出

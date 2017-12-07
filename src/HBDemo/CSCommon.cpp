@@ -88,7 +88,7 @@ enum AVPixelFormat getImageInnerFormat(IMAGE_PIX_FORMAT pixFormat) {
     }
 }
 
-enum IMAGE_PIX_FORMAT getImageExternFormat(AVPixelFormat pixFormat) {
+IMAGE_PIX_FORMAT getImageExternFormat(AVPixelFormat pixFormat) {
     switch (pixFormat) {
         case AV_PIX_FMT_YUV420P:
             return CS_PIX_FMT_YUV420P;
@@ -115,30 +115,52 @@ enum IMAGE_PIX_FORMAT getImageExternFormat(AVPixelFormat pixFormat) {
 char* getImagePixFmtDescript(IMAGE_PIX_FORMAT dataType) {
     switch (dataType) {
         case CS_PIX_FMT_NONE:
-            return (char*)"CS_PIX_FMT_NONE";
+            return (char*)"FMT_NONE";
         case CS_PIX_FMT_YUV420P:
-            return (char*)"CS_PIX_FMT_YUV420P";
+            return (char*)"YUV420P";
         case CS_PIX_FMT_YUV422P:
-            return (char*)"CS_PIX_FMT_YUV422P";
+            return (char*)"YUV422P";
         case CS_PIX_FMT_YUV444P:
-            return (char*)"CS_PIX_FMT_YUV444P";
+            return (char*)"YUV444P";
         case CS_PIX_FMT_NV12:
-            return (char*)"CS_PIX_FMT_NV12";
+            return (char*)"NV12";
         case CS_PIX_FMT_NV21:
-            return (char*)"CS_PIX_FMT_NV21";
+            return (char*)"NV21";
         case CS_PIX_FMT_YUVJ420P:
-            return (char*)"CS_PIX_FMT_YUVJ420P";
+            return (char*)"YUVJ420P";
         case CS_PIX_FMT_BGRA:
-            return (char*)"CS_PIX_FMT_BGRA";
+            return (char*)"BGRA";
         case CS_PIX_FMT_RGB8:
-            return (char*)"CS_PIX_FMT_RGB8";
+            return (char*)"RGB8";
         default:
             LOGE("Get image pixmat inner format failed !");
-            exit(0);
+            return nullptr;
     }
 
 }
 
+char* getPictureTypeDescript(enum AVPictureType pictureType) {
+    switch (pictureType) {
+        case AV_PICTURE_TYPE_NONE:
+            return (char*)"UKNOWN";
+        case AV_PICTURE_TYPE_I:
+            return (char*)"I";
+        case AV_PICTURE_TYPE_P:
+            return (char*)"P";
+        case AV_PICTURE_TYPE_B:
+            return (char*)"B";
+        case AV_PICTURE_TYPE_S:
+            return (char*)"S";
+        case AV_PICTURE_TYPE_SI:
+            return (char*)"SI";
+        case AV_PICTURE_TYPE_SP:
+            return (char*)"SP";
+        case AV_PICTURE_TYPE_BI:
+            return (char*)"BI";
+        default:
+            return (char*)"UKNOWN-D";
+    }
+}
 char* getMediaDataTypeDescript(MEDIA_DATA_TYPE dataType) {
     switch (dataType) {
         case MD_TYPE_UNKNOWN:

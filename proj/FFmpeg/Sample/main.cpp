@@ -37,7 +37,10 @@ int main(int argc, const char * argv[]) {
 //                CSVideoDemo_VideoDecoder();
             }
             {/** 视频转码 */
-                CSVideoDemo_VideoTransfor();
+//                CSVideoDemo_VideoTransfor();
+            }
+            {/** 视频分析 */
+                CSVideoDemo_VideoAnalysis();
             }
         }
     }

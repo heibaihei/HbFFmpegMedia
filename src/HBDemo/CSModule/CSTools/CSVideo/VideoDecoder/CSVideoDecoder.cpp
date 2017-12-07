@@ -170,6 +170,7 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
                 /** 阻塞等待空间帧缓冲区存在可用资源 */
                 mEmptyFrameQueueIPC->condV();
                 if (mTargetFrameQueue->push(*pOutFrame) > 0) {
+                    LOGI("[Work task: <Decoder>] Current frame queue length:%d", mTargetFrameQueue->queueLength());
                     mTargetFrameQueueIPC->condP();
                 }
                 else {/** push 帧失败 */
@@ -362,18 +363,23 @@ DO_SWSCALE_END_LABEL:
     return HB_ERROR;
 }
 
-int CSVideoDecoder::receiveFrame(AVFrame *OutFrame) {
+int CSVideoDecoder::receiveFrame(AVFrame **OutFrame) {
     int HBError = HB_ERROR;
+    if (!OutFrame) {
+        LOGE("Video Decoder >>> invalid params !");
+        return HBError;
+    }
+    *OutFrame = nullptr;
     if (!(mState & DECODE_STATE_PREPARED) || mOutMediaType != MD_TYPE_RAW_BY_MEMORY) {
         LOGE("Video Decoder >>> receive raw frame failed, invalid output media type !");
         return HBError;
     }
 
 RETRY_RECEIVE_FRAME:
-    OutFrame = nullptr;
+    AVFrame *pNewFrame = nullptr;
     HBError = HB_ERROR;
     if (mTargetFrameQueue && mTargetFrameQueue->queueLength() > 0) {
-        if (!(OutFrame = mTargetFrameQueue->get())) {
+        if (!(pNewFrame = mTargetFrameQueue->get())) {
             LOGE("Video Decoder [%d] >>> receive failed failed, <frame:%d>!", __LINE__, mTargetFrameQueue->queueLength());
             goto RETRY_RECEIVE_FRAME;
         }
@@ -385,6 +391,8 @@ RETRY_RECEIVE_FRAME:
     }
 //    else
 //        LOGE("Video decoder >>> cur not valid decoder data: %d!", mTargetFrameQueue->queueLength());
+    
+    *OutFrame = pNewFrame;
     return HBError;
 }
 
