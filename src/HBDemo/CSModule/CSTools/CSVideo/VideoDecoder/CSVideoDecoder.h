@@ -64,12 +64,13 @@ protected:
     int  _SwscaleInitial();
     int  _DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame);
     int  _DoExport(AVFrame **pOutFrame);
+
+protected:
     /**
      *  媒体参数初始化，重置;
      */
     int  _mediaParamInitial();
     
-private:
     int mVideoStreamIndex;
     ImageParams mTargetVideoParams;
     ImageParams mSrcVideoParams;
@@ -84,6 +85,9 @@ private:
     
     /** 解码线程上下文 */
     ThreadContext mDecodeThreadCtx;
+    
+private:
+    
 } CSVideoDecoder;
 
 }

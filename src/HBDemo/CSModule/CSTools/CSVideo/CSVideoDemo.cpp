@@ -56,6 +56,7 @@ int CSVideoDemo_VideoAnalysis() {
             }
         }
         pVideoAnalysiser->stop();
+        pVideoAnalysiser->ExportAnalysisInfo();
         pVideoAnalysiser->release();
     }
     return HB_ERROR;

@@ -170,7 +170,6 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
                 /** 阻塞等待空间帧缓冲区存在可用资源 */
                 mEmptyFrameQueueIPC->condV();
                 if (mTargetFrameQueue->push(*pOutFrame) > 0) {
-                    LOGI("[Work task: <Decoder>] Current frame queue length:%d", mTargetFrameQueue->queueLength());
                     mTargetFrameQueueIPC->condP();
                 }
                 else {/** push 帧失败 */

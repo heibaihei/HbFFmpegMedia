@@ -14,6 +14,14 @@
 
 namespace HBMedia {
 
+/** 根据 AVPictureType 类型的最大个数来定 */
+#define MAX_PICTURE_TYPE  (8)
+    
+#define INFO_FRAME_TYPE    (1 << 0)
+#define INFO_FRAME_ENCODER (1 << 1)
+#define INFO_FRAME_DECODER (1 << 2)
+#define INFO_FRAME_OTHER   (1 << 3)
+    
 /** 结构功能解析:
  *  视频文件解析
  */
@@ -29,6 +37,13 @@ public:
      */
     void analysisFrame(AVFrame *pFrame, AVMediaType type);
     
+    /**
+     *  输出汇总后视频解析信息
+     */
+    void ExportAnalysisInfo();
+    
+    void setAnalysisModule(uint64_t infoSet) { mInfoSet = infoSet; }
+    
 protected:
     
     /**
@@ -37,6 +52,13 @@ protected:
     void EchoFrameInfo(AVFrame *pFrame, AVMediaType type);
     
 private:
+    uint64_t mInfoSet;
+    
+    /** Video info  */
+    int64_t mVideoPictureTypeArry[MAX_PICTURE_TYPE];
+    
+    
+    /** Audio info  */
     
 } CSVideoAnalysis;
 
