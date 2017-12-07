@@ -1,6 +1,7 @@
 #ifndef __HBDEFINE_H__
 #define __HBDEFINE_H__
 
+#include "CSVersion.h"
 #include "CSUtil.h"
 
 #define MT_PLATFORM_UNKNOWN            0

@@ -243,4 +243,16 @@ bool needResampleAudio(AudioParams *param1, AudioParams *param2)
               param1->sample_rate == param2->sample_rate));
 }
 
+std::string getCSMediaVersion() {
+    char version[64] = {0};
+    sprintf(version, "%s-%0.1f.%d.%d.%d-(Beta:%d)", \
+            CS_MODULE_NAME,\
+            CS_MAIN_VERSION,\
+            CS_RELEASE_VERSION,\
+            CS_UPGRADE_VERSION,\
+            CS_ALPHA_VERSION,\
+            CS_BETA_VERSION);
+    return std::string(version);
+}
+
 

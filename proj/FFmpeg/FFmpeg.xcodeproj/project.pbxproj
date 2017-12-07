@@ -3118,6 +3118,7 @@
 		A195CBC71FBB109B00F708F9 /* CSAudioShiftEffect.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioShiftEffect.cpp; sourceTree = "<group>"; };
 		A195CBC81FBB109B00F708F9 /* CSAudioShiftEffect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSAudioShiftEffect.h; sourceTree = "<group>"; };
 		A195CBCA1FBB189300F708F9 /* libSoundTouch.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSoundTouch.dylib; path = ../../../soundtouch/output/Mac/lib/libSoundTouch.dylib; sourceTree = "<group>"; };
+		A197B2581FD9616000D1019F /* CSVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSVersion.h; sourceTree = "<group>"; };
 		A19A67B91EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_grabdesktop.cpp; sourceTree = "<group>"; };
 		A19A67BB1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_readcamera.cpp; sourceTree = "<group>"; };
 		A19A67C21EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simplest_ffmpeg_demuxer_simple.cpp; sourceTree = "<group>"; };
@@ -17134,6 +17135,7 @@
 			isa = PBXGroup;
 			children = (
 				A131A1251FC91079002E5B8E /* CSModule.h */,
+				A197B2581FD9616000D1019F /* CSVersion.h */,
 				A131A0DF1FC90055002E5B8E /* CSTools */,
 				A1F4B09C1FB93192000FF69B /* CSDemo.cpp */,
 				A1F4B09D1FB93192000FF69B /* CSDemo.h */,
