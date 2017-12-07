@@ -36,7 +36,9 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
     AVFrame  *pNewFrame = av_frame_alloc();
     AVFrame *pTargetFrame = nullptr;
     while (!(pDecoder->mState & DECODE_STATE_DECODE_END)) {
-
+        /** 初始化区域 */
+        pTargetFrame = nullptr;
+        
         if (pDecoder->mAbort) {
             pDecoder->mState |= (DECODE_STATE_DECODE_ABORT | DECODE_STATE_DECODE_END);
             LOGE("[Work task: <Decoder>] Abort decoder process !");
@@ -108,8 +110,6 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                 break;
             }
             
-            /** 得到帧数据 */
-            pTargetFrame = nullptr;
             if (pDecoder->mIsNeedTransfer) {
                 /** 执行格式转换 */
                 if (pDecoder->_DoSwscale(pNewFrame, &pTargetFrame) != HB_OK) {
