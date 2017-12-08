@@ -140,7 +140,17 @@ void CSVideoAnalysis::_collectFrameInfo(AVFrame *pFrame, AVMediaType type) {
 }
     
 void CSVideoAnalysis::ExportAnalysisInfo() {
-    LOGI(">>> ========================================");
+    AVStream* pWorkStream = mPInVideoFormatCtx->streams[mVideoStreamIndex];
+    
+    
+    LOGI("\r\n");
+    LOGI(">>> SUMMARY: #################################### <<<");
+    
+    LOGI(">>> [Video Stream Info] =============================");
+    LOGI("Video: TimeBase:<%d,%d> (%lf) ", pWorkStream->time_base.num, pWorkStream->time_base.den, av_q2d(pWorkStream->time_base));
+    LOGI("======================================= <<< ");
+    
+    LOGI(">>> [Frames Info] ===================================");
     if (mInfoSet & INFO_FRAME_TYPE) {
         LOGI("Frame Type: I | P | B | S | SI | SP | BI | NONE >>> ");
         LOGI("  I-frame:    <no:%lld> Frame-Interal: <Max:%d> <Min:%d> <Avg:%d>", \
@@ -159,7 +169,7 @@ void CSVideoAnalysis::ExportAnalysisInfo() {
         LOGI("  SP-frame:   <no:%lld>", mVideoPictureTypeArry[AV_PICTURE_TYPE_SP]);
         LOGI("  BI-frame:   <no:%lld>", mVideoPictureTypeArry[AV_PICTURE_TYPE_BI]);
         LOGI("  NONE-frame: <no:%lld>", mVideoPictureTypeArry[AV_PICTURE_TYPE_NONE]);
-        LOGI("=============================================== <<< ");
+        LOGI("======================================= <<< ");
     }
     
     
