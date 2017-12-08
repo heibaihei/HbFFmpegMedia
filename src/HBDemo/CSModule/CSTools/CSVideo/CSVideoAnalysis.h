@@ -74,14 +74,8 @@ namespace HBMedia {
         int64_t mVideoFrameCount;
         int64_t mAudioFrameCount;
         
-        std::vector<CSFrameInfo> mIFrameSet;
-        CSFrameSummaryInfo mIFrameSummary;
-        
-        std::vector<CSFrameInfo> mPFrameSet;
-        CSFrameSummaryInfo mPFrameSummary;
-        
-        std::vector<CSFrameInfo> mBFrameSet;
-        CSFrameSummaryInfo mBFrameSummary;
+        std::vector<CSFrameInfo> mFrameInfoSet[MAX_PICTURE_TYPE];
+        CSFrameSummaryInfo       mFrameSummaryInfoSet[MAX_PICTURE_TYPE];
 
         /** Audio info  */
 

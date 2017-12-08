@@ -25,8 +25,8 @@ CSVideoAnalysis::CSVideoAnalysis()
     memset(&mInfoSet, 0xFF, sizeof(mInfoSet));
     memset(&mVideoPictureTypeArry, 0x00, sizeof(int64_t));
     
-    initialFrameInfoSummary(&mIFrameSummary);
-    initialFrameInfoSummary(&mPFrameSummary);
+    for (int i=0; i<MAX_PICTURE_TYPE; i++)
+        initialFrameInfoSummary(&(mFrameSummaryInfoSet[i]));
 }
 
 CSVideoAnalysis::~CSVideoAnalysis() {
@@ -55,66 +55,72 @@ void CSVideoAnalysis::_collectFrameInfo(AVFrame *pFrame, AVMediaType type) {
             newFrameInfoObj.mPTS = tfExternPts;
             newFrameInfoObj.mFrameOffset = mVideoFrameCount;
             
-            switch (pFrame->pict_type) {
+            enum AVPictureType frameType = pFrame->pict_type;
+            switch (frameType) {
                 case AV_PICTURE_TYPE_I:
                     {
                         {
+                            enum AVPictureType ePFrameType = AV_PICTURE_TYPE_P;
                             /** 计算 P 帧时间间隔 */
-                            if (mPFrameSet.size() != 0) {
-                                mPFrameSummary.mTotalInteral += mPFrameSet.size();
+                            if (mFrameInfoSet[ePFrameType].size() != 0) {
+                                mFrameSummaryInfoSet[ePFrameType].mTotalInteral += mFrameInfoSet[ePFrameType].size();
                                 
-                                if (mPFrameSummary.mMinInteral == 0)
-                                    mPFrameSummary.mMinInteral = (int)mPFrameSet.size();
-                                else if (mPFrameSummary.mMinInteral > mPFrameSet.size())
-                                    mPFrameSummary.mMinInteral = (int)mPFrameSet.size();
+                                if (mFrameSummaryInfoSet[ePFrameType].mMinInteral == 0)
+                                    mFrameSummaryInfoSet[ePFrameType].mMinInteral = (int)mFrameInfoSet[ePFrameType].size();
+                                else if (mFrameSummaryInfoSet[ePFrameType].mMinInteral > mFrameInfoSet[ePFrameType].size())
+                                    mFrameSummaryInfoSet[ePFrameType].mMinInteral = (int)mFrameInfoSet[ePFrameType].size();
                                 
-                                if (mPFrameSummary.mMaxInteral < mPFrameSet.size())
-                                    mPFrameSummary.mMaxInteral = (int)mPFrameSet.size();
+                                if (mFrameSummaryInfoSet[ePFrameType].mMaxInteral < mFrameInfoSet[ePFrameType].size())
+                                    mFrameSummaryInfoSet[ePFrameType].mMaxInteral = (int)mFrameInfoSet[ePFrameType].size();
                             }
-                            mPFrameSet.clear();
+                            mFrameInfoSet[ePFrameType].clear();
                         }
                         
                         {
+                            enum AVPictureType eBFrameType = AV_PICTURE_TYPE_B;
                             /** 计算 B 帧时间间隔 */
-                            if (mBFrameSet.size() != 0) {
-                                mBFrameSummary.mTotalInteral += mBFrameSet.size();
+                            if (mFrameInfoSet[eBFrameType].size() != 0) {
+                                mFrameSummaryInfoSet[eBFrameType].mTotalInteral += mFrameInfoSet[eBFrameType].size();
                                 
-                                if (mBFrameSummary.mMinInteral == 0)
-                                    mBFrameSummary.mMinInteral = (int)mBFrameSet.size();
-                                else if (mBFrameSummary.mMinInteral > mBFrameSet.size())
-                                    mBFrameSummary.mMinInteral = (int)mBFrameSet.size();
+                                if (mFrameSummaryInfoSet[eBFrameType].mMinInteral == 0)
+                                    mFrameSummaryInfoSet[eBFrameType].mMinInteral = (int)mFrameInfoSet[eBFrameType].size();
+                                else if (mFrameSummaryInfoSet[eBFrameType].mMinInteral > mFrameInfoSet[eBFrameType].size())
+                                    mFrameSummaryInfoSet[eBFrameType].mMinInteral = (int)mFrameInfoSet[eBFrameType].size();
                                 
-                                if (mBFrameSummary.mMaxInteral < mBFrameSet.size())
-                                    mBFrameSummary.mMaxInteral = (int)mBFrameSet.size();
+                                if (mFrameSummaryInfoSet[eBFrameType].mMaxInteral < mFrameInfoSet[eBFrameType].size())
+                                    mFrameSummaryInfoSet[eBFrameType].mMaxInteral = (int)mFrameInfoSet[eBFrameType].size();
                             }
-                            mBFrameSet.clear();
+                            mFrameInfoSet[eBFrameType].clear();
                         }
                         
-                        /** 计算 I 帧时间间隔 */
-                        if (mIFrameSet.size() != 0) {
-                            size_t iLastFrameInfoIndex = (mIFrameSet.size() - 1);
-                            double currentFrameInteral = newFrameInfoObj.mFrameOffset - mIFrameSet[iLastFrameInfoIndex].mFrameOffset;
-                            
-                            mIFrameSummary.mTotalInteral += currentFrameInteral;
-                            if (currentFrameInteral > mIFrameSummary.mMaxInteral)
-                                mIFrameSummary.mMaxInteral = currentFrameInteral;
-                            
-                            if (mIFrameSummary.mMinInteral == 0)
-                                mIFrameSummary.mMinInteral = currentFrameInteral;
-                            else if (currentFrameInteral < mIFrameSummary.mMinInteral)
-                                mIFrameSummary.mMinInteral = currentFrameInteral;
+                        {
+                            /** 计算 I 帧时间间隔 */
+                            if (mFrameInfoSet[frameType].size() != 0) {
+                                size_t iLastFrameInfoIndex = (mFrameInfoSet[frameType].size() - 1);
+                                double currentFrameInteral = newFrameInfoObj.mFrameOffset - mFrameInfoSet[frameType][iLastFrameInfoIndex].mFrameOffset;
+                                
+                                
+                                mFrameSummaryInfoSet[frameType].mTotalInteral += currentFrameInteral;
+                                if (currentFrameInteral > mFrameSummaryInfoSet[frameType].mMaxInteral)
+                                    mFrameSummaryInfoSet[frameType].mMaxInteral = currentFrameInteral;
+                                
+                                if (mFrameSummaryInfoSet[frameType].mMinInteral == 0)
+                                    mFrameSummaryInfoSet[frameType].mMinInteral = currentFrameInteral;
+                                else if (currentFrameInteral < mFrameSummaryInfoSet[frameType].mMinInteral)
+                                    mFrameSummaryInfoSet[frameType].mMinInteral = currentFrameInteral;
+                            }
+                            mFrameInfoSet[frameType].push_back(newFrameInfoObj);
                         }
-                        mIFrameSet.push_back(newFrameInfoObj);
                     }
                     break;
                 case AV_PICTURE_TYPE_P:
                     {
-                        mPFrameSet.push_back(newFrameInfoObj);
+                        mFrameInfoSet[frameType].push_back(newFrameInfoObj);
                     }
                     break;
                 case AV_PICTURE_TYPE_B:
                     {
-                        mBFrameSet.push_back(newFrameInfoObj);
+                        mFrameInfoSet[frameType].push_back(newFrameInfoObj);
                     }
                     break;
                 default:
@@ -138,13 +144,16 @@ void CSVideoAnalysis::ExportAnalysisInfo() {
     if (mInfoSet & INFO_FRAME_TYPE) {
         LOGI("Frame Type: I | P | B | S | SI | SP | BI | NONE >>> ");
         LOGI("  I-frame:    <no:%lld> Frame-Interal: <Max:%d> <Min:%d> <Avg:%d>", \
-             mVideoPictureTypeArry[AV_PICTURE_TYPE_I], mIFrameSummary.mMaxInteral, mIFrameSummary.mMinInteral, (int)(mIFrameSummary.mTotalInteral / (int)(mIFrameSet.size() - 1)));
+             mVideoPictureTypeArry[AV_PICTURE_TYPE_I], mFrameSummaryInfoSet[AV_PICTURE_TYPE_I].mMaxInteral, mFrameSummaryInfoSet[AV_PICTURE_TYPE_I].mMinInteral, \
+                    (int)(mFrameSummaryInfoSet[AV_PICTURE_TYPE_I].mTotalInteral / (int)(mFrameInfoSet[AV_PICTURE_TYPE_I].size() - 1)));
         
         LOGI("  P-frame:    <no:%lld> Per_I_Frame: <Max:%d> <Min:%d> <Avg:%d>", \
-             mVideoPictureTypeArry[AV_PICTURE_TYPE_P], mPFrameSummary.mMaxInteral, mPFrameSummary.mMinInteral, (int)(mPFrameSummary.mTotalInteral / (int)(mIFrameSet.size() - 1)));
+             mVideoPictureTypeArry[AV_PICTURE_TYPE_P], mFrameSummaryInfoSet[AV_PICTURE_TYPE_P].mMaxInteral, mFrameSummaryInfoSet[AV_PICTURE_TYPE_P].mMinInteral, \
+                    (int)(mFrameSummaryInfoSet[AV_PICTURE_TYPE_P].mTotalInteral / (int)(mFrameInfoSet[AV_PICTURE_TYPE_I].size() - 1)));
         
         LOGI("  B-frame:    <no:%lld> Per_I_Frame: <Max:%d> <Min:%d> <Avg:%d>", \
-             mVideoPictureTypeArry[AV_PICTURE_TYPE_B], mBFrameSummary.mMaxInteral, mBFrameSummary.mMinInteral, (int)(mBFrameSummary.mTotalInteral / (int)(mIFrameSet.size() - 1)));
+             mVideoPictureTypeArry[AV_PICTURE_TYPE_B], mFrameSummaryInfoSet[AV_PICTURE_TYPE_B].mMaxInteral, mFrameSummaryInfoSet[AV_PICTURE_TYPE_B].mMinInteral, \
+                    (int)(mFrameSummaryInfoSet[AV_PICTURE_TYPE_B].mTotalInteral / (int)(mFrameInfoSet[AV_PICTURE_TYPE_I].size() - 1)));
         LOGI("  S-frame:    <no:%lld>", mVideoPictureTypeArry[AV_PICTURE_TYPE_S]);
         LOGI("  SI-frame:   <no:%lld>", mVideoPictureTypeArry[AV_PICTURE_TYPE_SI]);
         LOGI("  SP-frame:   <no:%lld>", mVideoPictureTypeArry[AV_PICTURE_TYPE_SP]);
