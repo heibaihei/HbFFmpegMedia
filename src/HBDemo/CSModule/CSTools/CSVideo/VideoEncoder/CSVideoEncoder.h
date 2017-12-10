@@ -27,6 +27,7 @@ namespace HBMedia {
 typedef class CSVideoEncoder : public CSMediaBase
 {
 public:
+    static int S_MAX_BUFFER_CACHE;
     CSVideoEncoder();
     ~CSVideoEncoder();
     
@@ -51,7 +52,14 @@ public:
      */
     virtual int syncWait();
     
+    void setInImageParams(ImageParams& param) { mSrcVideoParams = param; }
+    void setOutImageParams(ImageParams& param) { mTargetVideoParams = param; }
+    
 protected:
+    /**
+     *  媒体参数初始化，重置;
+     */
+    int  _mediaParamInitial();
     
     static void* ThreadFunc_Video_Encoder(void *arg);
 
@@ -64,6 +72,21 @@ protected:
     int  _DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame);
 
 private:
+    int mVideoStreamIndex;
+    ImageParams mTargetVideoParams;
+    ImageParams mSrcVideoParams;
+    
+    SwsContext *mPVideoConvertCtx;
+    
+    AVCodecContext* mPOutVideoCodecCtx;
+    AVCodec* mPOutVideoCodec;
+    
+    FiFoQueue<AVFrame *> *mSrcFrameQueue;
+    ThreadIPCContext     *mSrcFrameQueueIPC;
+    ThreadIPCContext     *mEmptyFrameQueueIPC;
+    
+    /** 编码线程上下文 */
+    ThreadContext mEncodeThreadCtx;
     
 } CSVideoEncoder;
 

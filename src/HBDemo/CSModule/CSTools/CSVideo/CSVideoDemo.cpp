@@ -63,6 +63,28 @@ int CSVideoDemo_VideoAnalysis() {
     return HB_ERROR;
 }
 
+int CSVideoDemo_VideoEncoder() {
+    {   /** 视频编码，将视频裸数据转换成编码数据文件输出 */
+        ImageParams inImageParamObj;
+        inImageParamObj.mWidth = 480;
+        inImageParamObj.mHeight = 480;
+        inImageParamObj.mPixFmt = CS_PIX_FMT_YUV420P;
+        inImageParamObj.mAlign = 1;
+        
+        HBMedia::CSVideoEncoder* pVideoEncoder = new HBMedia::CSVideoEncoder();
+        pVideoEncoder->setInMediaType(MD_TYPE_RAW_BY_MEMORY);
+        pVideoEncoder->setInImageParams(inImageParamObj);
+        pVideoEncoder->setOutMediaType(MD_TYPE_COMPRESS);
+        pVideoEncoder->setOutMediaFile((char *)VIDEO_RESOURCE_ROOT_PATH"/encode/new100.mp4");
+
+        pVideoEncoder->prepare();
+        pVideoEncoder->start();
+        pVideoEncoder->syncWait();
+        pVideoEncoder->stop();
+        pVideoEncoder->release();
+    }
+    return HB_OK;
+}
 int CSVideoDemo_VideoDecoder() {
 //    {
 //        /** 视频解码，将裸数据存储文件的方式输出解码数据 */

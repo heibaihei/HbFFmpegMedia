@@ -12,6 +12,7 @@
 /**
  *  提供内部视频模块对外文件
  */
+#include "CSVideoEncoder.h"
 #include "CSVideoDecoder.h"
 #include "CSVideoAnalysis.h"
 

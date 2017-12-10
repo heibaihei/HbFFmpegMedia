@@ -164,13 +164,13 @@ char* getPictureTypeDescript(enum AVPictureType pictureType) {
 char* getMediaDataTypeDescript(MEDIA_DATA_TYPE dataType) {
     switch (dataType) {
         case MD_TYPE_UNKNOWN:
-            return (char*)"MD_TYPE_UNKNOWN";
+            return (char*)"UNKNOWN";
         case MD_TYPE_RAW_BY_FILE:
-            return (char*)"MD_TYPE_RAW_BY_FILE";
+            return (char*)"RAW_BY_FILE";
         case MD_TYPE_RAW_BY_MEMORY:
-            return (char*)"MD_TYPE_RAW_BY_MEMORY";
+            return (char*)"RAW_BY_MEMORY";
         case MD_TYPE_COMPRESS:
-            return (char*)"MD_TYPE_COMPRESS";
+            return (char*)"COMPRESS";
         default:
             LOGE("Get image inner format failed !");
             exit(0);

@@ -117,13 +117,23 @@ int CSMediaBase::_OutMediaInitial() {
         case MD_TYPE_RAW_BY_FILE: {
             mTrgMediaFileHandle = fopen(mTrgMediaFile, "wb");
             if (!mTrgMediaFileHandle) {
-                LOGE("Audio decoder couldn't open output file.");
+                LOGE("Base media output initial failed, couldn't open output file.");
                 return HB_ERROR;
             }
 
         }
         break;
         case MD_TYPE_RAW_BY_MEMORY:
+            break;
+        case MD_TYPE_COMPRESS:
+            {
+                int HBErr = HB_OK;
+                HBErr = avformat_alloc_output_context2(&mPOutVideoFormatCtx, NULL, NULL, mTrgMediaFile);
+                if (HBErr < 0) {
+                    LOGE("Base media alloc output avformat ctx failed, %s", av_err2str(HBErr));
+                    return HB_ERROR;
+                }
+            }
             break;
         default:
             LOGE("Base media output media type:%s is not support !", getMediaDataTypeDescript(mOutMediaType));

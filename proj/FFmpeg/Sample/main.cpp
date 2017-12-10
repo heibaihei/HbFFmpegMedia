@@ -33,6 +33,9 @@ int main(int argc, const char * argv[]) {
 //            HBPickImageFrameFromVideo();
         }
         {/** Video */
+            {/** 视频编码 */
+                CSVideoDemo_VideoEncoder();
+            }
             {/** 视频解码 */
 //                CSVideoDemo_VideoDecoder();
             }
@@ -40,7 +43,7 @@ int main(int argc, const char * argv[]) {
 //                CSVideoDemo_VideoTransfor();
             }
             {/** 视频分析 */
-                CSVideoDemo_VideoAnalysis();
+//                CSVideoDemo_VideoAnalysis();
             }
         }
     }
