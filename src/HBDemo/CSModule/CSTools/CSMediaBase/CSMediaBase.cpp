@@ -74,6 +74,13 @@ int CSMediaBase::release() {
     if (mPInVideoFormatCtx) {
         avformat_close_input(&mPInVideoFormatCtx);
     }
+    if (mPOutVideoFormatCtx) {
+        avformat_close_input(&mPOutVideoFormatCtx);
+    }
+    if (mSrcMediaFileHandle) {
+        fclose(mSrcMediaFileHandle);
+        mSrcMediaFileHandle = nullptr;
+    }
     if (mTrgMediaFileHandle) {
         fclose(mTrgMediaFileHandle);
         mTrgMediaFileHandle = nullptr;

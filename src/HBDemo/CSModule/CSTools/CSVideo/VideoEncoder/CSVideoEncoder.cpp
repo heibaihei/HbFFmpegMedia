@@ -37,7 +37,8 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
     AVFrame *pInFrame = nullptr;
     AVFrame *pOutFrame = nullptr;
     
-    while (S_NOT_EQ(pEncoder->mState, ENCODE_STATE_READPKT_END)) {
+    while (S_NOT_EQ(pEncoder->mState, ENCODE_STATE_READPKT_END) \
+           && pEncoder->mSrcFrameQueue->queueLength()) {
         pInFrame = nullptr;
         pOutFrame = nullptr;
         if (S_EQ(pEncoder->mState, ENCODE_STATE_ENCODE_ABORT))
@@ -166,7 +167,6 @@ int CSVideoEncoder::start() {
     }
     
     return HB_OK;
-    return HB_OK;
 }
 
 int CSVideoEncoder::stop() {
@@ -251,22 +251,21 @@ int CSVideoEncoder::_InputInitial() {
     switch (mInMediaType) {
         case MD_TYPE_RAW_BY_MEMORY:
             if (!mSrcFrameQueue || !mSrcFrameQueueIPC || !mEmptyFrameQueueIPC) {
-                LOGE("[%s] >>> [Type:%s]Video encoder input prepare failed !", __func__, getMediaDataTypeDescript(mInMediaType));
+                LOGE("[%s] >>> [Type:%s]Video encoder input prepare failed !", __FUNCTION__, \
+                     getMediaDataTypeDescript(mInMediaType));
                 return HB_ERROR;
             }
+            break;
+            
+        case MD_TYPE_COMPRESS:
+            LOGE("[%s] >>> [Type:%s]Video encoder not susport this media data type !", __FUNCTION__, \
+                 getMediaDataTypeDescript(mInMediaType));
             break;
             
         default:
             LOGE("input media initial failed, cur media type:%s", getMediaDataTypeDescript(mInMediaType));
             return HB_ERROR;
     }
-    
-    return HB_OK;
-}
-
-int CSVideoEncoder::_SwscaleInitial() {
-    mPVideoConvertCtx = nullptr;
-    mIsNeedTransfer = false;
     
     if (mTargetVideoParams.mPixFmt == CS_PIX_FMT_NONE)
         mTargetVideoParams.mPixFmt = mSrcVideoParams.mPixFmt;
@@ -281,6 +280,13 @@ int CSVideoEncoder::_SwscaleInitial() {
         LOGE("Get target image buffer size failed, size:%d !", mTargetVideoParams.mPreImagePixBufferSize);
         return HB_ERROR;
     }
+    
+    return HB_OK;
+}
+
+int CSVideoEncoder::_SwscaleInitial() {
+    mPVideoConvertCtx = nullptr;
+    mIsNeedTransfer = false;
     
     if (mTargetVideoParams.mPixFmt != mSrcVideoParams.mPixFmt \
         || mTargetVideoParams.mWidth != mSrcVideoParams.mWidth \
@@ -375,13 +381,13 @@ int CSVideoEncoder::_EncoderInitial() {
         pVideoStream = avformat_new_stream(mPOutVideoFormatCtx, NULL);
         if (!pVideoStream) {
             LOGE("[%s] >>> Video encoder initial failed, new stream failed !", __func__);
-            return HB_ERROR;
+            goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }
         
         mPOutVideoCodec = avcodec_find_encoder(mPOutVideoFormatCtx->oformat->video_codec);
         if (!mPOutVideoCodec) {
             LOGE("[%s] >>> Video encoder initial failed, find valid encoder failed !", __func__);
-            return HB_ERROR;
+            goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }
         
         mPOutVideoCodecCtx = avcodec_alloc_context3(mPOutVideoCodec);
@@ -401,22 +407,30 @@ int CSVideoEncoder::_EncoderInitial() {
         
         if ((HBError = avio_open(&(mPOutVideoFormatCtx->pb), mTrgMediaFile, AVIO_FLAG_READ_WRITE)) < 0) {
             LOGE("Video encoder Could't open output file, %s !", makeErrorStr(HBError));
-            return HB_ERROR;
+            goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }
         
         if ((HBError = avcodec_open2(mPOutVideoCodecCtx, mPOutVideoCodec, &opts)) < 0) {
             LOGE("Video encoder open failed, %s!", makeErrorStr(HBError));
-            return HB_ERROR;
+            goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }
         
         if ((HBError = avformat_write_header(mPOutVideoFormatCtx, NULL)) < 0) {
             LOGE("Video encoder write format header failed, %s!", makeErrorStr(HBError));
-            return HB_ERROR;
+            goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }
     }
     return HB_OK;
 
 VIDEO_ENCODER_INITIAL_END_LABEL:
+    CSMediaBase::release();
+    if (mPOutVideoCodecCtx) {
+        if (avcodec_is_open(mPOutVideoCodecCtx)) {
+            avcodec_close(mPOutVideoCodecCtx);
+        }
+        avcodec_free_context(&mPOutVideoCodecCtx);
+    }
+    mPOutVideoCodec = nullptr;
     return HB_ERROR;
 }
 
@@ -444,6 +458,14 @@ int CSVideoEncoder::_mediaParamInitial() {
                     LOGE("[%s] >>> [Type:%s]Video encoder output prepare failed !", __func__, getMediaDataTypeDescript(mOutMediaType));
                     return HB_ERROR;
                 }
+                
+                if (mSrcVideoParams.mPixFmt == CS_PIX_FMT_NONE \
+                    || mSrcVideoParams.mWidth == 0 \
+                    || mSrcVideoParams.mHeight == 0) {
+                    LOGE("[%s] >>> [Type:%s]Video encoder output params invalid !", __func__, getMediaDataTypeDescript(mOutMediaType));
+                    return HB_ERROR;
+                }
+                
             }
             break;
             
@@ -477,7 +499,7 @@ int CSVideoEncoder::_mediaParamInitial() {
             return HB_ERROR;
             
         case MD_TYPE_COMPRESS:
-            break;;
+            break;
 
         default:
             LOGE("Unknown media type !");
