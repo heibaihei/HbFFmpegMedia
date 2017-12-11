@@ -11,7 +11,90 @@
 namespace HBMedia {
 
 int CSVideoEncoder::S_MAX_BUFFER_CACHE = 8;
+
+static void EchoStatus(uint64_t status) {
+    
+    bool bReadEnd = ((status & ENCODE_STATE_READPKT_END) != 0 ? true : false);
+    bool bEncodeEnd = ((status & ENCODE_STATE_ENCODE_END) != 0 ? true : false);
+    bool bReadAbort = ((status & ENCODE_STATE_READPKT_ABORT) != 0 ? true : false);
+    bool bEncodeAbort = ((status & ENCODE_STATE_ENCODE_ABORT) != 0 ? true : false);
+    bool bFlushMode = ((status & ENCODE_STATE_FLUSH_MODE) != 0 ? true : false);
+    
+    LOGI("[Work task: <Encoder>] Status: Read<End:%d, Abort:%d> | <Flush:%d> | encode<End:%d, Abort:%d>", bReadEnd, bReadAbort, bFlushMode, bEncodeEnd, bEncodeAbort);
+}
+
 void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
+    if (!arg) {
+        LOGE("[Work task: <Decoder>] Thread param args is invalid !");
+        return nullptr;
+    }
+    
+    int HBError = HB_OK;
+    ThreadParam_t *pThreadParams = (ThreadParam_t *)arg;
+    CSVideoEncoder* pEncoder = (CSVideoEncoder *)(pThreadParams->mThreadArgs);
+    AVPacket *pNewPacket = av_packet_alloc();
+    AVFrame  *pNewFrame = nullptr;
+    AVFrame *pInFrame = nullptr;
+    AVFrame *pOutFrame = nullptr;
+    
+    while (S_NOT_EQ(pEncoder->mState, ENCODE_STATE_READPKT_END)) {
+        pInFrame = nullptr;
+        pOutFrame = nullptr;
+        if (S_EQ(pEncoder->mState, ENCODE_STATE_ENCODE_ABORT))
+            break;
+        
+        pEncoder->mSrcFrameQueueIPC->condV();
+        if (!(pInFrame = pEncoder->mSrcFrameQueue->get())) {
+            LOGE("[Work task: <Decoder>] get frame failed !");
+            continue;
+        }
+        pEncoder->mEmptyFrameQueueIPC->condP();
+        
+        pOutFrame = pInFrame;
+        if (pEncoder->mIsNeedTransfer) {
+            if (pEncoder->_DoSwscale(pInFrame, &pOutFrame) != HB_OK) {
+                
+                if (pInFrame->opaque)
+                    av_freep(pInFrame->opaque);
+                av_frame_free(&pInFrame);
+                continue;
+            }
+            
+            if (pInFrame->opaque)
+                av_freep(pInFrame->opaque);
+            av_frame_free(&pInFrame);
+        }
+        else
+            pInFrame = nullptr;
+        
+        int HbError = avcodec_send_frame(pEncoder->mPOutVideoCodecCtx, pOutFrame);
+        if (pOutFrame->opaque)
+            av_freep(pOutFrame->opaque);
+        av_frame_free(&pOutFrame);
+        if (HBError != 0) {
+            if (HBError != AVERROR(EAGAIN)) {
+                LOGE("[Work task: <Encoder>] Send frame failed, Err:%s", av_err2str(HBError));
+                break;
+            }
+            continue;
+        }
+        
+        while (true) {
+            HbError = avcodec_receive_packet(pEncoder->mPOutVideoCodecCtx, pNewPacket);
+            if (HbError == 0) {
+                pNewPacket->stream_index = pEncoder->mVideoStreamIndex;
+                HbError = av_write_frame(pEncoder->mPOutVideoFormatCtx, pNewPacket);
+                av_packet_unref(pNewPacket);
+            }
+            else if (HbError == AVERROR(EAGAIN))
+                break;
+            else if (HbError<0 && HbError!=AVERROR_EOF)
+                break;
+        }
+    }
+    
+    pEncoder->_flush();
+VIDEO_ENCODER_THREAD_END_LABEL:
     
     return nullptr;
 }
@@ -87,18 +170,80 @@ int CSVideoEncoder::start() {
 }
 
 int CSVideoEncoder::stop() {
+    if (!(mState & DECODE_STATE_DECODE_END)) {
+        mAbort = true;
+    }
+    mEncodeThreadCtx.join();
+    
+    if (CSMediaBase::stop() != HB_OK) {
+        LOGE("Media base stop failed !");
+        return HB_ERROR;
+    }
+    
+    AVFrame *pFrame = nullptr;
+    while (mSrcFrameQueue->queueLength()) {
+        pFrame = mSrcFrameQueue->get();
+        if (pFrame) {
+            if (pFrame->opaque)
+                av_freep(pFrame);
+            av_frame_free(&pFrame);
+        }
+    }
+    
+    if (release() != HB_OK) {
+        LOGE("decoder release failed !");
+        return HB_ERROR;
+    }
     return HB_OK;
 }
 
 int CSVideoEncoder::release() {
+    if (mPOutVideoCodecCtx)
+        avcodec_free_context(&mPOutVideoCodecCtx);
+    mPOutVideoCodecCtx = nullptr;
+    if (mPVideoConvertCtx) {
+        sws_freeContext(mPVideoConvertCtx);
+        mPVideoConvertCtx = nullptr;
+    }
+    CSMediaBase::release();
     return HB_OK;
 }
 
-int CSVideoEncoder::sendFrame(AVFrame **OutFrame) {
-    return HB_OK;
+int CSVideoEncoder::sendFrame(AVFrame **pSrcFrame) {
+    int HBError = HB_ERROR;
+    if (!pSrcFrame) {
+        mState |= ENCODE_STATE_READPKT_END;
+        LOGE("Video Encoder >>> send frame end !");
+        return HB_OK;
+    }
+    *pSrcFrame = nullptr;
+    if (!(mState & ENCODE_STATE_PREPARED) || mInMediaType != MD_TYPE_RAW_BY_MEMORY) {
+        LOGE("Video Encoder >>> send raw frame failed, invalid output media type !");
+        return HBError;
+    }
+    
+RETRY_SEND_FRAME:
+    HBError = HB_ERROR;
+    if (mSrcFrameQueue) {
+        if (mSrcFrameQueue->queueLeft() > 0) {
+            if (mSrcFrameQueue->push(*pSrcFrame) > 0)
+                HBError = HB_OK;
+            mEmptyFrameQueueIPC->condV();
+            mSrcFrameQueueIPC->condP();
+        }
+        else {
+            goto RETRY_SEND_FRAME;
+        }
+    }
+    
+    return HBError;
 }
 
 int CSVideoEncoder::syncWait() {
+    while (!(mState & ENCODE_STATE_ENCODE_END)) {
+        usleep(100);
+    }
+    stop();
     return HB_OK;
 }
 
@@ -154,8 +299,65 @@ int CSVideoEncoder::_SwscaleInitial() {
     return HB_OK;
 }
 
+void CSVideoEncoder::_flush() {
+    int HbError = HB_OK;
+    AVPacket *pNewPacket = av_packet_alloc();
+    
+    avcodec_send_frame(mPOutVideoCodecCtx, NULL);
+    while (true) {
+        HbError = avcodec_receive_packet(mPOutVideoCodecCtx, pNewPacket);
+        if (HbError == 0) {
+            pNewPacket->stream_index = mVideoStreamIndex;
+            HbError = av_write_frame(mPOutVideoFormatCtx, pNewPacket);
+            av_packet_unref(pNewPacket);
+        }
+        else if (HbError == AVERROR(EAGAIN))
+            break;
+        else if (HbError<0 && HbError!=AVERROR_EOF)
+            break;
+    }
+}
+
 int CSVideoEncoder::_DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame) {
+    if (!pOutFrame) {
+        LOGE("Video decoder do swscale invalid args !");
+        return HB_ERROR;
+    }
+    
+    uint8_t *pTargetImageBuffer = nullptr;
+    *pOutFrame = av_frame_alloc();
+    if (!(*pOutFrame)) {
+        LOGE("Alloc new output frame failed !");
+        goto DO_SWSCALE_END_LABEL;
+    }
+    
+    pTargetImageBuffer = (uint8_t *)av_mallocz(mTargetVideoParams.mPreImagePixBufferSize);
+    if (!pTargetImageBuffer) {
+        LOGE("malloc target image buffer failed !");
+        goto DO_SWSCALE_END_LABEL;
+    }
+    
+    av_image_fill_arrays((*pOutFrame)->data, (*pOutFrame)->linesize,\
+                         pTargetImageBuffer, getImageInnerFormat(mTargetVideoParams.mPixFmt),\
+                         mTargetVideoParams.mWidth, mTargetVideoParams.mHeight, mTargetVideoParams.mAlign);
+    
+    pTargetImageBuffer = nullptr;
+    if (sws_scale(mPVideoConvertCtx, pInFrame->data, pInFrame->linesize,\
+                  0, mSrcVideoParams.mHeight, (*pOutFrame)->data, (*pOutFrame)->linesize) <= 0) {
+        LOGE("swscale to target frame format failed !");
+        goto DO_SWSCALE_END_LABEL;
+    }
     return HB_OK;
+    
+DO_SWSCALE_END_LABEL:
+    if (*pOutFrame) {
+        av_frame_free(pOutFrame);
+        *pOutFrame = nullptr;
+    }
+    if (pTargetImageBuffer)
+        av_free(pTargetImageBuffer);
+    
+    return HB_ERROR;
 }
 
 int CSVideoEncoder::_EncoderInitial() {

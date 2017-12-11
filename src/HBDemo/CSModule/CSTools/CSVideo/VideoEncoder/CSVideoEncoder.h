@@ -45,7 +45,7 @@ public:
     /**
      *  外部传送帧进来
      */
-    virtual int sendFrame(AVFrame **OutFrame);
+    virtual int sendFrame(AVFrame **pSrcFrame);
     
     /**
      *  同步等待解码器退出
@@ -70,6 +70,9 @@ protected:
     int  _InputInitial();
     int  _SwscaleInitial();
     int  _DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame);
+
+private:
+    void _flush();
 
 private:
     int mVideoStreamIndex;
