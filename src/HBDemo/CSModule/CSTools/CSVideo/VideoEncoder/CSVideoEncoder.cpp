@@ -33,14 +33,15 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
     ThreadParam_t *pThreadParams = (ThreadParam_t *)arg;
     CSVideoEncoder* pEncoder = (CSVideoEncoder *)(pThreadParams->mThreadArgs);
     AVPacket *pNewPacket = av_packet_alloc();
-    AVFrame  *pNewFrame = nullptr;
     AVFrame *pInFrame = nullptr;
     AVFrame *pOutFrame = nullptr;
     
     while (S_NOT_EQ(pEncoder->mState, ENCODE_STATE_READPKT_END) \
-           && pEncoder->mSrcFrameQueue->queueLength()) {
+           || (pEncoder->mSrcFrameQueue->queueLength() > 0))
+    {
         pInFrame = nullptr;
         pOutFrame = nullptr;
+        
         if (S_EQ(pEncoder->mState, ENCODE_STATE_ENCODE_ABORT))
             break;
         
@@ -51,7 +52,6 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
         }
         pEncoder->mEmptyFrameQueueIPC->condP();
         
-        pOutFrame = pInFrame;
         if (pEncoder->mIsNeedTransfer) {
             if (pEncoder->_DoSwscale(pInFrame, &pOutFrame) != HB_OK) {
                 
@@ -65,38 +65,57 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
                 av_freep(pInFrame->opaque);
             av_frame_free(&pInFrame);
         }
-        else
+        else {
+            pOutFrame = pInFrame;
             pInFrame = nullptr;
+        }
         
         int HbError = avcodec_send_frame(pEncoder->mPOutVideoCodecCtx, pOutFrame);
+        
         if (pOutFrame->opaque)
             av_freep(pOutFrame->opaque);
         av_frame_free(&pOutFrame);
+        
         if (HBError != 0) {
             if (HBError != AVERROR(EAGAIN)) {
                 LOGE("[Work task: <Encoder>] Send frame failed, Err:%s", av_err2str(HBError));
-                break;
+                pEncoder->mState |= ENCODE_STATE_ENCODE_ABORT;
             }
             continue;
         }
         
-        while (true) {
-            HbError = avcodec_receive_packet(pEncoder->mPOutVideoCodecCtx, pNewPacket);
-            if (HbError == 0) {
-                pNewPacket->stream_index = pEncoder->mVideoStreamIndex;
-                HbError = av_write_frame(pEncoder->mPOutVideoFormatCtx, pNewPacket);
+//        while (true) {
+        HbError = avcodec_receive_packet(pEncoder->mPOutVideoCodecCtx, pNewPacket);
+        if (HbError == 0) {
+            pNewPacket->stream_index = pEncoder->mVideoStreamIndex;
+            HBError = pEncoder->_DoExport(pNewPacket);
+            if (HBError != HB_OK) {
                 av_packet_unref(pNewPacket);
             }
-            else if (HbError == AVERROR(EAGAIN))
-                break;
-            else if (HbError<0 && HbError!=AVERROR_EOF)
-                break;
         }
+        else {
+            if (HBError != AVERROR(EAGAIN) \
+                && HBError != AVERROR_EOF) {
+                pEncoder->mState |= ENCODE_STATE_ENCODE_ABORT;
+            }
+        }
+//        }
     }
     
     pEncoder->_flush();
-VIDEO_ENCODER_THREAD_END_LABEL:
     
+VIDEO_ENCODER_THREAD_END_LABEL:
+    av_write_trailer(pEncoder->mPOutVideoFormatCtx);
+    
+    av_packet_free(&pNewPacket);
+    
+    if (pInFrame->opaque)
+        av_freep(pInFrame->opaque);
+    av_frame_free(&pInFrame);
+    
+    if (pOutFrame->opaque)
+        av_freep(pOutFrame->opaque);
+    av_frame_free(&pOutFrame);
     return nullptr;
 }
 
@@ -224,11 +243,15 @@ int CSVideoEncoder::sendFrame(AVFrame **pSrcFrame) {
     
 RETRY_SEND_FRAME:
     HBError = HB_ERROR;
-    if (mSrcFrameQueue) {
+    if (mSrcFrameQueue \
+        && S_NOT_EQ(mState, ENCODE_STATE_ENCODE_ABORT) \
+        && S_NOT_EQ(mState, ENCODE_STATE_FLUSH_MODE))
+    {
+        mEmptyFrameQueueIPC->condV();
         if (mSrcFrameQueue->queueLeft() > 0) {
             if (mSrcFrameQueue->push(*pSrcFrame) > 0)
                 HBError = HB_OK;
-            mEmptyFrameQueueIPC->condV();
+            
             mSrcFrameQueueIPC->condP();
         }
         else {
@@ -240,7 +263,7 @@ RETRY_SEND_FRAME:
 }
 
 int CSVideoEncoder::syncWait() {
-    while (!(mState & ENCODE_STATE_ENCODE_END)) {
+    while (S_NOT_EQ(mState, ENCODE_STATE_ENCODE_END)) {
         usleep(100);
     }
     stop();
@@ -307,21 +330,41 @@ int CSVideoEncoder::_SwscaleInitial() {
 
 void CSVideoEncoder::_flush() {
     int HbError = HB_OK;
-    AVPacket *pNewPacket = av_packet_alloc();
-    
+    mState |= ENCODE_STATE_FLUSH_MODE;
     avcodec_send_frame(mPOutVideoCodecCtx, NULL);
+    
+    AVPacket *pNewPacket = av_packet_alloc();
     while (true) {
         HbError = avcodec_receive_packet(mPOutVideoCodecCtx, pNewPacket);
         if (HbError == 0) {
             pNewPacket->stream_index = mVideoStreamIndex;
-            HbError = av_write_frame(mPOutVideoFormatCtx, pNewPacket);
-            av_packet_unref(pNewPacket);
+            HbError = _DoExport(pNewPacket);
+            if (HbError != HB_OK) {
+                av_packet_unref(pNewPacket);
+            }
         }
-        else if (HbError == AVERROR(EAGAIN))
+        else {
+            if (HbError != AVERROR_EOF)
+                mState |= ENCODE_STATE_ENCODE_ABORT;
+            else
+                LOGE("[Work task: <Encoder>] Encoder flush success !");
             break;
-        else if (HbError<0 && HbError!=AVERROR_EOF)
-            break;
+        }
     }
+
+    av_packet_free(&pNewPacket);
+    mState |= ENCODE_STATE_ENCODE_END;
+}
+
+int CSVideoEncoder::_DoExport(AVPacket *pPacket)
+{
+    int HbError = av_write_frame(mPOutVideoFormatCtx, pPacket);
+    if (HbError != 0) {
+        LOGE("[Work task: <Encoder>] Export new packet failed, %s !", av_err2str(HbError));
+        return HB_ERROR;
+    }
+    av_packet_unref(pPacket);
+    return HB_OK;
 }
 
 int CSVideoEncoder::_DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame) {

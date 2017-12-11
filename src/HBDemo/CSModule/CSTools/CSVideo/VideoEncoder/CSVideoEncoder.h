@@ -70,6 +70,7 @@ protected:
     int  _InputInitial();
     int  _SwscaleInitial();
     int  _DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame);
+    int  _DoExport(AVPacket *pPacket);
 
 private:
     void _flush();
