@@ -71,7 +71,7 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
             pInFrame = nullptr;
         }
         
-        int HbError = avcodec_send_frame(pEncoder->mPOutVideoCodecCtx, pOutFrame);
+        HBError = avcodec_send_frame(pEncoder->mPOutVideoCodecCtx, pOutFrame);
         if (pOutFrame->opaque)
             av_freep(pOutFrame->opaque);
         av_frame_free(&pOutFrame);
@@ -85,8 +85,8 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
         }
         
 //        while (true) {
-        HbError = avcodec_receive_packet(pEncoder->mPOutVideoCodecCtx, pNewPacket);
-        if (HbError == 0) {
+        HBError = avcodec_receive_packet(pEncoder->mPOutVideoCodecCtx, pNewPacket);
+        if (HBError == 0) {
             pNewPacket->stream_index = pEncoder->mVideoStreamIndex;
             HBError = pEncoder->_DoExport(pNewPacket);
             if (HBError != HB_OK) {
@@ -94,8 +94,7 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
             }
         }
         else {
-            if (HBError != AVERROR(EAGAIN) \
-                && HBError != AVERROR_EOF) {
+            if (HBError != AVERROR(EAGAIN) && HBError != AVERROR_EOF) {
                 LOGE("[Work task: <Encoder>] Receive packet failed, Err:%s", av_err2str(HBError));
                 pEncoder->mState |= ENCODE_STATE_ENCODE_ABORT;
             }
@@ -108,15 +107,19 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
 VIDEO_ENCODER_THREAD_END_LABEL:
     av_write_trailer(pEncoder->mPOutVideoFormatCtx);
     
+    pEncoder->mState |= ENCODE_STATE_ENCODE_END;
     av_packet_free(&pNewPacket);
     
-    if (pInFrame->opaque)
-        av_freep(pInFrame->opaque);
-    av_frame_free(&pInFrame);
-    
-    if (pOutFrame->opaque)
-        av_freep(pOutFrame->opaque);
-    av_frame_free(&pOutFrame);
+    if (pInFrame) {
+        if (pInFrame->opaque)
+            av_freep(pInFrame->opaque);
+        av_frame_free(&pInFrame);
+    }
+    if (pOutFrame) {
+        if (pOutFrame->opaque)
+            av_freep(pOutFrame->opaque);
+        av_frame_free(&pOutFrame);
+    }
     return nullptr;
 }
 
@@ -274,7 +277,6 @@ int CSVideoEncoder::syncWait() {
     while (S_NOT_EQ(mState, ENCODE_STATE_ENCODE_END)) {
         usleep(100);
     }
-    stop();
     return HB_OK;
 }
 
@@ -361,7 +363,6 @@ void CSVideoEncoder::_flush() {
     }
 
     av_packet_free(&pNewPacket);
-    mState |= ENCODE_STATE_ENCODE_END;
 }
 
 int CSVideoEncoder::_DoExport(AVPacket *pPacket)
@@ -449,6 +450,8 @@ int CSVideoEncoder::_EncoderInitial() {
         mPOutVideoCodecCtx->height = mTargetVideoParams.mHeight;
         mPOutVideoCodecCtx->time_base.num = 1;
         mPOutVideoCodecCtx->time_base.den = 30;
+        
+        mVideoStreamIndex = pVideoStream->index;
         
         avcodec_parameters_from_context(pVideoStream->codecpar, mPOutVideoCodecCtx);
         av_dump_format(mPOutVideoFormatCtx, 0, mTrgMediaFile, 1);

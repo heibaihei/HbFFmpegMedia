@@ -98,9 +98,10 @@ int CSVideoDemo_VideoEncoder() {
                     
 //                    usleep(10);
                 }
+                pVideoEncoder->sendFrame(NULL);
             }
-//            pVideoDecoder->stop();
-//            pVideoDecoder->release();
+            pVideoDecoder->stop();
+            pVideoDecoder->release();
         }
         
         pVideoEncoder->syncWait();

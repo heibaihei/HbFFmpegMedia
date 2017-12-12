@@ -75,7 +75,8 @@ int CSMediaBase::release() {
         avformat_close_input(&mPInVideoFormatCtx);
     }
     if (mPOutVideoFormatCtx) {
-        avformat_close_input(&mPOutVideoFormatCtx);
+        avformat_free_context(mPOutVideoFormatCtx);
+        mPOutVideoFormatCtx = nullptr;
     }
     if (mSrcMediaFileHandle) {
         fclose(mSrcMediaFileHandle);
@@ -99,6 +100,10 @@ int CSMediaBase::stop(){
             break;
         case MD_TYPE_RAW_BY_MEMORY:
             break;
+        case MD_TYPE_COMPRESS:
+            avformat_free_context(mPOutVideoFormatCtx);
+            mPOutVideoFormatCtx = nullptr;
+            break;
         default:
             LOGE("Base media output media type:%s is not support !", getMediaDataTypeDescript(mOutMediaType));
             return HB_ERROR;
@@ -110,6 +115,9 @@ int CSMediaBase::stop(){
                 avformat_close_input(&mPInVideoFormatCtx);
             }
         }
+            break;
+        case MD_TYPE_RAW_BY_MEMORY:
+            /** TODO: 待补充结束资源的释放 */
             break;
         default:
             LOGE("Base media input media type:%s is not support !", getMediaDataTypeDescript(mInMediaType));
