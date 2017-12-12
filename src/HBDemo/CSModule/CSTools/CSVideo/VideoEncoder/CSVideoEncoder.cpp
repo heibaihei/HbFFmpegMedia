@@ -47,7 +47,8 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
         
         pEncoder->mSrcFrameQueueIPC->condV();
         if (!(pInFrame = pEncoder->mSrcFrameQueue->get())) {
-            LOGE("[Work task: <Decoder>] get frame failed !");
+            LOGE("[Work task: <Encoder:%p>] get queue[%p] length:%d frame failed !", pEncoder, \
+                 pEncoder->mSrcFrameQueue, pEncoder->mSrcFrameQueue->queueLength());
             continue;
         }
         pEncoder->mEmptyFrameQueueIPC->condP();
@@ -71,7 +72,6 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
         }
         
         int HbError = avcodec_send_frame(pEncoder->mPOutVideoCodecCtx, pOutFrame);
-        
         if (pOutFrame->opaque)
             av_freep(pOutFrame->opaque);
         av_frame_free(&pOutFrame);
@@ -96,6 +96,7 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
         else {
             if (HBError != AVERROR(EAGAIN) \
                 && HBError != AVERROR_EOF) {
+                LOGE("[Work task: <Encoder>] Receive packet failed, Err:%s", av_err2str(HBError));
                 pEncoder->mState |= ENCODE_STATE_ENCODE_ABORT;
             }
         }
@@ -232,12 +233,17 @@ int CSVideoEncoder::sendFrame(AVFrame **pSrcFrame) {
     int HBError = HB_ERROR;
     if (!pSrcFrame) {
         mState |= ENCODE_STATE_READPKT_END;
-        LOGE("Video Encoder >>> send frame end !");
+        LOGE("Video Encoder >>> Send frame end !");
         return HB_OK;
     }
-    *pSrcFrame = nullptr;
+
     if (!(mState & ENCODE_STATE_PREPARED) || mInMediaType != MD_TYPE_RAW_BY_MEMORY) {
-        LOGE("Video Encoder >>> send raw frame failed, invalid output media type !");
+        LOGE("Video Encoder >>> Send raw frame failed, invalid output media type !");
+        return HBError;
+    }
+    
+    if (!(*pSrcFrame)) {
+        LOGE("Video Encoder >>> Invalid frame, send failed !");
         return HBError;
     }
     
@@ -249,10 +255,12 @@ RETRY_SEND_FRAME:
     {
         mEmptyFrameQueueIPC->condV();
         if (mSrcFrameQueue->queueLeft() > 0) {
-            if (mSrcFrameQueue->push(*pSrcFrame) > 0)
+            if (mSrcFrameQueue->push(*pSrcFrame) > 0) {
+                LOGD("Video Encoder[%p] >>> Send a valid frame[%p] into encoder buffer queue[%p], length:%d!", \
+                     this, *pSrcFrame, mSrcFrameQueue, mSrcFrameQueue->queueLength());
                 HBError = HB_OK;
-            
-            mSrcFrameQueueIPC->condP();
+                mSrcFrameQueueIPC->condP();
+            }
         }
         else {
             goto RETRY_SEND_FRAME;

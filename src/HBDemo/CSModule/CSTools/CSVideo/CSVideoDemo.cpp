@@ -79,6 +79,30 @@ int CSVideoDemo_VideoEncoder() {
 
         pVideoEncoder->prepare();
         pVideoEncoder->start();
+        
+        {
+            HBMedia::CSVideoDecoder* pVideoDecoder = new HBMedia::CSVideoDecoder();
+            pVideoDecoder->setInMediaType(MD_TYPE_COMPRESS);
+            pVideoDecoder->setOutMediaType(MD_TYPE_RAW_BY_MEMORY);
+            pVideoDecoder->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/100.mp4");
+            
+            pVideoDecoder->prepare();
+            pVideoDecoder->start();
+            AVFrame *pNewFrame = nullptr;
+            if (pVideoDecoder->getStatus() & DECODE_STATE_PREPARED) {
+                while (!(pVideoDecoder->getStatus() & DECODE_STATE_DECODE_END)) {
+                    pNewFrame = nullptr;
+                    if ((pVideoDecoder->receiveFrame(&pNewFrame) == HB_OK) && pNewFrame) {
+                        pVideoEncoder->sendFrame(&pNewFrame);
+                    }
+                    
+//                    usleep(10);
+                }
+            }
+//            pVideoDecoder->stop();
+//            pVideoDecoder->release();
+        }
+        
         pVideoEncoder->syncWait();
         pVideoEncoder->stop();
         pVideoEncoder->release();
