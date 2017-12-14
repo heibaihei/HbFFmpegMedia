@@ -44,7 +44,8 @@ public:
     virtual int release();
     
     /**
-     *  取帧
+     *  取帧接口
+     *  导出的帧都转换成： AV_TIME_BASE_Q 时间基 表示
      */
     virtual int receiveFrame(AVFrame **OutFrame);
     
@@ -63,6 +64,8 @@ protected:
     int  _ExportInitial();
     int  _SwscaleInitial();
     int  _DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame);
+    
+    /** 导出的帧都转换成： AV_TIME_BASE_Q 时间基 表示 */
     int  _DoExport(AVFrame **pOutFrame);
 
 protected:

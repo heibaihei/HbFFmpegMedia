@@ -169,7 +169,13 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
             if (mTargetFrameQueue) {
                 /** 阻塞等待空间帧缓冲区存在可用资源 */
                 mEmptyFrameQueueIPC->condV();
+                {
+                    /** 重新计算时间 */
+                    (*pOutFrame)->pts = (int64_t)av_rescale_q((*pOutFrame)->pts, \
+                                                     mPInVideoFormatCtx->streams[mVideoStreamIndex]->time_base, AV_TIME_BASE_Q);
+                }
                 if (mTargetFrameQueue->push(*pOutFrame) > 0) {
+                    LOGD("[Work task: <Decoder>] Push frame:%lld, %lf !", (*pOutFrame)->pts, ((*pOutFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
                     mTargetFrameQueueIPC->condP();
                 }
                 else {/** push 帧失败 */
@@ -349,6 +355,7 @@ int  CSVideoDecoder::_DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame) {
         LOGE("swscale to target frame format failed !");
         goto DO_SWSCALE_END_LABEL;
     }
+    (*pOutFrame)->pts = pInFrame->pts;
     return HB_OK;
     
 DO_SWSCALE_END_LABEL:

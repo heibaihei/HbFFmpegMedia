@@ -69,6 +69,15 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
         else {
             pOutFrame = pInFrame;
             pInFrame = nullptr;
+            
+            pOutFrame->format = getImageInnerFormat(pEncoder->mTargetVideoParams.mPixFmt);
+            pOutFrame->width = pEncoder->mTargetVideoParams.mWidth;
+            pOutFrame->height = pEncoder->mTargetVideoParams.mHeight;
+        }
+        
+        if (pOutFrame) {
+            /** 传入的文件，默认以 AV_TIME_BASE_Q 为实践基传入, 在这里对 它的时间基进行本地转换 */
+            pOutFrame->pts = av_rescale_q(pOutFrame->pts, AV_TIME_BASE_Q, pEncoder->mPOutVideoFormatCtx->streams[pEncoder->mVideoStreamIndex]->time_base);
         }
         
         HBError = avcodec_send_frame(pEncoder->mPOutVideoCodecCtx, pOutFrame);
@@ -84,28 +93,34 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
             continue;
         }
         
-//        while (true) {
-        HBError = avcodec_receive_packet(pEncoder->mPOutVideoCodecCtx, pNewPacket);
-        if (HBError == 0) {
-            pNewPacket->stream_index = pEncoder->mVideoStreamIndex;
-            HBError = pEncoder->_DoExport(pNewPacket);
-            if (HBError != HB_OK) {
-                av_packet_unref(pNewPacket);
+        while (true) {
+            HBError = avcodec_receive_packet(pEncoder->mPOutVideoCodecCtx, pNewPacket);
+            if (HBError == 0) {
+                pNewPacket->stream_index = pEncoder->mVideoStreamIndex;
+                HBError = pEncoder->_DoExport(pNewPacket);
+                if (HBError != HB_OK) {
+                    av_packet_unref(pNewPacket);
+                }
+            }
+            else {
+                if (HBError == AVERROR(EAGAIN))
+                    break;
+                else if (HBError != AVERROR_EOF) {
+                    LOGE("[Work task: <Encoder>] Receive packet failed, Err:%s", av_err2str(HBError));
+                    pEncoder->mState |= ENCODE_STATE_ENCODE_ABORT;
+                }
             }
         }
-        else {
-            if (HBError != AVERROR(EAGAIN) && HBError != AVERROR_EOF) {
-                LOGE("[Work task: <Encoder>] Receive packet failed, Err:%s", av_err2str(HBError));
-                pEncoder->mState |= ENCODE_STATE_ENCODE_ABORT;
-            }
-        }
-//        }
     }
     
     pEncoder->_flush();
     
 VIDEO_ENCODER_THREAD_END_LABEL:
     av_write_trailer(pEncoder->mPOutVideoFormatCtx);
+    avcodec_close(pEncoder->mPOutVideoCodecCtx);
+    avio_close(pEncoder->mPOutVideoFormatCtx->pb);
+    avformat_free_context(pEncoder->mPOutVideoFormatCtx);
+    pEncoder->mPOutVideoFormatCtx = nullptr;
     
     pEncoder->mState |= ENCODE_STATE_ENCODE_END;
     av_packet_free(&pNewPacket);
@@ -258,9 +273,14 @@ RETRY_SEND_FRAME:
     {
         mEmptyFrameQueueIPC->condV();
         if (mSrcFrameQueue->queueLeft() > 0) {
+            
+//            int64_t tSrcFramePts = av_rescale_q((*pSrcFrame)->pts, \
+//                                                AV_TIME_BASE_Q, mPOutVideoFormatCtx->streams[mVideoStreamIndex]->time_base);
+//
+            LOGD("Video Encoder >>> Send frame, OriginalPts<%lld, %lf> !", \
+                 (*pSrcFrame)->pts, ((*pSrcFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
+            
             if (mSrcFrameQueue->push(*pSrcFrame) > 0) {
-                LOGD("Video Encoder[%p] >>> Send a valid frame[%p] into encoder buffer queue[%p], length:%d!", \
-                     this, *pSrcFrame, mSrcFrameQueue, mSrcFrameQueue->queueLength());
                 HBError = HB_OK;
                 mSrcFrameQueueIPC->condP();
             }
@@ -405,6 +425,7 @@ int CSVideoEncoder::_DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame) {
         LOGE("swscale to target frame format failed !");
         goto DO_SWSCALE_END_LABEL;
     }
+    (*pOutFrame)->pts = pInFrame->pts;
     return HB_OK;
     
 DO_SWSCALE_END_LABEL:
@@ -435,6 +456,9 @@ int CSVideoEncoder::_EncoderInitial() {
             LOGE("[%s] >>> Video encoder initial failed, new stream failed !", __func__);
             goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }
+        
+        pVideoStream->time_base.num = 1;
+        pVideoStream->time_base.den = 90000;
         
         mPOutVideoCodec = avcodec_find_encoder(mPOutVideoFormatCtx->oformat->video_codec);
         if (!mPOutVideoCodec) {

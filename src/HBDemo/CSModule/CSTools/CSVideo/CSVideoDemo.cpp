@@ -95,8 +95,6 @@ int CSVideoDemo_VideoEncoder() {
                     if ((pVideoDecoder->receiveFrame(&pNewFrame) == HB_OK) && pNewFrame) {
                         pVideoEncoder->sendFrame(&pNewFrame);
                     }
-                    
-//                    usleep(10);
                 }
                 pVideoEncoder->sendFrame(NULL);
             }
