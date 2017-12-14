@@ -124,7 +124,9 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                     LOGE("Clone target frame failed !");
                     continue;
                 }
-                
+                pTargetFrame->format = pNewFrame->format;
+                pTargetFrame->width = pNewFrame->width;
+                pTargetFrame->height = pNewFrame->height;
             }
             av_frame_unref(pNewFrame);
             
@@ -356,6 +358,9 @@ int  CSVideoDecoder::_DoSwscale(AVFrame *pInFrame, AVFrame **pOutFrame) {
         goto DO_SWSCALE_END_LABEL;
     }
     (*pOutFrame)->pts = pInFrame->pts;
+    (*pOutFrame)->format = getImageInnerFormat(mTargetVideoParams.mPixFmt);
+    (*pOutFrame)->width = mTargetVideoParams.mWidth;
+    (*pOutFrame)->height = mTargetVideoParams.mHeight;
     return HB_OK;
     
 DO_SWSCALE_END_LABEL:

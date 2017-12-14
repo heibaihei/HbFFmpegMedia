@@ -100,6 +100,7 @@
 		A181BC6A1EA21788004861DA /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC671EA21788004861DA /* simplest_ffmpeg_video_encoder_pure.cpp */; };
 		A181BC6F1F6517BD00B34FD0 /* CSThreadContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC6D1F6517BD00B34FD0 /* CSThreadContext.cpp */; };
 		A181BC721F6517F400B34FD0 /* CSThreadIPCContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A181BC701F6517F400B34FD0 /* CSThreadIPCContext.cpp */; };
+		A187C75D1FE27EDB00FAF954 /* CSPictureUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A187C75C1FE27EDB00FAF954 /* CSPictureUtil.cpp */; };
 		A19450B11F6754E1004E8669 /* CSWorkTasks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19450AF1F6754E1004E8669 /* CSWorkTasks.cpp */; };
 		A195CBBC1FBB0EA700F708F9 /* CSAudioEffectFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A195CBBA1FBB0EA700F708F9 /* CSAudioEffectFactory.cpp */; };
 		A195CBC61FBB102400F708F9 /* CSAudioResamplerEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A195CBC41FBB102400F708F9 /* CSAudioResamplerEffect.cpp */; };
@@ -3112,6 +3113,7 @@
 		A181BC6F1EA219B3004861DA /* resource */ = {isa = PBXFileReference; lastKnownFileType = folder; name = resource; path = ../../resource; sourceTree = "<group>"; };
 		A181BC701F6517F400B34FD0 /* CSThreadIPCContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSThreadIPCContext.cpp; sourceTree = "<group>"; };
 		A181BC711F6517F400B34FD0 /* CSThreadIPCContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSThreadIPCContext.h; sourceTree = "<group>"; };
+		A187C75C1FE27EDB00FAF954 /* CSPictureUtil.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSPictureUtil.cpp; sourceTree = "<group>"; };
 		A19450AF1F6754E1004E8669 /* CSWorkTasks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSWorkTasks.cpp; sourceTree = "<group>"; };
 		A19450B01F6754E1004E8669 /* CSWorkTasks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSWorkTasks.h; sourceTree = "<group>"; };
 		A195CBBA1FBB0EA700F708F9 /* CSAudioEffectFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioEffectFactory.cpp; sourceTree = "<group>"; };
@@ -9653,6 +9655,7 @@
 			children = (
 				A131A1181FC9013E002E5B8E /* HBPictureDemo.h */,
 				A131A1191FC9013E002E5B8E /* CSPicture.cpp */,
+				A187C75C1FE27EDB00FAF954 /* CSPictureUtil.cpp */,
 				A131A11A1FC9013E002E5B8E /* stb */,
 				A131A11D1FC9013E002E5B8E /* CSPicture.h */,
 				A131A11E1FC9013E002E5B8E /* HBPictureDemo.cpp */,
@@ -17483,6 +17486,7 @@
 				A181BC6F1F6517BD00B34FD0 /* CSThreadContext.cpp in Sources */,
 				A19A67D91EB3445600DE8F11 /* simplest_ffmpeg_video_filter_pure.cpp in Sources */,
 				A131A0F01FC900B0002E5B8E /* CSVideoDemo.cpp in Sources */,
+				A187C75D1FE27EDB00FAF954 /* CSPictureUtil.cpp in Sources */,
 				A1245A981F65FD4A00DB5D45 /* CSAStream.cpp in Sources */,
 				A1245A8B1F657F9000DB5D45 /* CSPlayer.cpp in Sources */,
 				A131A0EF1FC900B0002E5B8E /* CSVideoTool.cpp in Sources */,

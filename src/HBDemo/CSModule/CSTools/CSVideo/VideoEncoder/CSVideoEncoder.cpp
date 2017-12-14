@@ -116,7 +116,9 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
     pEncoder->_flush();
     
 VIDEO_ENCODER_THREAD_END_LABEL:
-    av_write_trailer(pEncoder->mPOutVideoFormatCtx);
+    if ((HBError = av_write_trailer(pEncoder->mPOutVideoFormatCtx)) != 0)
+        LOGE("[Work task: <Encoder>] write trail failed, %s !", av_err2str(HBError));
+
     avcodec_close(pEncoder->mPOutVideoCodecCtx);
     avio_close(pEncoder->mPOutVideoFormatCtx->pb);
     avformat_free_context(pEncoder->mPOutVideoFormatCtx);
@@ -374,10 +376,10 @@ void CSVideoEncoder::_flush() {
             }
         }
         else {
-            if (HbError != AVERROR_EOF)
+            if (HbError != AVERROR_EOF) {
                 mState |= ENCODE_STATE_ENCODE_ABORT;
-            else
-                LOGE("[Work task: <Encoder>] Encoder flush success !");
+                LOGE("[Work task: <Encoder>] Encoder flush success, %s !", av_err2str(HbError));
+            }
             break;
         }
     }
@@ -469,11 +471,16 @@ int CSVideoEncoder::_EncoderInitial() {
         mPOutVideoCodecCtx = avcodec_alloc_context3(mPOutVideoCodec);
         mPOutVideoCodecCtx->codec_id = mPOutVideoCodec->id;
         mPOutVideoCodecCtx->codec_type = mPOutVideoCodec->type;
+        mPOutVideoCodecCtx->gop_size = 250;
+        mPOutVideoCodecCtx->keyint_min = 60;
         mPOutVideoCodecCtx->pix_fmt = getImageInnerFormat(mTargetVideoParams.mPixFmt);
         mPOutVideoCodecCtx->width = mTargetVideoParams.mWidth;
         mPOutVideoCodecCtx->height = mTargetVideoParams.mHeight;
+        mPOutVideoCodecCtx->framerate.num = 1;
+        mPOutVideoCodecCtx->framerate.den = 30;
         mPOutVideoCodecCtx->time_base.num = 1;
         mPOutVideoCodecCtx->time_base.den = 30;
+        mPOutVideoCodecCtx->bit_rate = 1500000;
         
         mVideoStreamIndex = pVideoStream->index;
         

@@ -203,4 +203,6 @@ private:
 
 } /** HBMedia */
 
+int CSPicUtil_ExportYUV420RawData(AVFrame *pFrame);
+
 #endif /* CSPicture_hpp */
