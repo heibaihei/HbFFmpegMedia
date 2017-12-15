@@ -12,6 +12,7 @@
 #include "CSLog.h"
 #include "HBPictureDemo.h"
 #include "CSPacketQueue.h"
+#include "CSPicture.h"
 
 /**
  *  获取当前时间

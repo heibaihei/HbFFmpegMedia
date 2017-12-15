@@ -203,6 +203,10 @@ private:
 
 } /** HBMedia */
 
-int CSPicUtil_ExportYUV420RawData(AVFrame *pFrame);
+/**
+ * 目前支持帧图像以裸数据文件的方式输出
+ * 目前支持格式: YUV420P
+ */
+int CSPicUtil_ExportImgaeRawDataByFile(AVFrame *pFrame);
 
 #endif /* CSPicture_hpp */
