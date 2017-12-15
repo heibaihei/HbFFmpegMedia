@@ -177,7 +177,7 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
                                                      mPInVideoFormatCtx->streams[mVideoStreamIndex]->time_base, AV_TIME_BASE_Q);
                 }
                 if (mTargetFrameQueue->push(*pOutFrame) > 0) {
-                    LOGD("[Work task: <Decoder>] Push frame:%lld, %lf !", (*pOutFrame)->pts, ((*pOutFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
+//                    LOGD("[Work task: <Decoder>] Push frame:%lld, %lf !", (*pOutFrame)->pts, ((*pOutFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
                     mTargetFrameQueueIPC->condP();
                 }
                 else {/** push 帧失败 */

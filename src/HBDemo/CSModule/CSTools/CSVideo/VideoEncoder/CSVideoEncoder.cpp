@@ -253,7 +253,7 @@ int CSVideoEncoder::sendFrame(AVFrame **pSrcFrame) {
     int HBError = HB_ERROR;
     if (!pSrcFrame) {
         mState |= ENCODE_STATE_READPKT_END;
-        LOGE("Video Encoder >>> Send frame end !");
+        LOGI("Video Encoder >>> Send frame end !");
         return HB_OK;
     }
 
@@ -279,7 +279,7 @@ RETRY_SEND_FRAME:
 //            int64_t tSrcFramePts = av_rescale_q((*pSrcFrame)->pts, \
 //                                                AV_TIME_BASE_Q, mPOutVideoFormatCtx->streams[mVideoStreamIndex]->time_base);
 //
-            LOGD("Video Encoder >>> Send frame, OriginalPts<%lld, %lf> !", \
+//            LOGD("Video Encoder >>> Send frame, OriginalPts<%lld, %lf> !", \
                  (*pSrcFrame)->pts, ((*pSrcFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
             
             if (mSrcFrameQueue->push(*pSrcFrame) > 0) {
@@ -471,8 +471,10 @@ int CSVideoEncoder::_EncoderInitial() {
         mPOutVideoCodecCtx = avcodec_alloc_context3(mPOutVideoCodec);
         mPOutVideoCodecCtx->codec_id = mPOutVideoCodec->id;
         mPOutVideoCodecCtx->codec_type = mPOutVideoCodec->type;
-        mPOutVideoCodecCtx->gop_size = 250;
+        mPOutVideoCodecCtx->gop_size = 30;
         mPOutVideoCodecCtx->keyint_min = 60;
+//        mPOutVideoCodecCtx->has_b_frames = 0;
+//        mPOutVideoCodecCtx->max_b_frames = 0;
         mPOutVideoCodecCtx->pix_fmt = getImageInnerFormat(mTargetVideoParams.mPixFmt);
         mPOutVideoCodecCtx->width = mTargetVideoParams.mWidth;
         mPOutVideoCodecCtx->height = mTargetVideoParams.mHeight;
@@ -481,25 +483,42 @@ int CSVideoEncoder::_EncoderInitial() {
         mPOutVideoCodecCtx->time_base.num = 1;
         mPOutVideoCodecCtx->time_base.den = 30;
         mPOutVideoCodecCtx->bit_rate = 1500000;
+//        mPOutVideoCodecCtx->qmin = 34;
+//        mPOutVideoCodecCtx->qmax = 50;
+        
+        if (mPOutVideoFormatCtx->oformat->flags & AVFMT_GLOBALHEADER) {
+            /** 如果转成实时传输数据，就不能设置： AV_CODEC_FLAG_GLOBAL_HEADER  */
+            mPOutVideoCodecCtx->flags = AV_CODEC_FLAG_GLOBAL_HEADER;
+        }
+        
+//        if (mPOutVideoCodecCtx->codec_id == AV_CODEC_ID_H264)
+//        {
+//            av_opt_set(mPOutVideoCodecCtx->priv_data, "level", "4.1", 0);
+//            av_opt_set(mPOutVideoCodecCtx->priv_data, "preset", "superfast", 0);
+//            av_opt_set(mPOutVideoCodecCtx->priv_data, "tune", "zerolatency", 0);
+//        }
+        
         
         mVideoStreamIndex = pVideoStream->index;
         
-        avcodec_parameters_from_context(pVideoStream->codecpar, mPOutVideoCodecCtx);
         av_dump_format(mPOutVideoFormatCtx, 0, mTrgMediaFile, 1);
-        
-        AVDictionary *opts = NULL;
-        av_dict_set(&opts, "threads", "auto", 0);
         
         if ((HBError = avio_open(&(mPOutVideoFormatCtx->pb), mTrgMediaFile, AVIO_FLAG_READ_WRITE)) < 0) {
             LOGE("Video encoder Could't open output file, %s !", makeErrorStr(HBError));
             goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }
         
+        AVDictionary *opts = NULL;
+        av_dict_set(&opts, "threads", "auto", 0);
+        av_dict_set(&opts, "profile", "main", 0);
+        
+         avcodec_parameters_from_context(pVideoStream->codecpar, mPOutVideoCodecCtx);
+        
         if ((HBError = avcodec_open2(mPOutVideoCodecCtx, mPOutVideoCodec, &opts)) < 0) {
             LOGE("Video encoder open failed, %s!", makeErrorStr(HBError));
             goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }
-        
+
         if ((HBError = avformat_write_header(mPOutVideoFormatCtx, NULL)) < 0) {
             LOGE("Video encoder write format header failed, %s!", makeErrorStr(HBError));
             goto VIDEO_ENCODER_INITIAL_END_LABEL;

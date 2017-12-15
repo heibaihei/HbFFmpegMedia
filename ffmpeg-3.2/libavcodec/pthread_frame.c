@@ -612,7 +612,7 @@ int ff_frame_thread_init(AVCodecContext *avctx)
 #if HAVE_W32THREADS
     w32thread_init();
 #endif
-    printf("[Huangcl] %d -------------------------------------> thread initial count:%d\r\n", __LINE__, thread_count);
+//    printf("[Huangcl] %d -------------------------------------> thread initial count:%d\r\n", __LINE__, thread_count);
     if (!thread_count) {
         int nb_cpus = av_cpu_count();
         if ((avctx->debug & (FF_DEBUG_VIS_QP | FF_DEBUG_VIS_MB_TYPE)) || avctx->debug_mv)
@@ -642,7 +642,7 @@ int ff_frame_thread_init(AVCodecContext *avctx)
     pthread_mutex_init(&fctx->buffer_mutex, NULL);
     fctx->delaying = 1;
 
-    printf("[Huangcl] %d -------------------------------------> thread initial count:%d\r\n", __LINE__, thread_count);
+//    printf("[Huangcl] %d -------------------------------------> thread initial count:%d\r\n", __LINE__, thread_count);
     for (i = 0; i < thread_count; i++) {
         AVCodecContext *copy = av_malloc(sizeof(AVCodecContext));
         PerThreadContext *p  = &fctx->threads[i];
