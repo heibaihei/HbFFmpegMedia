@@ -2969,16 +2969,10 @@
 		A131A0F91FC900FB002E5B8E /* audio_player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audio_player.h; sourceTree = "<group>"; };
 		A131A0FA1FC900FB002E5B8E /* audio_player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audio_player.cpp; sourceTree = "<group>"; };
 		A131A0FB1FC900FB002E5B8E /* xiaoqingge.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = xiaoqingge.mp3; sourceTree = "<group>"; };
-		A131A0FD1FC900FB002E5B8E /* skycity1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = skycity1.mp3; sourceTree = "<group>"; };
-		A131A0FE1FC900FB002E5B8E /* 100_s16_1_output.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = 100_s16_1_output.pcm; sourceTree = "<group>"; };
-		A131A0FF1FC900FB002E5B8E /* skycity1_output.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = skycity1_output.pcm; sourceTree = "<group>"; };
 		A131A1001FC900FB002E5B8E /* CSAudioDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioDecoder.cpp; sourceTree = "<group>"; };
 		A131A1011FC900FB002E5B8E /* AudioDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDecoder.cpp; sourceTree = "<group>"; };
 		A131A1021FC900FB002E5B8E /* AudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDecoder.h; sourceTree = "<group>"; };
-		A131A1031FC900FB002E5B8E /* 100_fltp_2_output.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = 100_fltp_2_output.pcm; sourceTree = "<group>"; };
 		A131A1041FC900FB002E5B8E /* CSAudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioDecoder.h; sourceTree = "<group>"; };
-		A131A1051FC900FB002E5B8E /* 100.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = 100.mp4; sourceTree = "<group>"; };
-		A131A1061FC900FB002E5B8E /* 100_fltp_output.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = 100_fltp_output.pcm; sourceTree = "<group>"; };
 		A131A1081FC900FB002E5B8E /* skycity1_output.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = skycity1_output.pcm; sourceTree = "<group>"; };
 		A131A1091FC900FB002E5B8E /* CSAudioEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioEncoder.cpp; sourceTree = "<group>"; };
 		A131A10A1FC900FB002E5B8E /* AudioEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioEncoder.cpp; sourceTree = "<group>"; };
@@ -9665,16 +9659,10 @@
 		A131A0FC1FC900FB002E5B8E /* AudioDecoder */ = {
 			isa = PBXGroup;
 			children = (
-				A131A0FD1FC900FB002E5B8E /* skycity1.mp3 */,
-				A131A0FE1FC900FB002E5B8E /* 100_s16_1_output.pcm */,
-				A131A0FF1FC900FB002E5B8E /* skycity1_output.pcm */,
 				A131A1001FC900FB002E5B8E /* CSAudioDecoder.cpp */,
 				A131A1011FC900FB002E5B8E /* AudioDecoder.cpp */,
 				A131A1021FC900FB002E5B8E /* AudioDecoder.h */,
-				A131A1031FC900FB002E5B8E /* 100_fltp_2_output.pcm */,
 				A131A1041FC900FB002E5B8E /* CSAudioDecoder.h */,
-				A131A1051FC900FB002E5B8E /* 100.mp4 */,
-				A131A1061FC900FB002E5B8E /* 100_fltp_output.pcm */,
 			);
 			path = AudioDecoder;
 			sourceTree = "<group>";
