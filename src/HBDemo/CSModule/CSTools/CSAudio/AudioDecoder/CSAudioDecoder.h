@@ -14,86 +14,73 @@
 #include <iostream>
 
 #include "CSAudio.h"
+#include "CSMediaBase.h"
+#include "CSThreadContext.h"
+#include "frame.h"
+#include "CSFiFoQueue.h"
 
 namespace HBMedia {
     
-/**
- *  1、解码包含有音视频流的媒体文件
- *  2、对接编码器
- */
-    
-typedef class CSAudioDecoder
+
+typedef class CSAudioDecoder : public CSMediaBase
 {
 public:
-    CSAudioDecoder(AudioParams* targetAudioParam);
+    static int S_MAX_BUFFER_CACHE;
+    CSAudioDecoder();
     ~CSAudioDecoder();
     
     /**
-     *  配置输入的音频文件
+     *  准备工作，对外接口
      */
-    void setInputAudioMediaFile(char *file);
-    char *getInputAudioMediaFile();
+    virtual int prepare();
+    
+    virtual int start();
+    
+    virtual int stop();
+    
+    virtual int release();
     
     /**
-     *  配置输出的音频文件
+     *  取帧接口
+     *  导出的帧都转换成： AV_TIME_BASE_Q 时间基 表示
      */
-    void setOutputAudioMediaFile(char *file);
-    char *getOutputAudioMediaFile();
+    virtual int receiveFrame(AVFrame **OutFrame);
     
-    /** 
+    /**
+     *  同步等待解码器退出
+     */
+    virtual int syncWait();
+
+protected:
+    static void* ThreadFunc_Audio_Decoder(void *arg);
+    
+    /**
      *  解码器初始化、启动、关闭、释放
      */
-    int  audioDecoderInitial();
-    int  audioDecoderOpen();
-    int  audioDecoderClose();
-    int  audioDecoderRelease();
+    int  _DecoderInitial();
+    int  _ExportInitial();
+    int  _ResampleInitial();
+    int  _DoResample(AVFrame *pInFrame, AVFrame **pOutFrame);
     
-    /**
-     *  音频读包
-     *  @return HB_OK 执行正常
-     *          HB_ERROR 执行发生异常
-     */
-    int  readAudioPacket();
-    
-    /**
-     *  音频解帧
-     */
-    int  selectAudieoFrame();
-    
-    /**
-     *  将音频数据写入音频缓冲区
-     */
-    int  CSIOPushDataBuffer(uint8_t* data, int samples);
-    
-private:
-    /**
-     *  检验音频参数的有效性
-     */
-    int  _checkAudioParamValid();
-    
-protected:
-    int mPKTSerial;
-    char *mInputAudioMediaFile;
+    /** 导出的帧都转换成： AV_TIME_BASE_Q 时间基 表示 */
+    int  _DoExport(AVFrame **pOutFrame);
+
+    int  _mediaParamInitial();
     
     int mAudioStreamIndex;
-    AVAudioFifo *mAudioFifo;
     AudioParams mTargetAudioParams;
-    AVFormatContext* mPInputAudioFormatCtx;
+    AudioParams mSrcAudioParams;
+    
     AVCodecContext* mPInputAudioCodecCtx;
     AVCodec* mPInputAudioCodec;
-
-    CSAudioResample *mAudioResample;
+    struct SwrContext *mPAudioResampleCtx;
     
-    PacketQueue mPacketCacheList;
+    FiFoQueue<AVFrame *> *mTargetFrameQueue;
+    ThreadIPCContext     *mTargetFrameQueueIPC;
+    ThreadIPCContext     *mEmptyFrameQueueIPC;
     
-    /** 输出文件，只是针对不做编码的情况下，将音频数据以裸流PCM格数的方式输出 */
-    char *mOutputAudioMediaFile;
-    FILE *mAudioOutputFileHandle;
-    
-    int64_t mDecodeStateFlag;
-    
-private:
-    
+    /** 解码线程上下文 */
+    ThreadContext mDecodeThreadCtx;
 } CSAudioDecoder;
     
 }

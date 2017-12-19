@@ -49,7 +49,7 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
             && !(pDecoder->mState & DECODE_STATE_READPKT_END))
         {
             av_init_packet(pNewPacket);
-            HBError = av_read_frame(pDecoder->mPInVideoFormatCtx, pNewPacket);
+            HBError = av_read_frame(pDecoder->mPInMediaFormatCtx, pNewPacket);
             if (HBError != 0) {
                 if (HBError != AVERROR_EOF) {
                     LOGE("[Work task: <Decoder>] Read frame failed, Err:%s", av_err2str(HBError));
@@ -174,7 +174,7 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
                 {
                     /** 重新计算时间 */
                     (*pOutFrame)->pts = (int64_t)av_rescale_q((*pOutFrame)->pts, \
-                                                     mPInVideoFormatCtx->streams[mVideoStreamIndex]->time_base, AV_TIME_BASE_Q);
+                                                     mPInMediaFormatCtx->streams[mVideoStreamIndex]->time_base, AV_TIME_BASE_Q);
                 }
                 if (mTargetFrameQueue->push(*pOutFrame) > 0) {
 //                    LOGD("[Work task: <Decoder>] Push frame:%lld, %lf !", (*pOutFrame)->pts, ((*pOutFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
@@ -224,7 +224,7 @@ CSVideoDecoder::CSVideoDecoder() {
     imageParamInit(&mTargetVideoParams);
 
     mVideoStreamIndex = INVALID_STREAM_INDEX;
-    mPInVideoFormatCtx = nullptr;
+    mPInMediaFormatCtx = nullptr;
 
     mPInputVideoCodecCtx = nullptr;
     mPInputVideoCodec = nullptr;
@@ -420,13 +420,13 @@ int  CSVideoDecoder::_DecoderInitial() {
             goto VIDEO_DECODER_INITIAL_END_LABEL;
         }
         
-        mVideoStreamIndex = av_find_best_stream(mPInVideoFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
+        mVideoStreamIndex = av_find_best_stream(mPInMediaFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
         if (mVideoStreamIndex < 0) {
             LOGW("Video decoder counldn't find valid audio stream, %s", av_err2str(mVideoStreamIndex));
             goto VIDEO_DECODER_INITIAL_END_LABEL;
         }
         
-        pVideoStream = mPInVideoFormatCtx->streams[mVideoStreamIndex];
+        pVideoStream = mPInMediaFormatCtx->streams[mVideoStreamIndex];
         mPInputVideoCodec = avcodec_find_decoder(pVideoStream->codecpar->codec_id);
         if (!mPInputVideoCodec) {
             LOGE("Codec <%d> not found !", pVideoStream->codecpar->codec_id);
@@ -453,7 +453,7 @@ int  CSVideoDecoder::_DecoderInitial() {
         mSrcVideoParams.mHeight = mPInputVideoCodecCtx->height;
         mSrcVideoParams.mPixFmt = getImageExternFormat(mPInputVideoCodecCtx->pix_fmt);
         
-        av_dump_format(mPInVideoFormatCtx, mVideoStreamIndex, mSrcMediaFile, false);
+        av_dump_format(mPInMediaFormatCtx, mVideoStreamIndex, mSrcMediaFile, false);
     }
     
     return HB_OK;

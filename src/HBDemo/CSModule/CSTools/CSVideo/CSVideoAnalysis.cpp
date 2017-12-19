@@ -42,7 +42,7 @@ void CSVideoAnalysis::_collectFrameInfo(AVFrame *pFrame, AVMediaType type) {
     {
         IMAGE_PIX_FORMAT eLocalVideoPixFormat = getImageExternFormat((AVPixelFormat)pFrame->format);
         int64_t tiExternPts = av_rescale_q(pFrame->pts, \
-                                    mPInVideoFormatCtx->streams[mVideoStreamIndex]->time_base, AV_TIME_BASE_Q);
+                                    mPInMediaFormatCtx->streams[mVideoStreamIndex]->time_base, AV_TIME_BASE_Q);
         double  tfExternPts = ((double)tiExternPts / AV_TIME_BASE);
         
         if (mInfoSet & INFO_FRAME_TYPE) {
@@ -140,7 +140,7 @@ void CSVideoAnalysis::_collectFrameInfo(AVFrame *pFrame, AVMediaType type) {
 }
     
 void CSVideoAnalysis::ExportAnalysisInfo() {
-    AVStream* pWorkStream = mPInVideoFormatCtx->streams[mVideoStreamIndex];
+    AVStream* pWorkStream = mPInMediaFormatCtx->streams[mVideoStreamIndex];
     
     
     LOGI("\r\n");

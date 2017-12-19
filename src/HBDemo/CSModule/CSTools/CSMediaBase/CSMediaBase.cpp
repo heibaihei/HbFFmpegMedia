@@ -18,7 +18,7 @@ CSMediaBase::CSMediaBase() {
     mSrcMediaFileHandle = nullptr;
     mTrgMediaFile = nullptr;
     mTrgMediaFileHandle = nullptr;
-    mPInVideoFormatCtx = nullptr;
+    mPInMediaFormatCtx = nullptr;
     mPOutVideoFormatCtx = nullptr;
     memset(&mState, 0x00, sizeof(mState));
     mAbort = false;
@@ -42,14 +42,14 @@ int CSMediaBase::baseInitial() {
 int CSMediaBase::_InMediaInitial() {
     switch (mInMediaType) {
         case MD_TYPE_COMPRESS : {
-            mPInVideoFormatCtx = nullptr;
-            int HBError = avformat_open_input(&mPInVideoFormatCtx, mSrcMediaFile, NULL, NULL);
+            mPInMediaFormatCtx = nullptr;
+            int HBError = avformat_open_input(&mPInMediaFormatCtx, mSrcMediaFile, NULL, NULL);
             if (HBError != 0) {
                 LOGE("Media base in media initial failed, %s !", av_err2str(HBError));
                 goto IN_MEDIA_INITIAL_END_LABEL;
             }
 
-            HBError = avformat_find_stream_info(mPInVideoFormatCtx, NULL);
+            HBError = avformat_find_stream_info(mPInMediaFormatCtx, NULL);
             if (HBError < 0) {
                 LOGE("Media base couldn't find stream information. <%s>", av_err2str(HBError));
                 goto IN_MEDIA_INITIAL_END_LABEL;
@@ -64,15 +64,15 @@ int CSMediaBase::_InMediaInitial() {
     return HB_OK;
 
 IN_MEDIA_INITIAL_END_LABEL:
-    if (mPInVideoFormatCtx) {
-        avformat_close_input(&mPInVideoFormatCtx);
+    if (mPInMediaFormatCtx) {
+        avformat_close_input(&mPInMediaFormatCtx);
     }
     return HB_ERROR;
 }
 
 int CSMediaBase::release() {
-    if (mPInVideoFormatCtx) {
-        avformat_close_input(&mPInVideoFormatCtx);
+    if (mPInMediaFormatCtx) {
+        avformat_close_input(&mPInMediaFormatCtx);
     }
     if (mPOutVideoFormatCtx) {
         avformat_free_context(mPOutVideoFormatCtx);
@@ -111,8 +111,8 @@ int CSMediaBase::stop(){
     
     switch (mInMediaType) {
         case MD_TYPE_COMPRESS: {
-            if (mPInVideoFormatCtx) {
-                avformat_close_input(&mPInVideoFormatCtx);
+            if (mPInMediaFormatCtx) {
+                avformat_close_input(&mPInMediaFormatCtx);
             }
         }
             break;

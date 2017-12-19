@@ -68,7 +68,7 @@ namespace HBMedia {
          *  媒体数据输入信息
          */
         MEDIA_DATA_TYPE  mInMediaType;
-        AVFormatContext *mPInVideoFormatCtx;
+        AVFormatContext *mPInMediaFormatCtx;
         char            *mSrcMediaFile;
         FILE            *mSrcMediaFileHandle;
 
