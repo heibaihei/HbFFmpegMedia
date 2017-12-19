@@ -11,7 +11,7 @@
 #include "CSFiFoQueue.h"
 #include "CSLog.h"
 #include "CSCommon.h"
-#include "HBAudio.h"
+#include "CSAudio.h"
 #include "CSVideoDemo.h"
 #include "HBExample.h"
 #include "HBVideoConcat.h"
@@ -19,6 +19,7 @@
 #include "FFmpegModule/Swscale/FFmpegSwscale.h"
 #include "MTVideoTransfer.h"
 #include "HBPictureDemo.h"
+#include "CSAudio.h"
 #include "CSDemo.h"
 #include "libyuv.h"
 #include <unistd.h>
@@ -34,7 +35,7 @@ int main(int argc, const char * argv[]) {
         }
         {/** Video */
             {/** 视频编码 */
-                CSVideoDemo_VideoEncoder();
+//                CSVideoDemo_VideoEncoder();
             }
             {/** 视频解码 */
 //                CSVideoDemo_VideoDecoder();
@@ -44,6 +45,20 @@ int main(int argc, const char * argv[]) {
             }
             {/** 视频分析 */
 //                CSVideoDemo_VideoAnalysis();
+            }
+        }
+        {/** Audio */
+            {/** 音频编码 */
+                
+            }
+            {/** 音频解码 */
+                
+            }
+            {/** 音频转码 */
+                
+            }
+            {/** 音频分析 */
+                
             }
         }
     }

@@ -331,13 +331,9 @@ error:
 
 BYTE* CGif89a::getNextFrameT(int *deley)
 {
-	LOGGIF("getNextFrameT__0");
 	LPCFRAME lpf = getNextFrame();
-	LOGGIF("getNextFrameT");
 	if(lpf != NULL){
-		LOGGIF("getNextFrameT_______");
 		*deley = lpf->ctrlExt.delayTime;
-		LOGGIF("getNextFrameT success *deley=%d",*deley);
 		int x,y;
 		BYTE* pData = lpf->dataBuf;
 		BYTE* pColorTable = lpf->pColorTable;
@@ -402,7 +398,6 @@ LPCFRAME CGif89a::getNextFrame()
 		{
 	
 			fread((char*)&be,sizeof(char),1,m_file);
-			LOGGIF("getNextFrame  ___12 be=%d",be);
 			switch(be)
 			{	case 0x21:
 //					LOGGIF("getNextFrame  ___13");

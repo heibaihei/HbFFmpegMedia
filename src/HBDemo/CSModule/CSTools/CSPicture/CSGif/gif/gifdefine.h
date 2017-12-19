@@ -3,10 +3,6 @@
 #ifndef _DEFINE_H_GIF_
 #define _DEFINE_H_GIF_
 
-#include "cdebug.h"
-
-
-
 typedef unsigned char	BYTE;
 //typedef unsigned char BYTE;
 typedef unsigned int UINT;

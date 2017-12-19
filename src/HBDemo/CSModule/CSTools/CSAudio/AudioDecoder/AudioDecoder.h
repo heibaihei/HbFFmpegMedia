@@ -1,7 +1,7 @@
 #ifndef _HBAUDIO_DECODER_H_
 #define _HBAUDIO_DECODER_H_
 
-#include "HBAudio.h"
+#include "CSAudio.h"
 
 /**
  *  @func HBAudioDecoder 对不同类型的音频数据进行解码
