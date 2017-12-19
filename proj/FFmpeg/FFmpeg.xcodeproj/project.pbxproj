@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A100E2961FE8F0FE00F1783C /* MTGIF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A100E2871FE8F0FE00F1783C /* MTGIF.cpp */; };
+		A100E2971FE8F0FE00F1783C /* gif89a.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A100E2891FE8F0FE00F1783C /* gif89a.cpp */; };
+		A100E2981FE8F0FE00F1783C /* Quantize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A100E28B1FE8F0FE00F1783C /* Quantize.cpp */; };
+		A100E2991FE8F0FE00F1783C /* Srv_gifCreateInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A100E28E1FE8F0FE00F1783C /* Srv_gifCreateInterface.cpp */; };
 		A10365CB1F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10365C91F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp */; };
 		A1080E9A1F68DC6F0015A2D3 /* CSConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1080E981F68DC6F0015A2D3 /* CSConfig.cpp */; };
 		A1245A8B1F657F9000DB5D45 /* CSPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A891F657F9000DB5D45 /* CSPlayer.cpp */; };
@@ -2923,6 +2927,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A100E2811FE8F0FE00F1783C /* define.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = define.h; sourceTree = "<group>"; };
+		A100E2831FE8F0FE00F1783C /* Srv_gifCreateInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Srv_gifCreateInterface.h; sourceTree = "<group>"; };
+		A100E2851FE8F0FE00F1783C /* Quantize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Quantize.h; sourceTree = "<group>"; };
+		A100E2861FE8F0FE00F1783C /* gif89a.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gif89a.h; sourceTree = "<group>"; };
+		A100E2871FE8F0FE00F1783C /* MTGIF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MTGIF.cpp; sourceTree = "<group>"; };
+		A100E2881FE8F0FE00F1783C /* xiofile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xiofile.h; sourceTree = "<group>"; };
+		A100E2891FE8F0FE00F1783C /* gif89a.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gif89a.cpp; sourceTree = "<group>"; };
+		A100E28A1FE8F0FE00F1783C /* gifdefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gifdefine.h; sourceTree = "<group>"; };
+		A100E28B1FE8F0FE00F1783C /* Quantize.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Quantize.cpp; sourceTree = "<group>"; };
+		A100E28C1FE8F0FE00F1783C /* xfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xfile.h; sourceTree = "<group>"; };
+		A100E28D1FE8F0FE00F1783C /* MTGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTGIF.h; sourceTree = "<group>"; };
+		A100E28E1FE8F0FE00F1783C /* Srv_gifCreateInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Srv_gifCreateInterface.cpp; sourceTree = "<group>"; };
 		A10365C91F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = HBVideoChangeBgmMusic.cpp; sourceTree = "<group>"; };
 		A10365CA1F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HBVideoChangeBgmMusic.h; sourceTree = "<group>"; };
 		A1080E981F68DC6F0015A2D3 /* CSConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSConfig.cpp; sourceTree = "<group>"; };
@@ -9498,6 +9514,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A100E27F1FE8F0FE00F1783C /* CSGif */ = {
+			isa = PBXGroup;
+			children = (
+				A100E2811FE8F0FE00F1783C /* define.h */,
+				A100E2831FE8F0FE00F1783C /* Srv_gifCreateInterface.h */,
+				A100E2841FE8F0FE00F1783C /* gif */,
+				A100E28E1FE8F0FE00F1783C /* Srv_gifCreateInterface.cpp */,
+			);
+			path = CSGif;
+			sourceTree = "<group>";
+		};
+		A100E2841FE8F0FE00F1783C /* gif */ = {
+			isa = PBXGroup;
+			children = (
+				A100E2851FE8F0FE00F1783C /* Quantize.h */,
+				A100E2861FE8F0FE00F1783C /* gif89a.h */,
+				A100E2871FE8F0FE00F1783C /* MTGIF.cpp */,
+				A100E2881FE8F0FE00F1783C /* xiofile.h */,
+				A100E2891FE8F0FE00F1783C /* gif89a.cpp */,
+				A100E28A1FE8F0FE00F1783C /* gifdefine.h */,
+				A100E28B1FE8F0FE00F1783C /* Quantize.cpp */,
+				A100E28C1FE8F0FE00F1783C /* xfile.h */,
+				A100E28D1FE8F0FE00F1783C /* MTGIF.h */,
+			);
+			path = gif;
+			sourceTree = "<group>";
+		};
 		A10B26D91EC9BCB0006D24C6 /* examples */ = {
 			isa = PBXGroup;
 			children = (
@@ -9653,6 +9696,7 @@
 		A131A1171FC9013E002E5B8E /* CSPicture */ = {
 			isa = PBXGroup;
 			children = (
+				A100E27F1FE8F0FE00F1783C /* CSGif */,
 				A131A1181FC9013E002E5B8E /* HBPictureDemo.h */,
 				A131A1191FC9013E002E5B8E /* CSPicture.cpp */,
 				A187C75C1FE27EDB00FAF954 /* CSPictureUtil.cpp */,
@@ -17438,6 +17482,7 @@
 				A15CC9481FDABCB700A16610 /* CSVideoEncoder.cpp in Sources */,
 				A19E9C711F716075000EAF8C /* decoding_encoding.cpp in Sources */,
 				A19A67E11EB3457500DE8F11 /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,
+				A100E2971FE8F0FE00F1783C /* gif89a.cpp in Sources */,
 				A181BC681EA21788004861DA /* simplest_ffmpeg_demuxer.cpp in Sources */,
 				A17F02851FBB52C8009B03F0 /* CSAudioUtil.cpp in Sources */,
 				A1245A951F65FD3300DB5D45 /* CSVStream.cpp in Sources */,
@@ -17472,6 +17517,7 @@
 				A15632C11F94BB5F00F0140F /* transcoding.c in Sources */,
 				A181BC5F1EA21756004861DA /* HBSeperateFormat.c in Sources */,
 				A131A0ED1FC900B0002E5B8E /* CSVideoReverse.cpp in Sources */,
+				A100E2981FE8F0FE00F1783C /* Quantize.cpp in Sources */,
 				A181BC581EA2172B004861DA /* audio_format_convert.cpp in Sources */,
 				A1F7061C1F657181003A6010 /* CSMediaPiece.cpp in Sources */,
 				A131A1131FC900FB002E5B8E /* CSAudioDecoder.cpp in Sources */,
@@ -17480,10 +17526,12 @@
 				A1F4B09E1FB93192000FF69B /* CSDemo.cpp in Sources */,
 				A131A1141FC900FB002E5B8E /* AudioDecoder.cpp in Sources */,
 				A19A67E41EB3460100DE8F11 /* simplest_ffmpeg_swscale.cpp in Sources */,
+				A100E2991FE8F0FE00F1783C /* Srv_gifCreateInterface.cpp in Sources */,
 				A15BB0EE1F42C2DA00AFE839 /* CSPacketQueue.cpp in Sources */,
 				A131A1151FC900FB002E5B8E /* CSAudioEncoder.cpp in Sources */,
 				A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */,
 				A181BC6F1F6517BD00B34FD0 /* CSThreadContext.cpp in Sources */,
+				A100E2961FE8F0FE00F1783C /* MTGIF.cpp in Sources */,
 				A19A67D91EB3445600DE8F11 /* simplest_ffmpeg_video_filter_pure.cpp in Sources */,
 				A131A0F01FC900B0002E5B8E /* CSVideoDemo.cpp in Sources */,
 				A187C75D1FE27EDB00FAF954 /* CSPictureUtil.cpp in Sources */,
