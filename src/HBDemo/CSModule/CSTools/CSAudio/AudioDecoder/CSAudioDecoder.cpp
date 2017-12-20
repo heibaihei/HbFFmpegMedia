@@ -238,7 +238,7 @@ RETRY_SEND_FRAME:
     HBError = HB_ERROR;
     if (mSrcFrameQueue \
         && S_NOT_EQ(mState, S_ENCODE_ABORT) \
-        && S_NOT_EQ(mState, S_FLUSH))
+        && S_NOT_EQ(mState, S_DECODE_FLUSHING))
     {
         mEmptyFrameQueueIPC->condV();
         if (mSrcFrameQueue->queueLeft() > 0) {

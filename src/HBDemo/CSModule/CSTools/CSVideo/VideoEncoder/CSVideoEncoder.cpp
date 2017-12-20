@@ -260,7 +260,7 @@ RETRY_SEND_FRAME:
     HBError = HB_ERROR;
     if (mSrcFrameQueue \
         && S_NOT_EQ(mState, S_ENCODE_ABORT) \
-        && S_NOT_EQ(mState, S_FLUSH))
+        && S_NOT_EQ(mState, S_ENCODE_FLUSHING))
     {
         mEmptyFrameQueueIPC->condV();
         if (mSrcFrameQueue->queueLeft() > 0) {
@@ -351,7 +351,7 @@ int CSVideoEncoder::_SwscaleInitial() {
 
 void CSVideoEncoder::_flush() {
     int HbError = HB_OK;
-    mState |= S_FLUSH;
+    mState |= S_ENCODE_FLUSHING;
     avcodec_send_frame(mPOutVideoCodecCtx, NULL);
     
     AVPacket *pNewPacket = av_packet_alloc();

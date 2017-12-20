@@ -74,11 +74,11 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
             if (pNewPacket)
                 av_packet_free(&pNewPacket);
             
-            if (!(pDecoder->mState & S_FLUSH)) {
+            if (!(pDecoder->mState & S_DECODE_FLUSHING)) {
                 if (!(pDecoder->mState & S_READ_PKT_END)) {
                     LOGE("[Work task: <Decoder>] Flush decoder buffer, but the not reach the end of file !");
                 }
-                pDecoder->mState |= S_FLUSH;
+                pDecoder->mState |= S_DECODE_FLUSHING;
                 avcodec_send_packet(pDecoder->mPInputVideoCodecCtx, nullptr);
                 continue;
             }
@@ -94,7 +94,7 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                     }
                     av_frame_unref(pNewFrame);
                 }
-                if (pDecoder->mState & S_FLUSH)
+                if (pDecoder->mState & S_DECODE_FLUSHING)
                     pDecoder->mState |= S_DECODE_END;
                 break;
             }

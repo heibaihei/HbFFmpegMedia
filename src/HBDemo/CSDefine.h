@@ -24,16 +24,17 @@
 #define S_FINISHED                   0x0001
 #define S_ABORT                      0x0002
 #define S_PREPARED                   0x0004
-#define S_FLUSH                      0x0008
 
 #define S_READ_PKT_END               0x0010
 #define S_READ_PKT_ABORT             0x0020
 
 #define S_DECODE_END                 0x0100
 #define S_DECODE_ABORT               0x0200
+#define S_DECODE_FLUSHING            0x0400
 
 #define S_ENCODE_END                 0x1000
 #define S_ENCODE_ABORT               0x2000
+#define S_ENCODE_FLUSHING            0x4000
 
 
 #define CS_RECORD_AUDIO_BUFFER  (81920)

@@ -261,7 +261,7 @@ void EchoStatus(uint64_t status) {
     bool bDecodeEnd = ((status & S_DECODE_END) != 0 ? true : false);
     bool bReadAbort = ((status & S_READ_PKT_ABORT) != 0 ? true : false);
     bool bDecodeAbort = ((status & S_DECODE_ABORT) != 0 ? true : false);
-    bool bFlushMode = ((status & S_FLUSH) != 0 ? true : false);
+    bool bFlushMode = ((status & S_DECODE_FLUSHING) != 0 ? true : false);
     
     LOGI("[Work task: <Decoder>] Status: Read<End:%d, Abort:%d> | <Flush:%d> | Decode<End:%d, Abort:%d>", bReadEnd, bReadAbort, bFlushMode, bDecodeEnd, bDecodeAbort);
 }

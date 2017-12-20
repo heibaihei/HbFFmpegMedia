@@ -153,7 +153,7 @@ int CSAudioEncoder::selectAudioFrame()
     av_init_packet(&newPacket);
     
     while (true) {
-        if ((mEncodeStateFlag & S_FLUSH) || (mEncodeStateFlag & S_ENCODE_END) \
+        if ((mEncodeStateFlag & S_ENCODE_FLUSHING) || (mEncodeStateFlag & S_ENCODE_END) \
             || (mEncodeStateFlag & S_ENCODE_ABORT)){
             /** 音频解码模块状态检测 */
             break;
@@ -180,7 +180,7 @@ int CSAudioEncoder::selectAudioFrame()
         else if ((mEncodeStateFlag & S_READ_PKT_END) \
             || (mEncodeStateFlag & S_READ_PKT_ABORT)) {
             pNewFrame = nullptr;
-            mEncodeStateFlag |= S_FLUSH;
+            mEncodeStateFlag |= S_ENCODE_FLUSHING;
         }
         else
             goto AUDIO_ENCODE_END_LABEL;

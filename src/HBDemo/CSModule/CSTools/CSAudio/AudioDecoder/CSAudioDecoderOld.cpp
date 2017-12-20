@@ -211,7 +211,7 @@ int  CSAudioDecoder::selectAudieoFrame()
     
     while (true) {
         
-        if ((mDecodeStateFlag & S_FLUSH) || (mDecodeStateFlag & S_DECODE_END) \
+        if ((mDecodeStateFlag & S_DECODE_FLUSHING) || (mDecodeStateFlag & S_DECODE_END) \
             || (mDecodeStateFlag & S_DECODE_ABORT)){
             /** 音频解码模块状态检测 */
             break;
@@ -232,7 +232,7 @@ int  CSAudioDecoder::selectAudieoFrame()
                 av_packet_free(&pNewPacket);
                 pNewPacket = NULL;
                 /** 设置标识解码器已经进入排水模式 */
-                mDecodeStateFlag |= S_FLUSH;
+                mDecodeStateFlag |= S_DECODE_FLUSHING;
             }
             else {
 #if DECODE_WITH_MULTI_THREAD_MODE
