@@ -77,7 +77,7 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
         
         if (pOutFrame) {
             /** 传入的文件，默认以 AV_TIME_BASE_Q 为实践基传入, 在这里对 它的时间基进行本地转换 */
-            pOutFrame->pts = av_rescale_q(pOutFrame->pts, AV_TIME_BASE_Q, pEncoder->mPOutVideoFormatCtx->streams[pEncoder->mVideoStreamIndex]->time_base);
+            pOutFrame->pts = av_rescale_q(pOutFrame->pts, AV_TIME_BASE_Q, pEncoder->mPOutMediaFormatCtx->streams[pEncoder->mVideoStreamIndex]->time_base);
         }
         
         HBError = avcodec_send_frame(pEncoder->mPOutVideoCodecCtx, pOutFrame);
@@ -116,13 +116,13 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
     pEncoder->_flush();
     
 VIDEO_ENCODER_THREAD_END_LABEL:
-    if ((HBError = av_write_trailer(pEncoder->mPOutVideoFormatCtx)) != 0)
+    if ((HBError = av_write_trailer(pEncoder->mPOutMediaFormatCtx)) != 0)
         LOGE("[Work task: <Encoder>] write trail failed, %s !", av_err2str(HBError));
 
     avcodec_close(pEncoder->mPOutVideoCodecCtx);
-    avio_close(pEncoder->mPOutVideoFormatCtx->pb);
-    avformat_free_context(pEncoder->mPOutVideoFormatCtx);
-    pEncoder->mPOutVideoFormatCtx = nullptr;
+    avio_close(pEncoder->mPOutMediaFormatCtx->pb);
+    avformat_free_context(pEncoder->mPOutMediaFormatCtx);
+    pEncoder->mPOutMediaFormatCtx = nullptr;
     
     pEncoder->mState |= ENCODE_STATE_ENCODE_END;
     av_packet_free(&pNewPacket);
@@ -389,7 +389,7 @@ void CSVideoEncoder::_flush() {
 
 int CSVideoEncoder::_DoExport(AVPacket *pPacket)
 {
-    int HbError = av_write_frame(mPOutVideoFormatCtx, pPacket);
+    int HbError = av_write_frame(mPOutMediaFormatCtx, pPacket);
     if (HbError != 0) {
         LOGE("[Work task: <Encoder>] Export new packet failed, %s !", av_err2str(HbError));
         return HB_ERROR;
@@ -453,7 +453,7 @@ int CSVideoEncoder::_EncoderInitial() {
             goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }
         
-        pVideoStream = avformat_new_stream(mPOutVideoFormatCtx, NULL);
+        pVideoStream = avformat_new_stream(mPOutMediaFormatCtx, NULL);
         if (!pVideoStream) {
             LOGE("[%s] >>> Video encoder initial failed, new stream failed !", __func__);
             goto VIDEO_ENCODER_INITIAL_END_LABEL;
@@ -462,7 +462,7 @@ int CSVideoEncoder::_EncoderInitial() {
         pVideoStream->time_base.num = 1;
         pVideoStream->time_base.den = 90000;
         
-        mPOutVideoCodec = avcodec_find_encoder(mPOutVideoFormatCtx->oformat->video_codec);
+        mPOutVideoCodec = avcodec_find_encoder(mPOutMediaFormatCtx->oformat->video_codec);
         if (!mPOutVideoCodec) {
             LOGE("[%s] >>> Video encoder initial failed, find valid encoder failed !", __func__);
             goto VIDEO_ENCODER_INITIAL_END_LABEL;
@@ -486,7 +486,7 @@ int CSVideoEncoder::_EncoderInitial() {
 //        mPOutVideoCodecCtx->qmin = 34;
 //        mPOutVideoCodecCtx->qmax = 50;
         
-        if (mPOutVideoFormatCtx->oformat->flags & AVFMT_GLOBALHEADER) {
+        if (mPOutMediaFormatCtx->oformat->flags & AVFMT_GLOBALHEADER) {
             /** 如果转成实时传输数据，就不能设置： AV_CODEC_FLAG_GLOBAL_HEADER  */
             mPOutVideoCodecCtx->flags = AV_CODEC_FLAG_GLOBAL_HEADER;
         }
@@ -501,9 +501,9 @@ int CSVideoEncoder::_EncoderInitial() {
         
         mVideoStreamIndex = pVideoStream->index;
         
-        av_dump_format(mPOutVideoFormatCtx, 0, mTrgMediaFile, 1);
+        av_dump_format(mPOutMediaFormatCtx, 0, mTrgMediaFile, 1);
         
-        if ((HBError = avio_open(&(mPOutVideoFormatCtx->pb), mTrgMediaFile, AVIO_FLAG_READ_WRITE)) < 0) {
+        if ((HBError = avio_open(&(mPOutMediaFormatCtx->pb), mTrgMediaFile, AVIO_FLAG_READ_WRITE)) < 0) {
             LOGE("Video encoder Could't open output file, %s !", makeErrorStr(HBError));
             goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }
@@ -519,7 +519,7 @@ int CSVideoEncoder::_EncoderInitial() {
             goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }
 
-        if ((HBError = avformat_write_header(mPOutVideoFormatCtx, NULL)) < 0) {
+        if ((HBError = avformat_write_header(mPOutMediaFormatCtx, NULL)) < 0) {
             LOGE("Video encoder write format header failed, %s!", makeErrorStr(HBError));
             goto VIDEO_ENCODER_INITIAL_END_LABEL;
         }

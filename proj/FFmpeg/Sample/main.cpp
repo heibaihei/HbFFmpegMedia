@@ -13,6 +13,7 @@
 #include "CSCommon.h"
 #include "CSAudio.h"
 #include "CSVideoDemo.h"
+#include "CSAudioDemo.h"
 #include "HBExample.h"
 #include "HBVideoConcat.h"
 #include "HBVideoChangeBgmMusic.h"
@@ -52,7 +53,7 @@ int main(int argc, const char * argv[]) {
                 
             }
             {/** 音频解码 */
-                
+                CSAudioDemo_AudioDecoder();
             }
             {/** 音频转码 */
                 

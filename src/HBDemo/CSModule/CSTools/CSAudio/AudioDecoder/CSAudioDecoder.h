@@ -55,11 +55,23 @@ protected:
     static void* ThreadFunc_Audio_Decoder(void *arg);
     
     /**
+     *  刷新缓冲区
+     */
+    void _flush();
+    
+    /**
      *  解码器初始化、启动、关闭、释放
      */
     int  _DecoderInitial();
     int  _ExportInitial();
     int  _ResampleInitial();
+    
+    /**
+     *  @func _DoResample 执行重采样操作
+     *  @param pInFrame  要重采样的目标帧；
+     *  @param pOutFrame 重采样后需输出的帧；
+     *  @return HB_OK 重采样; HB_ERROR 重采样失败
+     */
     int  _DoResample(AVFrame *pInFrame, AVFrame **pOutFrame);
     
     /** 导出的帧都转换成： AV_TIME_BASE_Q 时间基 表示 */

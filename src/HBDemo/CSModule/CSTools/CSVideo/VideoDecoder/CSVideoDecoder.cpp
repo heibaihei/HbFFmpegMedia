@@ -12,7 +12,7 @@ namespace HBMedia {
     
 static void EchoStatus(uint64_t status) {
 
-    bool bReadEnd = ((status & DECODE_STATE_READPKT_END) != 0 ? true : false);
+    bool bReadEnd = ((status & S_READ_PKT_END) != 0 ? true : false);
     bool bDecodeEnd = ((status & DECODE_STATE_DECODE_END) != 0 ? true : false);
     bool bReadAbort = ((status & DECODE_STATE_READPKT_ABORT) != 0 ? true : false);
     bool bDecodeAbort = ((status & DECODE_STATE_DECODE_ABORT) != 0 ? true : false);
@@ -46,7 +46,7 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
         }
         
         if (!(pDecoder->mState & DECODE_STATE_DECODE_ABORT) \
-            && !(pDecoder->mState & DECODE_STATE_READPKT_END))
+            && !(pDecoder->mState & S_READ_PKT_END))
         {
             av_init_packet(pNewPacket);
             HBError = av_read_frame(pDecoder->mPInMediaFormatCtx, pNewPacket);
@@ -55,7 +55,7 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                     LOGE("[Work task: <Decoder>] Read frame failed, Err:%s", av_err2str(HBError));
                     pDecoder->mState |= DECODE_STATE_READPKT_ABORT;
                 }
-                pDecoder->mState |= DECODE_STATE_READPKT_END;
+                pDecoder->mState |= S_READ_PKT_END;
                 av_packet_free(&pNewPacket);
                 pNewPacket = nullptr;
                 continue;
@@ -86,7 +86,7 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                 av_packet_free(&pNewPacket);
             
             if (!(pDecoder->mState & DECODE_STATE_FLUSH_MODE)) {
-                if (!(pDecoder->mState & DECODE_STATE_READPKT_END)) {
+                if (!(pDecoder->mState & S_READ_PKT_END)) {
                     LOGE("[Work task: <Decoder>] Flush decoder buffer, but the not reach the end of file !");
                 }
                 pDecoder->mState |= DECODE_STATE_FLUSH_MODE;

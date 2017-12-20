@@ -19,7 +19,7 @@ CSMediaBase::CSMediaBase() {
     mTrgMediaFile = nullptr;
     mTrgMediaFileHandle = nullptr;
     mPInMediaFormatCtx = nullptr;
-    mPOutVideoFormatCtx = nullptr;
+    mPOutMediaFormatCtx = nullptr;
     memset(&mState, 0x00, sizeof(mState));
     mAbort = false;
 }
@@ -74,9 +74,9 @@ int CSMediaBase::release() {
     if (mPInMediaFormatCtx) {
         avformat_close_input(&mPInMediaFormatCtx);
     }
-    if (mPOutVideoFormatCtx) {
-        avformat_free_context(mPOutVideoFormatCtx);
-        mPOutVideoFormatCtx = nullptr;
+    if (mPOutMediaFormatCtx) {
+        avformat_free_context(mPOutMediaFormatCtx);
+        mPOutMediaFormatCtx = nullptr;
     }
     if (mSrcMediaFileHandle) {
         fclose(mSrcMediaFileHandle);
@@ -101,8 +101,8 @@ int CSMediaBase::stop(){
         case MD_TYPE_RAW_BY_MEMORY:
             break;
         case MD_TYPE_COMPRESS:
-            avformat_free_context(mPOutVideoFormatCtx);
-            mPOutVideoFormatCtx = nullptr;
+            avformat_free_context(mPOutMediaFormatCtx);
+            mPOutMediaFormatCtx = nullptr;
             break;
         default:
             LOGE("Base media output media type:%s is not support !", getMediaDataTypeDescript(mOutMediaType));
@@ -143,7 +143,7 @@ int CSMediaBase::_OutMediaInitial() {
         case MD_TYPE_COMPRESS:
             {
                 int HBErr = HB_OK;
-                HBErr = avformat_alloc_output_context2(&mPOutVideoFormatCtx, NULL, NULL, mTrgMediaFile);
+                HBErr = avformat_alloc_output_context2(&mPOutMediaFormatCtx, NULL, NULL, mTrgMediaFile);
                 if (HBErr < 0) {
                     LOGE("Base media alloc output avformat ctx failed, %s", av_err2str(HBErr));
                     return HB_ERROR;

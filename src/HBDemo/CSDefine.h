@@ -20,8 +20,15 @@
 #define DECODE_WITH_MULTI_THREAD_MODE  0
 
 /** 解码模块 */
+#define S_ABORT                      0x0001
+#define S_FINISHED                   0x0002
+
+#define S_READ_PKT_END               0x0010
+
+#define S_DECODE_END                 0x0100
+#define S_DECODE_ABORT               0x0200
+
 #define DECODE_STATE_UNKNOWN         0x0000
-#define DECODE_STATE_READPKT_END     0x0001
 #define DECODE_STATE_DECODE_END      0x0002
 #define DECODE_STATE_READPKT_ABORT   0x0004
 #define DECODE_STATE_DECODE_ABORT    0x0008

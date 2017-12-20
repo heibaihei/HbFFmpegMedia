@@ -76,7 +76,7 @@ namespace HBMedia {
          *  媒体数据输出信息
          */
         MEDIA_DATA_TYPE  mOutMediaType;
-        AVFormatContext *mPOutVideoFormatCtx;
+        AVFormatContext *mPOutMediaFormatCtx;
         char            *mTrgMediaFile;
         FILE            *mTrgMediaFileHandle;
         

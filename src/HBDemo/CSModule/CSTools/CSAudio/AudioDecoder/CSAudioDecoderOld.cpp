@@ -167,7 +167,7 @@ int  CSAudioDecoder::readAudioPacket()
 {
     int HBError = HB_ERROR;
     
-    if ((mDecodeStateFlag & DECODE_STATE_READPKT_END) \
+    if ((mDecodeStateFlag & S_READ_PKT_END) \
         || (mDecodeStateFlag & DECODE_STATE_READPKT_ABORT)) {
         LOGW("Audio read packet finished !");
         return HB_ERROR;
@@ -188,7 +188,7 @@ int  CSAudioDecoder::readAudioPacket()
         else {
             switch (HBError) {
                 case AVERROR_EOF:
-                    mDecodeStateFlag |= DECODE_STATE_READPKT_END;
+                    mDecodeStateFlag |= S_READ_PKT_END;
                     break;
                     
                 default:
@@ -227,7 +227,7 @@ int  CSAudioDecoder::selectAudieoFrame()
         }
         else {
             /** 如果队列中没有包，则检查读包状态是否正常，并且进入排水模式 */
-            if ((mDecodeStateFlag & DECODE_STATE_READPKT_END) \
+            if ((mDecodeStateFlag & S_READ_PKT_END) \
                 || (mDecodeStateFlag & DECODE_STATE_READPKT_ABORT)) {
                 av_packet_free(&pNewPacket);
                 pNewPacket = NULL;
