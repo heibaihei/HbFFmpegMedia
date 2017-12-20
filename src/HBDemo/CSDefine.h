@@ -36,7 +36,6 @@
 #define S_ENCODE_ABORT               0x2000
 #define S_ENCODE_FLUSHING            0x4000
 
-
 #define CS_RECORD_AUDIO_BUFFER  (81920)
 
 #define SAFE_DELETE(p)           do { if(p) { delete (p); (p) = nullptr;} } while(0)

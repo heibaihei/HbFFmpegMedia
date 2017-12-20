@@ -17,20 +17,31 @@ int CSAudioDemo_AudioDecoder() {
 
     pAudioDecoder->prepare();
     pAudioDecoder->start();
-    AVFrame *pNewFrame = nullptr;
     
-    if (pAudioDecoder->getStatus() & S_PREPARED) {
-        while (!(pAudioDecoder->getStatus() & S_DECODE_END)) {
-            pNewFrame = nullptr;
-            if ((pAudioDecoder->receiveFrame(&pNewFrame) == HB_OK) && pNewFrame) {
-                if (pNewFrame->opaque)
-                    av_freep(pNewFrame->opaque);
-                av_frame_free(&pNewFrame);
-            }
-
-            usleep(10);
+    int HbErr = 0;
+    AVFrame *pNewFrame = nullptr;
+    while (true) {
+        pNewFrame = nullptr;
+        HbErr = pAudioDecoder->receiveFrame(&pNewFrame);
+        switch (HbErr) {
+            case 0:
+                {
+                    if (pNewFrame) {
+                        if (pNewFrame->opaque)
+                            av_freep(pNewFrame->opaque);
+                        av_frame_free(&pNewFrame);
+                    }
+                }
+                break;
+            case -2:
+            case -3:
+                goto RECEIVED_END_LABEL;
+            default:
+                break;
         }
     }
+
+RECEIVED_END_LABEL:
     pAudioDecoder->stop();
     pAudioDecoder->release();
     return HB_OK;

@@ -35,7 +35,7 @@ public:
     int condP();
     
     /** 等待资源出现可用 */
-    int WaitV();
+    int WaitR();
     
     /** 消费资源 */
     int condV();

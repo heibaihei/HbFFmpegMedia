@@ -43,6 +43,10 @@ public:
     /**
      *  取帧接口
      *  导出的帧都转换成： AV_TIME_BASE_Q 时间基 表示
+     *  @return 0 成功获取到帧;
+     *         -1 本次调用取帧失败;
+     *         -2 已经解码结束，无帧可取;
+     *         -3 当前模式不支持调用取帧;
      */
     virtual int receiveFrame(AVFrame **OutFrame);
     

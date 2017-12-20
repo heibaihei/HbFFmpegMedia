@@ -32,7 +32,7 @@ int ThreadIPCContext::condP() {
     return HB_OK;
 }
 
-int ThreadIPCContext::WaitV() {
+int ThreadIPCContext::WaitR() {
     pthread_mutex_lock(&condMux);
     if (condCnt <= 0) {
         pthread_cond_wait(&cond, &condMux);

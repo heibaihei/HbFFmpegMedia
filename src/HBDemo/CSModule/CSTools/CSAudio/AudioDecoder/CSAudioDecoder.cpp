@@ -216,49 +216,39 @@ int CSAudioDecoder::release() {
 
 int CSAudioDecoder::receiveFrame(AVFrame **OutFrame) {
     int HBError = HB_ERROR;
-#if 0
-    int HBError = HB_ERROR;
     if (!OutFrame) {
-        mState |= S_READ_PKT_END;
-        LOGI("Video Encoder >>> Send frame end !");
-        return HB_OK;
+        LOGE("Audio Decoder >>> invalid params !");
+        return HB_ERROR;
     }
     
-    if (!(mState & S_PREPARED) || mInMediaType != MD_TYPE_RAW_BY_MEMORY) {
-        LOGE("Video Encoder >>> Send raw frame failed, invalid output media type !");
-        return HBError;
+    *OutFrame = nullptr;
+    if (!(mState & S_PREPARED) || mOutMediaType != MD_TYPE_RAW_BY_MEMORY) {
+        LOGE("Audio Decoder >>> receive raw frame failed, invalid output media type !");
+        return -3;
     }
     
-    if (!(*pSrcFrame)) {
-        LOGE("Video Encoder >>> Invalid frame, send failed !");
-        return HBError;
+RETRY_RECEIVE_FRAME:
+    AVFrame *pNewFrame = nullptr;
+    if (S_EQ(mState, S_DECODE_END) && (mTargetFrameQueue->queueLength() <= 0)) {
+        mState |= S_FINISHED;
+        HBError = -2;
+        LOGI("Audio Decoder >>> Finish receive all valid frames !");
     }
-    
-RETRY_SEND_FRAME:
-    HBError = HB_ERROR;
-    if (mSrcFrameQueue \
-        && S_NOT_EQ(mState, S_ENCODE_ABORT) \
-        && S_NOT_EQ(mState, S_DECODE_FLUSHING))
-    {
-        mEmptyFrameQueueIPC->condV();
-        if (mSrcFrameQueue->queueLeft() > 0) {
-            
-            //            int64_t tSrcFramePts = av_rescale_q((*pSrcFrame)->pts, \
-            //                                                AV_TIME_BASE_Q, mPOutVideoFormatCtx->streams[mVideoStreamIndex]->time_base);
-            //
-            //            LOGD("Video Encoder >>> Send frame, OriginalPts<%lld, %lf> !", \
-            (*pSrcFrame)->pts, ((*pSrcFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
-            
-            if (mSrcFrameQueue->push(*pSrcFrame) > 0) {
-                HBError = HB_OK;
-                mSrcFrameQueueIPC->condP();
-            }
+    else {
+        mTargetFrameQueueIPC->condV();
+        if (mTargetFrameQueue->queueLength() <= 0)
+            goto RETRY_RECEIVE_FRAME;
+        
+        if (!(pNewFrame = mTargetFrameQueue->get())) {
+            HBError = -1;
+            LOGE("Audio Decoder >>> Get audio frame failed !");
         }
         else {
-            goto RETRY_SEND_FRAME;
+            mEmptyFrameQueueIPC->condP();
         }
     }
-#endif
+    
+    *OutFrame = pNewFrame;
     return HBError;
 }
 
