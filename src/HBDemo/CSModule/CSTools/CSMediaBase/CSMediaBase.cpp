@@ -172,4 +172,12 @@ void CSMediaBase::setOutMediaFile(char *file) {
     mTrgMediaFile = av_strdup(file);
 }
 
+void CSMediaBase::setInAudioMediaParams(AudioParams& pParams) {
+    mSrcAudioParams = pParams;
+}
+
+void CSMediaBase::setOutAudioMediaParams(AudioParams& pParams) {
+    mTargetAudioParams = pParams;
+}
+
 }

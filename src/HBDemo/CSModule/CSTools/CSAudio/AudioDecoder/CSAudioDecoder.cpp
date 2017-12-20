@@ -115,7 +115,7 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
                 /** 验证是否需要拷贝部分数据 */
             }
             
-            if (pAudioDecoder->_DoExport(pOutFrame) != HB_OK) {
+            if (pAudioDecoder->_DoExport(&pOutFrame) != HB_OK) {
                 if (pOutFrame->opaque)
                     av_freep(pOutFrame->opaque);
                 av_frame_free(&pOutFrame);
@@ -359,7 +359,7 @@ int CSAudioDecoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
     
     int HBError = HB_OK;
     AVFrame* pTargetFrame = av_frame_alloc();
-    if (!(*pOutFrame)) {
+    if (!pTargetFrame) {
         LOGE("Audio resample malloc audio output frame failed !");
         return HB_ERROR;
     }
@@ -372,7 +372,7 @@ int CSAudioDecoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
                            mTargetAudioParams.channels,
                            pTargetFrame->nb_samples,
                            getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt), 0);
-    if (HBError >= 0) {
+    if (HBError < 0) {
         LOGE("Audio resample malloc output samples buffer failed !");
         return HB_ERROR;
     }
@@ -404,11 +404,13 @@ int CSAudioDecoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
     return HB_OK;
 }
 
-int CSAudioDecoder::_DoExport(AVFrame *pOutFrame) {
+int CSAudioDecoder::_DoExport(AVFrame **pOutFrame) {
     if (!pOutFrame) {
         LOGE("Audio decoder export with invalid params !");
         return HB_ERROR;
     }
+    
+    AVFrame *pNewFrame = *pOutFrame;
     
     switch (mOutMediaType) {
         case MD_TYPE_RAW_BY_MEMORY:
@@ -416,28 +418,26 @@ int CSAudioDecoder::_DoExport(AVFrame *pOutFrame) {
             if (mTargetFrameQueue) {
                 /** 阻塞等待空间帧缓冲区存在可用资源 */
                 mEmptyFrameQueueIPC->condV();
-//                {
-//                    /** 重新计算时间 */
-//                    (*pOutFrame)->pts = (int64_t)av_rescale_q((*pOutFrame)->pts, \
-//                                                              mPInMediaFormatCtx->streams[mVideoStreamIndex]->time_base, AV_TIME_BASE_Q);
-//                }
-                if (mTargetFrameQueue->push(pOutFrame) > 0) {
-                    //                    LOGD("[Work task: <Decoder>] Push frame:%lld, %lf !", (*pOutFrame)->pts, ((*pOutFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
+                {
+                    /** 重新计算时间 */
+                    pNewFrame->pts = (int64_t)av_rescale_q(pNewFrame->pts, \
+                                                              mPInMediaFormatCtx->streams[mAudioStreamIndex]->time_base, AV_TIME_BASE_Q);
+                }
+                if (mTargetFrameQueue->push(pNewFrame) > 0) {
+                    LOGD("[Work task: <Decoder>] Push frame:%lld, %lf !", pNewFrame->pts, (pNewFrame->pts * av_q2d(AV_TIME_BASE_Q)));
                     mTargetFrameQueueIPC->condP();
                 }
                 else {/** push 帧失败 */
                     LOGE("[Work task: <Decoder>] Push frame to queue failed !");
                     mEmptyFrameQueueIPC->condP();
-                    if (pOutFrame->opaque)
-                        av_freep(pOutFrame->opaque);
-                    av_frame_free(&pOutFrame);
+                    if (pNewFrame->opaque)
+                        av_freep(pNewFrame->opaque);
+                    av_frame_free(&pNewFrame);
+                    *pOutFrame = nullptr;
                 }
             }
             else {
                 LOGE("[Work task: <Decoder>] Frame buffer queue is invalid !");
-                if (pOutFrame->opaque)
-                    av_freep(pOutFrame->opaque);
-                av_frame_free(&pOutFrame);
                 break;
             }
             

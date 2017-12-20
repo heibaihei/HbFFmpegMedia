@@ -57,6 +57,11 @@ namespace HBMedia {
         void setOutMediaFile(char *file);
         char *getOutMediaFile() { return mTrgMediaFile; }
 
+        void setInAudioMediaParams(AudioParams& pParams);
+        AudioParams *getInAudioMediaParams() { return &mSrcAudioParams; }
+        
+        void setOutAudioMediaParams(AudioParams& pParams);
+        AudioParams *getOutAudioMediaParams() { return &mTargetAudioParams; }
     protected:
         int _InMediaInitial();
 
