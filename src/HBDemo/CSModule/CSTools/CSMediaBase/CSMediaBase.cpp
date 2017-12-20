@@ -21,6 +21,8 @@ CSMediaBase::CSMediaBase() {
     mPInMediaFormatCtx = nullptr;
     mPOutMediaFormatCtx = nullptr;
     memset(&mState, 0x00, sizeof(mState));
+    audioParamInit(&mSrcAudioParams);
+    audioParamInit(&mTargetAudioParams);
     mAbort = false;
 }
 

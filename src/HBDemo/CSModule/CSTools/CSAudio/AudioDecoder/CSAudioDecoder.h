@@ -75,13 +75,11 @@ protected:
     int  _DoResample(AVFrame *pInFrame, AVFrame **pOutFrame);
     
     /** 导出的帧都转换成： AV_TIME_BASE_Q 时间基 表示 */
-    int  _DoExport(AVFrame **pOutFrame);
+    int  _DoExport(AVFrame *pOutFrame);
 
     int  _mediaParamInitial();
     
     int mAudioStreamIndex;
-    AudioParams mTargetAudioParams;
-    AudioParams mSrcAudioParams;
     
     AVCodecContext* mPInputAudioCodecCtx;
     AVCodec* mPInputAudioCodec;

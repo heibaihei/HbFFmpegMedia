@@ -71,7 +71,8 @@ namespace HBMedia {
         AVFormatContext *mPInMediaFormatCtx;
         char            *mSrcMediaFile;
         FILE            *mSrcMediaFileHandle;
-
+        AudioParams      mSrcAudioParams;
+        
         /**
          *  媒体数据输出信息
          */
@@ -79,6 +80,7 @@ namespace HBMedia {
         AVFormatContext *mPOutMediaFormatCtx;
         char            *mTrgMediaFile;
         FILE            *mTrgMediaFileHandle;
+        AudioParams      mTargetAudioParams;
         
         bool    mAbort;
         /** 解码器状态 */
