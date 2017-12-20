@@ -19,12 +19,8 @@ int CSAudioDemo_AudioDecoder() {
     pAudioDecoder->start();
     AVFrame *pNewFrame = nullptr;
     
-    while (true) {
-        usleep(20);
-    }
-    
-    if (pAudioDecoder->getStatus() & DECODE_STATE_PREPARED) {
-        while (!(pAudioDecoder->getStatus() & DECODE_STATE_DECODE_END)) {
+    if (pAudioDecoder->getStatus() & S_PREPARED) {
+        while (!(pAudioDecoder->getStatus() & S_DECODE_END)) {
             pNewFrame = nullptr;
             if ((pAudioDecoder->receiveFrame(&pNewFrame) == HB_OK) && pNewFrame) {
                 if (pNewFrame->opaque)

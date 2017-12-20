@@ -65,4 +65,7 @@ char* getImagePixFmtDescript(IMAGE_PIX_FORMAT dataType);
  *  获取媒体类型的描述信息
  */
 char* getMediaDataTypeDescript(MEDIA_DATA_TYPE dataType);
+
+/** 输出当前状态信息 */
+void EchoStatus(uint64_t status);
 #endif

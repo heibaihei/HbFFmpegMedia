@@ -168,7 +168,7 @@ int  CSAudioDecoder::readAudioPacket()
     int HBError = HB_ERROR;
     
     if ((mDecodeStateFlag & S_READ_PKT_END) \
-        || (mDecodeStateFlag & DECODE_STATE_READPKT_ABORT)) {
+        || (mDecodeStateFlag & S_READ_PKT_ABORT)) {
         LOGW("Audio read packet finished !");
         return HB_ERROR;
     }
@@ -192,7 +192,7 @@ int  CSAudioDecoder::readAudioPacket()
                     break;
                     
                 default:
-                    mDecodeStateFlag |= DECODE_STATE_READPKT_ABORT;
+                    mDecodeStateFlag |= S_READ_PKT_ABORT;
                     break;
             }
             goto READ_PKT_END_LABEL;
@@ -211,8 +211,8 @@ int  CSAudioDecoder::selectAudieoFrame()
     
     while (true) {
         
-        if ((mDecodeStateFlag & DECODE_STATE_FLUSH_MODE) || (mDecodeStateFlag & DECODE_STATE_DECODE_END) \
-            || (mDecodeStateFlag & DECODE_STATE_DECODE_ABORT)){
+        if ((mDecodeStateFlag & S_FLUSH) || (mDecodeStateFlag & S_DECODE_END) \
+            || (mDecodeStateFlag & S_DECODE_ABORT)){
             /** 音频解码模块状态检测 */
             break;
         }
@@ -228,11 +228,11 @@ int  CSAudioDecoder::selectAudieoFrame()
         else {
             /** 如果队列中没有包，则检查读包状态是否正常，并且进入排水模式 */
             if ((mDecodeStateFlag & S_READ_PKT_END) \
-                || (mDecodeStateFlag & DECODE_STATE_READPKT_ABORT)) {
+                || (mDecodeStateFlag & S_READ_PKT_ABORT)) {
                 av_packet_free(&pNewPacket);
                 pNewPacket = NULL;
                 /** 设置标识解码器已经进入排水模式 */
-                mDecodeStateFlag |= DECODE_STATE_FLUSH_MODE;
+                mDecodeStateFlag |= S_FLUSH;
             }
             else {
 #if DECODE_WITH_MULTI_THREAD_MODE
@@ -262,7 +262,7 @@ int  CSAudioDecoder::selectAudieoFrame()
                     break;
                 else {
                     /** avcodec_receive_frame 过程底层发生异常 */
-                    mDecodeStateFlag |= DECODE_STATE_DECODE_ABORT;
+                    mDecodeStateFlag |= S_DECODE_ABORT;
                 }
                 
                 av_frame_unref(pNewFrame);
@@ -270,7 +270,7 @@ int  CSAudioDecoder::selectAudieoFrame()
         }
         else if (HBError != AVERROR(EAGAIN)) {
             /** avcodec_send_packet 过程底层发生异常 */
-            mDecodeStateFlag |= DECODE_STATE_DECODE_ABORT;
+            mDecodeStateFlag |= S_DECODE_ABORT;
         }
         
         av_packet_unref(pNewPacket);

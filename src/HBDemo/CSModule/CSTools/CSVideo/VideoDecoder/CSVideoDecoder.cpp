@@ -9,17 +9,6 @@
 #include "CSVideoDecoder.h"
 
 namespace HBMedia {
-    
-static void EchoStatus(uint64_t status) {
-
-    bool bReadEnd = ((status & S_READ_PKT_END) != 0 ? true : false);
-    bool bDecodeEnd = ((status & DECODE_STATE_DECODE_END) != 0 ? true : false);
-    bool bReadAbort = ((status & DECODE_STATE_READPKT_ABORT) != 0 ? true : false);
-    bool bDecodeAbort = ((status & DECODE_STATE_DECODE_ABORT) != 0 ? true : false);
-    bool bFlushMode = ((status & DECODE_STATE_FLUSH_MODE) != 0 ? true : false);
-    
-    LOGI("[Work task: <Decoder>] Status: Read<End:%d, Abort:%d> | <Flush:%d> | Decode<End:%d, Abort:%d>", bReadEnd, bReadAbort, bFlushMode, bDecodeEnd, bDecodeAbort);
-}
 
 int CSVideoDecoder::S_MAX_BUFFER_CACHE = 8;
 void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
@@ -35,17 +24,17 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
     AVPacket *pNewPacket = av_packet_alloc();
     AVFrame  *pNewFrame = av_frame_alloc();
     AVFrame *pTargetFrame = nullptr;
-    while (!(pDecoder->mState & DECODE_STATE_DECODE_END)) {
+    while (!(pDecoder->mState & S_DECODE_END)) {
         /** 初始化区域 */
         pTargetFrame = nullptr;
         
         if (pDecoder->mAbort) {
-            pDecoder->mState |= (DECODE_STATE_DECODE_ABORT | DECODE_STATE_DECODE_END);
+            pDecoder->mState |= (S_DECODE_ABORT | S_DECODE_END);
             LOGE("[Work task: <Decoder>] Abort decoder process !");
             break;
         }
         
-        if (!(pDecoder->mState & DECODE_STATE_DECODE_ABORT) \
+        if (!(pDecoder->mState & S_DECODE_ABORT) \
             && !(pDecoder->mState & S_READ_PKT_END))
         {
             av_init_packet(pNewPacket);
@@ -53,7 +42,7 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
             if (HBError != 0) {
                 if (HBError != AVERROR_EOF) {
                     LOGE("[Work task: <Decoder>] Read frame failed, Err:%s", av_err2str(HBError));
-                    pDecoder->mState |= DECODE_STATE_READPKT_ABORT;
+                    pDecoder->mState |= S_READ_PKT_ABORT;
                 }
                 pDecoder->mState |= S_READ_PKT_END;
                 av_packet_free(&pNewPacket);
@@ -72,8 +61,8 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                 if (HBError != 0) {
                     if (HBError != AVERROR(EAGAIN)) {
                         LOGE("[Work task: <Decoder>] Send packet failed, Err:%s", av_err2str(HBError));
-                        pDecoder->mState |= DECODE_STATE_DECODE_ABORT;
-                        pDecoder->mState |= DECODE_STATE_DECODE_END;
+                        pDecoder->mState |= S_DECODE_ABORT;
+                        pDecoder->mState |= S_DECODE_END;
                     }
                     else
                         LOGE("[Work task: <Decoder>] Send packet require eagain, desc:%s", av_err2str(HBError));
@@ -85,11 +74,11 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
             if (pNewPacket)
                 av_packet_free(&pNewPacket);
             
-            if (!(pDecoder->mState & DECODE_STATE_FLUSH_MODE)) {
+            if (!(pDecoder->mState & S_FLUSH)) {
                 if (!(pDecoder->mState & S_READ_PKT_END)) {
                     LOGE("[Work task: <Decoder>] Flush decoder buffer, but the not reach the end of file !");
                 }
-                pDecoder->mState |= DECODE_STATE_FLUSH_MODE;
+                pDecoder->mState |= S_FLUSH;
                 avcodec_send_packet(pDecoder->mPInputVideoCodecCtx, nullptr);
                 continue;
             }
@@ -101,12 +90,12 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                 if (HBError != AVERROR(EAGAIN)) {
                     if (HBError != AVERROR_EOF) {
                         LOGE("[Work task: <Decoder>] Receive frame, desc:%s", av_err2str(HBError));
-                        pDecoder->mState |= DECODE_STATE_DECODE_ABORT;
+                        pDecoder->mState |= S_DECODE_ABORT;
                     }
                     av_frame_unref(pNewFrame);
                 }
-                if (pDecoder->mState & DECODE_STATE_FLUSH_MODE)
-                    pDecoder->mState |= DECODE_STATE_DECODE_END;
+                if (pDecoder->mState & S_FLUSH)
+                    pDecoder->mState |= S_DECODE_END;
                 break;
             }
             
@@ -266,7 +255,7 @@ int CSVideoDecoder::prepare() {
         goto VIDEO_DECODER_PREPARE_END_LABEL;
     }
     
-    mState |= DECODE_STATE_PREPARED;
+    mState |= S_PREPARED;
     return HB_OK;
     
 VIDEO_DECODER_PREPARE_END_LABEL:
@@ -275,7 +264,7 @@ VIDEO_DECODER_PREPARE_END_LABEL:
 }
     
 int CSVideoDecoder::start() {
-    if (!(mState & DECODE_STATE_PREPARED)) {
+    if (!(mState & S_PREPARED)) {
         LOGE("Media decoder is not prepared !");
         return HB_ERROR;
     }
@@ -293,7 +282,7 @@ int CSVideoDecoder::start() {
 }
     
 int CSVideoDecoder::stop() {
-    if (!(mState & DECODE_STATE_DECODE_END)) {
+    if (!(mState & S_DECODE_END)) {
         mAbort = true;
     }
     mDecodeThreadCtx.join();
@@ -321,7 +310,7 @@ int CSVideoDecoder::stop() {
 }
 
 int CSVideoDecoder::syncWait() {
-    while (!(mState & DECODE_STATE_DECODE_END)) {
+    while (!(mState & S_DECODE_END)) {
         usleep(100);
     }
     stop();
@@ -381,7 +370,7 @@ int CSVideoDecoder::receiveFrame(AVFrame **OutFrame) {
         return HBError;
     }
     *OutFrame = nullptr;
-    if (!(mState & DECODE_STATE_PREPARED) || mOutMediaType != MD_TYPE_RAW_BY_MEMORY) {
+    if (!(mState & S_PREPARED) || mOutMediaType != MD_TYPE_RAW_BY_MEMORY) {
         LOGE("Video Decoder >>> receive raw frame failed, invalid output media type !");
         return HBError;
     }

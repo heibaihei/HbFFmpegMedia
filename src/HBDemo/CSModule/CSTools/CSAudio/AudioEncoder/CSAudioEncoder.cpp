@@ -104,7 +104,7 @@ int  CSAudioEncoder::audioEncoderOpen()
 
 int CSAudioEncoder::getPcmData(uint8_t** pData, int* dataSizes) {
     
-    if ((mEncodeStateFlag & ENCODE_STATE_READ_DATA_END) || !pData || dataSizes) {
+    if ((mEncodeStateFlag & S_READ_PKT_END) || !pData || dataSizes) {
         LOGE("Audio encoder get pcm data failed !");
         return HB_ERROR;
     }
@@ -118,7 +118,7 @@ int CSAudioEncoder::getPcmData(uint8_t** pData, int* dataSizes) {
     *dataSizes = (int)fread(*pData, 1, mPerFrameBufferSizes, mInputAudioMediaFileHandle);
     if (*dataSizes <= 0) {
         LOGF("Read audio media abort !\n");
-        mEncodeStateFlag |= ENCODE_STATE_READ_DATA_END;
+        mEncodeStateFlag |= S_READ_PKT_END;
     }
     return HB_OK;
 }
@@ -153,13 +153,13 @@ int CSAudioEncoder::selectAudioFrame()
     av_init_packet(&newPacket);
     
     while (true) {
-        if ((mEncodeStateFlag & ENCODE_STATE_FLUSH_MODE) || (mEncodeStateFlag & ENCODE_STATE_ENCODE_END) \
-            || (mEncodeStateFlag & ENCODE_STATE_ENCODE_ABORT)){
+        if ((mEncodeStateFlag & S_FLUSH) || (mEncodeStateFlag & S_ENCODE_END) \
+            || (mEncodeStateFlag & S_ENCODE_ABORT)){
             /** 音频解码模块状态检测 */
             break;
         }
         
-        if ((av_audio_fifo_size(mAudioFifo) >= mPOutputAudioCodecCtx->frame_size) || ((mEncodeStateFlag & ENCODE_STATE_READ_DATA_END) && (av_audio_fifo_size(mAudioFifo) > 0))) {
+        if ((av_audio_fifo_size(mAudioFifo) >= mPOutputAudioCodecCtx->frame_size) || ((mEncodeStateFlag & S_READ_PKT_END) && (av_audio_fifo_size(mAudioFifo) > 0))) {
             
             HbError = _initialOutputFrame(&pNewFrame, &mTargetAudioParams, mPOutputAudioCodecCtx->frame_size);
             if (HbError != HB_OK) {
@@ -177,10 +177,10 @@ int CSAudioEncoder::selectAudioFrame()
             pNewFrame->pts = mLastAudioFramePts;
             
         }
-        else if ((mEncodeStateFlag & ENCODE_STATE_READ_DATA_END) \
-            || (mEncodeStateFlag & ENCODE_STATE_READ_DATA_ABORT)) {
+        else if ((mEncodeStateFlag & S_READ_PKT_END) \
+            || (mEncodeStateFlag & S_READ_PKT_ABORT)) {
             pNewFrame = nullptr;
-            mEncodeStateFlag |= ENCODE_STATE_FLUSH_MODE;
+            mEncodeStateFlag |= S_FLUSH;
         }
         else
             goto AUDIO_ENCODE_END_LABEL;
@@ -206,9 +206,9 @@ int CSAudioEncoder::selectAudioFrame()
             }
             else {
                 if (HbError<0 && HbError!=AVERROR_EOF)
-                    mEncodeStateFlag |= ENCODE_STATE_ENCODE_ABORT;
+                    mEncodeStateFlag |= S_ENCODE_ABORT;
                 else if (HbError == AVERROR_EOF && !pNewFrame)
-                    mEncodeStateFlag |= ENCODE_STATE_ENCODE_END;
+                    mEncodeStateFlag |= S_ENCODE_END;
                 break;
             }
         }

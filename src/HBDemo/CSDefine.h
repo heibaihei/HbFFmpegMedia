@@ -20,28 +20,20 @@
 #define DECODE_WITH_MULTI_THREAD_MODE  0
 
 /** 解码模块 */
-#define S_ABORT                      0x0001
-#define S_FINISHED                   0x0002
+#define S_UNKNOWN                    0x0000
+#define S_FINISHED                   0x0001
+#define S_ABORT                      0x0002
+#define S_PREPARED                   0x0004
+#define S_FLUSH                      0x0008
 
 #define S_READ_PKT_END               0x0010
+#define S_READ_PKT_ABORT             0x0020
 
 #define S_DECODE_END                 0x0100
 #define S_DECODE_ABORT               0x0200
 
-#define DECODE_STATE_UNKNOWN         0x0000
-#define DECODE_STATE_DECODE_END      0x0002
-#define DECODE_STATE_READPKT_ABORT   0x0004
-#define DECODE_STATE_DECODE_ABORT    0x0008
-#define DECODE_STATE_FLUSH_MODE      0x0010
-#define DECODE_STATE_PREPARED        0x0020
-
-#define ENCODE_STATE_UNKNOWN         0x0000
-#define ENCODE_STATE_READPKT_END     0x0001
-#define ENCODE_STATE_ENCODE_END      0x0002
-#define ENCODE_STATE_READPKT_ABORT   0x0004
-#define ENCODE_STATE_ENCODE_ABORT    0x0008
-#define ENCODE_STATE_FLUSH_MODE      0x0010
-#define ENCODE_STATE_PREPARED        0x0020
+#define S_ENCODE_END                 0x1000
+#define S_ENCODE_ABORT               0x2000
 
 
 #define CS_RECORD_AUDIO_BUFFER  (81920)

@@ -39,8 +39,8 @@ int CSVideoDemo_VideoAnalysis() {
         pVideoAnalysiser->prepare();
         pVideoAnalysiser->start();
         AVFrame *pNewFrame = nullptr;
-        if (pVideoAnalysiser->getStatus() & DECODE_STATE_PREPARED) {
-            while (!(pVideoAnalysiser->getStatus() & DECODE_STATE_DECODE_END)) {
+        if (pVideoAnalysiser->getStatus() & S_PREPARED) {
+            while (!(pVideoAnalysiser->getStatus() & S_DECODE_END)) {
                 pNewFrame = nullptr;
                 if ((pVideoAnalysiser->receiveFrame(&pNewFrame) == HB_OK) && pNewFrame) {
                     
@@ -89,8 +89,8 @@ int CSVideoDemo_VideoEncoder() {
             pVideoDecoder->prepare();
             pVideoDecoder->start();
             AVFrame *pNewFrame = nullptr;
-            if (pVideoDecoder->getStatus() & DECODE_STATE_PREPARED) {
-                while (!(pVideoDecoder->getStatus() & DECODE_STATE_DECODE_END)) {
+            if (pVideoDecoder->getStatus() & S_PREPARED) {
+                while (!(pVideoDecoder->getStatus() & S_DECODE_END)) {
                     pNewFrame = nullptr;
                     if ((pVideoDecoder->receiveFrame(&pNewFrame) == HB_OK) && pNewFrame) {
                         pVideoEncoder->sendFrame(&pNewFrame);
@@ -133,8 +133,8 @@ int CSVideoDemo_VideoDecoder() {
         pVideoDecoder->prepare();
         pVideoDecoder->start();
         AVFrame *pNewFrame = nullptr;
-        if (pVideoDecoder->getStatus() & DECODE_STATE_PREPARED) {
-            while (!(pVideoDecoder->getStatus() & DECODE_STATE_DECODE_END)) {
+        if (pVideoDecoder->getStatus() & S_PREPARED) {
+            while (!(pVideoDecoder->getStatus() & S_DECODE_END)) {
                 pNewFrame = nullptr;
                 if ((pVideoDecoder->receiveFrame(&pNewFrame) == HB_OK) && pNewFrame) {
                     if (pNewFrame->opaque)

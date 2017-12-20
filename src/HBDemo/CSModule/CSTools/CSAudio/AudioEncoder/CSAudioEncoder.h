@@ -16,12 +16,6 @@
 #include "CSAudio.h"
 
 namespace HBMedia {
-    
-#define ENCODE_STATE_READ_DATA_END     0X0001
-#define ENCODE_STATE_ENCODE_END        0X0002
-#define ENCODE_STATE_READ_DATA_ABORT   0X0004
-#define ENCODE_STATE_ENCODE_ABORT      0X0008
-#define ENCODE_STATE_FLUSH_MODE        0X0010
 
 typedef class CSAudioEncoder
 {

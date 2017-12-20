@@ -11,16 +11,6 @@
 namespace HBMedia {
 
 #define CS_SWR_CH_MAX  (64)
-    
-static void EchoStatus(uint64_t status) {
-    bool bReadEnd = ((status & S_READ_PKT_END) != 0 ? true : false);
-    bool bDecodeEnd = ((status & DECODE_STATE_DECODE_END) != 0 ? true : false);
-    bool bReadAbort = ((status & DECODE_STATE_READPKT_ABORT) != 0 ? true : false);
-    bool bDecodeAbort = ((status & DECODE_STATE_DECODE_ABORT) != 0 ? true : false);
-    bool bFlushMode = ((status & DECODE_STATE_FLUSH_MODE) != 0 ? true : false);
-    
-    LOGI("[Work task: <Decoder>] Status: Read<End:%d, Abort:%d> | <Flush:%d> | Decode<End:%d, Abort:%d>", bReadEnd, bReadAbort, bFlushMode, bDecodeEnd, bDecodeAbort);
-}
 
 int CSAudioDecoder::S_MAX_BUFFER_CACHE = 8;
 void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
@@ -129,7 +119,7 @@ DECODE_THREAD_EXIT_LABEL:
         av_packet_free(&pNewPacket);
     
     pAudioDecoder->_flush();
-    pAudioDecoder->mState |= DECODE_STATE_DECODE_END;
+    pAudioDecoder->mState |= S_DECODE_END;
     
     if (HBError != HB_OK) {
         pAudioDecoder->release();
@@ -188,7 +178,7 @@ int CSAudioDecoder::prepare() {
         goto AUDIO_DECODER_PREPARE_END_LABEL;
     }
     
-    mState |= DECODE_STATE_PREPARED;
+    mState |= S_PREPARED;
     return HB_OK;
     
 AUDIO_DECODER_PREPARE_END_LABEL:
@@ -198,7 +188,7 @@ AUDIO_DECODER_PREPARE_END_LABEL:
 
 int CSAudioDecoder::start() {
     
-    if (!(mState & DECODE_STATE_PREPARED)) {
+    if (!(mState & S_PREPARED)) {
         LOGE("Media decoder is not prepared !");
         return HB_ERROR;
     }
@@ -225,7 +215,51 @@ int CSAudioDecoder::release() {
 }
 
 int CSAudioDecoder::receiveFrame(AVFrame **OutFrame) {
-    return HB_OK;
+    int HBError = HB_ERROR;
+#if 0
+    int HBError = HB_ERROR;
+    if (!OutFrame) {
+        mState |= S_READ_PKT_END;
+        LOGI("Video Encoder >>> Send frame end !");
+        return HB_OK;
+    }
+    
+    if (!(mState & S_PREPARED) || mInMediaType != MD_TYPE_RAW_BY_MEMORY) {
+        LOGE("Video Encoder >>> Send raw frame failed, invalid output media type !");
+        return HBError;
+    }
+    
+    if (!(*pSrcFrame)) {
+        LOGE("Video Encoder >>> Invalid frame, send failed !");
+        return HBError;
+    }
+    
+RETRY_SEND_FRAME:
+    HBError = HB_ERROR;
+    if (mSrcFrameQueue \
+        && S_NOT_EQ(mState, S_ENCODE_ABORT) \
+        && S_NOT_EQ(mState, S_FLUSH))
+    {
+        mEmptyFrameQueueIPC->condV();
+        if (mSrcFrameQueue->queueLeft() > 0) {
+            
+            //            int64_t tSrcFramePts = av_rescale_q((*pSrcFrame)->pts, \
+            //                                                AV_TIME_BASE_Q, mPOutVideoFormatCtx->streams[mVideoStreamIndex]->time_base);
+            //
+            //            LOGD("Video Encoder >>> Send frame, OriginalPts<%lld, %lf> !", \
+            (*pSrcFrame)->pts, ((*pSrcFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
+            
+            if (mSrcFrameQueue->push(*pSrcFrame) > 0) {
+                HBError = HB_OK;
+                mSrcFrameQueueIPC->condP();
+            }
+        }
+        else {
+            goto RETRY_SEND_FRAME;
+        }
+    }
+#endif
+    return HBError;
 }
 
 int CSAudioDecoder::syncWait() {
@@ -323,6 +357,8 @@ int CSAudioDecoder::_ExportInitial() {
         mTargetAudioParams.sample_rate = mSrcAudioParams.sample_rate;
     if (getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt) == AV_SAMPLE_FMT_NONE)
         mTargetAudioParams.pri_sample_fmt = mSrcAudioParams.pri_sample_fmt;
+    if (mTargetAudioParams.frame_size == 0)
+        mTargetAudioParams.frame_size = mSrcAudioParams.frame_size;
 //    mSrcAudioParams.mbitRate = mPInputAudioCodecCtx->bit_rate;
     
     return HB_OK;
