@@ -131,8 +131,6 @@ VIDEO_ENCODER_THREAD_END_LABEL:
 
 CSVideoEncoder::CSVideoEncoder() {
     memset(&mState, 0x00, sizeof(mState));
-    imageParamInit(&mSrcVideoParams);
-    imageParamInit(&mTargetVideoParams);
     
     mVideoStreamIndex = INVALID_STREAM_INDEX;
     

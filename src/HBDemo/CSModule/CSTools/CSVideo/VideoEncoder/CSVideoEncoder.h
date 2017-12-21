@@ -78,8 +78,6 @@ private:
 
 private:
     int mVideoStreamIndex;
-    ImageParams mTargetVideoParams;
-    ImageParams mSrcVideoParams;
     
     SwsContext *mPVideoConvertCtx;
     

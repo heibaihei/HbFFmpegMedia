@@ -77,6 +77,7 @@ namespace HBMedia {
         char            *mSrcMediaFile;
         FILE            *mSrcMediaFileHandle;
         AudioParams      mSrcAudioParams;
+        ImageParams      mSrcVideoParams;
         
         /**
          *  媒体数据输出信息
@@ -86,6 +87,7 @@ namespace HBMedia {
         char            *mTrgMediaFile;
         FILE            *mTrgMediaFileHandle;
         AudioParams      mTargetAudioParams;
+        ImageParams      mTargetVideoParams;
         
         bool    mAbort;
         /** 解码器状态 */

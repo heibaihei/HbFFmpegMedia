@@ -75,8 +75,6 @@ protected:
     int  _mediaParamInitial();
     
     int mVideoStreamIndex;
-    ImageParams mTargetVideoParams;
-    ImageParams mSrcVideoParams;
     
     AVCodecContext* mPInputVideoCodecCtx;
     AVCodec* mPInputVideoCodec;

@@ -23,6 +23,8 @@ CSMediaBase::CSMediaBase() {
     memset(&mState, 0x00, sizeof(mState));
     audioParamInit(&mSrcAudioParams);
     audioParamInit(&mTargetAudioParams);
+    imageParamInit(&mSrcVideoParams);
+    imageParamInit(&mTargetVideoParams);
     mAbort = false;
 }
 
