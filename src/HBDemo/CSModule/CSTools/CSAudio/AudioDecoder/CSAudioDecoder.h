@@ -34,10 +34,19 @@ public:
      */
     virtual int prepare();
     
+    /**
+     *  启动解码
+     */
     virtual int start();
     
+    /**
+     *  关闭解码
+     */
     virtual int stop();
     
+    /**
+     *  释放内部资源
+     */
     virtual int release();
     
     /**
@@ -56,6 +65,9 @@ public:
     virtual int syncWait();
 
 protected:
+    /**
+     *  解码函数入口
+     */
     static void* ThreadFunc_Audio_Decoder(void *arg);
     
     /**
@@ -67,7 +79,15 @@ protected:
      *  解码器初始化、启动、关闭、释放
      */
     int  _DecoderInitial();
+    
+    /**
+     *  输出初始化
+     */
     int  _ExportInitial();
+    
+    /**
+     *  重采样初始化
+     */
     int  _ResampleInitial();
     
     /**

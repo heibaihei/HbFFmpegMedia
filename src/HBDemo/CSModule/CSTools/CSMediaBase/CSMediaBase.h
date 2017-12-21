@@ -22,14 +22,29 @@ namespace HBMedia {
 
         ~CSMediaBase();
 
+        /**
+         *  基础初始化
+         */
         int baseInitial();
 
+        /**
+         *  准备工作，对外接口
+         */
         virtual int prepare() = 0;
 
+        /**
+         *  启动解码
+         */
         virtual int start() = 0;
 
+        /**
+         *  关闭解码
+         */
         virtual int stop();
 
+        /**
+         *  释放内部资源
+         */
         virtual int release();
 
         uint64_t getStatus() { return mState; }
