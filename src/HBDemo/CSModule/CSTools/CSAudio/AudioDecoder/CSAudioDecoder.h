@@ -98,23 +98,27 @@ protected:
      */
     int  _DoResample(AVFrame *pInFrame, AVFrame **pOutFrame);
     
-    /** 导出的帧都转换成： AV_TIME_BASE_Q 时间基 表示 */
+    /**
+     *  导出的帧都转换成： AV_TIME_BASE_Q 时间基 表示
+     */
     int  _DoExport(AVFrame **pOutFrame);
 
+    /**
+     *  媒体源输入输出类型检验检查
+     */
     int  _mediaParamInitial();
     
-    int mAudioStreamIndex;
+    int  mAudioStreamIndex;
     
-    AVCodecContext* mPInputAudioCodecCtx;
-    AVCodec* mPInputAudioCodec;
+    /***/
+    AVCodecContext    *mPInputAudioCodecCtx;
+    AVCodec           *mPInputAudioCodec;
     struct SwrContext *mPAudioResampleCtx;
     
     FiFoQueue<AVFrame *> *mTargetFrameQueue;
     ThreadIPCContext     *mTargetFrameQueueIPC;
     ThreadIPCContext     *mEmptyFrameQueueIPC;
-    
-    /** 解码线程上下文 */
-    ThreadContext mDecodeThreadCtx;
+    ThreadContext         mDecodeThreadCtx;
 } CSAudioDecoder;
     
 }
