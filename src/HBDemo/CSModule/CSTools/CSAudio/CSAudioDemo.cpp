@@ -7,13 +7,13 @@ int CSAudioDemo_AudioDecoder() {
     
     AudioParams targetAudioParam;
     audioParamInit(&targetAudioParam);
-    targetAudioParam.sample_rate = 48000;
+    targetAudioParam.sample_rate = 41000;
     
     HBMedia::CSAudioDecoder* pAudioDecoder = new HBMedia::CSAudioDecoder();
     pAudioDecoder->setInMediaType(MD_TYPE_COMPRESS);
     pAudioDecoder->setOutMediaType(MD_TYPE_RAW_BY_MEMORY);
     pAudioDecoder->setOutAudioMediaParams(targetAudioParam);
-    pAudioDecoder->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/audio/music1.mp3");
+    pAudioDecoder->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/100.mp4");
 
     pAudioDecoder->prepare();
     pAudioDecoder->start();

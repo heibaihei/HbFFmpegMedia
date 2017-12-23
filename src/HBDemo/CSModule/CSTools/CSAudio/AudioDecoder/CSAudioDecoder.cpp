@@ -504,10 +504,9 @@ int CSAudioDecoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
         goto AUDIO_RESAMPLE_END_LABEL;
     }
 
-    /**
-     *  是否需要调整 pts 时间
-     */
-    pTargetFrame->pts = pInFrame->pts;
+    pTargetFrame->pts = (int64_t)av_rescale_q(pInFrame->pts, \
+                                              (AVRational){1, mSrcAudioParams.sample_rate},
+                                              (AVRational){1, mTargetAudioParams.sample_rate});
     *pOutFrame = pTargetFrame;
     return HB_OK;
 
