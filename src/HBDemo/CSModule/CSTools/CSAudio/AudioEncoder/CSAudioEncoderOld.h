@@ -15,7 +15,7 @@
 
 #include "CSAudio.h"
 
-namespace HBMedia {
+namespace Hello {
 
 typedef class CSAudioEncoder
 {
@@ -76,7 +76,7 @@ private:
     AVCodecContext* mPOutputAudioCodecCtx;
     AVCodec* mPOutputAudioCodec;
     
-    CSAudioResample *mAudioResample;
+    HBMedia::CSAudioResample *mAudioResample;
     
     PacketQueue mPacketCacheList;
     int64_t mEncodeStateFlag;
