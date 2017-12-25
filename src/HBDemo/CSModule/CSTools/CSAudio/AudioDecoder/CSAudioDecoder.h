@@ -20,7 +20,6 @@
 #include "CSFiFoQueue.h"
 
 namespace HBMedia {
-    
 
 typedef class CSAudioDecoder : public CSMediaBase
 {

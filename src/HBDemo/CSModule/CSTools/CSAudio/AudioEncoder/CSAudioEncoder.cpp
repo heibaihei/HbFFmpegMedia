@@ -1,295 +1,160 @@
 //
-//  CSAudioEncoder.c
-//  FFmpeg
+//  CSAudioEncoder.cpp
+//  Sample
 //
-//  Created by zj-db0519 on 2017/8/15.
+//  Created by zj-db0519 on 2017/12/25.
 //  Copyright © 2017年 meitu. All rights reserved.
 //
 
 #include "CSAudioEncoder.h"
 
 namespace HBMedia {
+
+int CSAudioEncoder::S_MAX_BUFFER_CACHE = 8;
     
-enum AVCodecID CSAudioEncoder::mTargetCodecID = AV_CODEC_ID_AAC;
-    
-CSAudioEncoder::CSAudioEncoder(AudioParams* targetAudioParam)
-{
-    if (!targetAudioParam) {
-        LOGE("Initial audio decoder param failed !");
-        return;
-    }
-    mTargetAudioParams = *targetAudioParam;
-    mPOutputAudioFormatCtx = nullptr;
-    mPOutputAudioStream = nullptr;
-    mInputAudioMediaFileHandle = nullptr;
-    mAudioFifo = nullptr;
+void* CSAudioEncoder::ThreadFunc_Audio_Encoder(void *arg) {
+    return nullptr;
 }
 
-CSAudioEncoder::~CSAudioEncoder()
-{
-    if (mPOutputAudioFormatCtx) {
-        avformat_free_context(mPOutputAudioFormatCtx);
-        mPOutputAudioFormatCtx = nullptr;
-    }
+CSAudioEncoder::CSAudioEncoder() {
+    memset(&mState, 0x00, sizeof(mState));
+    
+    mAudioStreamIndex = INVALID_STREAM_INDEX;
+    
+    mSrcFrameQueue = new FiFoQueue<AVFrame *>(S_MAX_BUFFER_CACHE);
+    mSrcFrameQueueIPC = new ThreadIPCContext(0);
+    mEmptyFrameQueueIPC = new ThreadIPCContext(S_MAX_BUFFER_CACHE);
+    mEncodeThreadCtx.setFunction(nullptr, nullptr);
+}
+    
+CSAudioEncoder::~CSAudioEncoder() {
 }
 
-int  CSAudioEncoder::audioEncoderInitial()
-{
-    globalInitial();
-    mPOutputAudioFormatCtx = avformat_alloc_context();
-    mPOutputAudioFormatCtx->oformat = av_guess_format(NULL, mOutputAudioMediaFile, NULL);
-    if (avio_open(&mPOutputAudioFormatCtx->pb, mOutputAudioMediaFile, AVIO_FLAG_READ_WRITE) < 0) {
-        LOGE("Failed to open output file: %s!\n", mOutputAudioMediaFile);
-        return HB_ERROR;
+int CSAudioEncoder::prepare() {
+    if (baseInitial() != HB_OK) {
+        LOGE("Audio base initial failed !");
+        goto AUDIO_ENCODER_PREPARE_END_LABEL;
     }
     
-    mPOutputAudioStream = avformat_new_stream(mPOutputAudioFormatCtx, NULL);
-    if (mPOutputAudioStream == NULL) {
-        LOGE("Create media stream failed !\n");
-        return HB_ERROR;
+    if (_mediaParamInitial() != HB_OK) {
+        LOGE("Check Audio encoder param failed !");
+        goto AUDIO_ENCODER_PREPARE_END_LABEL;
     }
     
-    mPOutputAudioCodec = avcodec_find_encoder(mTargetCodecID);
-    if (mPOutputAudioCodec == NULL) {
-        LOGE("Can not find audio encoder! %d\n", mPOutputAudioCodec->id);
-        return HB_ERROR;
+    if (_InputInitial() != HB_OK) {
+        LOGE("Audio decoder open failed !");
+        goto AUDIO_ENCODER_PREPARE_END_LABEL;
     }
     
-    mPOutputAudioCodecCtx = avcodec_alloc_context3(mPOutputAudioCodec);
-    mPOutputAudioCodecCtx->codec_id = mPOutputAudioCodec->id;
-    mPOutputAudioCodecCtx->codec_type = AVMEDIA_TYPE_AUDIO;
-    mPOutputAudioCodecCtx->sample_fmt = getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt);
-    mPOutputAudioCodecCtx->sample_rate = mTargetAudioParams.sample_rate;
-    mPOutputAudioCodecCtx->channels = mTargetAudioParams.channels;
-    mPOutputAudioCodecCtx->channel_layout = av_get_default_channel_layout(mPOutputAudioCodecCtx->channels);
-    mPOutputAudioCodecCtx->bit_rate = mTargetAudioParams.mbitRate;
+    if (_ResampleInitial() != HB_OK) {
+        LOGE("Audio swscale initail failed !");
+        goto AUDIO_ENCODER_PREPARE_END_LABEL;
+    }
     
-    avcodec_parameters_from_context(mPOutputAudioStream->codecpar, mPOutputAudioCodecCtx);
+    if (_EncoderInitial() != HB_OK) {
+        LOGE("Audio encoder initial failed !");
+        goto AUDIO_ENCODER_PREPARE_END_LABEL;
+    }
     
-    av_dump_format(mPOutputAudioFormatCtx, 0, mOutputAudioMediaFile, 1);
-    
-    mEncodeStateFlag = 0x00;
+    mState |= S_PREPARED;
     return HB_OK;
+    
+AUDIO_ENCODER_PREPARE_END_LABEL:
+    release();
+    return HB_ERROR;
 }
-
-int  CSAudioEncoder::audioEncoderOpen()
-{
-    int HbError = -1;
     
-    HbError = avcodec_open2(mPOutputAudioCodecCtx, mPOutputAudioCodec, NULL);
-    if (HbError < 0) {
-        LOGE("Failed to open encoder !%s\n", makeErrorStr(HbError));
+int CSAudioEncoder::start() {
+    if (!(mState & S_PREPARED)) {
+        LOGE("Media audio encoder is not prepared !");
+        return HB_ERROR;
+    }
+    if (HB_OK != mEncodeThreadCtx.setFunction(ThreadFunc_Audio_Encoder, this)) {
+        LOGE("Initial encode thread context failed !");
         return HB_ERROR;
     }
     
-    HbError = avformat_write_header(mPOutputAudioFormatCtx, NULL);
-    if (HbError < 0) {
-        LOGE("Avformat write header failed !");
-        return HB_ERROR;
-    }
-    
-    mLastAudioFramePts = 0;
-    mAudioFifo = av_audio_fifo_alloc(mPOutputAudioCodecCtx->sample_fmt, mPOutputAudioCodecCtx->channels, mPOutputAudioCodecCtx->frame_size);
-    mPerFrameBufferSizes = av_get_bytes_per_sample(mPOutputAudioCodecCtx->sample_fmt) *mPOutputAudioCodecCtx->frame_size * mPOutputAudioCodecCtx->channels;
-    
-    /** 临时测试代码，表示以本地文件的输出方式来获取数据 */
-    mInputAudioMediaFileHandle = fopen(mInputAudioMediaFile, "rb");
-    if(!mInputAudioMediaFileHandle) {
-        LOGE("Open input audio file failed !");
+    if (mEncodeThreadCtx.start() != HB_OK) {
+        LOGE("Start encode thread context failed !");
         return HB_ERROR;
     }
     
     return HB_OK;
 }
 
-int CSAudioEncoder::getPcmData(uint8_t** pData, int* dataSizes) {
+int CSAudioEncoder::stop() {
+    if (!(mState & S_DECODE_END)) {
+        mAbort = true;
+    }
+    mEncodeThreadCtx.join();
     
-    if ((mEncodeStateFlag & S_READ_PKT_END) || !pData || dataSizes) {
-        LOGE("Audio encoder get pcm data failed !");
+    if (CSMediaBase::stop() != HB_OK) {
+        LOGE("Media base stop failed !");
         return HB_ERROR;
     }
     
-    *pData = (uint8_t*) av_mallocz(mPerFrameBufferSizes);
-    if (*pData) {
-        LOGE("Audio encoder malloc audio buffer failed !");
-        return HB_ERROR;
-    }
-    
-    *dataSizes = (int)fread(*pData, 1, mPerFrameBufferSizes, mInputAudioMediaFileHandle);
-    if (*dataSizes <= 0) {
-        LOGF("Read audio media abort !\n");
-        mEncodeStateFlag |= S_READ_PKT_END;
-    }
-    return HB_OK;
-}
-
-int CSAudioEncoder::pushPcmDataToAudioBuffer(uint8_t* pData, int dataSizes)
-{
-    int HbError = -1;
-    int audioFrameDataLineSize[AV_NUM_DATA_POINTERS] = {0, 0, 0, 0, 0, 0, 0, 0};
-    uint8_t *audioFrameData[AV_NUM_DATA_POINTERS] = {NULL};
-    
-    int samplesPerChannel = dataSizes / (av_get_bytes_per_sample(mPOutputAudioCodecCtx->sample_fmt) * mPOutputAudioCodecCtx->channels);
-    HbError = av_samples_fill_arrays(audioFrameData, audioFrameDataLineSize, pData, mPOutputAudioCodecCtx->channels, samplesPerChannel, mPOutputAudioCodecCtx->sample_fmt, 1);
-    if (HbError < 0) {
-        LOGE("Audio samples fill arrays failed <%s>!", makeErrorStr(HbError));
-        return HB_ERROR;
-    }
-    
-    HbError = av_audio_fifo_write(mAudioFifo, (void **)audioFrameData, samplesPerChannel);
-    if ((HbError < 0) || (HbError < samplesPerChannel)) {
-        LOGE("Audio fifo write sample:%d failed !", samplesPerChannel);
-        return HB_ERROR;
-    }
-    
-    return HbError;
-}
-    
-int CSAudioEncoder::selectAudioFrame()
-{
-    int HbError = -1;
-    AVFrame* pNewFrame = nullptr;
-    AVPacket newPacket;
-    av_init_packet(&newPacket);
-    
-    while (true) {
-        if ((mEncodeStateFlag & S_ENCODE_FLUSHING) || (mEncodeStateFlag & S_ENCODE_END) \
-            || (mEncodeStateFlag & S_ENCODE_ABORT)){
-            /** 音频解码模块状态检测 */
-            break;
-        }
-        
-        if ((av_audio_fifo_size(mAudioFifo) >= mPOutputAudioCodecCtx->frame_size) || ((mEncodeStateFlag & S_READ_PKT_END) && (av_audio_fifo_size(mAudioFifo) > 0))) {
-            
-            HbError = _initialOutputFrame(&pNewFrame, &mTargetAudioParams, mPOutputAudioCodecCtx->frame_size);
-            if (HbError != HB_OK) {
-                LOGE("initial output frame failed !");
-                return HB_ERROR;
-            }
-            
-            HbError = av_audio_fifo_read(mAudioFifo, (void **)pNewFrame->data, mPOutputAudioCodecCtx->frame_size);
-            if (HbError < 0) {
-                LOGE("Audio fifo read data failed !");
-                return HB_ERROR;
-            }
-            
-            mLastAudioFramePts += HbError;
-            pNewFrame->pts = mLastAudioFramePts;
-            
-        }
-        else if ((mEncodeStateFlag & S_READ_PKT_END) \
-            || (mEncodeStateFlag & S_READ_PKT_ABORT)) {
-            pNewFrame = nullptr;
-            mEncodeStateFlag |= S_ENCODE_FLUSHING;
-        }
-        else
-            goto AUDIO_ENCODE_END_LABEL;
-        
-        HbError = avcodec_send_frame(mPOutputAudioCodecCtx, pNewFrame);
-        if (HbError<0 && HbError != AVERROR(EAGAIN) && HbError != AVERROR_EOF) {
-            av_frame_unref(pNewFrame);
-            LOGE("Send packet failed: %s!\n", makeErrorStr(HbError));
-            return HB_ERROR;
-        }
-        
-        if (pNewFrame)
-            av_frame_unref(pNewFrame);
-        
-        while (true) {
-            HbError = avcodec_receive_packet(mPOutputAudioCodecCtx, &newPacket);
-            if (HbError == 0) {
-                av_packet_rescale_ts(&newPacket, mPOutputAudioCodecCtx->time_base, mPOutputAudioStream->time_base);
-                
-                newPacket.stream_index = mPOutputAudioStream->index;
-                av_write_frame(mPOutputAudioFormatCtx, &newPacket);
-                av_packet_unref(&newPacket);
-            }
-            else {
-                if (HbError<0 && HbError!=AVERROR_EOF)
-                    mEncodeStateFlag |= S_ENCODE_ABORT;
-                else if (HbError == AVERROR_EOF && !pNewFrame)
-                    mEncodeStateFlag |= S_ENCODE_END;
-                break;
-            }
+    AVFrame *pFrame = nullptr;
+    while (mSrcFrameQueue->queueLength()) {
+        pFrame = mSrcFrameQueue->get();
+        if (pFrame) {
+            if (pFrame->opaque)
+                av_freep(pFrame);
+            av_frame_free(&pFrame);
         }
     }
-
-AUDIO_ENCODE_END_LABEL:
-    return HB_OK;
-}
     
-int  CSAudioEncoder::audioEncoderClose()
-{
-    if (0 != av_write_trailer(mPOutputAudioFormatCtx)) {
-        LOGE("Audio write tailer failed !");
+    if (release() != HB_OK) {
+        LOGE("decoder release failed !");
         return HB_ERROR;
     }
-    
-    if (mInputAudioMediaFileHandle) {
-        fclose(mInputAudioMediaFileHandle);
-        mInputAudioMediaFileHandle = nullptr;
-    }
-    if (avcodec_is_open(mPOutputAudioCodecCtx)) {
-        avcodec_close(mPOutputAudioCodecCtx);
-    }
     return HB_OK;
 }
 
-int  CSAudioEncoder::audioEncoderRelease()
-{
+int CSAudioEncoder::release() {
+    if (mPOutAudioCodecCtx)
+        avcodec_free_context(&mPOutAudioCodecCtx);
+    mPOutAudioCodecCtx = nullptr;
+    if (mPAudioConvertCtx) {
+        sws_freeContext(mPAudioConvertCtx);
+        mPAudioConvertCtx = nullptr;
+    }
+    CSMediaBase::release();
     return HB_OK;
 }
-    
-void CSAudioEncoder::setInputAudioMediaFile(char *file)
-{
-    if (mInputAudioMediaFile)
-        av_freep(mInputAudioMediaFile);
-    av_strdup(mInputAudioMediaFile);
-}
 
-char *CSAudioEncoder::getInputAudioMediaFile()
-{
-    return mInputAudioMediaFile;
-}
-
-void CSAudioEncoder::setOutputAudioMediaFile(char *file)
-{
-    if (mOutputAudioMediaFile)
-        av_freep(mOutputAudioMediaFile);
-    av_strdup(mOutputAudioMediaFile);
-}
-
-int CSAudioEncoder::_initialOutputFrame(AVFrame** frame, AudioParams *pAudioParam, int AudioSamples) {
-    if (!frame)
-        return HB_ERROR;
-    
-    AVFrame* newOutputFrame = *frame;
-    if (!newOutputFrame) {
-        newOutputFrame = av_frame_alloc();
-        if (!newOutputFrame)
-            return HB_ERROR;
-    }
-    
-    newOutputFrame->nb_samples = AudioSamples;
-    newOutputFrame->format = getAudioInnerFormat(pAudioParam->pri_sample_fmt);
-    newOutputFrame->sample_rate = pAudioParam->sample_rate;
-    newOutputFrame->channels = pAudioParam->channels;
-    newOutputFrame->channel_layout = (uint64_t)av_get_default_channel_layout(pAudioParam->channels);
-    
-    if ((av_frame_get_buffer(newOutputFrame, 1)) < 0) {
-        LOGE("Get frame buffer error !");
-        return HB_ERROR;
-    }
-    
-    /** 将本地的对象指针传递出去 */
-    *frame = newOutputFrame;
-    
+int CSAudioEncoder::sendFrame(AVFrame **pSrcFrame) {
     return HB_OK;
 }
-    
-char *CSAudioEncoder::getOutputAudioMediaFile()
-{
-    return mOutputAudioMediaFile;
+
+int CSAudioEncoder::syncWait() {
+    return HB_OK;
+}
+
+int CSAudioEncoder::_mediaParamInitial() {
+    return HB_OK;
+}
+
+int CSAudioEncoder::_EncoderInitial() {
+    return HB_OK;
+}
+
+int CSAudioEncoder::_InputInitial() {
+    return HB_OK;
+}
+
+int CSAudioEncoder::_ResampleInitial() {
+    return HB_OK;
+}
+
+int CSAudioEncoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
+    return HB_OK;
+}
+
+int CSAudioEncoder::_DoExport(AVPacket *pPacket) {
+    return HB_OK;
+}
+
+void CSAudioEncoder::_flush() {
 }
 
 }

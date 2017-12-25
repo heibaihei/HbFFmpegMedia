@@ -1,8 +1,8 @@
 //
 //  CSAudioEncoder.h
-//  FFmpeg
+//  Sample
 //
-//  Created by zj-db0519 on 2017/8/15.
+//  Created by zj-db0519 on 2017/12/25.
 //  Copyright © 2017年 meitu. All rights reserved.
 //
 
@@ -10,84 +10,90 @@
 #define CSAudioEncoder_h
 
 #include <stdio.h>
-#include <stdint.h>
-#include <iostream>
 
-#include "CSAudio.h"
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <pthread.h>
+#include <unistd.h>
+
+#include "CSMediaBase.h"
+#include "CSThreadContext.h"
+#include "frame.h"
+#include "CSFiFoQueue.h"
 
 namespace HBMedia {
-
-typedef class CSAudioEncoder
+/** 结构功能解析:
+ *  编码数据，如果不是以文件的方式输出，则内部默认持有数据帧缓冲队列，供外部提取，以阻塞等待的方式
+ */
+typedef class CSAudioEncoder : public CSMediaBase
 {
 public:
-    CSAudioEncoder(AudioParams* targetAudioParam);
+    static int S_MAX_BUFFER_CACHE;
+    CSAudioEncoder();
     ~CSAudioEncoder();
     
-    static enum AVCodecID mTargetCodecID;
     /**
-     *  配置输入的音频文件
+     *  准备工作，对外接口
      */
-    void setInputAudioMediaFile(char *file);
-    char *getInputAudioMediaFile();
+    virtual int prepare();
+    
+    virtual int start();
+    
+    virtual int stop();
+    
+    virtual int release();
     
     /**
-     *  配置输出的音频文件
+     *  外部传送帧进来，
+     *  如果传入的帧必须是以 AV_TIME_BASE 时间基为准
      */
-    void setOutputAudioMediaFile(char *file);
-    char *getOutputAudioMediaFile();
+    virtual int sendFrame(AVFrame **pSrcFrame);
     
     /**
-     *  解码器初始化、启动、关闭、释放
+     *  同步等待解码器退出
      */
-    int  audioEncoderInitial();
-    int  audioEncoderOpen();
-    int  audioEncoderClose();
-    int  audioEncoderRelease();
+    virtual int syncWait();
     
-    /**
-     *  从外部资源获取PCM 数据
-     */
-    int getPcmData(uint8_t** pData, int* dataSizes);
-    
-    /**
-     *  将得到的pcm 数据丢到缓冲区
-     */
-    int pushPcmDataToAudioBuffer(uint8_t* pData, int dataSizes);
-    
-    /**
-     *  解码数据
-     */
-    int selectAudioFrame();
-    
-private:
+    void setInAudioParams(AudioParams& param) { mSrcAudioParams = param; }
+    void setOutAudioParams(AudioParams& param) { mTargetAudioParams = param; }
     
 protected:
-    int _initialOutputFrame(AVFrame** frame, AudioParams *pAudioParam, int AudioSamples);
+    /**
+     *  媒体参数初始化，重置;
+     */
+    int  _mediaParamInitial();
+    
+    static void* ThreadFunc_Audio_Encoder(void *arg);
+    
+    /**
+     *  编码器初始化、启动、关闭、释放
+     */
+    int  _EncoderInitial();
+    int  _InputInitial();
+    int  _ResampleInitial();
+    int  _DoResample(AVFrame *pInFrame, AVFrame **pOutFrame);
+    int  _DoExport(AVPacket *pPacket);
     
 private:
-    FILE *mInputAudioMediaFileHandle;
-    char *mInputAudioMediaFile;
-    char *mOutputAudioMediaFile;
+    void _flush();
     
+private:
     int mAudioStreamIndex;
-    AVAudioFifo *mAudioFifo;
-    AudioParams mTargetAudioParams;
     
-    AVCodecContext* mPOutputAudioCodecCtx;
-    AVCodec* mPOutputAudioCodec;
+    SwsContext *mPAudioConvertCtx;
     
-    CSAudioResample *mAudioResample;
+    AVCodecContext* mPOutAudioCodecCtx;
+    AVCodec* mPOutAudioCodec;
     
-    PacketQueue mPacketCacheList;
-    int64_t mEncodeStateFlag;
+    FiFoQueue<AVFrame *> *mSrcFrameQueue;
+    ThreadIPCContext     *mSrcFrameQueueIPC;
+    ThreadIPCContext     *mEmptyFrameQueueIPC;
     
-    int mPerFrameBufferSizes;
-    int64_t mLastAudioFramePts;
-    /** 测试结构成员 */
-    AVStream* mPOutputAudioStream;
-    AVFormatContext* mPOutputAudioFormatCtx;
+    /** 编码线程上下文 */
+    ThreadContext mEncodeThreadCtx;
+    
 } CSAudioEncoder;
-    
-} /** HBMedia */
+}
 
 #endif /* CSAudioEncoder_h */
