@@ -257,9 +257,9 @@ std::string getCSMediaVersion() {
 
 void EchoStatus(uint64_t status) {
     
-    bool bReadEnd = ((status & S_READ_PKT_END) != 0 ? true : false);
+    bool bReadEnd = ((status & S_READ_DATA_END) != 0 ? true : false);
     bool bDecodeEnd = ((status & S_DECODE_END) != 0 ? true : false);
-    bool bReadAbort = ((status & S_READ_PKT_ABORT) != 0 ? true : false);
+    bool bReadAbort = ((status & S_READ_DATA_ABORT) != 0 ? true : false);
     bool bDecodeAbort = ((status & S_DECODE_ABORT) != 0 ? true : false);
     bool bFlushMode = ((status & S_DECODE_FLUSHING) != 0 ? true : false);
     

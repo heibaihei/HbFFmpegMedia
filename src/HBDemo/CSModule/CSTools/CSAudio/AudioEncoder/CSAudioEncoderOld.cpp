@@ -104,7 +104,7 @@ int  CSAudioEncoder::audioEncoderOpen()
 
 int CSAudioEncoder::getPcmData(uint8_t** pData, int* dataSizes) {
     
-    if ((mEncodeStateFlag & S_READ_PKT_END) || !pData || dataSizes) {
+    if ((mEncodeStateFlag & S_READ_DATA_END) || !pData || dataSizes) {
         LOGE("Audio encoder get pcm data failed !");
         return HB_ERROR;
     }
@@ -118,7 +118,7 @@ int CSAudioEncoder::getPcmData(uint8_t** pData, int* dataSizes) {
     *dataSizes = (int)fread(*pData, 1, mPerFrameBufferSizes, mInputAudioMediaFileHandle);
     if (*dataSizes <= 0) {
         LOGF("Read audio media abort !\n");
-        mEncodeStateFlag |= S_READ_PKT_END;
+        mEncodeStateFlag |= S_READ_DATA_END;
     }
     return HB_OK;
 }
@@ -159,7 +159,7 @@ int CSAudioEncoder::selectAudioFrame()
             break;
         }
         
-        if ((av_audio_fifo_size(mAudioFifo) >= mPOutputAudioCodecCtx->frame_size) || ((mEncodeStateFlag & S_READ_PKT_END) && (av_audio_fifo_size(mAudioFifo) > 0))) {
+        if ((av_audio_fifo_size(mAudioFifo) >= mPOutputAudioCodecCtx->frame_size) || ((mEncodeStateFlag & S_READ_DATA_END) && (av_audio_fifo_size(mAudioFifo) > 0))) {
             
             HbError = _initialOutputFrame(&pNewFrame, &mTargetAudioParams, mPOutputAudioCodecCtx->frame_size);
             if (HbError != HB_OK) {
@@ -177,8 +177,8 @@ int CSAudioEncoder::selectAudioFrame()
             pNewFrame->pts = mLastAudioFramePts;
             
         }
-        else if ((mEncodeStateFlag & S_READ_PKT_END) \
-            || (mEncodeStateFlag & S_READ_PKT_ABORT)) {
+        else if ((mEncodeStateFlag & S_READ_DATA_END) \
+            || (mEncodeStateFlag & S_READ_DATA_ABORT)) {
             pNewFrame = nullptr;
             mEncodeStateFlag |= S_ENCODE_FLUSHING;
         }

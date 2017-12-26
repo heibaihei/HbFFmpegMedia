@@ -25,8 +25,8 @@
 #define S_ABORT                      0x0002
 #define S_PREPARED                   0x0004
 
-#define S_READ_PKT_END               0x0010
-#define S_READ_PKT_ABORT             0x0020
+#define S_READ_DATA_END              0x0010
+#define S_READ_DATA_ABORT            0x0020
 
 #define S_DECODE_END                 0x0100
 #define S_DECODE_ABORT               0x0200

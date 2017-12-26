@@ -27,7 +27,7 @@ void* CSAudioEncoder::ThreadFunc_Audio_Encoder(void *arg) {
     AVFrame *pOutFrame = nullptr;
     pEncoder->mNextAudioFramePts = 0;
     
-    while (S_NOT_EQ(pEncoder->mState, S_READ_PKT_END) \
+    while (S_NOT_EQ(pEncoder->mState, S_READ_DATA_END) \
            || (pEncoder->mSrcFrameQueue->queueLength() > 0))
     {
         pInFrame = nullptr;
@@ -269,7 +269,7 @@ int CSAudioEncoder::release() {
 int CSAudioEncoder::sendFrame(AVFrame **pSrcFrame) {
     int HBError = HB_ERROR;
     if (!pSrcFrame) {
-        mState |= S_READ_PKT_END;
+        mState |= S_READ_DATA_END;
         LOGI("Audio Encoder >>> Send frame end !");
         return HB_OK;
     }

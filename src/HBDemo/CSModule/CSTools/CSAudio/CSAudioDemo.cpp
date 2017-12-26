@@ -72,7 +72,7 @@ int CSAudioDemo_AudioEncoder()
         pAudioEncoder->setOutAudioParams(outAudioParamObj);
     }
     pAudioEncoder->setOutMediaType(MD_TYPE_COMPRESS);
-    pAudioEncoder->setOutMediaFile((char *)AUDIO_RESOURCE_ROOT_PATH"/encode/new100.mp4");
+    pAudioEncoder->setOutMediaFile((char *)AUDIO_RESOURCE_ROOT_PATH"/Encode/new100.mp3");
     
     pAudioEncoder->prepare();
     pAudioEncoder->start();

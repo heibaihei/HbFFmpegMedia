@@ -35,16 +35,16 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
         }
         
         if (!(pDecoder->mState & S_DECODE_ABORT) \
-            && !(pDecoder->mState & S_READ_PKT_END))
+            && !(pDecoder->mState & S_READ_DATA_END))
         {
             av_init_packet(pNewPacket);
             HBError = av_read_frame(pDecoder->mPInMediaFormatCtx, pNewPacket);
             if (HBError != 0) {
                 if (HBError != AVERROR_EOF) {
                     LOGE("[Work task: <Decoder>] Read frame failed, Err:%s", av_err2str(HBError));
-                    pDecoder->mState |= S_READ_PKT_ABORT;
+                    pDecoder->mState |= S_READ_DATA_ABORT;
                 }
-                pDecoder->mState |= S_READ_PKT_END;
+                pDecoder->mState |= S_READ_DATA_END;
                 av_packet_free(&pNewPacket);
                 pNewPacket = nullptr;
                 continue;
@@ -75,7 +75,7 @@ void* CSVideoDecoder::ThreadFunc_Video_Decoder(void *arg) {
                 av_packet_free(&pNewPacket);
             
             if (!(pDecoder->mState & S_DECODE_FLUSHING)) {
-                if (!(pDecoder->mState & S_READ_PKT_END)) {
+                if (!(pDecoder->mState & S_READ_DATA_END)) {
                     LOGE("[Work task: <Decoder>] Flush decoder buffer, but the not reach the end of file !");
                 }
                 pDecoder->mState |= S_DECODE_FLUSHING;

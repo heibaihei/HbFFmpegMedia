@@ -30,7 +30,7 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
         goto DECODE_THREAD_EXIT_LABEL;
     }
     
-    while (S_NOT_EQ(pAudioDecoder->mState, S_READ_PKT_END))
+    while (S_NOT_EQ(pAudioDecoder->mState, S_READ_DATA_END))
     {
         pInFrame = nullptr;
         pOutFrame = nullptr;
@@ -43,12 +43,12 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
         HBError = av_read_frame(pAudioDecoder->mPInMediaFormatCtx, pNewPacket);
         if (HBError < 0) {
             if (HBError != AVERROR_EOF) {
-                pAudioDecoder->mState |= S_READ_PKT_ABORT;
+                pAudioDecoder->mState |= S_READ_DATA_ABORT;
                 LOGE("[Work task: <Decoder>] Read audio packet abort !");
             }
             else
                 LOGW("[Work task: <Decoder>] Read audio packet reach file eof !");
-            pAudioDecoder->mState |= S_READ_PKT_END;
+            pAudioDecoder->mState |= S_READ_DATA_END;
             continue;
         }
         

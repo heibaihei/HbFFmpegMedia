@@ -25,7 +25,7 @@ void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
     AVFrame *pInFrame = nullptr;
     AVFrame *pOutFrame = nullptr;
     
-    while (S_NOT_EQ(pEncoder->mState, S_READ_PKT_END) \
+    while (S_NOT_EQ(pEncoder->mState, S_READ_DATA_END) \
            || (pEncoder->mSrcFrameQueue->queueLength() > 0))
     {
         pInFrame = nullptr;
@@ -239,7 +239,7 @@ int CSVideoEncoder::release() {
 int CSVideoEncoder::sendFrame(AVFrame **pSrcFrame) {
     int HBError = HB_ERROR;
     if (!pSrcFrame) {
-        mState |= S_READ_PKT_END;
+        mState |= S_READ_DATA_END;
         LOGI("Video Encoder >>> Send frame end !");
         return HB_OK;
     }

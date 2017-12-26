@@ -67,7 +67,7 @@ void *VideoFormatTranser::DecodeThreadFunc(void *arg) {
             if (pVideoTranser->mEncodeFrameQueue->queueLeft() == 0 \
                 && pVideoTranser->mDecodePacketQueue->queueLength() == 0)
             {
-                if (!(pVideoTranser->mState & S_READ_PKT_END) \
+                if (!(pVideoTranser->mState & S_READ_DATA_END) \
                     && !(pVideoTranser->mState & S_DECODE_ABORT))
                 {/** 判断是否读包结束 或者本身解包异常 */
                     pVideoTranser->mDecodeThreadIpcCtx.mIsThreadPending = true;
@@ -88,7 +88,7 @@ void *VideoFormatTranser::DecodeThreadFunc(void *arg) {
             && (nullptr != (pNewPacket = pVideoTranser->mDecodePacketQueue->get())))
         {   /** 得到帧 */
         }
-        else if (!(pVideoTranser->mState & S_READ_PKT_END) \
+        else if (!(pVideoTranser->mState & S_READ_DATA_END) \
                  && !(pVideoTranser->mState & S_DECODE_ABORT)) {
             LOGE("Decode thread get valid packet failed or not free queue node !");
             continue;
@@ -106,7 +106,7 @@ void *VideoFormatTranser::DecodeThreadFunc(void *arg) {
             }
         }
         else if (!(pVideoTranser->mState & S_DECODE_FLUSHING) \
-                 && ((pVideoTranser->mState & S_READ_PKT_END) || (pVideoTranser->mState & S_DECODE_ABORT))) {
+                 && ((pVideoTranser->mState & S_READ_DATA_END) || (pVideoTranser->mState & S_DECODE_ABORT))) {
             HBError = avcodec_send_packet(pMediaDecoder->mPVideoCodecCtx, NULL);
             pVideoTranser->mState |= S_DECODE_FLUSHING;
             LOGW("Decode process into flush buffer !");
@@ -363,7 +363,7 @@ int VideoFormatTranser::doConvert() {
 
         /** 读取原始数据 */
         pNewPacket = nullptr;
-        if (S_NOT_EQ(mState, S_READ_PKT_END) \
+        if (S_NOT_EQ(mState, S_READ_DATA_END) \
             && S_NOT_EQ(mState, S_DECODE_END) \
             && S_NOT_EQ(mState, S_DECODE_ABORT))
         {
@@ -380,7 +380,7 @@ int VideoFormatTranser::doConvert() {
                     else
                         LOGW("Read input video data end, reach file eof !");
                     
-                    mState |= S_READ_PKT_END;
+                    mState |= S_READ_DATA_END;
                     if (!bNeedTranscode && HBError == AVERROR_EOF)
                         mState |= S_FINISHED;
                     continue;
@@ -525,21 +525,21 @@ int VideoFormatTranser::_TransMedia(AVPacket** pInPacket) {
 
     if (S_NOT_EQ(mState,S_DECODE_END))
     { /** 进入解码模块流程 */
-        if (S_NOT_EQ(mState,S_READ_PKT_END) && S_NOT_EQ(mState,S_DECODE_ABORT))
+        if (S_NOT_EQ(mState,S_READ_DATA_END) && S_NOT_EQ(mState,S_DECODE_ABORT))
         {
             /** 只有读数据包未结束以及本身解码器没有发生异常，说明都要往里面丢数据 */
             HBError = avcodec_send_packet(mPMediaDecoder->mPVideoCodecCtx, *pInPacket);
             if (HBError != 0) {
                 if (HBError != AVERROR(EAGAIN)) {
                     mState |= S_DECODE_ABORT;
-                    if (S_NOT_EQ(mState, S_READ_PKT_END))
+                    if (S_NOT_EQ(mState, S_READ_DATA_END))
                         mState |= S_ABORT;
                 }
                 return -1;
             }
         }
         else if (S_NOT_EQ(mState,S_DECODE_FLUSHING) \
-                 && (S_EQ(mState,S_READ_PKT_END) || S_EQ(mState,S_DECODE_ABORT)))
+                 && (S_EQ(mState,S_READ_DATA_END) || S_EQ(mState,S_DECODE_ABORT)))
         {
             HBError = avcodec_send_packet(mPMediaDecoder->mPVideoCodecCtx, NULL);
             mState |= S_DECODE_FLUSHING;
