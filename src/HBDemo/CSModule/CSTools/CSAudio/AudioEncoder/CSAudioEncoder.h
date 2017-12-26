@@ -74,6 +74,15 @@ protected:
     int  _EncoderInitial();
     int  _InputInitial();
     int  _ResampleInitial();
+    
+    /**
+     *  对音频进行重采样
+     *  @param pInFrame  输入音频帧，欲重采样原始音频帧
+     *  @param pOutFrame 输出目标音频帧，重采样后目标音频帧
+     *  @return
+     *     HB_OK 重采样成功, pOutFrame 指向输出音频帧;
+     *     HB_ERROR 重采样失败, pOutFrame 为 NULL;
+     */
     int  _DoResample(AVFrame *pInFrame, AVFrame **pOutFrame);
     int  _DoExport(AVPacket *pPacket);
     

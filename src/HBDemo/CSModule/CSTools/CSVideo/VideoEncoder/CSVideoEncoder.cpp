@@ -240,17 +240,17 @@ int CSVideoEncoder::sendFrame(AVFrame **pSrcFrame) {
     int HBError = HB_ERROR;
     if (!pSrcFrame) {
         mState |= S_READ_DATA_END;
-        LOGI("Video Encoder >>> Send frame end !");
+        LOGI("Video Encoder >>> [Extern] Send frame end !");
         return HB_OK;
     }
 
     if (!(mState & S_PREPARED) || mInMediaType != MD_TYPE_RAW_BY_MEMORY) {
-        LOGE("Video Encoder >>> Send raw frame failed, invalid output media type !");
+        LOGE("Video Encoder >>> [Extern] Send raw frame failed, invalid output media type !");
         return HBError;
     }
     
     if (!(*pSrcFrame)) {
-        LOGE("Video Encoder >>> Invalid frame, send failed !");
+        LOGE("Video Encoder >>> [Extern] Invalid frame, send failed !");
         return HBError;
     }
     

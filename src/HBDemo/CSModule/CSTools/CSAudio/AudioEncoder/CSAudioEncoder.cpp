@@ -39,21 +39,20 @@ void* CSAudioEncoder::ThreadFunc_Audio_Encoder(void *arg) {
         
         pEncoder->mSrcFrameQueueIPC->condV();
         if (!(pInFrame = pEncoder->mSrcFrameQueue->get())) {
-            LOGE("[Work task: <Encoder:%p>] get queue[%p] length:%d frame failed !", pEncoder, \
+            LOGE("[Work task: <Encoder:%p>] Get queue[%p] length:%d frame failed !", pEncoder, \
                  pEncoder->mSrcFrameQueue, pEncoder->mSrcFrameQueue->queueLength());
             continue;
         }
         pEncoder->mEmptyFrameQueueIPC->condP();
-        {
-            pInFrame->pts = (int64_t)av_rescale_q(pInFrame->pts, \
-                                                  AV_TIME_BASE_Q, (AVRational){1, pEncoder->mSrcAudioParams.sample_rate});
-        }
+        
+        pInFrame->pts = (int64_t)av_rescale_q(pInFrame->pts, AV_TIME_BASE_Q, (AVRational){1, pEncoder->mSrcAudioParams.sample_rate});
         if (pEncoder->mIsNeedTransfer) {
             if (pEncoder->_DoResample(pInFrame, &pOutFrame) != HB_OK) {
                 
                 if (pInFrame->opaque)
                     av_freep(pInFrame->opaque);
                 av_frame_free(&pInFrame);
+                LOGE("[Work task: <Encoder:%p>] Do audio resample failed !", pEncoder);
                 continue;
             }
             
@@ -66,6 +65,7 @@ void* CSAudioEncoder::ThreadFunc_Audio_Encoder(void *arg) {
             pInFrame = nullptr;
         }
         
+        /** 缓冲音频数据 */
         if (pEncoder->_BufferAudioRawData(pOutFrame) != 1)
             LOGE("[Work task: <Encoder>] Buffer audio frame data failed !");
         av_frame_unref(pOutFrame);
@@ -195,8 +195,7 @@ int CSAudioEncoder::prepare() {
      */
     S_MAX_AUDIO_FIFO_BUFFER_SIZE = mSrcAudioParams.sample_rate;
     mAudioOutDataBuffer = av_audio_fifo_alloc(getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt), mTargetAudioParams.channels, S_MAX_AUDIO_FIFO_BUFFER_SIZE);
-    if(!mAudioOutDataBuffer)
-    {
+    if(!mAudioOutDataBuffer) {
         LOGE("Audio encoder initial audio inner data buffer failed !");
         return HB_ERROR;
     }
@@ -292,13 +291,8 @@ RETRY_SEND_FRAME:
     {
         mEmptyFrameQueueIPC->condV();
         if (mSrcFrameQueue->queueLeft() > 0) {
-            
-            //            int64_t tSrcFramePts = av_rescale_q((*pSrcFrame)->pts, \
-            //                                                AV_TIME_BASE_Q, mPOutVideoFormatCtx->streams[mVideoStreamIndex]->time_base);
-            //
-            //            LOGD("Video Encoder >>> Send frame, OriginalPts<%lld, %lf> !", \
-            (*pSrcFrame)->pts, ((*pSrcFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
-            
+            LOGD("Audio Encoder >>> [Extern] Send audio frame, pts<%lld, %lf> !", (*pSrcFrame)->pts, \
+                                                    ((*pSrcFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
             if (mSrcFrameQueue->push(*pSrcFrame) > 0) {
                 mSrcFrameQueueIPC->condP();
                 return HB_OK;
@@ -535,11 +529,8 @@ int CSAudioEncoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
     (int)av_rescale_rnd(swr_get_delay(mPAudioResampleCtx, mTargetAudioParams.sample_rate) + pInFrame->nb_samples,\
                         mTargetAudioParams.sample_rate, mSrcAudioParams.sample_rate, AV_ROUND_UP);
     
-    HBError = av_samples_alloc(pTargetFrame->data,
-                               &pTargetFrame->linesize[0],
-                               mTargetAudioParams.channels,
-                               pTargetFrame->nb_samples,
-                               getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt), 0);
+    HBError = av_samples_alloc(pTargetFrame->data, &pTargetFrame->linesize[0],
+                        mTargetAudioParams.channels, pTargetFrame->nb_samples, getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt), mTargetAudioParams.mAlign);
     if (HBError < 0) {
         LOGE("[Work task: <Decoder>] Audio resample malloc output samples buffer failed !");
         goto AUDIO_RESAMPLE_END_LABEL;
@@ -555,8 +546,9 @@ int CSAudioEncoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
             pInAudioBuffer[i] = pInFrame->data[i];
         }
     }
-    else
+    else {
         pInAudioBuffer[0] = pInFrame->data[0];
+    }
     
     HBError = swr_convert(mPAudioResampleCtx, pTargetFrame->data, pTargetFrame->nb_samples, \
                           (const uint8_t **)pInAudioBuffer, pInFrame->nb_samples);

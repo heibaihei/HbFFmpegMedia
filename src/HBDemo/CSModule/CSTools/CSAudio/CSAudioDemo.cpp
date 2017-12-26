@@ -54,6 +54,7 @@ int CSAudioDemo_AudioEncoder()
     pAudioEncoder->setInMediaType(MD_TYPE_RAW_BY_MEMORY);
     {
         AudioParams inAudioParamObj;
+        audioParamInit(&inAudioParamObj);
         inAudioParamObj.channels = 2;
         inAudioParamObj.channel_layout = av_get_default_channel_layout(inAudioParamObj.channels);
         inAudioParamObj.sample_rate = 44100;
@@ -63,6 +64,7 @@ int CSAudioDemo_AudioEncoder()
     }
     {
         AudioParams outAudioParamObj;
+        audioParamInit(&outAudioParamObj);
         outAudioParamObj.channels = 2;
         outAudioParamObj.channel_layout = av_get_default_channel_layout(outAudioParamObj.channels);
         outAudioParamObj.sample_rate = 44100;
@@ -81,6 +83,7 @@ int CSAudioDemo_AudioEncoder()
         AudioParams targetAudioParam;
         audioParamInit(&targetAudioParam);
         targetAudioParam.sample_rate = 41000;
+        targetAudioParam.pri_sample_fmt = CS_SAMPLE_FMT_S16;
         
         HBMedia::CSAudioDecoder* pAudioDecoder = new HBMedia::CSAudioDecoder();
         pAudioDecoder->setInMediaType(MD_TYPE_COMPRESS);
