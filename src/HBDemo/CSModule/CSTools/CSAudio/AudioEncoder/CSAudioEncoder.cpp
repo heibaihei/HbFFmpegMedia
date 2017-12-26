@@ -42,7 +42,10 @@ void* CSAudioEncoder::ThreadFunc_Audio_Encoder(void *arg) {
             continue;
         }
         pEncoder->mEmptyFrameQueueIPC->condP();
-        
+        {
+            pInFrame->pts = (int64_t)av_rescale_q(pInFrame->pts, \
+                                                  AV_TIME_BASE_Q, (AVRational){1, pEncoder->mSrcAudioParams.sample_rate});
+        }
         if (pEncoder->mIsNeedTransfer) {
             if (pEncoder->_DoResample(pInFrame, &pOutFrame) != HB_OK) {
                 
@@ -237,7 +240,48 @@ int CSAudioEncoder::release() {
 }
 
 int CSAudioEncoder::sendFrame(AVFrame **pSrcFrame) {
-    return HB_OK;
+    int HBError = HB_ERROR;
+    if (!pSrcFrame) {
+        mState |= S_READ_PKT_END;
+        LOGI("Audio Encoder >>> Send frame end !");
+        return HB_OK;
+    }
+    
+    if (!(mState & S_PREPARED) || mInMediaType != MD_TYPE_RAW_BY_MEMORY) {
+        LOGE("Audio Encoder >>> Send raw frame failed, invalid output media type !");
+        return HBError;
+    }
+    
+    if (!(*pSrcFrame)) {
+        LOGE("Audio Encoder >>> Invalid frame, send failed !");
+        return HBError;
+    }
+    
+RETRY_SEND_FRAME:
+    HBError = HB_ERROR;
+    if (mSrcFrameQueue \
+        && S_NOT_EQ(mState, S_ENCODE_ABORT) \
+        && S_NOT_EQ(mState, S_ENCODE_FLUSHING))
+    {
+        mEmptyFrameQueueIPC->condV();
+        if (mSrcFrameQueue->queueLeft() > 0) {
+            
+            //            int64_t tSrcFramePts = av_rescale_q((*pSrcFrame)->pts, \
+            //                                                AV_TIME_BASE_Q, mPOutVideoFormatCtx->streams[mVideoStreamIndex]->time_base);
+            //
+            //            LOGD("Video Encoder >>> Send frame, OriginalPts<%lld, %lf> !", \
+            (*pSrcFrame)->pts, ((*pSrcFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
+            
+            if (mSrcFrameQueue->push(*pSrcFrame) > 0) {
+                HBError = HB_OK;
+                mSrcFrameQueueIPC->condP();
+            }
+        }
+        else {
+            goto RETRY_SEND_FRAME;
+        }
+    }
+    return HBError;
 }
 
 int CSAudioEncoder::syncWait() {

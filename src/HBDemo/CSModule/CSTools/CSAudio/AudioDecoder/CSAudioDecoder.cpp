@@ -310,15 +310,18 @@ RETRY_RECEIVE_FRAME:
     }
     else {
         mTargetFrameQueueIPC->condV();
-        if (mTargetFrameQueue->queueLength() <= 0)
+        if (mTargetFrameQueue->queueLength() <= 0) {
             goto RETRY_RECEIVE_FRAME;
+        }
         
         if (!(pNewFrame = mTargetFrameQueue->get())) {
             HBError = -1;
             LOGE("Audio Decoder >>> Get audio frame failed !");
         }
-        else
+        else {
+            HBError = 0;
             mEmptyFrameQueueIPC->condP();
+        }
     }
     
     *OutFrame = pNewFrame;
