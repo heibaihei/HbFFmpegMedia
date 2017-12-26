@@ -14,7 +14,7 @@ int CSVideoEncoder::S_MAX_BUFFER_CACHE = 8;
 
 void* CSVideoEncoder::ThreadFunc_Video_Encoder(void *arg) {
     if (!arg) {
-        LOGE("[Work task: <Decoder>] Thread param args is invalid !");
+        LOGE("[Work task: <Encoder>] Thread param args is invalid !");
         return nullptr;
     }
     

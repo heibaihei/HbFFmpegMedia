@@ -75,13 +75,14 @@ protected:
     int  _DoResample(AVFrame *pInFrame, AVFrame **pOutFrame);
     int  _DoExport(AVPacket *pPacket);
     
+    int  _BufferAudioRawData(AVFrame *pInFrame, AVFrame **pOutFrame);
 private:
     void _flush();
     
 private:
     int mAudioStreamIndex;
     
-    SwsContext *mPAudioConvertCtx;
+    struct SwrContext *mPAudioResampleCtx;
     
     AVCodecContext* mPOutAudioCodecCtx;
     AVCodec* mPOutAudioCodec;

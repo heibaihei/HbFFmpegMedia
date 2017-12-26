@@ -10,8 +10,6 @@
 
 namespace HBMedia {
 
-#define CS_SWR_CH_MAX  (64)
-
 int CSAudioDecoder::S_MAX_BUFFER_CACHE = 8;
 void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
     if (!arg) {

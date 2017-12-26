@@ -49,6 +49,8 @@
 #define S_EQ(s,t)         ((s) & (t))
 #define S_NOT_EQ(s,t)     (!((s) & (t)))
 
+#define CS_SWR_CH_MAX  (64)
+
 //#define SOUND_TOUCH_MODULE_EXCLUDE  1
 //#define LIBYUV_MODULE_EXCLUDE  1
 
@@ -192,17 +194,16 @@ typedef struct _ImageParams {
 } ImageParams;
 
 typedef struct _AudioParams {
-    int sample_rate;  /** 采样率 */
-    int channels;
-    int64_t channel_layout;
-    AUDIO_SAMPLE_FORMAT pri_sample_fmt;
+    int sample_rate;                     /** 采样率 */
+    int channels;                        /** 通道数 */
+    int64_t channel_layout;              /** 通道格式 */
+    AUDIO_SAMPLE_FORMAT pri_sample_fmt;  /** 采样格式 */
     
-    /** frame_size & bytes_per_sec 使用意义待定 */
-    int frame_size; /** 对应编码格式一帧有多少个samples */
+    int frame_size;                      /** 一个音频帧的采样数 */
     int bytes_per_sec;
     
-    long mbitRate;  /** 比特率 */
-    int   mAlign;
+    long mbitRate;                       /** 比特率 */
+    int   mAlign;                        /** 是否对齐 */
 } AudioParams;
 
 /** 输入数据类型，裸数据还是压缩数据 */

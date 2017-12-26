@@ -7,13 +7,17 @@
 #include "CSMediaBase.h"
 #include "CSAudio.h"
 
-#define VIDEO_RESOURCE_ROOT_PATH       "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/audio"
+#define AUDIO_RESOURCE_ROOT_PATH       "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource/audio"
 
+
+/**
+ *  音频媒体文件解码
+ */
+int CSAudioDemo_AudioDecoder();
 
 /**
  *  音频媒体文件编码
  */
-int CSAudioDemo_AudioDecoder();
-
+int CSAudioDemo_AudioEncoder();
 
 #endif
