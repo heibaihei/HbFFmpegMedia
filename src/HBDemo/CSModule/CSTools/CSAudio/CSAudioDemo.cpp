@@ -67,6 +67,7 @@ int CSAudioDemo_AudioEncoder()
         outAudioParamObj.channel_layout = av_get_default_channel_layout(outAudioParamObj.channels);
         outAudioParamObj.sample_rate = 44100;
         outAudioParamObj.mbitRate = 64000;
+        outAudioParamObj.nb_samples = 1024;
         outAudioParamObj.pri_sample_fmt = CS_SAMPLE_FMT_FLTP;
         pAudioEncoder->setOutAudioParams(outAudioParamObj);
     }

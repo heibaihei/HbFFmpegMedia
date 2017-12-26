@@ -95,7 +95,7 @@ int CSAStream::bindOpaque(void *handle) {
     mStreamThreadParam->mTimeBase = mStream->time_base;
     mStreamThreadParam->mCodecCtx = mCodecCtx;
     
-    mAudioParam->frame_size = mCodecCtx->frame_size;
+    mAudioParam->nb_samples = mCodecCtx->frame_size;
     
     mSrcFrame = av_frame_alloc();
     if (!mSrcFrame) {
@@ -184,11 +184,11 @@ int CSAStream::sendRawData(uint8_t* pData, long DataSize, int64_t TimeStamp) {
     while (true) {
         pBufferFrame = nullptr;
         int iFifoSize = av_audio_fifo_size(mAudioFifo);
-        if (iFifoSize < mAudioParam->frame_size) {
+        if (iFifoSize < mAudioParam->nb_samples) {
             break;
         }
         
-        actualAudioSamples = FFMIN(iFifoSize, mAudioParam->frame_size);
+        actualAudioSamples = FFMIN(iFifoSize, mAudioParam->nb_samples);
         iBufferSize = av_samples_get_buffer_size(NULL, iChannels, actualAudioSamples, eSampleFmt, mAudioParam->mAlign);
         if (iBufferSize <= 0) {
             LOGE("Get sample size error [size:%d] !\n", iBufferSize);

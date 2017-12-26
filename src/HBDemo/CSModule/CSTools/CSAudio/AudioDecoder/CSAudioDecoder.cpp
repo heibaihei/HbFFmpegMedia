@@ -377,7 +377,7 @@ int CSAudioDecoder::_DecoderInitial() {
         mSrcAudioParams.pri_sample_fmt = getAudioOuterFormat(mPInputAudioCodecCtx->sample_fmt);
         mSrcAudioParams.mbitRate = mPInputAudioCodecCtx->bit_rate;
         mSrcAudioParams.sample_rate = mPInputAudioCodecCtx->sample_rate;
-        mSrcAudioParams.frame_size = mPInputAudioCodecCtx->frame_size;
+        mSrcAudioParams.nb_samples = mPInputAudioCodecCtx->frame_size;
         
         av_dump_format(mPInMediaFormatCtx, mAudioStreamIndex, mSrcMediaFile, false);
     }
@@ -423,8 +423,8 @@ int CSAudioDecoder::_ExportInitial() {
         mTargetAudioParams.sample_rate = mSrcAudioParams.sample_rate;
     if (getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt) == AV_SAMPLE_FMT_NONE)
         mTargetAudioParams.pri_sample_fmt = mSrcAudioParams.pri_sample_fmt;
-    if (mTargetAudioParams.frame_size == 0)
-        mTargetAudioParams.frame_size = mSrcAudioParams.frame_size;
+    if (mTargetAudioParams.nb_samples == 0)
+        mTargetAudioParams.nb_samples = mSrcAudioParams.nb_samples;
 //    mSrcAudioParams.mbitRate = mPInputAudioCodecCtx->bit_rate;
     
     return HB_OK;

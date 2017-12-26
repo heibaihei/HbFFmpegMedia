@@ -199,7 +199,7 @@ typedef struct _AudioParams {
     int64_t channel_layout;              /** 通道格式 */
     AUDIO_SAMPLE_FORMAT pri_sample_fmt;  /** 采样格式 */
     
-    int frame_size;                      /** 一个音频帧的采样数 */
+    int nb_samples;                      /** 一帧采样点个数(单通道) */
     int bytes_per_sec;
     
     long mbitRate;                       /** 比特率 */

@@ -40,7 +40,7 @@ int audioParamInit(AudioParams* param) {
     param->channels = 0;
     param->channel_layout = 0;
     param->pri_sample_fmt = CS_SAMPLE_FMT_NONE;
-    param->frame_size = 0;
+    param->nb_samples = 0;
     param->channel_layout = 0;
     param->bytes_per_sec = 0;
     param->mbitRate = 0;//96000;
