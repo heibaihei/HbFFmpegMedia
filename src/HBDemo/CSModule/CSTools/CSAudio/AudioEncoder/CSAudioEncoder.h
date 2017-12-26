@@ -48,6 +48,7 @@ public:
     /**
      *  外部传送帧进来，
      *  如果传入的帧必须是以 AV_TIME_BASE_Q 时间基为准
+     *  @return HB_OK 送帧成功; HB_ERROR 送帧失败
      */
     virtual int sendFrame(AVFrame **pSrcFrame);
     

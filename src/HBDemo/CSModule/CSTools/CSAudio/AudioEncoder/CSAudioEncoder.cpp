@@ -267,25 +267,25 @@ int CSAudioEncoder::release() {
 }
 
 int CSAudioEncoder::sendFrame(AVFrame **pSrcFrame) {
-    int HBError = HB_ERROR;
-    if (!pSrcFrame) {
+    if (S_NOT_EQ(mState, S_PREPARED) \
+        || S_EQ(mState, S_READ_DATA_END) \
+        || (mInMediaType != MD_TYPE_RAW_BY_MEMORY)) {
+        LOGE("Audio Encoder >>> Audio encoder status abnormal !");
+        return HB_ERROR;
+    }
+    
+    if (pSrcFrame == nullptr) {/** 进入刷帧模式 */
         mState |= S_READ_DATA_END;
         LOGI("Audio Encoder >>> Send frame end !");
         return HB_OK;
     }
     
-    if (!(mState & S_PREPARED) || mInMediaType != MD_TYPE_RAW_BY_MEMORY) {
-        LOGE("Audio Encoder >>> Send raw frame failed, invalid output media type !");
-        return HBError;
-    }
-    
     if (!(*pSrcFrame)) {
         LOGE("Audio Encoder >>> Invalid frame, send failed !");
-        return HBError;
+        return HB_ERROR;
     }
     
 RETRY_SEND_FRAME:
-    HBError = HB_ERROR;
     if (mSrcFrameQueue \
         && S_NOT_EQ(mState, S_ENCODE_ABORT) \
         && S_NOT_EQ(mState, S_ENCODE_FLUSHING))
@@ -300,15 +300,16 @@ RETRY_SEND_FRAME:
             (*pSrcFrame)->pts, ((*pSrcFrame)->pts * av_q2d(AV_TIME_BASE_Q)));
             
             if (mSrcFrameQueue->push(*pSrcFrame) > 0) {
-                HBError = HB_OK;
                 mSrcFrameQueueIPC->condP();
+                return HB_OK;
             }
         }
         else {
             goto RETRY_SEND_FRAME;
         }
     }
-    return HBError;
+    
+    return HB_ERROR;
 }
 
 int CSAudioEncoder::syncWait() {
