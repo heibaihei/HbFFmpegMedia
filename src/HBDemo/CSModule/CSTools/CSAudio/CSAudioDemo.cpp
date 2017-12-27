@@ -111,7 +111,9 @@ int CSAudioDemo_AudioEncoder()
                     break;
             }
         }
+
     RECEIVED_END_LABEL:
+        pAudioEncoder->sendFrame(NULL);
         pAudioDecoder->stop();
         pAudioDecoder->release();
     }

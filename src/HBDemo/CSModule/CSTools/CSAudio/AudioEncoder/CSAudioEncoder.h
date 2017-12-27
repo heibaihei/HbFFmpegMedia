@@ -83,7 +83,7 @@ protected:
      *     HB_OK 重采样成功, pOutFrame 指向输出音频帧;
      *     HB_ERROR 重采样失败, pOutFrame 为 NULL;
      */
-    int  _DoResample(AVFrame *pInFrame, AVFrame **pOutFrame);
+    int  _DoResample(const AVFrame *pInFrame, AVFrame **pOutFrame);
     int  _DoExport(AVPacket *pPacket);
     
     /**

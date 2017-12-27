@@ -267,8 +267,10 @@ void disposeImageFrame(void *pFrame) {
 void clearImageFrame(void *pFrame) {
     if (pFrame) {
         AVFrame *pTmpFrame = (AVFrame*)pFrame;
-        if (pTmpFrame->opaque)
-            av_freep(pTmpFrame->opaque);
+        /** 临时删除: huangcl  */
+//        if (pTmpFrame->opaque)
+//            av_freep(pTmpFrame->opaque);
+//        pTmpFrame->opaque = nullptr;
         av_frame_unref(pTmpFrame);
     }
 }
@@ -276,12 +278,16 @@ void clearImageFrame(void *pFrame) {
 void EchoStatus(uint64_t status) {
     
     bool bReadEnd = ((status & S_READ_DATA_END) != 0 ? true : false);
-    bool bDecodeEnd = ((status & S_DECODE_END) != 0 ? true : false);
     bool bReadAbort = ((status & S_READ_DATA_ABORT) != 0 ? true : false);
+    bool bDecodeEnd = ((status & S_DECODE_END) != 0 ? true : false);
     bool bDecodeAbort = ((status & S_DECODE_ABORT) != 0 ? true : false);
-    bool bFlushMode = ((status & S_DECODE_FLUSHING) != 0 ? true : false);
+    bool bDecodeFlushMode = ((status & S_DECODE_FLUSHING) != 0 ? true : false);
+    bool bEncodeEnd = ((status & S_ENCODE_END) != 0 ? true : false);
+    bool bEncodeAbort = ((status & S_ENCODE_ABORT) != 0 ? true : false);
+    bool bEncodeFlushMode = ((status & S_ENCODE_FLUSHING) != 0 ? true : false);
     
-    LOGI("[Work task: <Decoder>] Status: Read<End:%d, Abort:%d> | <Flush:%d> | Decode<End:%d, Abort:%d>", bReadEnd, bReadAbort, bFlushMode, bDecodeEnd, bDecodeAbort);
+    LOGI("[Work task: <Decoder>] Status: Read<E:%d, A:%d> | Decode<E:%d, A:%d, F:%d> | Encode<E:%d, A:%d, F:%d>", \
+         bReadEnd, bReadAbort, bDecodeEnd, bDecodeAbort, bDecodeFlushMode, bEncodeEnd, bEncodeAbort, bEncodeFlushMode);
 }
 
 
