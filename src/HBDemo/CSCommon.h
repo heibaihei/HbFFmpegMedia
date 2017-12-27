@@ -66,6 +66,17 @@ char* getImagePixFmtDescript(IMAGE_PIX_FORMAT dataType);
  */
 char* getMediaDataTypeDescript(MEDIA_DATA_TYPE dataType);
 
+/**
+ *  释放 AVFrame 空间
+ *  @param pFrame 指向 AVFrame 指针的指针, AVFrame* 取地址
+ */
+void disposeImageFrame(void *pFrame);
+/**
+ *  释放 AVFrame 空间
+ *  @param pFrame 指向 AVFrame 的指针, AVFrame 取地址
+ */
+void clearImageFrame(void *pFrame);
+
 /** 输出当前状态信息 */
 void EchoStatus(uint64_t status);
 #endif

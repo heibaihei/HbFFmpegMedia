@@ -47,18 +47,15 @@ void* CSAudioEncoder::ThreadFunc_Audio_Encoder(void *arg) {
         
         pInFrame->pts = (int64_t)av_rescale_q(pInFrame->pts, AV_TIME_BASE_Q, (AVRational){1, pEncoder->mSrcAudioParams.sample_rate});
         if (pEncoder->mIsNeedTransfer) {
-            if (pEncoder->_DoResample(pInFrame, &pOutFrame) != HB_OK) {
-                
-                if (pInFrame->opaque)
-                    av_freep(pInFrame->opaque);
-                av_frame_free(&pInFrame);
+            bool bIsResampled = true;
+            if (pEncoder->_DoResample(pInFrame, &pOutFrame) != HB_OK)
+                bIsResampled = false;
+            
+            disposeImageFrame(&pInFrame);
+            if (!bIsResampled) {
                 LOGE("[Work task: <Encoder:%p>] Do audio resample failed !", pEncoder);
                 continue;
             }
-            
-            if (pInFrame->opaque)
-                av_freep(pInFrame->opaque);
-            av_frame_free(&pInFrame);
         }
         else {
             pOutFrame = pInFrame;
@@ -68,18 +65,11 @@ void* CSAudioEncoder::ThreadFunc_Audio_Encoder(void *arg) {
         /** 缓冲音频数据 */
         if (pEncoder->_BufferAudioRawData(pOutFrame) != 1)
             LOGE("[Work task: <Encoder>] Buffer audio frame data failed !");
-        av_frame_unref(pOutFrame);
-        if (pOutFrame->opaque) {
-            av_freep(pOutFrame->opaque);
-            pOutFrame->opaque = nullptr;
-        }
+        disposeImageFrame(&pOutFrame);
         
         if (pEncoder->_ReadFrameFromAudioBuffer(&pOutFrame) != 1) {
-            if (pOutFrame) {
-                if (pOutFrame->opaque)
-                    av_freep(pOutFrame->opaque);
-                av_frame_free(&pOutFrame);
-            }
+            if (pOutFrame)
+                disposeImageFrame(&pOutFrame);
             continue;
         }
         
@@ -587,13 +577,12 @@ int CSAudioEncoder::_BufferAudioRawData(AVFrame *pInFrame) {
 }
 
 int CSAudioEncoder::_ReadFrameFromAudioBuffer(AVFrame **pOutFrame) {
-    if (!pOutFrame) {
+    if (!pOutFrame)
         return -1;
-    }
     
     int audioSampleBufferSize = av_audio_fifo_size(mAudioOutDataBuffer);
     if ((audioSampleBufferSize <= 0) || (audioSampleBufferSize < mTargetAudioParams.nb_samples)) {
-        LOGI("[Work task: <Decoder>] There is not complete audio frame, buffer size:%d, frame size:%d !", audioSampleBufferSize, mTargetAudioParams.nb_samples);
+        LOGI("[Work task: <Decoder>] Not whole frame, buffer:%d, Frame size:%d !", audioSampleBufferSize, mTargetAudioParams.nb_samples);
         return 0;
     }
     

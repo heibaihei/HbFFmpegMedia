@@ -255,6 +255,24 @@ std::string getCSMediaVersion() {
     return std::string(version);
 }
 
+void disposeImageFrame(void *pFrame) {
+    if (pFrame) {
+        AVFrame **ppFrame = (AVFrame**)pFrame;
+        clearImageFrame(*ppFrame);
+        av_frame_free(ppFrame);
+        pFrame = nullptr;
+    }
+}
+
+void clearImageFrame(void *pFrame) {
+    if (pFrame) {
+        AVFrame *pTmpFrame = (AVFrame*)pFrame;
+        if (pTmpFrame->opaque)
+            av_freep(pTmpFrame->opaque);
+        av_frame_unref(pTmpFrame);
+    }
+}
+
 void EchoStatus(uint64_t status) {
     
     bool bReadEnd = ((status & S_READ_DATA_END) != 0 ? true : false);
