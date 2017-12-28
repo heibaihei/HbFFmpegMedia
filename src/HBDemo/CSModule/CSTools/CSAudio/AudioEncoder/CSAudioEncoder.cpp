@@ -233,6 +233,10 @@ int CSAudioEncoder::stop() {
         LOGE("decoder release failed !");
         return HB_ERROR;
     }
+    
+    av_audio_fifo_reset(mAudioOutDataBuffer);
+    av_audio_fifo_free(mAudioOutDataBuffer);
+    mAudioOutDataBuffer = nullptr;
     return HB_OK;
 }
 
@@ -290,7 +294,7 @@ RETRY_SEND_FRAME:
 }
 
 int CSAudioEncoder::syncWait() {
-    while (S_NOT_EQ(mState, S_ENCODE_END)) {
+    while (S_NOT_EQ(mState, S_FINISHED)) {
         usleep(100);
     }
     return HB_OK;
