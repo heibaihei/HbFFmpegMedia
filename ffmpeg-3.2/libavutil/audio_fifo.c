@@ -59,8 +59,8 @@ void av_audio_fifo_free(AVAudioFifo *af)
 AVAudioFifo *av_audio_fifo_alloc(enum AVSampleFormat sample_fmt, int channels,
                                  int nb_samples)
 {
-    AVAudioFifo *af;
-    int buf_size, i;
+    AVAudioFifo *af = NULL;
+    int buf_size = 0, i = 0;
 
     /* get channel buffer size (also validates parameters) */
     if (av_samples_get_buffer_size(&buf_size, channels, nb_samples, sample_fmt, 1) < 0)

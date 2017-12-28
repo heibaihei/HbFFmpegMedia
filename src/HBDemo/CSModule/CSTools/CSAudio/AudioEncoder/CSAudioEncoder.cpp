@@ -152,7 +152,6 @@ int CSAudioEncoder::prepare() {
         goto AUDIO_ENCODER_PREPARE_END_LABEL;
     }
     
-    
     if (_mediaParamInitial() != HB_OK) {
         LOGE("Check Audio encoder param failed !");
         goto AUDIO_ENCODER_PREPARE_END_LABEL;

@@ -17,7 +17,7 @@ SRC_LINK=.
 ifndef MAIN_MAKEFILE
 SRC_PATH:=$(SRC_PATH:.%=..%)
 endif
-CC_IDENT=Apple LLVM version 9.0.0 (clang-900.0.38)
+CC_IDENT=Apple LLVM version 9.0.0 (clang-900.0.39.2)
 ARCH=c
 INTRINSICS=none
 CC=gcc
