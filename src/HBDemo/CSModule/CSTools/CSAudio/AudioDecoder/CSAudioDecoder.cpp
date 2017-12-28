@@ -67,21 +67,23 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
             continue;
         }
         
-        AVFrame *pInFrame = av_frame_alloc();
-        if (!pInFrame) {
-            LOGE("[Work task: <Decoder>] Alloc new frame failed !");
-            pAudioDecoder->mState |= S_ABORT;
-            continue;
-        }
-        
         while (true)
         {
+            pOutFrame = nullptr;
+            AVFrame *pInFrame = av_frame_alloc();
+            if (!pInFrame) {
+                LOGE("[Work task: <Decoder>] Alloc new frame failed !");
+                pAudioDecoder->mState |= S_ABORT;
+                break;
+            }
+            
             HBError = avcodec_receive_frame(pAudioDecoder->mPInputAudioCodecCtx, pInFrame);
             if (HBError != 0) {
                 if (HBError != AVERROR(EAGAIN)) {
                     pAudioDecoder->mState |= S_DECODE_ABORT;
                     LOGE("[Work task: <Decoder>] Decode audio frame abort !");
                 }
+                disposeImageFrame(&pInFrame);
                 break;
             }
             
@@ -93,10 +95,7 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
                     LOGE("Audio decoder resample failed !");
                 }
                 
-                if (pInFrame->opaque)
-                    av_freep(pInFrame->opaque);
-                av_frame_free(&pInFrame);
-                
+                disposeImageFrame(&pInFrame);
                 if (!IsResampleSuccess)
                     continue;
             }
@@ -106,9 +105,7 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
             }
             
             if (pAudioDecoder->_DoExport(&pOutFrame) != HB_OK) {
-                if (pOutFrame->opaque)
-                    av_freep(pOutFrame->opaque);
-                av_frame_free(&pOutFrame);
+                disposeImageFrame(&pOutFrame);
             }
         }
     }
@@ -476,7 +473,7 @@ int CSAudioDecoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
                                     mTargetAudioParams.sample_rate, mSrcAudioParams.sample_rate, AV_ROUND_UP);
     
     HBError = av_samples_alloc(pTargetFrame->data,
-                           &pTargetFrame->linesize[0],
+                           pTargetFrame->linesize,
                            mTargetAudioParams.channels,
                            pTargetFrame->nb_samples,
                            getAudioInnerFormat(mTargetAudioParams.pri_sample_fmt), 0);
@@ -486,6 +483,8 @@ int CSAudioDecoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
     }
     
     pTargetFrame->opaque = pTargetFrame->data[0];
+
+#if 0
     if (av_sample_fmt_is_planar(getAudioInnerFormat(mSrcAudioParams.pri_sample_fmt))) {
         /** TODO:  huangcl  */
 //        int plane_size= pInFrame->nb_samples \
@@ -497,9 +496,10 @@ int CSAudioDecoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
     }
     else
         pInAudioBuffer[0] = pInFrame->data[0];
+#endif
     
     HBError = swr_convert(mPAudioResampleCtx, pTargetFrame->data, pTargetFrame->nb_samples, \
-                          (const uint8_t **)pInAudioBuffer, pInFrame->nb_samples);
+                          (const uint8_t **)pInFrame->data, pInFrame->nb_samples);
     if (HBError < 0) {
         LOGE("[Work task: <Decoder>] Audio resample swr convert failed ! %s", av_err2str(HBError));
         goto AUDIO_RESAMPLE_END_LABEL;
@@ -545,9 +545,7 @@ int CSAudioDecoder::_DoExport(AVFrame **pOutFrame) {
                 else {
                     LOGE("[Work task: <Decoder>] Push frame to queue failed !");
                     mEmptyFrameQueueIPC->condP();
-                    if (pNewFrame->opaque)
-                        av_freep(pNewFrame->opaque);
-                    av_frame_free(&pNewFrame);
+                    disposeImageFrame(&pNewFrame);
                     *pOutFrame = nullptr;
                 }
             }

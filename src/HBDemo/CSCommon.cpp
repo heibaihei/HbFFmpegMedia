@@ -267,10 +267,8 @@ void disposeImageFrame(void *pFrame) {
 void clearImageFrame(void *pFrame) {
     if (pFrame) {
         AVFrame *pTmpFrame = (AVFrame*)pFrame;
-        /** 临时删除: huangcl  */
-//        if (pTmpFrame->opaque)
-//            av_freep(pTmpFrame->opaque);
-//        pTmpFrame->opaque = nullptr;
+        if (pTmpFrame->opaque)
+            av_freep(&(pTmpFrame->opaque));
         av_frame_unref(pTmpFrame);
     }
 }
