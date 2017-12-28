@@ -47,7 +47,7 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
                 LOGE("[Work task: <Decoder>] Read audio packet abort !");
             }
             else
-                LOGW("[Work task: <Decoder>] Read audio packet reach file eof !");
+                LOGI("[Work task: <Decoder>] Read audio packet reach file eof !");
             pAudioDecoder->mState |= S_READ_DATA_END;
             continue;
         }

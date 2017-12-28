@@ -27,7 +27,7 @@
 
 #define PROJ_ROOT_PATH "/Users/zj-db0519/work/code/github/HbFFmpegMedia/resource"
 
-int gMtmvLogLevel = LOG_LEVEL_DEBUG;
+int gMtmvLogLevel = LOG_LEVEL_INFO;
 
 int main(int argc, const char * argv[]) {
     {/** media demo */

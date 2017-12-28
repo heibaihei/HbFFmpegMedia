@@ -577,7 +577,7 @@ int CSAudioEncoder::_ReadFrameFromAudioBuffer(AVFrame **pOutFrame) {
     if ((audioSampleBufferSize <= 0) \
         || ((audioSampleBufferSize < mTargetAudioParams.nb_samples) \
             && ((mSrcFrameQueue->queueLength() > 0) || S_NOT_EQ(mState, S_READ_DATA_END)))) {
-        LOGI("[Work task: <Encoder>] Not whole frame, buffer:%d, Frame size:%d !", audioSampleBufferSize, mTargetAudioParams.nb_samples);
+        LOGD("[Work task: <Encoder>] Not whole frame, buffer:%d, Frame size:%d !", audioSampleBufferSize, mTargetAudioParams.nb_samples);
         return 0;
     }
     
@@ -621,7 +621,7 @@ int CSAudioEncoder::_ReadFrameFromAudioBuffer(AVFrame **pOutFrame) {
         pNewFrame->nb_samples = HbError;
         pNewFrame->pts = mNextAudioFramePts;
         mNextAudioFramePts += pNewFrame->nb_samples;
-        LOGI("[Work task: <Encoder>] Read data from fifo size:%d, pts:%lld, %lf, duration:%lf !",  pNewFrame->nb_samples, \
+        LOGD("[Work task: <Encoder>] Read data from fifo size:%d, pts:%lld, %lf, duration:%lf !",  pNewFrame->nb_samples, \
              pNewFrame->pts, pNewFrame->pts * av_q2d((AVRational){1, mTargetAudioParams.sample_rate}), \
              pNewFrame->nb_samples * av_q2d((AVRational){1, mTargetAudioParams.sample_rate}));
         return 1;
