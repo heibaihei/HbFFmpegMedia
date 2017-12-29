@@ -86,7 +86,7 @@ protected:
     int  _DoExport(AVPacket *pPacket);
     
 private:
-    void _flushAudioFifo();
+    void _flushDataCache();
     void _flush();
     
 private:

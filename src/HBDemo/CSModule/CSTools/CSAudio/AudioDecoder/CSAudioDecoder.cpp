@@ -134,7 +134,7 @@ DECODE_THREAD_EXIT_LABEL:
     return nullptr;
 }
 
-void CSAudioDecoder::_flushAudioCache() {
+void CSAudioDecoder::_flushDataCache() {
     AVFrame *pNewFrame = nullptr;
     int HBError = HB_OK;
     
@@ -223,7 +223,7 @@ void CSAudioDecoder::_flush() {
     }
     
     /** 刷新音频数据缓冲区 */
-    _flushAudioCache();
+    _flushDataCache();
     
     if (pInFrame) {
         if (pInFrame->opaque)

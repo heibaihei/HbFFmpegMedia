@@ -550,7 +550,7 @@ int CSAudioEncoder::_DoExport(AVPacket *pPacket) {
     return HB_OK;
 }
 
-void CSAudioEncoder::_flushAudioFifo() {
+void CSAudioEncoder::_flushDataCache() {
     AVPacket *pNewPacket = av_packet_alloc();
     AVFrame *pNewFrame = nullptr;
     int HBError = HB_OK;
@@ -603,7 +603,7 @@ void CSAudioEncoder::_flushAudioFifo() {
 }
 
 void CSAudioEncoder::_flush() {
-    _flushAudioFifo();
+    _flushDataCache();
     
     int HBError = HB_OK;
     AVPacket *pNewPacket = av_packet_alloc();
