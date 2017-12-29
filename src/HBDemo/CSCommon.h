@@ -13,6 +13,7 @@
 #include "HBPictureDemo.h"
 #include "CSPacketQueue.h"
 #include "CSPicture.h"
+#include "CSAudioDataCache.h"
 
 /**
  *  获取当前时间

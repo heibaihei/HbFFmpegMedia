@@ -26,7 +26,12 @@ void CSAudioDataCache::release() {
         av_audio_fifo_free(mCacheBuffer);
         mCacheBuffer = nullptr;
     }
+}
     
+int CSAudioDataCache::getCacheSize() {
+    if (mCacheBuffer)
+        return av_audio_fifo_size(mCacheBuffer);
+    return 0;
 }
 
 int CSAudioDataCache::CacheInitial()
@@ -44,7 +49,7 @@ int CSAudioDataCache::CacheInitial()
 }
 
 int CSAudioDataCache::WriteDataToCache(AVFrame *pInFrame) {
-    if (pInFrame)
+    if (!pInFrame)
         return 0;
     
     int HBErr = av_audio_fifo_write(mCacheBuffer, (void **)pInFrame->data, pInFrame->nb_samples);

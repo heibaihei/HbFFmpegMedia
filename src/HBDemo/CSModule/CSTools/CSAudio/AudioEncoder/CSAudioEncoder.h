@@ -30,7 +30,6 @@ typedef class CSAudioEncoder : public CSMediaBase
 {
 public:
     static int S_MAX_BUFFER_CACHE;
-    static int S_MAX_AUDIO_FIFO_BUFFER_SIZE;
     CSAudioEncoder();
     ~CSAudioEncoder();
     
@@ -86,22 +85,6 @@ protected:
     int  _DoResample(const AVFrame *pInFrame, AVFrame **pOutFrame);
     int  _DoExport(AVPacket *pPacket);
     
-    /**
-     *   将得到的帧输入音频数据缓冲区，
-     *   需要完整帧数据时，从缓冲区中读取数据;
-     *  @return 1 帧插入成功，并且得到相应的帧数据;
-     *          0 帧数据缓冲失败;
-     */
-    int  _BufferAudioRawData(AVFrame *pInFrame);
-    
-    /**
-     *   从音频缓冲区中读取一个完整的帧数据;
-     *  @return 1 读到一个完整的帧;
-     *          0 目前无完整的音频帧数据;
-     *         -1 异常调用;
-     *         -2 音频数据缓冲区已经读取完毕;
-     */
-    int  _ReadFrameFromAudioBuffer(AVFrame **pOutFrame);
 private:
     void _flushAudioFifo();
     void _flush();
@@ -114,9 +97,7 @@ private:
     struct SwrContext *mPAudioResampleCtx;
     
     /** 音频数据缓冲区 */
-    AVAudioFifo *mAudioOutDataBuffer;
-    
-    int64_t      mNextAudioFramePts;
+    CSAudioDataCache mAudioDataCacheObj;
     
     FiFoQueue<AVFrame *> *mSrcFrameQueue;
     ThreadIPCContext     *mSrcFrameQueueIPC;

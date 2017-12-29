@@ -58,9 +58,14 @@ public:
      */
     int FlushDataCache(AVFrame **pOutFrame);
 
-private:
+    /** 释放缓冲区资源 */
     void release();
-    
+
+    /**
+     *  返回当前缓冲了的音频数据大小, sample 为单位
+     */
+    int getCacheSize();
+private:
     /**
      *  [内部接口] 从缓冲区中读取数据;
      *  @param [out] pOutFrame 读到的数据帧
