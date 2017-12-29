@@ -18,50 +18,50 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
     }
     
     ThreadParam_t  *pThreadParams = (ThreadParam_t *)arg;
-    CSAudioDecoder *pAudioDecoder = (CSAudioDecoder *)(pThreadParams->mThreadArgs);
+    CSAudioDecoder *pDecoder = (CSAudioDecoder *)(pThreadParams->mThreadArgs);
     
     int HBError = HB_ERROR;
     AVFrame *pInFrame = nullptr;
     AVFrame *pOutFrame = nullptr;
     AVPacket* pNewPacket = av_packet_alloc();
     if (!pNewPacket) {
-        pAudioDecoder->mState |= S_ABORT;
+        pDecoder->mState |= S_ABORT;
         LOGE("[Work task: <Decoder>] Malloc new packet failed !");
         goto DECODE_THREAD_EXIT_LABEL;
     }
     
-    while (S_NOT_EQ(pAudioDecoder->mState, S_READ_DATA_END))
+    while (S_NOT_EQ(pDecoder->mState, S_READ_DATA_END))
     {
         pInFrame = nullptr;
         pOutFrame = nullptr;
         
-        if (S_EQ(pAudioDecoder->mState, S_ABORT) \
-            || S_EQ(pAudioDecoder->mState, S_DECODE_ABORT)) {
+        if (S_EQ(pDecoder->mState, S_DECODE_ABORT) \
+            || S_EQ(pDecoder->mState, S_ABORT)) {
             break;
         }
         
-        HBError = av_read_frame(pAudioDecoder->mPInMediaFormatCtx, pNewPacket);
+        HBError = av_read_frame(pDecoder->mPInMediaFormatCtx, pNewPacket);
         if (HBError < 0) {
             if (HBError != AVERROR_EOF) {
-                pAudioDecoder->mState |= S_READ_DATA_ABORT;
+                pDecoder->mState |= S_READ_DATA_ABORT;
                 LOGE("[Work task: <Decoder>] Read audio packet abort !");
             }
             else
                 LOGI("[Work task: <Decoder>] Read audio packet reach file eof !");
-            pAudioDecoder->mState |= S_READ_DATA_END;
+            pDecoder->mState |= S_READ_DATA_END;
             continue;
         }
         
-        if (pNewPacket->stream_index != pAudioDecoder->mAudioStreamIndex) {
+        if (pNewPacket->stream_index != pDecoder->mAudioStreamIndex) {
             av_packet_unref(pNewPacket);
             continue;
         }
         
-        HBError = avcodec_send_packet(pAudioDecoder->mPInputAudioCodecCtx, pNewPacket);
+        HBError = avcodec_send_packet(pDecoder->mPInputAudioCodecCtx, pNewPacket);
         av_packet_unref(pNewPacket);
         if (HBError != 0) {
             if (HBError != AVERROR(EAGAIN)) {
-                pAudioDecoder->mState |= S_DECODE_ABORT;
+                pDecoder->mState |= S_DECODE_ABORT;
                 LOGE("[Work task: <Decoder>] Send audio packet abort !");
             }
             continue;
@@ -73,23 +73,23 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
             AVFrame *pInFrame = av_frame_alloc();
             if (!pInFrame) {
                 LOGE("[Work task: <Decoder>] Alloc new frame failed !");
-                pAudioDecoder->mState |= S_ABORT;
+                pDecoder->mState |= S_ABORT;
                 break;
             }
             
-            HBError = avcodec_receive_frame(pAudioDecoder->mPInputAudioCodecCtx, pInFrame);
+            HBError = avcodec_receive_frame(pDecoder->mPInputAudioCodecCtx, pInFrame);
             if (HBError != 0) {
                 if (HBError != AVERROR(EAGAIN)) {
-                    pAudioDecoder->mState |= S_DECODE_ABORT;
+                    pDecoder->mState |= S_DECODE_ABORT;
                     LOGE("[Work task: <Decoder>] Decode audio frame abort !");
                 }
                 disposeImageFrame(&pInFrame);
                 break;
             }
             
-            if (pInFrame && pAudioDecoder->mIsNeedTransfer) {
+            if (pInFrame && pDecoder->mIsNeedTransfer) {
                 bool IsResampleSuccess = true;
-                if (pAudioDecoder->_DoResample(pInFrame, &pOutFrame) != HB_OK) {
+                if (pDecoder->_DoResample(pInFrame, &pOutFrame) != HB_OK) {
                     IsResampleSuccess = false;
                     pOutFrame = nullptr;
                     LOGE("Audio decoder resample failed !");
@@ -104,17 +104,17 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
                 pInFrame = nullptr;
             }
             
-            if (pAudioDecoder->mAudioDataCacheObj.WriteDataToCache(pOutFrame) != 1)
+            if (pDecoder->mAudioDataCacheObj.WriteDataToCache(pOutFrame) != 1)
                 LOGE("[Work task: <Decoder>] Buffer audio frame data failed !");
             disposeImageFrame(&pOutFrame);
             
-            if (pAudioDecoder->mAudioDataCacheObj.ReadDataFromCache(&pOutFrame) != 1) {
+            if (pDecoder->mAudioDataCacheObj.ReadDataFromCache(&pOutFrame) != 1) {
                 if (pOutFrame)
                     disposeImageFrame(&pOutFrame);
                 continue;
             }
             
-            if (pAudioDecoder->_DoExport(&pOutFrame) != HB_OK) {
+            if (pDecoder->_DoExport(&pOutFrame) != HB_OK) {
                 disposeImageFrame(&pOutFrame);
             }
         }
@@ -125,11 +125,12 @@ DECODE_THREAD_EXIT_LABEL:
     if (pNewPacket)
         av_packet_free(&pNewPacket);
     
-    pAudioDecoder->_flush();
+    pDecoder->_flush();
     
     /** 将状态设置为结束状态后，唤醒外部可能等待中的外部接口调用 */
-    pAudioDecoder->mState |= S_DECODE_END;
-    pAudioDecoder->mTargetFrameQueueIPC->condP();
+    pDecoder->mState |= S_DECODE_END;
+    pDecoder->mTargetFrameQueueIPC->condP();
+    pDecoder->mState |= S_FINISHED;
     
     return nullptr;
 }
@@ -376,6 +377,9 @@ RETRY_RECEIVE_FRAME:
 }
 
 int CSAudioDecoder::syncWait() {
+    while (S_NOT_EQ(mState, S_FINISHED)) {
+        usleep(100);
+    }
     return HB_OK;
 }
 
