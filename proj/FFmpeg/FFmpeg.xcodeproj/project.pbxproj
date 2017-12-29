@@ -177,6 +177,7 @@
 		A1BE85AA1EB75F4C004B839C /* cmdutils.c in Sources */ = {isa = PBXBuildFile; fileRef = A1BE85621EB743C7004B839C /* cmdutils.c */; };
 		A1C31AF91FBC1B40001C4258 /* libSoundTouch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C31AF81FBC1B40001C4258 /* libSoundTouch.a */; };
 		A1D1CDBC1FAB473D0027C8AE /* MTVideoTransfer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1D1CDBA1FAB473C0027C8AE /* MTVideoTransfer.cpp */; };
+		A1D9FD171FF5EE9B00A70B6D /* CSAudioDataCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1D9FD151FF5EE9B00A70B6D /* CSAudioDataCache.cpp */; };
 		A1DED09F1FD7C094005CD4EF /* CSVideoAnalysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1DED09D1FD7C094005CD4EF /* CSVideoAnalysis.cpp */; };
 		A1E5CBA01F274AE100A02704 /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E5CB9F1F274AE100A02704 /* libfdk-aac.a */; };
 		A1E5CBA21F276AA500A02704 /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E5CBA11F276AA500A02704 /* libx264.a */; };
@@ -3172,6 +3173,8 @@
 		A1C31AF81FBC1B40001C4258 /* libSoundTouch.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSoundTouch.a; path = ../../../soundtouch/output/Mac/lib/libSoundTouch.a; sourceTree = "<group>"; };
 		A1D1CDBA1FAB473C0027C8AE /* MTVideoTransfer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MTVideoTransfer.cpp; sourceTree = "<group>"; };
 		A1D1CDBB1FAB473C0027C8AE /* MTVideoTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTVideoTransfer.h; sourceTree = "<group>"; };
+		A1D9FD151FF5EE9B00A70B6D /* CSAudioDataCache.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioDataCache.cpp; sourceTree = "<group>"; };
+		A1D9FD161FF5EE9B00A70B6D /* CSAudioDataCache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSAudioDataCache.h; sourceTree = "<group>"; };
 		A1DED09D1FD7C094005CD4EF /* CSVideoAnalysis.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoAnalysis.cpp; sourceTree = "<group>"; };
 		A1DED09E1FD7C094005CD4EF /* CSVideoAnalysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSVideoAnalysis.h; sourceTree = "<group>"; };
 		A1E5CB9F1F274AE100A02704 /* libfdk-aac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfdk-aac.a"; path = "../../lib/fdk-aac/lib/libfdk-aac.a"; sourceTree = "<group>"; };
@@ -9623,12 +9626,13 @@
 		A131A0F11FC900FB002E5B8E /* CSAudio */ = {
 			isa = PBXGroup;
 			children = (
+				A131A1071FC900FB002E5B8E /* AudioEncoder */,
+				A131A0FC1FC900FB002E5B8E /* AudioDecoder */,
+				A131A0F61FC900FB002E5B8E /* AudioPlayer */,
+				A131A0F31FC900FB002E5B8E /* AudioResample */,
+				A1D9FD0D1FF5ED9600A70B6D /* AudioUtil */,
 				A12686B01FE8FAEA004629F7 /* CSAudioDemo.h */,
 				A131A0F21FC900FB002E5B8E /* CSAudioDemo.cpp */,
-				A131A0F31FC900FB002E5B8E /* AudioResample */,
-				A131A0F61FC900FB002E5B8E /* AudioPlayer */,
-				A131A0FC1FC900FB002E5B8E /* AudioDecoder */,
-				A131A1071FC900FB002E5B8E /* AudioEncoder */,
 				A131A10F1FC900FB002E5B8E /* CSAudio.h */,
 			);
 			path = CSAudio;
@@ -10205,6 +10209,15 @@
 				A1BE85971EB75E1D004B839C /* main.c */,
 			);
 			path = ffserver;
+			sourceTree = "<group>";
+		};
+		A1D9FD0D1FF5ED9600A70B6D /* AudioUtil */ = {
+			isa = PBXGroup;
+			children = (
+				A1D9FD151FF5EE9B00A70B6D /* CSAudioDataCache.cpp */,
+				A1D9FD161FF5EE9B00A70B6D /* CSAudioDataCache.h */,
+			);
+			path = AudioUtil;
 			sourceTree = "<group>";
 		};
 		A1F127E41EA12A7F00939FF3 = {
@@ -17486,6 +17499,7 @@
 				A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */,
 				A1D1CDBC1FAB473D0027C8AE /* MTVideoTransfer.cpp in Sources */,
 				A195CBC91FBB109B00F708F9 /* CSAudioShiftEffect.cpp in Sources */,
+				A1D9FD171FF5EE9B00A70B6D /* CSAudioDataCache.cpp in Sources */,
 				A131A1101FC900FB002E5B8E /* CSAudioDemo.cpp in Sources */,
 				A1DED09F1FD7C094005CD4EF /* CSVideoAnalysis.cpp in Sources */,
 				A131A1241FC904D6002E5B8E /* CSMediaBase.cpp in Sources */,
