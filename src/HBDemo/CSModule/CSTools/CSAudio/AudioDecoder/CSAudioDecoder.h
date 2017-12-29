@@ -109,7 +109,7 @@ protected:
     
     int  mAudioStreamIndex;
     
-    /***/
+    CSAudioDataCache   mAudioDataCacheObj;
     AVCodecContext    *mPInputAudioCodecCtx;
     AVCodec           *mPInputAudioCodec;
     struct SwrContext *mPAudioResampleCtx;

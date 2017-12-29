@@ -9,6 +9,7 @@ int CSAudioDemo_AudioDecoder() {
     AudioParams targetAudioParam;
     audioParamInit(&targetAudioParam);
     targetAudioParam.sample_rate = 41000;
+    targetAudioParam.nb_samples = 1024;
     
     HBMedia::CSAudioDecoder* pAudioDecoder = new HBMedia::CSAudioDecoder();
     pAudioDecoder->setInMediaType(MD_TYPE_COMPRESS);

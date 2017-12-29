@@ -27,8 +27,6 @@
 		A131A1111FC900FB002E5B8E /* CSAudioResample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A0F41FC900FB002E5B8E /* CSAudioResample.cpp */; };
 		A131A1121FC900FB002E5B8E /* audio_player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A0FA1FC900FB002E5B8E /* audio_player.cpp */; };
 		A131A1131FC900FB002E5B8E /* CSAudioDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A1001FC900FB002E5B8E /* CSAudioDecoder.cpp */; };
-		A131A1151FC900FB002E5B8E /* CSAudioEncoderOld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A1091FC900FB002E5B8E /* CSAudioEncoderOld.cpp */; };
-		A131A1161FC900FB002E5B8E /* AudioEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A10A1FC900FB002E5B8E /* AudioEncoder.cpp */; };
 		A131A11F1FC9013E002E5B8E /* CSPicture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A1191FC9013E002E5B8E /* CSPicture.cpp */; };
 		A131A1201FC9013E002E5B8E /* HBPictureDemo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A11E1FC9013E002E5B8E /* HBPictureDemo.cpp */; };
 		A131A1241FC904D6002E5B8E /* CSMediaBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A131A1221FC904D6002E5B8E /* CSMediaBase.cpp */; };
@@ -2975,10 +2973,6 @@
 		A131A0FB1FC900FB002E5B8E /* xiaoqingge.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = xiaoqingge.mp3; sourceTree = "<group>"; };
 		A131A1001FC900FB002E5B8E /* CSAudioDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioDecoder.cpp; sourceTree = "<group>"; };
 		A131A1041FC900FB002E5B8E /* CSAudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioDecoder.h; sourceTree = "<group>"; };
-		A131A1091FC900FB002E5B8E /* CSAudioEncoderOld.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioEncoderOld.cpp; sourceTree = "<group>"; };
-		A131A10A1FC900FB002E5B8E /* AudioEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioEncoder.cpp; sourceTree = "<group>"; };
-		A131A10B1FC900FB002E5B8E /* CSAudioEncoderOld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioEncoderOld.h; sourceTree = "<group>"; };
-		A131A10D1FC900FB002E5B8E /* AudioEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioEncoder.h; sourceTree = "<group>"; };
 		A131A10F1FC900FB002E5B8E /* CSAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudio.h; sourceTree = "<group>"; };
 		A131A1181FC9013E002E5B8E /* HBPictureDemo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HBPictureDemo.h; sourceTree = "<group>"; };
 		A131A1191FC9013E002E5B8E /* CSPicture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSPicture.cpp; sourceTree = "<group>"; };
@@ -9578,6 +9572,7 @@
 		A131A0DF1FC90055002E5B8E /* CSTools */ = {
 			isa = PBXGroup;
 			children = (
+				A1D9FD191FF62CCA00A70B6D /* CSHWMedia */,
 				A131A1211FC904D6002E5B8E /* CSMediaBase */,
 				A131A1171FC9013E002E5B8E /* CSPicture */,
 				A131A0F11FC900FB002E5B8E /* CSAudio */,
@@ -9671,10 +9666,6 @@
 		A131A1071FC900FB002E5B8E /* AudioEncoder */ = {
 			isa = PBXGroup;
 			children = (
-				A131A1091FC900FB002E5B8E /* CSAudioEncoderOld.cpp */,
-				A131A10A1FC900FB002E5B8E /* AudioEncoder.cpp */,
-				A131A10B1FC900FB002E5B8E /* CSAudioEncoderOld.h */,
-				A131A10D1FC900FB002E5B8E /* AudioEncoder.h */,
 				A10A0F161FF145560036A410 /* CSAudioEncoder.cpp */,
 				A10A0F171FF145560036A410 /* CSAudioEncoder.h */,
 			);
@@ -10218,6 +10209,21 @@
 				A1D9FD161FF5EE9B00A70B6D /* CSAudioDataCache.h */,
 			);
 			path = AudioUtil;
+			sourceTree = "<group>";
+		};
+		A1D9FD191FF62CCA00A70B6D /* CSHWMedia */ = {
+			isa = PBXGroup;
+			children = (
+				A1D9FD1A1FF62CCA00A70B6D /* MAC */,
+			);
+			path = CSHWMedia;
+			sourceTree = "<group>";
+		};
+		A1D9FD1A1FF62CCA00A70B6D /* MAC */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = MAC;
 			sourceTree = "<group>";
 		};
 		A1F127E41EA12A7F00939FF3 = {
@@ -17526,7 +17532,6 @@
 				A19A67E41EB3460100DE8F11 /* simplest_ffmpeg_swscale.cpp in Sources */,
 				A100E2991FE8F0FE00F1783C /* Srv_gifCreateInterface.cpp in Sources */,
 				A15BB0EE1F42C2DA00AFE839 /* CSPacketQueue.cpp in Sources */,
-				A131A1151FC900FB002E5B8E /* CSAudioEncoderOld.cpp in Sources */,
 				A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */,
 				A181BC6F1F6517BD00B34FD0 /* CSThreadContext.cpp in Sources */,
 				A100E2961FE8F0FE00F1783C /* MTGIF.cpp in Sources */,
@@ -17543,7 +17548,6 @@
 				A19A67CD1EB3433900DE8F11 /* simplest_ffmpeg_muxer.cpp in Sources */,
 				A131A0EC1FC900B0002E5B8E /* CSVideoDecoder.cpp in Sources */,
 				A131A0EE1FC900B0002E5B8E /* CSVideoScale.cpp in Sources */,
-				A131A1161FC900FB002E5B8E /* AudioEncoder.cpp in Sources */,
 				A19A67DA1EB3445600DE8F11 /* simplest_ffmpeg_video_filter.cpp in Sources */,
 				A17F028F1FBB52F5009B03F0 /* CSVideoUtil.cpp in Sources */,
 				A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */,
