@@ -104,6 +104,16 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
                 pInFrame = nullptr;
             }
             
+            if (pAudioDecoder->mAudioDataCacheObj.WriteDataToCache(pOutFrame) != 1)
+                LOGE("[Work task: <Decoder>] Buffer audio frame data failed !");
+            disposeImageFrame(&pOutFrame);
+            
+            if (pAudioDecoder->mAudioDataCacheObj.ReadDataFromCache(&pOutFrame) != 1) {
+                if (pOutFrame)
+                    disposeImageFrame(&pOutFrame);
+                continue;
+            }
+            
             if (pAudioDecoder->_DoExport(&pOutFrame) != HB_OK) {
                 disposeImageFrame(&pOutFrame);
             }
@@ -124,19 +134,40 @@ DECODE_THREAD_EXIT_LABEL:
     return nullptr;
 }
 
+void CSAudioDecoder::_flushAudioCache() {
+    AVFrame *pNewFrame = nullptr;
+    int HBError = HB_OK;
+    
+    while ((S_NOT_EQ(mState, S_ABORT)) && (mAudioDataCacheObj.CacheInitial() > 0))
+    {
+        HBError = mAudioDataCacheObj.FlushDataCache(&pNewFrame);
+        if (HBError != 1) {
+            if (pNewFrame)
+                disposeImageFrame(&pNewFrame);
+            if (HBError == -2)
+                break;
+            continue;
+        }
+        
+        if (_DoExport(&pNewFrame) != HB_OK) {
+            disposeImageFrame(&pNewFrame);
+        }
+    }
+}
+    
 void CSAudioDecoder::_flush() {
-    if (S_EQ(mState, S_ABORT))
-        return;
-    
-    mState |= S_ENCODE_FLUSHING;
-    avcodec_send_packet(mPInputAudioCodecCtx, NULL);
-    
     int HbError = HB_OK;
     AVFrame *pInFrame = nullptr;
     AVFrame *pOutFrame = nullptr;
+    
+    mState |= S_ENCODE_FLUSHING;
+    avcodec_send_packet(mPInputAudioCodecCtx, NULL);
     while (true) {
         pInFrame = nullptr;
         pOutFrame = nullptr;
+        
+        if (S_EQ(mState, S_ABORT))
+            break;
         
         pInFrame = av_frame_alloc();
         if (!pInFrame) {
@@ -174,12 +205,25 @@ void CSAudioDecoder::_flush() {
             pInFrame = nullptr;
         }
         
+        if (mAudioDataCacheObj.WriteDataToCache(pOutFrame) != 1)
+            LOGE("[Work task: <Decoder>] Buffer audio frame data failed !");
+        disposeImageFrame(&pOutFrame);
+        
+        if (mAudioDataCacheObj.ReadDataFromCache(&pOutFrame) != 1) {
+            if (pOutFrame)
+                disposeImageFrame(&pOutFrame);
+            continue;
+        }
+        
         if (_DoExport(&pOutFrame) != HB_OK) {
             if (pOutFrame->opaque)
                 av_freep(pOutFrame->opaque);
             av_frame_free(&pOutFrame);
         }
     }
+    
+    /** 刷新音频数据缓冲区 */
+    _flushAudioCache();
     
     if (pInFrame) {
         if (pInFrame->opaque)
@@ -242,6 +286,12 @@ int CSAudioDecoder::prepare() {
     if (_ResampleInitial() != HB_OK) {
         LOGE("Audio resample initail failed !");
         goto AUDIO_DECODER_PREPARE_END_LABEL;
+    }
+    
+    mAudioDataCacheObj.setAudioParams(&mTargetAudioParams);
+    if(HB_OK != mAudioDataCacheObj.CacheInitial()) {
+        LOGE("Audio decoder initial audio inner data buffer failed !");
+        return HB_ERROR;
     }
     
     mState |= S_PREPARED;
@@ -483,21 +533,6 @@ int CSAudioDecoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
     }
     
     pTargetFrame->opaque = pTargetFrame->data[0];
-
-#if 0
-    if (av_sample_fmt_is_planar(getAudioInnerFormat(mSrcAudioParams.pri_sample_fmt))) {
-        /** TODO:  huangcl  */
-//        int plane_size= pInFrame->nb_samples \
-//                            * av_get_bytes_per_sample((enum AVSampleFormat)(getAudioInnerFormat(mSrcAudioParams.pri_sample_fmt) & 0xFF));
-//        pInFrame->data[0]+i*plane_size;
-        for (int i=0; i<mSrcAudioParams.channels; i++) {
-            pInAudioBuffer[i] = pInFrame->data[i];
-        }
-    }
-    else
-        pInAudioBuffer[0] = pInFrame->data[0];
-#endif
-    
     HBError = swr_convert(mPAudioResampleCtx, pTargetFrame->data, pTargetFrame->nb_samples, \
                           (const uint8_t **)pInFrame->data, pInFrame->nb_samples);
     if (HBError < 0) {
@@ -512,11 +547,8 @@ int CSAudioDecoder::_DoResample(AVFrame *pInFrame, AVFrame **pOutFrame) {
     return HB_OK;
 
 AUDIO_RESAMPLE_END_LABEL:
-    if (pTargetFrame) {
-        if (pTargetFrame->opaque)
-            av_freep(pTargetFrame->opaque);
-        av_frame_free(&pTargetFrame);
-    }
+    if (pTargetFrame)
+        disposeImageFrame(&pTargetFrame);
     return HB_ERROR;
 }
 

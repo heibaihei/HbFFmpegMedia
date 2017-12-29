@@ -517,21 +517,8 @@ int CSAudioEncoder::_DoResample(const AVFrame *pInFrame, AVFrame **pOutFrame) {
     }
     
     pTargetFrame->opaque = pTargetFrame->data[0];
-    if (av_sample_fmt_is_planar(getAudioInnerFormat(mSrcAudioParams.pri_sample_fmt))) {
-        /** TODO:  huangcl  */
-        //        int plane_size= pInFrame->nb_samples \
-        //                            * av_get_bytes_per_sample((enum AVSampleFormat)(getAudioInnerFormat(mSrcAudioParams.pri_sample_fmt) & 0xFF));
-        //        pInFrame->data[0]+i*plane_size;
-        for (int i=0; i<mSrcAudioParams.channels; i++) {
-            pInAudioBuffer[i] = pInFrame->data[i];
-        }
-    }
-    else {
-        pInAudioBuffer[0] = pInFrame->data[0];
-    }
-    
     HBError = swr_convert(mPAudioResampleCtx, pTargetFrame->data, pTargetFrame->nb_samples, \
-                          (const uint8_t **)pInAudioBuffer, pInFrame->nb_samples);
+                          (const uint8_t **)pInFrame->data, pInFrame->nb_samples);
     if (HBError < 0) {
         LOGE("[Work task: <Encoder>] Audio resample swr convert failed ! %s", av_err2str(HBError));
         goto AUDIO_RESAMPLE_END_LABEL;

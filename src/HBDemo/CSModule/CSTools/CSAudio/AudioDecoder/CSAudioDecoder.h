@@ -74,6 +74,8 @@ protected:
      */
     void _flush();
     
+    void _flushAudioCache();
+    
     /**
      *  解码器初始化、启动、关闭、释放
      */

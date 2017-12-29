@@ -29,9 +29,7 @@ int CSAudioDemo_AudioDecoder() {
             case 0:
                 {
                     if (pNewFrame) {
-                        if (pNewFrame->opaque)
-                            av_freep(pNewFrame->opaque);
-                        av_frame_free(&pNewFrame);
+                        disposeImageFrame(&pNewFrame);
                     }
                 }
                 break;

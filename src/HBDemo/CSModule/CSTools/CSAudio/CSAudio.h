@@ -14,7 +14,6 @@ typedef enum _AudioDataType {
 
 #include "CSCommon.h"
 
-#include "AudioEncoder/AudioEncoder.h"
 #include "CSPacketQueue.h"
 
 #include "CSAudioResample.h"
