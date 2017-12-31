@@ -555,7 +555,7 @@ void CSAudioEncoder::_flushDataCache() {
     AVFrame *pNewFrame = nullptr;
     int HBError = HB_OK;
 
-    while ((S_NOT_EQ(mState, S_ABORT)) && (mAudioDataCacheObj.CacheInitial() > 0))
+    while ((S_NOT_EQ(mState, S_ABORT)) && (mAudioDataCacheObj.getCacheSize() > 0))
     {
         HBError = mAudioDataCacheObj.FlushDataCache(&pNewFrame);
         if (HBError != 1) {
@@ -598,7 +598,7 @@ void CSAudioEncoder::_flushDataCache() {
     }
     
     LOGI("[Work task: <Encoder>] Source frame queue size:%d, audio fifo size:%d", \
-         mSrcFrameQueue->queueLength(), mAudioDataCacheObj.CacheInitial());
+         mSrcFrameQueue->queueLength(), mAudioDataCacheObj.getCacheSize());
     av_packet_free(&pNewPacket);
 }
 
