@@ -17,13 +17,12 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
         return nullptr;
     }
     
+    int HBError = HB_ERROR;
     ThreadParam_t  *pThreadParams = (ThreadParam_t *)arg;
     CSAudioDecoder *pDecoder = (CSAudioDecoder *)(pThreadParams->mThreadArgs);
     
-    int HBError = HB_ERROR;
-    AVFrame *pInFrame = nullptr;
-    AVFrame *pOutFrame = nullptr;
-    AVPacket* pNewPacket = av_packet_alloc();
+    AVFrame  *pInFrame = nullptr, *pOutFrame = nullptr;
+    AVPacket *pNewPacket = av_packet_alloc();
     if (!pNewPacket) {
         pDecoder->mState |= S_ABORT;
         LOGE("[Work task: <Decoder>] Malloc new packet failed !");
@@ -124,6 +123,8 @@ void* CSAudioDecoder::ThreadFunc_Audio_Decoder(void *arg) {
 DECODE_THREAD_EXIT_LABEL:
     if (pNewPacket)
         av_packet_free(&pNewPacket);
+    disposeImageFrame(&pInFrame);
+    disposeImageFrame(&pOutFrame);
     
     pDecoder->_flush();
     
@@ -158,8 +159,7 @@ void CSAudioDecoder::_flushDataCache() {
     
 void CSAudioDecoder::_flush() {
     int HbError = HB_OK;
-    AVFrame *pInFrame = nullptr;
-    AVFrame *pOutFrame = nullptr;
+    AVFrame *pInFrame = nullptr, *pOutFrame = nullptr;
     
     mState |= S_ENCODE_FLUSHING;
     avcodec_send_packet(mPInputAudioCodecCtx, NULL);
@@ -167,7 +167,7 @@ void CSAudioDecoder::_flush() {
         pInFrame = nullptr;
         pOutFrame = nullptr;
         
-        if (S_EQ(mState, S_ABORT))
+        if (S_EQ(mState, S_ABORT) || S_EQ(mState, S_DECODE_ABORT))
             break;
         
         pInFrame = av_frame_alloc();
@@ -183,6 +183,8 @@ void CSAudioDecoder::_flush() {
                 mState |= S_DECODE_ABORT;
                 LOGE("[Work task: <Decoder>] Flush audio frame abort !");
             }
+            else
+                LOGI("[Work task: <Decoder>] Flush audio, %s !", av_err2str(HbError));
             break;
         }
         
@@ -194,10 +196,7 @@ void CSAudioDecoder::_flush() {
                 LOGE("[Work task: <Decoder>] Audio decoder resample failed !");
             }
             
-            if (pInFrame->opaque)
-                av_freep(pInFrame->opaque);
-            av_frame_free(&pInFrame);
-            
+            disposeImageFrame(&pInFrame);
             if (!IsResampleSuccess)
                 continue;
         }
@@ -217,27 +216,15 @@ void CSAudioDecoder::_flush() {
         }
         
         if (_DoExport(&pOutFrame) != HB_OK) {
-            if (pOutFrame->opaque)
-                av_freep(pOutFrame->opaque);
-            av_frame_free(&pOutFrame);
+            disposeImageFrame(&pOutFrame);
         }
     }
     
+    disposeImageFrame(&pInFrame);
+    disposeImageFrame(&pOutFrame);
+    
     /** 刷新音频数据缓冲区 */
     _flushDataCache();
-    
-    if (pInFrame) {
-        if (pInFrame->opaque)
-            av_freep(&(pInFrame->opaque));
-        av_frame_free(&pInFrame);
-    }
-    
-    if (pOutFrame) {
-        if (pOutFrame->opaque)
-            av_freep(&(pOutFrame->opaque));
-        av_frame_free(&pOutFrame);
-    }
-
     LOGI("[Work task: <Decoder>] Audio decoder flushed all buffer !");
 }
 
