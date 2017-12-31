@@ -506,7 +506,7 @@ int CSAudioEncoder::_DoResample(const AVFrame *pInFrame, AVFrame **pOutFrame) {
      *  将以 "时钟基c" 表示的 数值a 转换成以 "时钟基b" 来表示, "a * b / c" 的值并分五种方式来取整
      */
     pTargetFrame->nb_samples = \
-    (int)av_rescale_rnd(swr_get_delay(mPAudioResampleCtx, mTargetAudioParams.sample_rate) + pInFrame->nb_samples,\
+    (int)av_rescale_rnd(swr_get_delay(mPAudioResampleCtx, mSrcAudioParams.sample_rate) + pInFrame->nb_samples,\
                         mTargetAudioParams.sample_rate, mSrcAudioParams.sample_rate, AV_ROUND_UP);
     
     HBError = av_samples_alloc(pTargetFrame->data, &pTargetFrame->linesize[0],
@@ -527,6 +527,7 @@ int CSAudioEncoder::_DoResample(const AVFrame *pInFrame, AVFrame **pOutFrame) {
     pTargetFrame->pts = (int64_t)av_rescale_q(pInFrame->pts, \
                                               (AVRational){1, mSrcAudioParams.sample_rate},
                                               (AVRational){1, mTargetAudioParams.sample_rate});
+    pTargetFrame->nb_samples = HBError;
     *pOutFrame = pTargetFrame;
     return HB_OK;
     
