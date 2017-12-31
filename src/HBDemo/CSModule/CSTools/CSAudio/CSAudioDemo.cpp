@@ -28,6 +28,8 @@ int CSAudioDemo_AudioDecoder() {
         switch (HbErr) {
             case 0:
                 {
+                    LOGI("[Main-Test] >>> Get frame:%lld, %lf", pNewFrame->pts, \
+                         pNewFrame->pts * av_q2d(AV_TIME_BASE_Q));
                     if (pNewFrame) {
                         disposeImageFrame(&pNewFrame);
                     }

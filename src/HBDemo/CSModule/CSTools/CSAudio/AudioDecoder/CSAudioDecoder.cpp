@@ -140,7 +140,7 @@ void CSAudioDecoder::_flushDataCache() {
     AVFrame *pNewFrame = nullptr;
     int HBError = HB_OK;
     
-    while ((S_NOT_EQ(mState, S_ABORT)) && (mAudioDataCacheObj.CacheInitial() > 0))
+    while ((S_NOT_EQ(mState, S_ABORT)) && (mAudioDataCacheObj.getCacheSize() > 0))
     {
         HBError = mAudioDataCacheObj.FlushDataCache(&pNewFrame);
         if (HBError != 1) {
@@ -155,6 +155,7 @@ void CSAudioDecoder::_flushDataCache() {
             disposeImageFrame(&pNewFrame);
         }
     }
+    LOGI("[Work task: <Decoder>] >>> Audio cache:%d", mAudioDataCacheObj.getCacheSize());
 }
     
 void CSAudioDecoder::_flush() {
