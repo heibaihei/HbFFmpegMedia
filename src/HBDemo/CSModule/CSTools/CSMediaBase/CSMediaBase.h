@@ -72,11 +72,24 @@ namespace HBMedia {
         void setOutMediaFile(char *file);
         char *getOutMediaFile() { return mTrgMediaFile; }
 
+        /**
+         *  音频参数参数信息
+         */
         void setInAudioMediaParams(AudioParams& pParams);
         AudioParams *getInAudioMediaParams() { return &mSrcAudioParams; }
         
         void setOutAudioMediaParams(AudioParams& pParams);
         AudioParams *getOutAudioMediaParams() { return &mTargetAudioParams; }
+        
+        /**
+         *  视频媒体参数信息
+         */
+        void setInImageMediaParams(ImageParams& pParams);
+        ImageParams *getInImageMediaParams() { return &mSrcVideoParams; }
+        
+        void setOutImageMediaParams(ImageParams& pParams);
+        ImageParams *getOutImageMediaParams() { return &mTargetVideoParams; }
+        
     protected:
         int _InMediaInitial();
 

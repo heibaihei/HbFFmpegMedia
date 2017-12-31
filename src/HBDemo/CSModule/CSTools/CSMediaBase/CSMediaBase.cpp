@@ -181,5 +181,13 @@ void CSMediaBase::setInAudioMediaParams(AudioParams& pParams) {
 void CSMediaBase::setOutAudioMediaParams(AudioParams& pParams) {
     mTargetAudioParams = pParams;
 }
+    
+void CSMediaBase::setInImageMediaParams(ImageParams& pParams) {
+    mSrcVideoParams = pParams;
+}
+    
+void CSMediaBase::setOutImageMediaParams(ImageParams& pParams) {
+    mTargetVideoParams = pParams;
+}
 
 }
