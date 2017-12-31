@@ -83,7 +83,7 @@ int CSAudioDemo_AudioEncoder()
     {
         AudioParams targetAudioParam;
         audioParamInit(&targetAudioParam);
-        targetAudioParam.sample_rate = 41000;
+        targetAudioParam.sample_rate = 44100;
         targetAudioParam.pri_sample_fmt = CS_SAMPLE_FMT_S16;
         
         HBMedia::CSAudioDecoder* pAudioDecoder = new HBMedia::CSAudioDecoder();
