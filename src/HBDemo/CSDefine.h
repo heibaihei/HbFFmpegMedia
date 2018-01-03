@@ -54,6 +54,11 @@
 //#define SOUND_TOUCH_MODULE_EXCLUDE  1
 //#define LIBYUV_MODULE_EXCLUDE  1
 
+/* Minimum SDL audio buffer size, in samples. */
+#define SDL_AUDIO_MIN_BUFFER_SIZE 512
+/* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
+#define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
+
 typedef struct KeyFramePts {
     int64_t audioPts;
     int64_t videoPts;
@@ -221,6 +226,17 @@ typedef enum STREAM_TYPE {
     CS_STREAM_TYPE_DATA      = 0x04,
     CS_STREAM_TYPE_ALL       = 0x07,
 } STREAM_TYPE;
+
+/** 内部帧 */
+typedef struct CSFrame {
+    uint8_t    *mData;
+    int         mDataLineSize[AV_NUM_DATA_POINTERS];
+    int         mStreamIndex;
+    int         mFrameType;
+    void       *mOpaque;
+    ImageParams mImageParam;
+    AudioParams mAudioParam;
+} CSFrame;
 
 #define CS_COMMON_RESOURCE_ROOT_PATH "/Users/zj-db0519/work/resource/folder"
 

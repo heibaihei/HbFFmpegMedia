@@ -134,7 +134,7 @@ void CSVideoAnalysis::_collectFrameInfo(AVFrame *pFrame, AVMediaType type) {
              pFrame->sample_aspect_ratio.num, pFrame->sample_aspect_ratio.den);
         
         LOGI("         (%lf) ===> PTS<%lld> BestPTS<%lld> DTS<%lld> codecd_no<%d> display_no<%d>", \
-             tfExternPts,  pFrame->pts, pFrame->best_effort_timestamp, pFrame->pkt_dts, \
+             tfExternPts,  pFrame->pts, av_frame_get_best_effort_timestamp(pFrame), pFrame->pkt_dts, \
              pFrame->coded_picture_number, pFrame->display_picture_number);
     }
 }

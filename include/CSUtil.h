@@ -17,6 +17,7 @@ extern "C" {
 #include "libavformat/avformat.h"
 #include "libswresample/swresample.h"
 #include "libavutil/mem.h"
+#include "libavutil/time.h"
 #include "libavutil/imgutils.h"
 #include "libavutil/samplefmt.h"
 #include "libavutil/error.h"

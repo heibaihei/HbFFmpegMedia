@@ -141,7 +141,7 @@ CSVideoEncoder::CSVideoEncoder() {
 }
 
 CSVideoEncoder::~CSVideoEncoder() {
-    
+    release();
 }
 
 int CSVideoEncoder::prepare() {

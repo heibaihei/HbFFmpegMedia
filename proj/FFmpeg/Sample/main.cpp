@@ -45,7 +45,7 @@ int main(int argc, const char * argv[]) {
 //                CSVideoDemo_VideoTransfor();
             }
             {/** 视频分析 */
-//                CSVideoDemo_VideoAnalysis();
+                CSVideoDemo_VideoAnalysis();
             }
         }
         {/** Audio */
@@ -53,7 +53,7 @@ int main(int argc, const char * argv[]) {
                 
             }
             {/** 音频解码 */
-                CSAudioDemo_AudioDecoder();
+//                CSAudioDemo_AudioDecoder();
             }
             {/** 音频转码 */
 //                CSAudioDemo_AudioEncoder();
