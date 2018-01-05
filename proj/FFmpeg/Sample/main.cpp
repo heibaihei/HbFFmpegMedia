@@ -45,18 +45,18 @@ int main(int argc, const char * argv[]) {
 //                CSVideoDemo_VideoTransfor();
             }
             {/** 视频分析 */
-                CSVideoDemo_VideoAnalysis();
+//                CSVideoDemo_VideoAnalysis();
             }
         }
         {/** Audio */
             {/** 音频编码 */
-                
+//                CSAudioDemo_AudioEncoder();
             }
             {/** 音频解码 */
 //                CSAudioDemo_AudioDecoder();
             }
-            {/** 音频转码 */
-//                CSAudioDemo_AudioEncoder();
+            {/** 音频播放器 */
+                CSAudioDemo_AudioPlayer();
             }
             {/** 音频分析 */
                 

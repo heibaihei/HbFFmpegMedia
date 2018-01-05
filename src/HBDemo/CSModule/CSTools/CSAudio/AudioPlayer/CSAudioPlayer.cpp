@@ -67,9 +67,12 @@ void CSAudioPlayer::CSAudioCallback(void *opaque, uint8_t *pOutDataBuffer, int o
 }
 
 CSAudioPlayer::CSAudioPlayer() {
+    mTmpAudioDataBufferSize = 0;
+    mTmpAudioDataBuffer = nullptr;
     mAudioDataRoundBufferSize = 0;
     mAudioDataRoundBuffer = nullptr;
-    mAbort = false;
+    mVolume = 1.0f;
+    mAudioPlayedBytes = 0;
     pthread_cond_init(&mAudioDataBufferCond, NULL);
     pthread_mutex_init(&mAudioDataBufferMutex, NULL);
 }
@@ -77,10 +80,27 @@ CSAudioPlayer::CSAudioPlayer() {
 CSAudioPlayer::~CSAudioPlayer() {
     
 }
+
+int CSAudioPlayer::pause() {
+    _pause(true);
+    return HB_OK;
+}
+
+int CSAudioPlayer::start() {
+    _pause(false);
+    return HB_OK;
+}
+
+int CSAudioPlayer::_pause(bool bDoPause) {
     
+    SDL_PauseAudio(bDoPause);
+    
+    return HB_OK;
+}
+
 int CSAudioPlayer::prepare() {
     mAbort = false;
-    if (_Open() != HB_OK) {
+    if (_Open() < 0) {
         LOGE("Audio player open failed !");
         return HB_ERROR;
     }
@@ -89,6 +109,14 @@ int CSAudioPlayer::prepare() {
     mVolume = 1.0f;
     mAudioPlayedBytes = 0;
     mAudioDataRoundBuffer = rbuf_create(mAudioDataRoundBufferSize << 1);
+    if (!mAudioDataRoundBuffer) {
+        LOGE("Audio player >>> Create audio round buffer failed !");
+        return HB_ERROR;
+    }
+    if (pause() != HB_OK) {
+        return HB_ERROR;
+    }
+    
     return HB_OK;
 }
 

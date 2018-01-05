@@ -1,7 +1,63 @@
 #include "CSAudioDemo.h"
 #include "CSAudioDecoder.h"
 #include "CSAudioEncoder.h"
+#include "CSAudioPlayer.h"
 
+
+int CSAudioDemo_AudioPlayer() {
+    /** 视频解码，将裸数据以内存缓存队列的方式输出解码数据，内部解码线程以最大的缓冲节点数缓冲解码后的数据，外部通过获取节点的方式进行取帧操作 */
+    AudioParams targetAudioParam;
+    audioParamInit(&targetAudioParam);
+    targetAudioParam.sample_rate = 44100;
+    targetAudioParam.channels = 2;
+    targetAudioParam.pri_sample_fmt = CS_SAMPLE_FMT_S16;
+    targetAudioParam.nb_samples = 1024;
+    
+    /** 解码器初始化 */
+    HBMedia::CSAudioDecoder* pAudioDecoder = new HBMedia::CSAudioDecoder();
+    pAudioDecoder->setInMediaType(MD_TYPE_COMPRESS);
+    pAudioDecoder->setOutMediaType(MD_TYPE_RAW_BY_MEMORY);
+    pAudioDecoder->setOutAudioMediaParams(targetAudioParam);
+    pAudioDecoder->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/100.mp4");
+    pAudioDecoder->prepare();
+    pAudioDecoder->start();
+    
+    /** 播放器初始化 */
+    HBMedia::CSAudioPlayer* pAudioPlayer = new HBMedia::CSAudioPlayer();
+    pAudioPlayer->setOutAudioMediaParams(targetAudioParam);
+    pAudioPlayer->prepare();
+    pAudioPlayer->start();
+    
+    int HbErr = 0;
+    AVFrame *pNewFrame = nullptr;
+    while (true) {
+        pNewFrame = nullptr;
+        HbErr = pAudioDecoder->receiveFrame(&pNewFrame);
+        switch (HbErr) {
+            case 0:
+            {
+                pAudioPlayer->sendFrame(pNewFrame);
+                //                    LOGI("[Main-Test] >>> Get frame:%lld, %lf", pNewFrame->pts, \
+                pNewFrame->pts * av_q2d(AV_TIME_BASE_Q));
+                if (pNewFrame) {
+                    disposeImageFrame(&pNewFrame);
+                }
+            }
+                break;
+            case -2:
+            case -3:
+                goto RECEIVED_END_LABEL;
+            default:
+                break;
+        }
+    }
+    
+RECEIVED_END_LABEL:
+    pAudioDecoder->stop();
+    pAudioDecoder->release();
+
+    return HB_OK;
+}
 
 int CSAudioDemo_AudioDecoder() {
     /** 视频解码，将裸数据以内存缓存队列的方式输出解码数据，内部解码线程以最大的缓冲节点数缓冲解码后的数据，外部通过获取节点的方式进行取帧操作 */

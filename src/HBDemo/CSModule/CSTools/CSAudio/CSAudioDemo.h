@@ -20,4 +20,8 @@ int CSAudioDemo_AudioDecoder();
  */
 int CSAudioDemo_AudioEncoder();
 
+/**
+ *  音频播放器
+ */
+int CSAudioDemo_AudioPlayer();
 #endif

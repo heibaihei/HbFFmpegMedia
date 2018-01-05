@@ -33,10 +33,21 @@ public:
      */
     int prepare();
     
+    int pause();
+    
+    int start();
+    
     int sendFrame(AVFrame *pFrame);
     
 protected:
     
+    int _pause(bool bDoPause);
+    
+    /**
+     * 打开音频设备
+     * @return > 0 音频设备打开成功;
+     *         <=0 音频设备打开失败
+     */
     int _Open();
     
 private:
@@ -44,7 +55,6 @@ private:
     uint8_t        *mTmpAudioDataBuffer;
     float           mVolume;
     int64_t         mAudioPlayedBytes;
-    bool            mAbort;
     int             mAudioDataRoundBufferSize;
     rbuf_t*         mAudioDataRoundBuffer;
     pthread_mutex_t mAudioDataBufferMutex;
