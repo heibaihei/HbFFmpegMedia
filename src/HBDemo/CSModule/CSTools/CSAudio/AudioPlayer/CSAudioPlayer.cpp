@@ -45,16 +45,18 @@ void CSAudioPlayer::CSAudioCallback(void *opaque, uint8_t *pOutDataBuffer, int o
     
     pthread_mutex_lock(&(pAudioPlayer->mAudioDataBufferMutex));
     while (true) {
-        if (pAudioPlayer->mAbort)
+        if (pAudioPlayer->mAbort || pAudioPlayer->mPlayerState != S_PLAY_START) {
+            memset(pOutDataBuffer, 0x00, outLength);
             break;
+        }
 
         int iReadLength = rbuf_read(pAudioPlayer->mAudioDataRoundBuffer, (u_char*)pTmpDataBuffer, iWantLength);
         pAudioPlayer->mAudioPlayedBytes += iReadLength;
+        pthread_cond_signal(&(pAudioPlayer->mAudioDataBufferCond));
         
         if (iReadLength < iWantLength) {
             iWantLength -= iReadLength;
             pTmpDataBuffer += iReadLength;
-            pthread_cond_signal(&(pAudioPlayer->mAudioDataBufferCond));
             pthread_cond_wait(&(pAudioPlayer->mAudioDataBufferCond), &(pAudioPlayer->mAudioDataBufferMutex));
         } else {
             iWantLength -= iReadLength;
@@ -63,7 +65,6 @@ void CSAudioPlayer::CSAudioCallback(void *opaque, uint8_t *pOutDataBuffer, int o
         }
     }
     pthread_mutex_unlock(&(pAudioPlayer->mAudioDataBufferMutex));
-    pthread_cond_signal(&(pAudioPlayer->mAudioDataBufferCond));
 }
 
 CSAudioPlayer::CSAudioPlayer() {
@@ -72,6 +73,7 @@ CSAudioPlayer::CSAudioPlayer() {
     mAudioDataRoundBufferSize = 0;
     mAudioDataRoundBuffer = nullptr;
     mVolume = 1.0f;
+    mPlayerState = S_PLAY_UNKNOWN;
     mAudioPlayedBytes = 0;
     pthread_cond_init(&mAudioDataBufferCond, NULL);
     pthread_mutex_init(&mAudioDataBufferMutex, NULL);
@@ -93,26 +95,44 @@ int CSAudioPlayer::start() {
 
 int CSAudioPlayer::_pause(bool bDoPause) {
     
-    SDL_PauseAudio(bDoPause);
+    if (mPlayerState == S_PLAY_PREPARED) {
+        /** 初始化状态允许 */
+    }
+    else if ((bDoPause == true && mPlayerState == S_PLAY_PAUSE) \
+        || (bDoPause == false && mPlayerState != S_PLAY_PAUSE)) {
+        return HB_OK;
+    }
     
+    if (bDoPause == true)
+        mPlayerState = S_PLAY_PAUSE;
+    else
+        mPlayerState = S_PLAY_START;
+    
+    /** 通知 音频回调推出 */
+    pthread_cond_signal(&mAudioDataBufferCond);
+    SDL_PauseAudio(bDoPause);
     return HB_OK;
 }
 
 int CSAudioPlayer::prepare() {
     mAbort = false;
+    memset(&mState, 0x00, sizeof(mState));
     if (_Open() < 0) {
         LOGE("Audio player open failed !");
         return HB_ERROR;
     }
-    mTmpAudioDataBufferSize = 0;
-    mTmpAudioDataBuffer = nullptr;
+    
     mVolume = 1.0f;
     mAudioPlayedBytes = 0;
+    mTmpAudioDataBufferSize = 0;
+    mTmpAudioDataBuffer = nullptr;
     mAudioDataRoundBuffer = rbuf_create(mAudioDataRoundBufferSize << 1);
     if (!mAudioDataRoundBuffer) {
         LOGE("Audio player >>> Create audio round buffer failed !");
         return HB_ERROR;
     }
+    
+    mPlayerState = S_PLAY_PREPARED;
     if (pause() != HB_OK) {
         return HB_ERROR;
     }
@@ -131,13 +151,15 @@ int CSAudioPlayer::sendFrame(AVFrame *pFrame) {
     
     int iWantLength = iTmpAudioDataBufferSize;
     u_char *pTmpDataBuffer = mTmpAudioDataBuffer;
+    
     pthread_mutex_lock(&mAudioDataBufferMutex);
     while (!mAbort) {
         int iWriteLength = rbuf_write(mAudioDataRoundBuffer, pTmpDataBuffer, iWantLength);
+        pthread_cond_signal(&mAudioDataBufferCond);
+        
         if (iWriteLength < iWantLength) {
             pTmpDataBuffer += iWriteLength;
             iWantLength -= iWriteLength;
-            pthread_cond_signal(&mAudioDataBufferCond);
             pthread_cond_wait(&mAudioDataBufferCond, &mAudioDataBufferMutex);
         } else {
             iWantLength -= iWriteLength;
@@ -145,18 +167,15 @@ int CSAudioPlayer::sendFrame(AVFrame *pFrame) {
         }
     }
     pthread_mutex_unlock(&mAudioDataBufferMutex);
-    pthread_cond_signal(&mAudioDataBufferCond);
     return HB_OK;
 }
 
 int CSAudioPlayer::_Open() {
     SDL_AudioSpec wanted_spec, spec;
-    const char *env;
     static const int next_nb_channels[] = {0, 0, 1, 6, 2, 6, 4, 6};
     static const int next_sample_rates[] = {0, 44100, 48000, 96000, 192000};
     int next_sample_rate_idx = FF_ARRAY_ELEMS(next_sample_rates) - 1;
-    
-    env = SDL_getenv("SDL_AUDIO_CHANNELS");
+    const char * env = SDL_getenv("SDL_AUDIO_CHANNELS");
     if (env) {
         mTargetAudioParams.channels = atoi(env);
         mTargetAudioParams.channel_layout = av_get_default_channel_layout(mTargetAudioParams.channels);

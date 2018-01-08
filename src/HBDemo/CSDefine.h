@@ -85,13 +85,13 @@ typedef enum ErrorCode {
     AV_EXIT_NORMAL       = 1,
 } ErrorCode;
 
-typedef enum PlayerState_t{
-    S_PLAY_ERR   = -1,
-    S_PLAY_INIT  = 0,
-    S_PLAY_PROCESS = 1,
-    S_PLAY_ABORT = 2,
-    S_PLAY_PAUSE = 3,
-    S_PLAY_END   = 4,
+typedef enum PlayerState{
+    S_PLAY_UNKNOWN   = -1,
+    S_PLAY_PREPARED  = 0,
+    S_PLAY_START     = 1,
+    S_PLAY_PAUSE     = 2,
+    S_PLAY_STOPPED   = 3,
+    S_PLAY_ABORT     = 4,
 } PlayerState;
 
 /*音频效果配置参数*/

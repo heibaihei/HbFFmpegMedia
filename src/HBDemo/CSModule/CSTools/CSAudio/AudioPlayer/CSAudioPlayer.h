@@ -51,6 +51,7 @@ protected:
     int _Open();
     
 private:
+    PlayerState     mPlayerState;
     unsigned int    mTmpAudioDataBufferSize;
     uint8_t        *mTmpAudioDataBuffer;
     float           mVolume;
