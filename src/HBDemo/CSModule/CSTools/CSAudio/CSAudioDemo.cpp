@@ -10,6 +10,7 @@ int CSAudioDemo_AudioPlayer() {
     audioParamInit(&targetAudioParam);
     targetAudioParam.sample_rate = 44100;
     targetAudioParam.channels = 2;
+    targetAudioParam.channel_layout = av_get_default_channel_layout(targetAudioParam.channels);
     targetAudioParam.pri_sample_fmt = CS_SAMPLE_FMT_S16;
     targetAudioParam.nb_samples = 1024;
     

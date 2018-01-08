@@ -141,7 +141,9 @@ int CSAudioPlayer::prepare() {
 }
 
 int CSAudioPlayer::sendFrame(AVFrame *pFrame) {
-
+    /**
+     *  开辟需要的音频数据缓冲空间大小
+     */
     int iTmpAudioDataBufferSize = av_samples_get_buffer_size(NULL, av_frame_get_channels(pFrame), pFrame->nb_samples, (enum AVSampleFormat)pFrame->format, 1);
     av_fast_malloc(&mTmpAudioDataBuffer, &mTmpAudioDataBufferSize, iTmpAudioDataBufferSize);
     if (!mTmpAudioDataBuffer) {
@@ -149,6 +151,15 @@ int CSAudioPlayer::sendFrame(AVFrame *pFrame) {
         return HB_ERROR;
     }
     
+    /**
+     *  拷贝输入音频数据到音频数据缓冲空间
+     */
+    memcpy(mTmpAudioDataBuffer, pFrame->data[0], iTmpAudioDataBufferSize);
+    
+    
+    /**
+     *  将音频数据输入到播放器循环缓冲区
+     */
     int iWantLength = iTmpAudioDataBufferSize;
     u_char *pTmpDataBuffer = mTmpAudioDataBuffer;
     
