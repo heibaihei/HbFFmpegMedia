@@ -14,6 +14,10 @@
 		A10365CB1F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10365C91F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp */; };
 		A1080E9A1F68DC6F0015A2D3 /* CSConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1080E981F68DC6F0015A2D3 /* CSConfig.cpp */; };
 		A10A0F181FF145560036A410 /* CSAudioEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10A0F161FF145560036A410 /* CSAudioEncoder.cpp */; };
+		A11254952006575500E64489 /* tutorial01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254942006575500E64489 /* tutorial01.cpp */; };
+		A11254972006583700E64489 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11254962006583700E64489 /* OpenGL.framework */; };
+		A112549920065CD600E64489 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A112549820065CD600E64489 /* libGLEW.a */; };
+		A112549B20065D1F00E64489 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A112549A20065D1E00E64489 /* libglfw.3.2.dylib */; };
 		A1245A8B1F657F9000DB5D45 /* CSPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A891F657F9000DB5D45 /* CSPlayer.cpp */; };
 		A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A901F65FD1900DB5D45 /* CSIStream.cpp */; };
 		A1245A951F65FD3300DB5D45 /* CSVStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A931F65FD3300DB5D45 /* CSVStream.cpp */; };
@@ -2947,6 +2951,12 @@
 		A1080E991F68DC6F0015A2D3 /* CSConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSConfig.h; sourceTree = "<group>"; };
 		A10A0F161FF145560036A410 /* CSAudioEncoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioEncoder.cpp; sourceTree = "<group>"; };
 		A10A0F171FF145560036A410 /* CSAudioEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSAudioEncoder.h; sourceTree = "<group>"; };
+		A11254932006575500E64489 /* CSGLExample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSGLExample.h; sourceTree = "<group>"; };
+		A11254942006575500E64489 /* tutorial01.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial01.cpp; sourceTree = "<group>"; };
+		A11254962006583700E64489 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		A112549820065CD600E64489 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = ../../../../../../../../usr/local/Cellar/glew/2.1.0/lib/libGLEW.a; sourceTree = "<group>"; };
+		A112549A20065D1E00E64489 /* libglfw.3.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.2.dylib; path = ../../../../../../../../usr/local/Cellar/glfw/3.2.1/lib/libglfw.3.2.dylib; sourceTree = "<group>"; };
+		A112549C20065F6E00E64489 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		A1245A891F657F9000DB5D45 /* CSPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSPlayer.cpp; sourceTree = "<group>"; };
 		A1245A8A1F657F9000DB5D45 /* CSPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPlayer.h; sourceTree = "<group>"; };
 		A1245A901F65FD1900DB5D45 /* CSIStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSIStream.cpp; sourceTree = "<group>"; };
@@ -9414,6 +9424,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A11254972006583700E64489 /* OpenGL.framework in Frameworks */,
+				A112549920065CD600E64489 /* libGLEW.a in Frameworks */,
+				A112549B20065D1F00E64489 /* libglfw.3.2.dylib in Frameworks */,
 				A1AE0C8B1FBDF932007D82DE /* libjpeg.a in Frameworks */,
 				A1C31AF91FBC1B40001C4258 /* libSoundTouch.a in Frameworks */,
 				A162628B1FB4785E00217831 /* libyuv.a in Frameworks */,
@@ -9556,6 +9569,25 @@
 				A16159C11F70AD05001D54EA /* transcoding.c */,
 			);
 			name = examples;
+			sourceTree = "<group>";
+		};
+		A112548A2006569700E64489 /* CSOpenGL */ = {
+			isa = PBXGroup;
+			children = (
+				A11254922006570E00E64489 /* CSGLExample */,
+			);
+			name = CSOpenGL;
+			path = ../../src/CSOpenGL;
+			sourceTree = "<group>";
+		};
+		A11254922006570E00E64489 /* CSGLExample */ = {
+			isa = PBXGroup;
+			children = (
+				A112549C20065F6E00E64489 /* README */,
+				A11254932006575500E64489 /* CSGLExample.h */,
+				A11254942006575500E64489 /* tutorial01.cpp */,
+			);
+			path = CSGLExample;
 			sourceTree = "<group>";
 		};
 		A1245A8F1F65FD1900DB5D45 /* CSStrem */ = {
@@ -9878,6 +9910,9 @@
 		A181BC401EA2142F004861DA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A112549A20065D1E00E64489 /* libglfw.3.2.dylib */,
+				A112549820065CD600E64489 /* libGLEW.a */,
+				A11254962006583700E64489 /* OpenGL.framework */,
 				A1AE0C831FBDF932007D82DE /* libjpeg.a */,
 				A1C31AF81FBC1B40001C4258 /* libSoundTouch.a */,
 				A195CBCA1FBB189300F708F9 /* libSoundTouch.dylib */,
@@ -10247,6 +10282,7 @@
 			isa = PBXGroup;
 			children = (
 				A162626E1FB4757700217831 /* YUV.xcodeproj */,
+				A112548A2006569700E64489 /* CSOpenGL */,
 				A1F127FC1EA12AB600939FF3 /* FFmpeg_Src */,
 				A181BC331EA1F682004861DA /* Sample */,
 				A1BE85611EB743BC004B839C /* HBCommon */,
@@ -17543,6 +17579,7 @@
 				A181BC5F1EA21756004861DA /* HBSeperateFormat.c in Sources */,
 				A131A0ED1FC900B0002E5B8E /* CSVideoReverse.cpp in Sources */,
 				A100E2981FE8F0FE00F1783C /* Quantize.cpp in Sources */,
+				A11254952006575500E64489 /* tutorial01.cpp in Sources */,
 				A181BC581EA2172B004861DA /* audio_format_convert.cpp in Sources */,
 				A1F7061C1F657181003A6010 /* CSMediaPiece.cpp in Sources */,
 				A131A1131FC900FB002E5B8E /* CSAudioDecoder.cpp in Sources */,
@@ -20320,6 +20357,10 @@
 					"\"$(SRCROOT)/../../src/HBDemo\"",
 					"\"$(SRCROOT)/../../src/HBDemo/CSModule\"",
 					"\"$(SRCROOT)/../../lib/lame/include\"",
+					/usr/local/Cellar/glew/2.1.0/include,
+					/usr/local/Cellar/glfw/3.2.1/include,
+					/usr/local/Cellar/glfw/3.2.1/include/GLFW,
+					/usr/local/Cellar/glm/0.9.8.5/include,
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -20329,6 +20370,8 @@
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
 					"\"$(SRCROOT)/../../lib/x264/lib\"",
 					"\"$(SRCROOT)/../../lib/lame/lib\"",
+					/usr/local/Cellar/glew/2.1.0/lib,
+					/usr/local/Cellar/glfw/3.2.1/lib,
 					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -20350,6 +20393,10 @@
 					"\"$(SRCROOT)/../../src/HBDemo\"",
 					"\"$(SRCROOT)/../../src/HBDemo/CSModule\"",
 					"\"$(SRCROOT)/../../lib/lame/include\"",
+					/usr/local/Cellar/glew/2.1.0/include,
+					/usr/local/Cellar/glfw/3.2.1/include,
+					/usr/local/Cellar/glfw/3.2.1/include/GLFW,
+					/usr/local/Cellar/glm/0.9.8.5/include,
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -20359,6 +20406,8 @@
 					"\"$(SRCROOT)/../../lib/fdk-aac/lib\"",
 					"\"$(SRCROOT)/../../lib/x264/lib\"",
 					"\"$(SRCROOT)/../../lib/lame/lib\"",
+					/usr/local/Cellar/glew/2.1.0/lib,
+					/usr/local/Cellar/glfw/3.2.1/lib,
 					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";

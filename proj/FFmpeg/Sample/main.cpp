@@ -18,6 +18,7 @@
 #include "HBVideoConcat.h"
 #include "HBVideoChangeBgmMusic.h"
 #include "FFmpegModule/Swscale/FFmpegSwscale.h"
+#include "CSGLExample.h"
 #include "MTVideoTransfer.h"
 #include "HBPictureDemo.h"
 #include "CSAudio.h"
@@ -56,11 +57,15 @@ int main(int argc, const char * argv[]) {
 //                CSAudioDemo_AudioDecoder();
             }
             {/** 音频播放器 */
-                CSAudioDemo_AudioPlayer();
+//                CSAudioDemo_AudioPlayer();
             }
             {/** 音频分析 */
                 
             }
+        }
+        {/** OpenGL */
+            CSGL_Demo_Tutorial01();
+            
         }
     }
     {/** Encapsulation */
