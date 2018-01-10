@@ -125,6 +125,7 @@
 		A19A67FB1EB3483900DE8F11 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A19A67FA1EB3483900DE8F11 /* main.c */; };
 		A19E9C711F716075000EAF8C /* decoding_encoding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16159B11F70AD05001D54EA /* decoding_encoding.cpp */; };
 		A1AE0C8B1FBDF932007D82DE /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1AE0C831FBDF932007D82DE /* libjpeg.a */; };
+		A1B258172005A1FA006101BE /* CSVideoPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1B258152005A1FA006101BE /* CSVideoPlayer.cpp */; };
 		A1BE85571EB742F7004B839C /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC411EA21430004861DA /* libSDL2.a */; };
 		A1BE85581EB7433C004B839C /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC431EA2145E004861DA /* libavcodec.a */; };
 		A1BE85591EB74340004B839C /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC451EA21460004861DA /* libavdevice.a */; };
@@ -3148,6 +3149,8 @@
 		A19A67FA1EB3483900DE8F11 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		A19B77A61FBB0D78001E3221 /* CSAudioBaseEffect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSAudioBaseEffect.h; sourceTree = "<group>"; };
 		A1AE0C831FBDF932007D82DE /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg.a; path = ../../lib/libjpeg/lib/libjpeg.a; sourceTree = "<group>"; };
+		A1B258152005A1FA006101BE /* CSVideoPlayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoPlayer.cpp; sourceTree = "<group>"; };
+		A1B258162005A1FA006101BE /* CSVideoPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSVideoPlayer.h; sourceTree = "<group>"; };
 		A1BAF0141F5EF79000C3062C /* CSUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSUtil.h; path = ../../../include/CSUtil.h; sourceTree = "<group>"; };
 		A1BE85621EB743C7004B839C /* cmdutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cmdutils.c; path = "../../ffmpeg-3.2/cmdutils.c"; sourceTree = "<group>"; };
 		A1BE85631EB743C7004B839C /* cmdutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cmdutils.h; path = "../../ffmpeg-3.2/cmdutils.h"; sourceTree = "<group>"; };
@@ -9587,6 +9590,7 @@
 		A131A0E01FC900B0002E5B8E /* CSVideo */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2580D2005A1DB006101BE /* VideoPlayer */,
 				A15CC93E1FDABBF500A16610 /* VideoEncoder */,
 				A1D1CDBA1FAB473C0027C8AE /* MTVideoTransfer.cpp */,
 				A1D1CDBB1FAB473C0027C8AE /* MTVideoTransfer.h */,
@@ -10167,6 +10171,15 @@
 				A151AF2E1FBB4F98001873B4 /* CSVideoScaleEffect.h */,
 			);
 			path = Video;
+			sourceTree = "<group>";
+		};
+		A1B2580D2005A1DB006101BE /* VideoPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				A1B258152005A1FA006101BE /* CSVideoPlayer.cpp */,
+				A1B258162005A1FA006101BE /* CSVideoPlayer.h */,
+			);
+			path = VideoPlayer;
 			sourceTree = "<group>";
 		};
 		A1BE85611EB743BC004B839C /* HBCommon */ = {
@@ -17521,6 +17534,7 @@
 				A151AF2F1FBB4F98001873B4 /* CSVideoScaleEffect.cpp in Sources */,
 				A181BC691EA21788004861DA /* simplest_ffmpeg_video_encoder.cpp in Sources */,
 				A151930A1FFCD823004C5B17 /* CSAudioPlayer.cpp in Sources */,
+				A1B258172005A1FA006101BE /* CSVideoPlayer.cpp in Sources */,
 				A151AF291FBB491F001873B4 /* CSVideoCropRotateEffect.cpp in Sources */,
 				A13E121B1F676775003FC0AC /* CSWorkContext.cpp in Sources */,
 				A19A67D21EB3434200DE8F11 /* simplest_ffmpeg_remuxer.cpp in Sources */,

@@ -140,6 +140,7 @@ int CSAudioPlayer::prepare() {
     return HB_OK;
 }
 
+
 int CSAudioPlayer::sendFrame(AVFrame *pFrame) {
     /**
      *  开辟需要的音频数据缓冲空间大小
@@ -154,9 +155,26 @@ int CSAudioPlayer::sendFrame(AVFrame *pFrame) {
     /**
      *  拷贝输入音频数据到音频数据缓冲空间
      */
-    memcpy(mTmpAudioDataBuffer, pFrame->data[0], iTmpAudioDataBufferSize);
-    
-    
+    memset(mTmpAudioDataBuffer, 0x00, mTmpAudioDataBufferSize);
+    if (av_sample_fmt_is_planar(getAudioInnerFormat(mSrcAudioParams.pri_sample_fmt))) {
+        if (getAudioInnerFormat(mSrcAudioParams.pri_sample_fmt) == AV_SAMPLE_FMT_S16P) {
+            uint8_t *leftSampleChannel = pFrame->extended_data[0];
+            uint8_t *rightSampleChannel = pFrame->extended_data[1];
+            for (int i=0, j=0; i<iTmpAudioDataBufferSize; i+=4, j++) {
+                /**
+                 * i 索引 mTmpAudioDataBuffer 中的数据存储空间
+                 * j 索引 sample 数据信息
+                 */
+                mTmpAudioDataBuffer[i] = (char)(leftSampleChannel[j] & 0xff);
+                mTmpAudioDataBuffer[i+1] = (char)((leftSampleChannel[j] >> 8) & 0xff);
+                mTmpAudioDataBuffer[i+2] = (char)(rightSampleChannel[j] & 0xff);
+                mTmpAudioDataBuffer[i+3] = (char)((rightSampleChannel[j] >> 8) & 0xff);
+            }
+        }
+    }
+    else {
+        memcpy(mTmpAudioDataBuffer, pFrame->data[0], iTmpAudioDataBufferSize);
+    }
     /**
      *  将音频数据输入到播放器循环缓冲区
      */
