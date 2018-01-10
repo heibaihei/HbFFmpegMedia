@@ -1,12 +1,14 @@
 #version 330 core
 
 // Ouput data
+// out关键字，声明了一个输出变量。变量名为color，类型为vec4, 所有的片元着色器都需要输出一个vec4变量
+// 该变量代表了一个像素的最终颜色
 out vec3 color;
 
 void main()
 {
 
-	// Output color = red 
+	// Output color = red , OpenGL中，R、G、B分量的范围是0.0~1.0（在画图中该范围是0~255）
+    // A是alpha值的意思，表示透明度，范围也是0.0~1.0。这里我们直接将A分量设为1.0，表示完全不透明
 	color = vec3(1,0,0);
-
 }

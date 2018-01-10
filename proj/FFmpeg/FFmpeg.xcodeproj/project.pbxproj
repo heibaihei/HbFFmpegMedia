@@ -2985,6 +2985,8 @@
 		A11254AF2006683D00E64489 /* quaternion_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = quaternion_utils.hpp; sourceTree = "<group>"; };
 		A11254B02006683D00E64489 /* objloader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = objloader.hpp; sourceTree = "<group>"; };
 		A11254BA20066A1700E64489 /* CSGLExample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSGLExample.cpp; sourceTree = "<group>"; };
+		A11254BC2006701F00E64489 /* SimpleFragmentShader.fragmentshader */ = {isa = PBXFileReference; lastKnownFileType = text; path = SimpleFragmentShader.fragmentshader; sourceTree = "<group>"; };
+		A11254BD2006702000E64489 /* SimpleVertexShader.vertexshader */ = {isa = PBXFileReference; lastKnownFileType = text; path = SimpleVertexShader.vertexshader; sourceTree = "<group>"; };
 		A1245A891F657F9000DB5D45 /* CSPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSPlayer.cpp; sourceTree = "<group>"; };
 		A1245A8A1F657F9000DB5D45 /* CSPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPlayer.h; sourceTree = "<group>"; };
 		A1245A901F65FD1900DB5D45 /* CSIStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSIStream.cpp; sourceTree = "<group>"; };
@@ -9624,6 +9626,8 @@
 		A112549D2006680300E64489 /* tutorial02_red_triangle */ = {
 			isa = PBXGroup;
 			children = (
+				A11254BC2006701F00E64489 /* SimpleFragmentShader.fragmentshader */,
+				A11254BD2006702000E64489 /* SimpleVertexShader.vertexshader */,
 				A112549E2006680300E64489 /* tutorial02.cpp */,
 			);
 			path = tutorial02_red_triangle;

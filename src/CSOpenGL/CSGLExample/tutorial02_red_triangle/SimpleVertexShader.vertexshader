@@ -1,12 +1,15 @@
 #version 330 core
+// 预处理器指令，用于指定着色器的版本
 
 // Input vertex data, different for all executions of this shader.
+// 创建了一个着色器变量 变量名字： vertexPosition_modelspace 表示顶点的位置
+// “in”表示position是输入变量，如果是顶点着色器，“in”声明的变量将从顶点数据获得相应的值
+// “layout (location = 0)”是布局限定符（layout qualifier）
 layout(location = 0) in vec3 vertexPosition_modelspace;
 
 void main(){
-
+    // gl_Position是GLSL的内置变量（类型为vec4），代表顶点的NDC位置
     gl_Position.xyz = vertexPosition_modelspace;
     gl_Position.w = 1.0;
-
 }
 

@@ -1,2 +1,37 @@
 glfw 教程：https://www.cnblogs.com/collectionne/p/6618419.html
 		  https://www.learnopengl.com/
+
+OpenGL的对象（object）概念。在OpenGL中，对象的意思和C++不太一样。OpenGL中，对象指表示OpenGL状态的一个子集的一组选项（a collection of options that represents a subset of OpenGL's state）。例如这里就有着色器对象、着色器程序对象。每个类型相同的OpenGL对象，都具有一个独一无二的ID（不同类型则可能重复）。ID的类型是GLuint，这是OpenGL定义的一个类型（一个简单的typedef），代表32位无符号整数。我们不能直接访问OpenGL对象，只能通过对象的ID进行间接访问。
+
+状态、对象、context:
+    http://blog.csdn.net/candycat1992/article/details/39676669
+
+
+创建着色器过程：
+
+1*. 从文件里读取其源代码
+2. 使用glCreateShader()创建一个着色器
+3. 使用glShaderSource()给其提供源代码
+4. 使用glCompileShader()编译着色器
+5*. 检查编译是否成功
+
+创建着色器程序过程：
+1. 创建好所有的着色器（这里只有顶点着色器和片元着色器）
+2. 使用glCreateProgram()创建一个着色器程序
+3. 使用glAttachShader()将所有着色器与该着色器程序关联
+4. 使用glLinkProgram()链接着色器程序
+5. 检查是否链接成功
+6. 使用glDeleteShader()删除所有着色器
+
+顶点缓存对象（VBO）和顶点数组对象（VAO）:
+    顶点缓存对象（VBO）准许顶点数组数据存放在服务端的高性能显卡内存中，且提供高效数据传输。如果缓存对象用于保存像素数据，就被称为像素缓存对象（PBO
+
+VBO:
+    参照：https://www.cnblogs.com/hefee/p/3824300.html
+创建VBO需要3个步骤：
+    使用glGenBuffers()生成新缓存对象。
+    使用glBindBuffer()绑定缓存对象。
+    使用glBufferData()将顶点数据拷贝到缓存对象中。
+
+
+
