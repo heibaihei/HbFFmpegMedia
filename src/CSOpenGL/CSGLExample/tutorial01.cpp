@@ -1,3 +1,5 @@
+#include "CSGLExample.h"
+
 // Include standard headers
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,11 +9,12 @@
 
 // Include GLFW [一定要先包含glew.h，再包含glfw3.h; glfw3.h会包含gl.h，而这是glew.h不允许的]
 #include <GLFW/glfw3.h>
-GLFWwindow* window;
 
 // Include GLM
 #include <glm/glm.hpp>
 using namespace glm;
+
+extern GLFWwindow* window;
 
 int CSGL_Demo_Tutorial01(void)
 {
@@ -116,4 +119,3 @@ int CSGL_Demo_Tutorial01(void)
 
 	return 0;
 }
-

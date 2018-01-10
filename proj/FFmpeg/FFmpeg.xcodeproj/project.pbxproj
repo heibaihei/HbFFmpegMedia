@@ -18,6 +18,16 @@
 		A11254972006583700E64489 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11254962006583700E64489 /* OpenGL.framework */; };
 		A112549920065CD600E64489 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A112549820065CD600E64489 /* libGLEW.a */; };
 		A112549B20065D1F00E64489 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A112549A20065D1E00E64489 /* libglfw.3.2.dylib */; };
+		A112549F2006680300E64489 /* tutorial02.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A112549E2006680300E64489 /* tutorial02.cpp */; };
+		A11254B12006683D00E64489 /* controls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254A32006683D00E64489 /* controls.cpp */; };
+		A11254B22006683D00E64489 /* quaternion_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254A42006683D00E64489 /* quaternion_utils.cpp */; };
+		A11254B32006683D00E64489 /* objloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254A52006683D00E64489 /* objloader.cpp */; };
+		A11254B42006683D00E64489 /* texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254A62006683D00E64489 /* texture.cpp */; };
+		A11254B52006683D00E64489 /* tangentspace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254A72006683D00E64489 /* tangentspace.cpp */; };
+		A11254B62006683D00E64489 /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254A82006683D00E64489 /* shader.cpp */; };
+		A11254B72006683D00E64489 /* text2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254AC2006683D00E64489 /* text2D.cpp */; };
+		A11254B82006683D00E64489 /* vboindexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254AD2006683D00E64489 /* vboindexer.cpp */; };
+		A11254BB20066A1700E64489 /* CSGLExample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254BA20066A1700E64489 /* CSGLExample.cpp */; };
 		A1245A8B1F657F9000DB5D45 /* CSPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A891F657F9000DB5D45 /* CSPlayer.cpp */; };
 		A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A901F65FD1900DB5D45 /* CSIStream.cpp */; };
 		A1245A951F65FD3300DB5D45 /* CSVStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A931F65FD3300DB5D45 /* CSVStream.cpp */; };
@@ -2957,6 +2967,24 @@
 		A112549820065CD600E64489 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = ../../../../../../../../usr/local/Cellar/glew/2.1.0/lib/libGLEW.a; sourceTree = "<group>"; };
 		A112549A20065D1E00E64489 /* libglfw.3.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.2.dylib; path = ../../../../../../../../usr/local/Cellar/glfw/3.2.1/lib/libglfw.3.2.dylib; sourceTree = "<group>"; };
 		A112549C20065F6E00E64489 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		A112549E2006680300E64489 /* tutorial02.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial02.cpp; sourceTree = "<group>"; };
+		A11254A12006683D00E64489 /* text2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = text2D.hpp; sourceTree = "<group>"; };
+		A11254A22006683D00E64489 /* vboindexer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vboindexer.hpp; sourceTree = "<group>"; };
+		A11254A32006683D00E64489 /* controls.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = controls.cpp; sourceTree = "<group>"; };
+		A11254A42006683D00E64489 /* quaternion_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = quaternion_utils.cpp; sourceTree = "<group>"; };
+		A11254A52006683D00E64489 /* objloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = objloader.cpp; sourceTree = "<group>"; };
+		A11254A62006683D00E64489 /* texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = texture.cpp; sourceTree = "<group>"; };
+		A11254A72006683D00E64489 /* tangentspace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tangentspace.cpp; sourceTree = "<group>"; };
+		A11254A82006683D00E64489 /* shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shader.cpp; sourceTree = "<group>"; };
+		A11254A92006683D00E64489 /* texture.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = texture.hpp; sourceTree = "<group>"; };
+		A11254AA2006683D00E64489 /* tangentspace.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tangentspace.hpp; sourceTree = "<group>"; };
+		A11254AB2006683D00E64489 /* shader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shader.hpp; sourceTree = "<group>"; };
+		A11254AC2006683D00E64489 /* text2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = text2D.cpp; sourceTree = "<group>"; };
+		A11254AD2006683D00E64489 /* vboindexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vboindexer.cpp; sourceTree = "<group>"; };
+		A11254AE2006683D00E64489 /* controls.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = controls.hpp; sourceTree = "<group>"; };
+		A11254AF2006683D00E64489 /* quaternion_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = quaternion_utils.hpp; sourceTree = "<group>"; };
+		A11254B02006683D00E64489 /* objloader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = objloader.hpp; sourceTree = "<group>"; };
+		A11254BA20066A1700E64489 /* CSGLExample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSGLExample.cpp; sourceTree = "<group>"; };
 		A1245A891F657F9000DB5D45 /* CSPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSPlayer.cpp; sourceTree = "<group>"; };
 		A1245A8A1F657F9000DB5D45 /* CSPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPlayer.h; sourceTree = "<group>"; };
 		A1245A901F65FD1900DB5D45 /* CSIStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSIStream.cpp; sourceTree = "<group>"; };
@@ -9583,11 +9611,45 @@
 		A11254922006570E00E64489 /* CSGLExample */ = {
 			isa = PBXGroup;
 			children = (
+				A11254A02006683D00E64489 /* common */,
+				A112549D2006680300E64489 /* tutorial02_red_triangle */,
 				A112549C20065F6E00E64489 /* README */,
 				A11254932006575500E64489 /* CSGLExample.h */,
+				A11254BA20066A1700E64489 /* CSGLExample.cpp */,
 				A11254942006575500E64489 /* tutorial01.cpp */,
 			);
 			path = CSGLExample;
+			sourceTree = "<group>";
+		};
+		A112549D2006680300E64489 /* tutorial02_red_triangle */ = {
+			isa = PBXGroup;
+			children = (
+				A112549E2006680300E64489 /* tutorial02.cpp */,
+			);
+			path = tutorial02_red_triangle;
+			sourceTree = "<group>";
+		};
+		A11254A02006683D00E64489 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				A11254A12006683D00E64489 /* text2D.hpp */,
+				A11254A22006683D00E64489 /* vboindexer.hpp */,
+				A11254A32006683D00E64489 /* controls.cpp */,
+				A11254A42006683D00E64489 /* quaternion_utils.cpp */,
+				A11254A52006683D00E64489 /* objloader.cpp */,
+				A11254A62006683D00E64489 /* texture.cpp */,
+				A11254A72006683D00E64489 /* tangentspace.cpp */,
+				A11254A82006683D00E64489 /* shader.cpp */,
+				A11254A92006683D00E64489 /* texture.hpp */,
+				A11254AA2006683D00E64489 /* tangentspace.hpp */,
+				A11254AB2006683D00E64489 /* shader.hpp */,
+				A11254AC2006683D00E64489 /* text2D.cpp */,
+				A11254AD2006683D00E64489 /* vboindexer.cpp */,
+				A11254AE2006683D00E64489 /* controls.hpp */,
+				A11254AF2006683D00E64489 /* quaternion_utils.hpp */,
+				A11254B02006683D00E64489 /* objloader.hpp */,
+			);
+			path = common;
 			sourceTree = "<group>";
 		};
 		A1245A8F1F65FD1900DB5D45 /* CSStrem */ = {
@@ -17536,6 +17598,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A15CC9481FDABCB700A16610 /* CSVideoEncoder.cpp in Sources */,
+				A11254BB20066A1700E64489 /* CSGLExample.cpp in Sources */,
 				A19E9C711F716075000EAF8C /* decoding_encoding.cpp in Sources */,
 				A19A67E11EB3457500DE8F11 /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,
 				A100E2971FE8F0FE00F1783C /* gif89a.cpp in Sources */,
@@ -17546,18 +17609,22 @@
 				A131A1201FC9013E002E5B8E /* HBPictureDemo.cpp in Sources */,
 				A19A67C31EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp in Sources */,
 				A131A11F1FC9013E002E5B8E /* CSPicture.cpp in Sources */,
+				A11254B62006683D00E64489 /* shader.cpp in Sources */,
 				A131A1111FC900FB002E5B8E /* CSAudioResample.cpp in Sources */,
+				A11254B42006683D00E64489 /* texture.cpp in Sources */,
 				A19A67E01EB3457500DE8F11 /* simplest_ffmpeg_video_encoder.cpp in Sources */,
 				A151AF2C1FBB4E89001873B4 /* CSVideoEffectFactory.cpp in Sources */,
 				A195CBC61FBB102400F708F9 /* CSAudioResamplerEffect.cpp in Sources */,
 				A1F6019F1F66C98C00168C96 /* CSStreamFactory.cpp in Sources */,
 				A17202B31F69993E00662F18 /* CSAudioFifo.cpp in Sources */,
+				A11254B12006683D00E64489 /* controls.cpp in Sources */,
 				A19A67EB1EB3465D00DE8F11 /* simplest_ffmpeg_mem_transcoder.cpp in Sources */,
 				A15632BA1F94B07200F0140F /* FilteringVideo.cpp in Sources */,
 				A134260E1FFD17F200D3451B /* CSAudioRoundBuf.cpp in Sources */,
 				A181BC351EA1F682004861DA /* main.cpp in Sources */,
 				A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */,
 				A1D1CDBC1FAB473D0027C8AE /* MTVideoTransfer.cpp in Sources */,
+				A11254B72006683D00E64489 /* text2D.cpp in Sources */,
 				A195CBC91FBB109B00F708F9 /* CSAudioShiftEffect.cpp in Sources */,
 				A1D9FD171FF5EE9B00A70B6D /* CSAudioDataCache.cpp in Sources */,
 				A131A1101FC900FB002E5B8E /* CSAudioDemo.cpp in Sources */,
@@ -17567,6 +17634,7 @@
 				A1F706161F656F9F003A6010 /* CSMediaTimeline.cpp in Sources */,
 				A19450B11F6754E1004E8669 /* CSWorkTasks.cpp in Sources */,
 				A1538FBD1F8C771D002C8880 /* HBVideoConcat.cpp in Sources */,
+				A11254B22006683D00E64489 /* quaternion_utils.cpp in Sources */,
 				A151AF2F1FBB4F98001873B4 /* CSVideoScaleEffect.cpp in Sources */,
 				A181BC691EA21788004861DA /* simplest_ffmpeg_video_encoder.cpp in Sources */,
 				A151930A1FFCD823004C5B17 /* CSAudioPlayer.cpp in Sources */,
@@ -17574,6 +17642,7 @@
 				A151AF291FBB491F001873B4 /* CSVideoCropRotateEffect.cpp in Sources */,
 				A13E121B1F676775003FC0AC /* CSWorkContext.cpp in Sources */,
 				A19A67D21EB3434200DE8F11 /* simplest_ffmpeg_remuxer.cpp in Sources */,
+				A11254B52006683D00E64489 /* tangentspace.cpp in Sources */,
 				A181BC6A1EA21788004861DA /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,
 				A15632C11F94BB5F00F0140F /* transcoding.c in Sources */,
 				A181BC5F1EA21756004861DA /* HBSeperateFormat.c in Sources */,
@@ -17581,6 +17650,7 @@
 				A100E2981FE8F0FE00F1783C /* Quantize.cpp in Sources */,
 				A11254952006575500E64489 /* tutorial01.cpp in Sources */,
 				A181BC581EA2172B004861DA /* audio_format_convert.cpp in Sources */,
+				A11254B32006683D00E64489 /* objloader.cpp in Sources */,
 				A1F7061C1F657181003A6010 /* CSMediaPiece.cpp in Sources */,
 				A131A1131FC900FB002E5B8E /* CSAudioDecoder.cpp in Sources */,
 				A131A1121FC900FB002E5B8E /* audio_player.cpp in Sources */,
@@ -17592,7 +17662,9 @@
 				A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */,
 				A181BC6F1F6517BD00B34FD0 /* CSThreadContext.cpp in Sources */,
 				A100E2961FE8F0FE00F1783C /* MTGIF.cpp in Sources */,
+				A112549F2006680300E64489 /* tutorial02.cpp in Sources */,
 				A19A67D91EB3445600DE8F11 /* simplest_ffmpeg_video_filter_pure.cpp in Sources */,
+				A11254B82006683D00E64489 /* vboindexer.cpp in Sources */,
 				A131A0F01FC900B0002E5B8E /* CSVideoDemo.cpp in Sources */,
 				A187C75D1FE27EDB00FAF954 /* CSPictureUtil.cpp in Sources */,
 				A1245A981F65FD4A00DB5D45 /* CSAStream.cpp in Sources */,
@@ -20357,6 +20429,7 @@
 					"\"$(SRCROOT)/../../src/HBDemo\"",
 					"\"$(SRCROOT)/../../src/HBDemo/CSModule\"",
 					"\"$(SRCROOT)/../../lib/lame/include\"",
+					"\"$(SRCROOT)/../../src/CSOpenGL/CSGLExample\"",
 					/usr/local/Cellar/glew/2.1.0/include,
 					/usr/local/Cellar/glfw/3.2.1/include,
 					/usr/local/Cellar/glfw/3.2.1/include/GLFW,
@@ -20393,6 +20466,7 @@
 					"\"$(SRCROOT)/../../src/HBDemo\"",
 					"\"$(SRCROOT)/../../src/HBDemo/CSModule\"",
 					"\"$(SRCROOT)/../../lib/lame/include\"",
+					"\"$(SRCROOT)/../../src/CSOpenGL/CSGLExample\"",
 					/usr/local/Cellar/glew/2.1.0/include,
 					/usr/local/Cellar/glfw/3.2.1/include,
 					/usr/local/Cellar/glfw/3.2.1/include/GLFW,

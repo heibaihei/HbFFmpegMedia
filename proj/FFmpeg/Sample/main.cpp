@@ -64,8 +64,8 @@ int main(int argc, const char * argv[]) {
             }
         }
         {/** OpenGL */
-            CSGL_Demo_Tutorial01();
-            
+//            CSGL_Demo_Tutorial01();
+            CSGL_Demo_Tutorial02();
         }
     }
     {/** Encapsulation */
