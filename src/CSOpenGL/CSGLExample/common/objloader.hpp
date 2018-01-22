@@ -9,7 +9,6 @@ bool loadOBJ(
 );
 
 
-
 bool loadAssImp(
 	const char * path, 
 	std::vector<unsigned short> & indices,

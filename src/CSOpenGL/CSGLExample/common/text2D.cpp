@@ -18,6 +18,8 @@ unsigned int Text2DUVBufferID;
 unsigned int Text2DShaderID;
 unsigned int Text2DUniformID;
 
+#define CSGL_Common_Shader_Root_Path "/Users/zj-db0519/work/code/github/HbFFmpegMedia/src/CSOpenGL/CSGLExample/tutorial11_2d_fonts/"
+
 void initText2D(const char * texturePath){
 
 	// Initialize texture
@@ -28,7 +30,8 @@ void initText2D(const char * texturePath){
 	glGenBuffers(1, &Text2DUVBufferID);
 
 	// Initialize Shader
-	Text2DShaderID = LoadShaders( "TextVertexShader.vertexshader", "TextVertexShader.fragmentshader" );
+	Text2DShaderID = LoadShaders( CSGL_Common_Shader_Root_Path"TextVertexShader.vertexshader", \
+                                 CSGL_Common_Shader_Root_Path"TextVertexShader.fragmentshader" );
 
 	// Initialize uniforms' IDs
 	Text2DUniformID = glGetUniformLocation( Text2DShaderID, "myTextureSampler" );

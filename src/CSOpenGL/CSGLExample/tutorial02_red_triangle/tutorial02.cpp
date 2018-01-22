@@ -109,8 +109,8 @@ int CSGL_Demo_Tutorial02(void)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
 	do{
-
-		// Clear the screen
+        // http://blog.csdn.net/candycat1992/article/details/39676669
+		// Clear the screen， 清空窗口
 		glClear( GL_COLOR_BUFFER_BIT );
 
 		// Use our shader
@@ -119,6 +119,7 @@ int CSGL_Demo_Tutorial02(void)
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        /** 把需要的数据和shader程序中的变量关联在一起 */
 		glVertexAttribPointer(
 			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
 			3,                  // size
@@ -128,12 +129,12 @@ int CSGL_Demo_Tutorial02(void)
 			(void*)0            // array buffer offset
 		);
 
-		// Draw the triangle !
+		// Draw the triangle !， 发起OpenGL调用来请求渲染对象
 		glDrawArrays(GL_TRIANGLES, 0, 3); // 3 indices starting at 0 -> 1 triangle
 
 		glDisableVertexAttribArray(0);
 
-		// Swap buffers
+		// Swap buffers, 请求将图像绘制到窗口 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 

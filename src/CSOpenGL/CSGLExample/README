@@ -1,11 +1,20 @@
+
 glfw 教程：https://www.cnblogs.com/collectionne/p/6618419.html
 		  https://www.learnopengl.com/
+          https://learnopengl-cn.readthedocs.io/zh/latest/
+
+OpenGL 教程详解：
+    http://blog.csdn.net/candycat1992/article/details/39676669
+
+---------------------------------------------------------------
 
 OpenGL的对象（object）概念。在OpenGL中，对象的意思和C++不太一样。OpenGL中，对象指表示OpenGL状态的一个子集的一组选项（a collection of options that represents a subset of OpenGL's state）。例如这里就有着色器对象、着色器程序对象。每个类型相同的OpenGL对象，都具有一个独一无二的ID（不同类型则可能重复）。ID的类型是GLuint，这是OpenGL定义的一个类型（一个简单的typedef），代表32位无符号整数。我们不能直接访问OpenGL对象，只能通过对象的ID进行间接访问。
 
 状态、对象、context:
     http://blog.csdn.net/candycat1992/article/details/39676669
 
+OpenGL：
+    http://www.opengl-tutorial.org/cn/beginners-tutorials/
 
 创建着色器过程：
 

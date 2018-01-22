@@ -28,6 +28,18 @@
 		A11254B72006683D00E64489 /* text2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254AC2006683D00E64489 /* text2D.cpp */; };
 		A11254B82006683D00E64489 /* vboindexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254AD2006683D00E64489 /* vboindexer.cpp */; };
 		A11254BB20066A1700E64489 /* CSGLExample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254BA20066A1700E64489 /* CSGLExample.cpp */; };
+		A1143E28201593C10038C500 /* tutorial03.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E20201593C10038C500 /* tutorial03.cpp */; };
+		A1143E2D2015B3370038C500 /* tutorial04.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E2C2015B3360038C500 /* tutorial04.cpp */; };
+		A1143E442015B61D0038C500 /* tutorial05.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E432015B61C0038C500 /* tutorial05.cpp */; };
+		A1143E512015B71F0038C500 /* tutorial06.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E502015B71F0038C500 /* tutorial06.cpp */; };
+		A1143E5B2015B7BA0038C500 /* tutorial07.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E5A2015B7BA0038C500 /* tutorial07.cpp */; };
+		A1143E722015B8570038C500 /* tutorial08.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E5D2015B8570038C500 /* tutorial08.cpp */; };
+		A1143E7F2015B8F70038C500 /* tutorial09.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E742015B8F70038C500 /* tutorial09.cpp */; };
+		A1143E802015B8F80038C500 /* tutorial09_several_objects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E762015B8F70038C500 /* tutorial09_several_objects.cpp */; };
+		A1143E812015B8F80038C500 /* tutorial09_AssImp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E7E2015B8F70038C500 /* tutorial09_AssImp.cpp */; };
+		A1143E832015C05C0038C500 /* libassimp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A1143E822015C05C0038C500 /* libassimp.dylib */; };
+		A1143E8F2015C14F0038C500 /* tutorial10.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E8E2015C14F0038C500 /* tutorial10.cpp */; };
+		A1143E9C2015C1E10038C500 /* tutorial11.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E9B2015C1E10038C500 /* tutorial11.cpp */; };
 		A1245A8B1F657F9000DB5D45 /* CSPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A891F657F9000DB5D45 /* CSPlayer.cpp */; };
 		A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A901F65FD1900DB5D45 /* CSIStream.cpp */; };
 		A1245A951F65FD3300DB5D45 /* CSVStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1245A931F65FD3300DB5D45 /* CSVStream.cpp */; };
@@ -96,6 +108,32 @@
 		A15BB0EE1F42C2DA00AFE839 /* CSPacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0EC1F42C2DA00AFE839 /* CSPacketQueue.cpp */; };
 		A15CC9481FDABCB700A16610 /* CSVideoEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15CC9461FDABCB700A16610 /* CSVideoEncoder.cpp */; };
 		A162628B1FB4785E00217831 /* libyuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A162627C1FB4757700217831 /* libyuv.a */; };
+		A16AE0292015C6DE0021649D /* tutorial12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE0212015C6DD0021649D /* tutorial12.cpp */; };
+		A16AE03F2015C8E40021649D /* tutorial13.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE03D2015C8E40021649D /* tutorial13.cpp */; };
+		A16AE04B2015C97F0021649D /* tutorial14.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE04A2015C97F0021649D /* tutorial14.cpp */; };
+		A16AE0572015CA4D0021649D /* tutorial15.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE0552015CA4C0021649D /* tutorial15.cpp */; };
+		A16AE0762015CAEF0021649D /* tutorial16_SimpleVersion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE0702015CAEF0021649D /* tutorial16_SimpleVersion.cpp */; };
+		A16AE0772015CAEF0021649D /* tutorial16.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE0732015CAEF0021649D /* tutorial16.cpp */; };
+		A16AE0812015CC6B0021649D /* tutorial17.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE07F2015CC6B0021649D /* tutorial17.cpp */; };
+		A16AE0832015CE440021649D /* libAntTweakBar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0822015CE440021649D /* libAntTweakBar.a */; };
+		A16AE0952015CE720021649D /* tutorial18_billboards.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE08C2015CE720021649D /* tutorial18_billboards.cpp */; };
+		A16AE0962015CE720021649D /* tutorial18_particles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE0902015CE720021649D /* tutorial18_particles.cpp */; };
+		A16AE0B02015D11A0021649D /* misc05_picking_BulletPhysics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE0A72015D1190021649D /* misc05_picking_BulletPhysics.cpp */; };
+		A16AE0B12015D11A0021649D /* misc05_picking_slow_easy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE0A82015D1190021649D /* misc05_picking_slow_easy.cpp */; };
+		A16AE0B22015D11A0021649D /* misc05_picking_custom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE0AE2015D1190021649D /* misc05_picking_custom.cpp */; };
+		A16AE0B42015D3B00021649D /* libBulletDynamics.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0B32015D3AF0021649D /* libBulletDynamics.dylib */; };
+		A16AE0B62015D3D20021649D /* libBullet3Common.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0B52015D3D20021649D /* libBullet3Common.dylib */; };
+		A16AE0B82015D3DE0021649D /* libBulletCollision.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0B72015D3DE0021649D /* libBulletCollision.dylib */; };
+		A16AE0BA2015D3E90021649D /* libLinearMath.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0B92015D3E90021649D /* libLinearMath.dylib */; };
+		A16AE0BC2015D3F10021649D /* libHACD.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0BB2015D3F10021649D /* libHACD.dylib */; };
+		A16AE0BE2015D3F80021649D /* libGIMPACTUtils.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0BD2015D3F70021649D /* libGIMPACTUtils.dylib */; };
+		A16AE0C02015D3FE0021649D /* libConvexDecomposition.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0BF2015D3FE0021649D /* libConvexDecomposition.dylib */; };
+		A16AE0C22015D4040021649D /* libBulletXmlWorldImporter.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0C12015D4040021649D /* libBulletXmlWorldImporter.dylib */; };
+		A16AE0C42015D40A0021649D /* libBulletWorldImporter.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0C32015D40A0021649D /* libBulletWorldImporter.dylib */; };
+		A16AE0C62015D4100021649D /* libBulletSoftBody.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0C52015D40F0021649D /* libBulletSoftBody.dylib */; };
+		A16AE0C82015D41B0021649D /* libBulletRobotics.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0C72015D41A0021649D /* libBulletRobotics.dylib */; };
+		A16AE0CA2015D4210021649D /* libBulletInverseDynamicsUtils.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0C92015D4200021649D /* libBulletInverseDynamicsUtils.dylib */; };
+		A16AE0CC2015D4260021649D /* libBulletInverseDynamics.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A16AE0CB2015D4260021649D /* libBulletInverseDynamics.dylib */; };
 		A17202B31F69993E00662F18 /* CSAudioFifo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17202B11F69993E00662F18 /* CSAudioFifo.cpp */; };
 		A175D0121F945D9100A7F5A4 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A175D0111F945D9000A7F5A4 /* libmp3lame.a */; };
 		A17F02851FBB52C8009B03F0 /* CSAudioUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17F02831FBB52C8009B03F0 /* CSAudioUtil.cpp */; };
@@ -2987,6 +3025,52 @@
 		A11254BA20066A1700E64489 /* CSGLExample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSGLExample.cpp; sourceTree = "<group>"; };
 		A11254BC2006701F00E64489 /* SimpleFragmentShader.fragmentshader */ = {isa = PBXFileReference; lastKnownFileType = text; path = SimpleFragmentShader.fragmentshader; sourceTree = "<group>"; };
 		A11254BD2006702000E64489 /* SimpleVertexShader.vertexshader */ = {isa = PBXFileReference; lastKnownFileType = text; path = SimpleVertexShader.vertexshader; sourceTree = "<group>"; };
+		A1143E1E201593C10038C500 /* SingleColor.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SingleColor.fragmentshader; sourceTree = "<group>"; };
+		A1143E1F201593C10038C500 /* SimpleTransform.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SimpleTransform.vertexshader; sourceTree = "<group>"; };
+		A1143E20201593C10038C500 /* tutorial03.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial03.cpp; sourceTree = "<group>"; };
+		A1143E2A2015B3360038C500 /* TransformVertexShader.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TransformVertexShader.vertexshader; sourceTree = "<group>"; };
+		A1143E2B2015B3360038C500 /* ColorFragmentShader.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ColorFragmentShader.fragmentshader; sourceTree = "<group>"; };
+		A1143E2C2015B3360038C500 /* tutorial04.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial04.cpp; sourceTree = "<group>"; };
+		A1143E3F2015B61C0038C500 /* TextureFragmentShader.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TextureFragmentShader.fragmentshader; sourceTree = "<group>"; };
+		A1143E402015B61C0038C500 /* TransformVertexShader.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TransformVertexShader.vertexshader; sourceTree = "<group>"; };
+		A1143E432015B61C0038C500 /* tutorial05.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial05.cpp; sourceTree = "<group>"; };
+		A1143E452015B6DB0038C500 /* uvtemplate.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvtemplate.DDS; sourceTree = "<group>"; };
+		A1143E4D2015B71F0038C500 /* uvtemplate.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvtemplate.DDS; sourceTree = "<group>"; };
+		A1143E4E2015B71F0038C500 /* TextureFragmentShader.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TextureFragmentShader.fragmentshader; sourceTree = "<group>"; };
+		A1143E4F2015B71F0038C500 /* TransformVertexShader.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TransformVertexShader.vertexshader; sourceTree = "<group>"; };
+		A1143E502015B71F0038C500 /* tutorial06.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial06.cpp; sourceTree = "<group>"; };
+		A1143E562015B7BA0038C500 /* uvmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvmap.DDS; sourceTree = "<group>"; };
+		A1143E572015B7BA0038C500 /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
+		A1143E582015B7BA0038C500 /* TextureFragmentShader.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TextureFragmentShader.fragmentshader; sourceTree = "<group>"; };
+		A1143E592015B7BA0038C500 /* TransformVertexShader.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TransformVertexShader.vertexshader; sourceTree = "<group>"; };
+		A1143E5A2015B7BA0038C500 /* tutorial07.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial07.cpp; sourceTree = "<group>"; };
+		A1143E5D2015B8570038C500 /* tutorial08.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial08.cpp; sourceTree = "<group>"; };
+		A1143E5E2015B8570038C500 /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
+		A1143E6E2015B8570038C500 /* uvmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvmap.DDS; sourceTree = "<group>"; };
+		A1143E6F2015B8570038C500 /* StandardShading.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.fragmentshader; sourceTree = "<group>"; };
+		A1143E702015B8570038C500 /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
+		A1143E712015B8570038C500 /* StandardShading.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.vertexshader; sourceTree = "<group>"; };
+		A1143E742015B8F70038C500 /* tutorial09.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial09.cpp; sourceTree = "<group>"; };
+		A1143E752015B8F70038C500 /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
+		A1143E762015B8F70038C500 /* tutorial09_several_objects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial09_several_objects.cpp; sourceTree = "<group>"; };
+		A1143E7B2015B8F70038C500 /* uvmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvmap.DDS; sourceTree = "<group>"; };
+		A1143E7C2015B8F70038C500 /* StandardShading.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.fragmentshader; sourceTree = "<group>"; };
+		A1143E7D2015B8F70038C500 /* StandardShading.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.vertexshader; sourceTree = "<group>"; };
+		A1143E7E2015B8F70038C500 /* tutorial09_AssImp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial09_AssImp.cpp; sourceTree = "<group>"; };
+		A1143E822015C05C0038C500 /* libassimp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.dylib; path = ../../../../../../../../usr/local/Cellar/assimp/4.1.0/lib/libassimp.dylib; sourceTree = "<group>"; };
+		A1143E852015C14F0038C500 /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
+		A1143E8B2015C14F0038C500 /* uvmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvmap.DDS; sourceTree = "<group>"; };
+		A1143E8C2015C14F0038C500 /* StandardTransparentShading.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardTransparentShading.fragmentshader; sourceTree = "<group>"; };
+		A1143E8D2015C14F0038C500 /* StandardShading.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.vertexshader; sourceTree = "<group>"; };
+		A1143E8E2015C14F0038C500 /* tutorial10.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial10.cpp; sourceTree = "<group>"; };
+		A1143E912015C1E10038C500 /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
+		A1143E952015C1E10038C500 /* TextVertexShader.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TextVertexShader.fragmentshader; sourceTree = "<group>"; };
+		A1143E962015C1E10038C500 /* uvmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvmap.DDS; sourceTree = "<group>"; };
+		A1143E972015C1E10038C500 /* Holstein.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = Holstein.DDS; sourceTree = "<group>"; };
+		A1143E982015C1E10038C500 /* StandardShading.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.fragmentshader; sourceTree = "<group>"; };
+		A1143E992015C1E10038C500 /* TextVertexShader.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TextVertexShader.vertexshader; sourceTree = "<group>"; };
+		A1143E9A2015C1E10038C500 /* StandardShading.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.vertexshader; sourceTree = "<group>"; };
+		A1143E9B2015C1E10038C500 /* tutorial11.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial11.cpp; sourceTree = "<group>"; };
 		A1245A891F657F9000DB5D45 /* CSPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSPlayer.cpp; sourceTree = "<group>"; };
 		A1245A8A1F657F9000DB5D45 /* CSPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPlayer.h; sourceTree = "<group>"; };
 		A1245A901F65FD1900DB5D45 /* CSIStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSIStream.cpp; sourceTree = "<group>"; };
@@ -3122,6 +3206,83 @@
 		A16159C01F70AD05001D54EA /* transcode_aac.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = transcode_aac.c; path = ../../../src/HBDemo/Example/transcode_aac.c; sourceTree = "<group>"; };
 		A16159C11F70AD05001D54EA /* transcoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = transcoding.c; path = ../../../src/HBDemo/Example/transcoding.c; sourceTree = "<group>"; };
 		A162626E1FB4757700217831 /* YUV.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = YUV.xcodeproj; path = ../../thirdparty/test/libyuv/proj/ios/YUV.xcodeproj; sourceTree = "<group>"; };
+		A16AE01B2015C6DD0021649D /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
+		A16AE01E2015C6DD0021649D /* uvmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvmap.DDS; sourceTree = "<group>"; };
+		A16AE01F2015C6DD0021649D /* StandardShading_WithSyntaxErrors.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading_WithSyntaxErrors.fragmentshader; sourceTree = "<group>"; };
+		A16AE0202015C6DD0021649D /* StandardShading.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.vertexshader; sourceTree = "<group>"; };
+		A16AE0212015C6DD0021649D /* tutorial12.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial12.cpp; sourceTree = "<group>"; };
+		A16AE02B2015C8E40021649D /* normal.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = normal.bmp; sourceTree = "<group>"; };
+		A16AE0382015C8E40021649D /* specular.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = specular.DDS; sourceTree = "<group>"; };
+		A16AE0392015C8E40021649D /* NormalMapping.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NormalMapping.vertexshader; sourceTree = "<group>"; };
+		A16AE03A2015C8E40021649D /* cylinder.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cylinder.mtl; sourceTree = "<group>"; };
+		A16AE03B2015C8E40021649D /* diffuse.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = diffuse.DDS; sourceTree = "<group>"; };
+		A16AE03C2015C8E40021649D /* cylinder.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cylinder.obj; sourceTree = "<group>"; };
+		A16AE03D2015C8E40021649D /* tutorial13.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial13.cpp; sourceTree = "<group>"; };
+		A16AE03E2015C8E40021649D /* NormalMapping.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NormalMapping.fragmentshader; sourceTree = "<group>"; };
+		A16AE0412015C97F0021649D /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
+		A16AE0452015C97F0021649D /* uvmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvmap.DDS; sourceTree = "<group>"; };
+		A16AE0462015C97F0021649D /* StandardShadingRTT.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShadingRTT.fragmentshader; sourceTree = "<group>"; };
+		A16AE0472015C97F0021649D /* WobblyTexture.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WobblyTexture.fragmentshader; sourceTree = "<group>"; };
+		A16AE0482015C97F0021649D /* Passthrough.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Passthrough.vertexshader; sourceTree = "<group>"; };
+		A16AE0492015C97F0021649D /* StandardShadingRTT.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShadingRTT.vertexshader; sourceTree = "<group>"; };
+		A16AE04A2015C97F0021649D /* tutorial14.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial14.cpp; sourceTree = "<group>"; };
+		A16AE0512015CA4C0021649D /* room.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = room.obj; sourceTree = "<group>"; };
+		A16AE0522015CA4C0021649D /* TextureFragmentShaderLOD.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TextureFragmentShaderLOD.fragmentshader; sourceTree = "<group>"; };
+		A16AE0532015CA4C0021649D /* room.blend */ = {isa = PBXFileReference; lastKnownFileType = file; path = room.blend; sourceTree = "<group>"; };
+		A16AE0542015CA4C0021649D /* TransformVertexShader.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TransformVertexShader.vertexshader; sourceTree = "<group>"; };
+		A16AE0552015CA4C0021649D /* tutorial15.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial15.cpp; sourceTree = "<group>"; };
+		A16AE0562015CA4C0021649D /* lightmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = lightmap.DDS; sourceTree = "<group>"; };
+		A16AE0592015CAEF0021649D /* DepthRTT.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DepthRTT.vertexshader; sourceTree = "<group>"; };
+		A16AE06A2015CAEF0021649D /* room.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = room.obj; sourceTree = "<group>"; };
+		A16AE06B2015CAEF0021649D /* SimpleTexture.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SimpleTexture.fragmentshader; sourceTree = "<group>"; };
+		A16AE06C2015CAEF0021649D /* ShadowMapping_SimpleVersion.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ShadowMapping_SimpleVersion.vertexshader; sourceTree = "<group>"; };
+		A16AE06D2015CAEF0021649D /* uvmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvmap.DDS; sourceTree = "<group>"; };
+		A16AE06E2015CAEF0021649D /* ShadowMapping.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ShadowMapping.vertexshader; sourceTree = "<group>"; };
+		A16AE06F2015CAEF0021649D /* DepthRTT.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DepthRTT.fragmentshader; sourceTree = "<group>"; };
+		A16AE0702015CAEF0021649D /* tutorial16_SimpleVersion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial16_SimpleVersion.cpp; sourceTree = "<group>"; };
+		A16AE0712015CAEF0021649D /* Passthrough.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Passthrough.vertexshader; sourceTree = "<group>"; };
+		A16AE0722015CAEF0021649D /* ShadowMapping_SimpleVersion.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ShadowMapping_SimpleVersion.fragmentshader; sourceTree = "<group>"; };
+		A16AE0732015CAEF0021649D /* tutorial16.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial16.cpp; sourceTree = "<group>"; };
+		A16AE0742015CAEF0021649D /* room_thickwalls.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = room_thickwalls.obj; sourceTree = "<group>"; };
+		A16AE0752015CAEF0021649D /* ShadowMapping.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ShadowMapping.fragmentshader; sourceTree = "<group>"; };
+		A16AE0792015CC6B0021649D /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
+		A16AE07D2015CC6B0021649D /* uvmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvmap.DDS; sourceTree = "<group>"; };
+		A16AE07E2015CC6B0021649D /* StandardShading.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.fragmentshader; sourceTree = "<group>"; };
+		A16AE07F2015CC6B0021649D /* tutorial17.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial17.cpp; sourceTree = "<group>"; };
+		A16AE0802015CC6B0021649D /* StandardShading.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.vertexshader; sourceTree = "<group>"; };
+		A16AE0822015CE440021649D /* libAntTweakBar.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libAntTweakBar.a; path = ../../../../../../../../usr/local/Cellar/anttweakbar/1.16/lib/libAntTweakBar.a; sourceTree = "<group>"; };
+		A16AE08C2015CE720021649D /* tutorial18_billboards.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial18_billboards.cpp; sourceTree = "<group>"; };
+		A16AE08D2015CE720021649D /* Billboard.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Billboard.vertexshader; sourceTree = "<group>"; };
+		A16AE08E2015CE720021649D /* Billboard.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Billboard.fragmentshader; sourceTree = "<group>"; };
+		A16AE08F2015CE720021649D /* particle.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = particle.DDS; sourceTree = "<group>"; };
+		A16AE0902015CE720021649D /* tutorial18_particles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial18_particles.cpp; sourceTree = "<group>"; };
+		A16AE0912015CE720021649D /* tutorial18_billboards.cpp.bak */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = tutorial18_billboards.cpp.bak; sourceTree = "<group>"; };
+		A16AE0922015CE720021649D /* Particle.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Particle.vertexshader; sourceTree = "<group>"; };
+		A16AE0932015CE720021649D /* ExampleBillboard.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = ExampleBillboard.DDS; sourceTree = "<group>"; };
+		A16AE0942015CE720021649D /* Particle.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Particle.fragmentshader; sourceTree = "<group>"; };
+		A16AE0982015D1190021649D /* Picking.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Picking.vertexshader; sourceTree = "<group>"; };
+		A16AE0992015D1190021649D /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
+		A16AE0A42015D1190021649D /* uvmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvmap.DDS; sourceTree = "<group>"; };
+		A16AE0A52015D1190021649D /* StandardShading.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.fragmentshader; sourceTree = "<group>"; };
+		A16AE0A72015D1190021649D /* misc05_picking_BulletPhysics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = misc05_picking_BulletPhysics.cpp; sourceTree = "<group>"; };
+		A16AE0A82015D1190021649D /* misc05_picking_slow_easy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = misc05_picking_slow_easy.cpp; sourceTree = "<group>"; };
+		A16AE0AB2015D1190021649D /* screenshot.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = screenshot.bmp; sourceTree = "<group>"; };
+		A16AE0AC2015D1190021649D /* StandardShading.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading.vertexshader; sourceTree = "<group>"; };
+		A16AE0AE2015D1190021649D /* misc05_picking_custom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = misc05_picking_custom.cpp; sourceTree = "<group>"; };
+		A16AE0AF2015D1190021649D /* Picking.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Picking.fragmentshader; sourceTree = "<group>"; };
+		A16AE0B32015D3AF0021649D /* libBulletDynamics.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libBulletDynamics.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libBulletDynamics.dylib; sourceTree = "<group>"; };
+		A16AE0B52015D3D20021649D /* libBullet3Common.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libBullet3Common.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libBullet3Common.dylib; sourceTree = "<group>"; };
+		A16AE0B72015D3DE0021649D /* libBulletCollision.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libBulletCollision.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libBulletCollision.dylib; sourceTree = "<group>"; };
+		A16AE0B92015D3E90021649D /* libLinearMath.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libLinearMath.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libLinearMath.dylib; sourceTree = "<group>"; };
+		A16AE0BB2015D3F10021649D /* libHACD.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libHACD.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libHACD.dylib; sourceTree = "<group>"; };
+		A16AE0BD2015D3F70021649D /* libGIMPACTUtils.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGIMPACTUtils.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libGIMPACTUtils.dylib; sourceTree = "<group>"; };
+		A16AE0BF2015D3FE0021649D /* libConvexDecomposition.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libConvexDecomposition.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libConvexDecomposition.dylib; sourceTree = "<group>"; };
+		A16AE0C12015D4040021649D /* libBulletXmlWorldImporter.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libBulletXmlWorldImporter.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libBulletXmlWorldImporter.dylib; sourceTree = "<group>"; };
+		A16AE0C32015D40A0021649D /* libBulletWorldImporter.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libBulletWorldImporter.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libBulletWorldImporter.dylib; sourceTree = "<group>"; };
+		A16AE0C52015D40F0021649D /* libBulletSoftBody.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libBulletSoftBody.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libBulletSoftBody.dylib; sourceTree = "<group>"; };
+		A16AE0C72015D41A0021649D /* libBulletRobotics.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libBulletRobotics.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libBulletRobotics.dylib; sourceTree = "<group>"; };
+		A16AE0C92015D4200021649D /* libBulletInverseDynamicsUtils.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libBulletInverseDynamicsUtils.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libBulletInverseDynamicsUtils.dylib; sourceTree = "<group>"; };
+		A16AE0CB2015D4260021649D /* libBulletInverseDynamics.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libBulletInverseDynamics.dylib; path = ../../../../../../../../usr/local/Cellar/bullet/2.87/lib/libBulletInverseDynamics.dylib; sourceTree = "<group>"; };
 		A17202B11F69993E00662F18 /* CSAudioFifo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioFifo.cpp; sourceTree = "<group>"; };
 		A17202B21F69993E00662F18 /* CSAudioFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSAudioFifo.h; sourceTree = "<group>"; };
 		A175D0111F945D9000A7F5A4 /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmp3lame.a; path = ../../lib/lame/lib/libmp3lame.a; sourceTree = "<group>"; };
@@ -9455,9 +9616,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				A11254972006583700E64489 /* OpenGL.framework in Frameworks */,
+				A16AE0B82015D3DE0021649D /* libBulletCollision.dylib in Frameworks */,
 				A112549920065CD600E64489 /* libGLEW.a in Frameworks */,
+				A16AE0CC2015D4260021649D /* libBulletInverseDynamics.dylib in Frameworks */,
+				A16AE0C62015D4100021649D /* libBulletSoftBody.dylib in Frameworks */,
+				A16AE0CA2015D4210021649D /* libBulletInverseDynamicsUtils.dylib in Frameworks */,
+				A16AE0C02015D3FE0021649D /* libConvexDecomposition.dylib in Frameworks */,
+				A16AE0C82015D41B0021649D /* libBulletRobotics.dylib in Frameworks */,
+				A16AE0C42015D40A0021649D /* libBulletWorldImporter.dylib in Frameworks */,
+				A16AE0C22015D4040021649D /* libBulletXmlWorldImporter.dylib in Frameworks */,
 				A112549B20065D1F00E64489 /* libglfw.3.2.dylib in Frameworks */,
+				A16AE0BE2015D3F80021649D /* libGIMPACTUtils.dylib in Frameworks */,
+				A16AE0BA2015D3E90021649D /* libLinearMath.dylib in Frameworks */,
+				A16AE0BC2015D3F10021649D /* libHACD.dylib in Frameworks */,
+				A1143E832015C05C0038C500 /* libassimp.dylib in Frameworks */,
+				A16AE0B62015D3D20021649D /* libBullet3Common.dylib in Frameworks */,
+				A16AE0B42015D3B00021649D /* libBulletDynamics.dylib in Frameworks */,
 				A1AE0C8B1FBDF932007D82DE /* libjpeg.a in Frameworks */,
+				A16AE0832015CE440021649D /* libAntTweakBar.a in Frameworks */,
 				A1C31AF91FBC1B40001C4258 /* libSoundTouch.a in Frameworks */,
 				A162628B1FB4785E00217831 /* libyuv.a in Frameworks */,
 				A1FC23BD1F277D1000024371 /* AudioToolbox.framework in Frameworks */,
@@ -9613,7 +9789,24 @@
 		A11254922006570E00E64489 /* CSGLExample */ = {
 			isa = PBXGroup;
 			children = (
+				A16AE0972015D1190021649D /* misc05_picking */,
+				A16AE0842015CE720021649D /* tutorial18_billboards_and_particles */,
+				A16AE0782015CC6B0021649D /* tutorial17_rotations */,
+				A16AE0582015CAEF0021649D /* tutorial16_shadowmaps */,
+				A16AE04C2015CA4C0021649D /* tutorial15_lightmaps */,
+				A16AE0402015C97F0021649D /* tutorial14_render_to_texture */,
+				A16AE02A2015C8E40021649D /* tutorial13_normal_mapping */,
+				A16AE01A2015C6DD0021649D /* tutorial12_extensions */,
+				A1143E902015C1E10038C500 /* tutorial11_2d_fonts */,
+				A1143E842015C14F0038C500 /* tutorial10_transparency */,
+				A1143E732015B8F70038C500 /* tutorial09_vbo_indexing */,
+				A1143E5C2015B8570038C500 /* tutorial08_basic_shading */,
+				A1143E522015B7BA0038C500 /* tutorial07_model_loading */,
+				A1143E462015B71F0038C500 /* tutorial06_keyboard_and_mouse */,
+				A1143E2E2015B61C0038C500 /* tutorial05_textured_cube */,
 				A11254A02006683D00E64489 /* common */,
+				A1143E292015B3360038C500 /* tutorial04_colored_cube */,
+				A1143E1D201593C10038C500 /* tutorial03_matrices */,
 				A112549D2006680300E64489 /* tutorial02_red_triangle */,
 				A112549C20065F6E00E64489 /* README */,
 				A11254932006575500E64489 /* CSGLExample.h */,
@@ -9654,6 +9847,114 @@
 				A11254B02006683D00E64489 /* objloader.hpp */,
 			);
 			path = common;
+			sourceTree = "<group>";
+		};
+		A1143E1D201593C10038C500 /* tutorial03_matrices */ = {
+			isa = PBXGroup;
+			children = (
+				A1143E1E201593C10038C500 /* SingleColor.fragmentshader */,
+				A1143E1F201593C10038C500 /* SimpleTransform.vertexshader */,
+				A1143E20201593C10038C500 /* tutorial03.cpp */,
+			);
+			path = tutorial03_matrices;
+			sourceTree = "<group>";
+		};
+		A1143E292015B3360038C500 /* tutorial04_colored_cube */ = {
+			isa = PBXGroup;
+			children = (
+				A1143E2A2015B3360038C500 /* TransformVertexShader.vertexshader */,
+				A1143E2B2015B3360038C500 /* ColorFragmentShader.fragmentshader */,
+				A1143E2C2015B3360038C500 /* tutorial04.cpp */,
+			);
+			path = tutorial04_colored_cube;
+			sourceTree = "<group>";
+		};
+		A1143E2E2015B61C0038C500 /* tutorial05_textured_cube */ = {
+			isa = PBXGroup;
+			children = (
+				A1143E452015B6DB0038C500 /* uvtemplate.DDS */,
+				A1143E3F2015B61C0038C500 /* TextureFragmentShader.fragmentshader */,
+				A1143E402015B61C0038C500 /* TransformVertexShader.vertexshader */,
+				A1143E432015B61C0038C500 /* tutorial05.cpp */,
+			);
+			path = tutorial05_textured_cube;
+			sourceTree = "<group>";
+		};
+		A1143E462015B71F0038C500 /* tutorial06_keyboard_and_mouse */ = {
+			isa = PBXGroup;
+			children = (
+				A1143E4D2015B71F0038C500 /* uvtemplate.DDS */,
+				A1143E4E2015B71F0038C500 /* TextureFragmentShader.fragmentshader */,
+				A1143E4F2015B71F0038C500 /* TransformVertexShader.vertexshader */,
+				A1143E502015B71F0038C500 /* tutorial06.cpp */,
+			);
+			path = tutorial06_keyboard_and_mouse;
+			sourceTree = "<group>";
+		};
+		A1143E522015B7BA0038C500 /* tutorial07_model_loading */ = {
+			isa = PBXGroup;
+			children = (
+				A1143E562015B7BA0038C500 /* uvmap.DDS */,
+				A1143E572015B7BA0038C500 /* cube.obj */,
+				A1143E582015B7BA0038C500 /* TextureFragmentShader.fragmentshader */,
+				A1143E592015B7BA0038C500 /* TransformVertexShader.vertexshader */,
+				A1143E5A2015B7BA0038C500 /* tutorial07.cpp */,
+			);
+			path = tutorial07_model_loading;
+			sourceTree = "<group>";
+		};
+		A1143E5C2015B8570038C500 /* tutorial08_basic_shading */ = {
+			isa = PBXGroup;
+			children = (
+				A1143E5D2015B8570038C500 /* tutorial08.cpp */,
+				A1143E5E2015B8570038C500 /* suzanne.obj */,
+				A1143E6E2015B8570038C500 /* uvmap.DDS */,
+				A1143E6F2015B8570038C500 /* StandardShading.fragmentshader */,
+				A1143E702015B8570038C500 /* cube.obj */,
+				A1143E712015B8570038C500 /* StandardShading.vertexshader */,
+			);
+			path = tutorial08_basic_shading;
+			sourceTree = "<group>";
+		};
+		A1143E732015B8F70038C500 /* tutorial09_vbo_indexing */ = {
+			isa = PBXGroup;
+			children = (
+				A1143E742015B8F70038C500 /* tutorial09.cpp */,
+				A1143E752015B8F70038C500 /* suzanne.obj */,
+				A1143E762015B8F70038C500 /* tutorial09_several_objects.cpp */,
+				A1143E7B2015B8F70038C500 /* uvmap.DDS */,
+				A1143E7C2015B8F70038C500 /* StandardShading.fragmentshader */,
+				A1143E7D2015B8F70038C500 /* StandardShading.vertexshader */,
+				A1143E7E2015B8F70038C500 /* tutorial09_AssImp.cpp */,
+			);
+			path = tutorial09_vbo_indexing;
+			sourceTree = "<group>";
+		};
+		A1143E842015C14F0038C500 /* tutorial10_transparency */ = {
+			isa = PBXGroup;
+			children = (
+				A1143E852015C14F0038C500 /* suzanne.obj */,
+				A1143E8B2015C14F0038C500 /* uvmap.DDS */,
+				A1143E8C2015C14F0038C500 /* StandardTransparentShading.fragmentshader */,
+				A1143E8D2015C14F0038C500 /* StandardShading.vertexshader */,
+				A1143E8E2015C14F0038C500 /* tutorial10.cpp */,
+			);
+			path = tutorial10_transparency;
+			sourceTree = "<group>";
+		};
+		A1143E902015C1E10038C500 /* tutorial11_2d_fonts */ = {
+			isa = PBXGroup;
+			children = (
+				A1143E912015C1E10038C500 /* suzanne.obj */,
+				A1143E952015C1E10038C500 /* TextVertexShader.fragmentshader */,
+				A1143E962015C1E10038C500 /* uvmap.DDS */,
+				A1143E972015C1E10038C500 /* Holstein.DDS */,
+				A1143E982015C1E10038C500 /* StandardShading.fragmentshader */,
+				A1143E992015C1E10038C500 /* TextVertexShader.vertexshader */,
+				A1143E9A2015C1E10038C500 /* StandardShading.vertexshader */,
+				A1143E9B2015C1E10038C500 /* tutorial11.cpp */,
+			);
+			path = tutorial11_2d_fonts;
 			sourceTree = "<group>";
 		};
 		A1245A8F1F65FD1900DB5D45 /* CSStrem */ = {
@@ -9942,6 +10243,125 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A16AE01A2015C6DD0021649D /* tutorial12_extensions */ = {
+			isa = PBXGroup;
+			children = (
+				A16AE01B2015C6DD0021649D /* suzanne.obj */,
+				A16AE01E2015C6DD0021649D /* uvmap.DDS */,
+				A16AE01F2015C6DD0021649D /* StandardShading_WithSyntaxErrors.fragmentshader */,
+				A16AE0202015C6DD0021649D /* StandardShading.vertexshader */,
+				A16AE0212015C6DD0021649D /* tutorial12.cpp */,
+			);
+			path = tutorial12_extensions;
+			sourceTree = "<group>";
+		};
+		A16AE02A2015C8E40021649D /* tutorial13_normal_mapping */ = {
+			isa = PBXGroup;
+			children = (
+				A16AE02B2015C8E40021649D /* normal.bmp */,
+				A16AE0382015C8E40021649D /* specular.DDS */,
+				A16AE0392015C8E40021649D /* NormalMapping.vertexshader */,
+				A16AE03A2015C8E40021649D /* cylinder.mtl */,
+				A16AE03B2015C8E40021649D /* diffuse.DDS */,
+				A16AE03C2015C8E40021649D /* cylinder.obj */,
+				A16AE03D2015C8E40021649D /* tutorial13.cpp */,
+				A16AE03E2015C8E40021649D /* NormalMapping.fragmentshader */,
+			);
+			path = tutorial13_normal_mapping;
+			sourceTree = "<group>";
+		};
+		A16AE0402015C97F0021649D /* tutorial14_render_to_texture */ = {
+			isa = PBXGroup;
+			children = (
+				A16AE0412015C97F0021649D /* suzanne.obj */,
+				A16AE0452015C97F0021649D /* uvmap.DDS */,
+				A16AE0462015C97F0021649D /* StandardShadingRTT.fragmentshader */,
+				A16AE0472015C97F0021649D /* WobblyTexture.fragmentshader */,
+				A16AE0482015C97F0021649D /* Passthrough.vertexshader */,
+				A16AE0492015C97F0021649D /* StandardShadingRTT.vertexshader */,
+				A16AE04A2015C97F0021649D /* tutorial14.cpp */,
+			);
+			path = tutorial14_render_to_texture;
+			sourceTree = "<group>";
+		};
+		A16AE04C2015CA4C0021649D /* tutorial15_lightmaps */ = {
+			isa = PBXGroup;
+			children = (
+				A16AE0512015CA4C0021649D /* room.obj */,
+				A16AE0522015CA4C0021649D /* TextureFragmentShaderLOD.fragmentshader */,
+				A16AE0532015CA4C0021649D /* room.blend */,
+				A16AE0542015CA4C0021649D /* TransformVertexShader.vertexshader */,
+				A16AE0552015CA4C0021649D /* tutorial15.cpp */,
+				A16AE0562015CA4C0021649D /* lightmap.DDS */,
+			);
+			path = tutorial15_lightmaps;
+			sourceTree = "<group>";
+		};
+		A16AE0582015CAEF0021649D /* tutorial16_shadowmaps */ = {
+			isa = PBXGroup;
+			children = (
+				A16AE0592015CAEF0021649D /* DepthRTT.vertexshader */,
+				A16AE06A2015CAEF0021649D /* room.obj */,
+				A16AE06B2015CAEF0021649D /* SimpleTexture.fragmentshader */,
+				A16AE06C2015CAEF0021649D /* ShadowMapping_SimpleVersion.vertexshader */,
+				A16AE06D2015CAEF0021649D /* uvmap.DDS */,
+				A16AE06E2015CAEF0021649D /* ShadowMapping.vertexshader */,
+				A16AE06F2015CAEF0021649D /* DepthRTT.fragmentshader */,
+				A16AE0702015CAEF0021649D /* tutorial16_SimpleVersion.cpp */,
+				A16AE0712015CAEF0021649D /* Passthrough.vertexshader */,
+				A16AE0722015CAEF0021649D /* ShadowMapping_SimpleVersion.fragmentshader */,
+				A16AE0732015CAEF0021649D /* tutorial16.cpp */,
+				A16AE0742015CAEF0021649D /* room_thickwalls.obj */,
+				A16AE0752015CAEF0021649D /* ShadowMapping.fragmentshader */,
+			);
+			path = tutorial16_shadowmaps;
+			sourceTree = "<group>";
+		};
+		A16AE0782015CC6B0021649D /* tutorial17_rotations */ = {
+			isa = PBXGroup;
+			children = (
+				A16AE0792015CC6B0021649D /* suzanne.obj */,
+				A16AE07D2015CC6B0021649D /* uvmap.DDS */,
+				A16AE07E2015CC6B0021649D /* StandardShading.fragmentshader */,
+				A16AE07F2015CC6B0021649D /* tutorial17.cpp */,
+				A16AE0802015CC6B0021649D /* StandardShading.vertexshader */,
+			);
+			path = tutorial17_rotations;
+			sourceTree = "<group>";
+		};
+		A16AE0842015CE720021649D /* tutorial18_billboards_and_particles */ = {
+			isa = PBXGroup;
+			children = (
+				A16AE08C2015CE720021649D /* tutorial18_billboards.cpp */,
+				A16AE08D2015CE720021649D /* Billboard.vertexshader */,
+				A16AE08E2015CE720021649D /* Billboard.fragmentshader */,
+				A16AE08F2015CE720021649D /* particle.DDS */,
+				A16AE0902015CE720021649D /* tutorial18_particles.cpp */,
+				A16AE0912015CE720021649D /* tutorial18_billboards.cpp.bak */,
+				A16AE0922015CE720021649D /* Particle.vertexshader */,
+				A16AE0932015CE720021649D /* ExampleBillboard.DDS */,
+				A16AE0942015CE720021649D /* Particle.fragmentshader */,
+			);
+			path = tutorial18_billboards_and_particles;
+			sourceTree = "<group>";
+		};
+		A16AE0972015D1190021649D /* misc05_picking */ = {
+			isa = PBXGroup;
+			children = (
+				A16AE0982015D1190021649D /* Picking.vertexshader */,
+				A16AE0992015D1190021649D /* suzanne.obj */,
+				A16AE0A42015D1190021649D /* uvmap.DDS */,
+				A16AE0A52015D1190021649D /* StandardShading.fragmentshader */,
+				A16AE0A72015D1190021649D /* misc05_picking_BulletPhysics.cpp */,
+				A16AE0A82015D1190021649D /* misc05_picking_slow_easy.cpp */,
+				A16AE0AB2015D1190021649D /* screenshot.bmp */,
+				A16AE0AC2015D1190021649D /* StandardShading.vertexshader */,
+				A16AE0AE2015D1190021649D /* misc05_picking_custom.cpp */,
+				A16AE0AF2015D1190021649D /* Picking.fragmentshader */,
+			);
+			path = misc05_picking;
+			sourceTree = "<group>";
+		};
 		A181BC331EA1F682004861DA /* Sample */ = {
 			isa = PBXGroup;
 			children = (
@@ -9976,6 +10396,21 @@
 		A181BC401EA2142F004861DA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A16AE0CB2015D4260021649D /* libBulletInverseDynamics.dylib */,
+				A16AE0C92015D4200021649D /* libBulletInverseDynamicsUtils.dylib */,
+				A16AE0C72015D41A0021649D /* libBulletRobotics.dylib */,
+				A16AE0C52015D40F0021649D /* libBulletSoftBody.dylib */,
+				A16AE0C32015D40A0021649D /* libBulletWorldImporter.dylib */,
+				A16AE0C12015D4040021649D /* libBulletXmlWorldImporter.dylib */,
+				A16AE0BF2015D3FE0021649D /* libConvexDecomposition.dylib */,
+				A16AE0BD2015D3F70021649D /* libGIMPACTUtils.dylib */,
+				A16AE0BB2015D3F10021649D /* libHACD.dylib */,
+				A16AE0B92015D3E90021649D /* libLinearMath.dylib */,
+				A16AE0B72015D3DE0021649D /* libBulletCollision.dylib */,
+				A16AE0B52015D3D20021649D /* libBullet3Common.dylib */,
+				A16AE0B32015D3AF0021649D /* libBulletDynamics.dylib */,
+				A16AE0822015CE440021649D /* libAntTweakBar.a */,
+				A1143E822015C05C0038C500 /* libassimp.dylib */,
 				A112549A20065D1E00E64489 /* libglfw.3.2.dylib */,
 				A112549820065CD600E64489 /* libGLEW.a */,
 				A11254962006583700E64489 /* OpenGL.framework */,
@@ -17605,25 +18040,34 @@
 				A11254BB20066A1700E64489 /* CSGLExample.cpp in Sources */,
 				A19E9C711F716075000EAF8C /* decoding_encoding.cpp in Sources */,
 				A19A67E11EB3457500DE8F11 /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,
+				A1143E7F2015B8F70038C500 /* tutorial09.cpp in Sources */,
 				A100E2971FE8F0FE00F1783C /* gif89a.cpp in Sources */,
 				A181BC681EA21788004861DA /* simplest_ffmpeg_demuxer.cpp in Sources */,
 				A17F02851FBB52C8009B03F0 /* CSAudioUtil.cpp in Sources */,
 				A1245A951F65FD3300DB5D45 /* CSVStream.cpp in Sources */,
 				A10A0F181FF145560036A410 /* CSAudioEncoder.cpp in Sources */,
 				A131A1201FC9013E002E5B8E /* HBPictureDemo.cpp in Sources */,
+				A1143E28201593C10038C500 /* tutorial03.cpp in Sources */,
+				A16AE0952015CE720021649D /* tutorial18_billboards.cpp in Sources */,
 				A19A67C31EB3432F00DE8F11 /* simplest_ffmpeg_demuxer_simple.cpp in Sources */,
 				A131A11F1FC9013E002E5B8E /* CSPicture.cpp in Sources */,
+				A16AE0772015CAEF0021649D /* tutorial16.cpp in Sources */,
 				A11254B62006683D00E64489 /* shader.cpp in Sources */,
 				A131A1111FC900FB002E5B8E /* CSAudioResample.cpp in Sources */,
 				A11254B42006683D00E64489 /* texture.cpp in Sources */,
+				A16AE0762015CAEF0021649D /* tutorial16_SimpleVersion.cpp in Sources */,
 				A19A67E01EB3457500DE8F11 /* simplest_ffmpeg_video_encoder.cpp in Sources */,
 				A151AF2C1FBB4E89001873B4 /* CSVideoEffectFactory.cpp in Sources */,
+				A16AE0B02015D11A0021649D /* misc05_picking_BulletPhysics.cpp in Sources */,
 				A195CBC61FBB102400F708F9 /* CSAudioResamplerEffect.cpp in Sources */,
+				A1143E8F2015C14F0038C500 /* tutorial10.cpp in Sources */,
 				A1F6019F1F66C98C00168C96 /* CSStreamFactory.cpp in Sources */,
 				A17202B31F69993E00662F18 /* CSAudioFifo.cpp in Sources */,
 				A11254B12006683D00E64489 /* controls.cpp in Sources */,
+				A16AE04B2015C97F0021649D /* tutorial14.cpp in Sources */,
 				A19A67EB1EB3465D00DE8F11 /* simplest_ffmpeg_mem_transcoder.cpp in Sources */,
 				A15632BA1F94B07200F0140F /* FilteringVideo.cpp in Sources */,
+				A16AE03F2015C8E40021649D /* tutorial13.cpp in Sources */,
 				A134260E1FFD17F200D3451B /* CSAudioRoundBuf.cpp in Sources */,
 				A181BC351EA1F682004861DA /* main.cpp in Sources */,
 				A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */,
@@ -17635,31 +18079,40 @@
 				A1DED09F1FD7C094005CD4EF /* CSVideoAnalysis.cpp in Sources */,
 				A131A1241FC904D6002E5B8E /* CSMediaBase.cpp in Sources */,
 				A181BC721F6517F400B34FD0 /* CSThreadIPCContext.cpp in Sources */,
+				A16AE0B12015D11A0021649D /* misc05_picking_slow_easy.cpp in Sources */,
 				A1F706161F656F9F003A6010 /* CSMediaTimeline.cpp in Sources */,
 				A19450B11F6754E1004E8669 /* CSWorkTasks.cpp in Sources */,
 				A1538FBD1F8C771D002C8880 /* HBVideoConcat.cpp in Sources */,
 				A11254B22006683D00E64489 /* quaternion_utils.cpp in Sources */,
+				A1143E722015B8570038C500 /* tutorial08.cpp in Sources */,
 				A151AF2F1FBB4F98001873B4 /* CSVideoScaleEffect.cpp in Sources */,
 				A181BC691EA21788004861DA /* simplest_ffmpeg_video_encoder.cpp in Sources */,
 				A151930A1FFCD823004C5B17 /* CSAudioPlayer.cpp in Sources */,
 				A1B258172005A1FA006101BE /* CSVideoPlayer.cpp in Sources */,
 				A151AF291FBB491F001873B4 /* CSVideoCropRotateEffect.cpp in Sources */,
 				A13E121B1F676775003FC0AC /* CSWorkContext.cpp in Sources */,
+				A1143E442015B61D0038C500 /* tutorial05.cpp in Sources */,
+				A1143E802015B8F80038C500 /* tutorial09_several_objects.cpp in Sources */,
 				A19A67D21EB3434200DE8F11 /* simplest_ffmpeg_remuxer.cpp in Sources */,
 				A11254B52006683D00E64489 /* tangentspace.cpp in Sources */,
 				A181BC6A1EA21788004861DA /* simplest_ffmpeg_video_encoder_pure.cpp in Sources */,
+				A1143E512015B71F0038C500 /* tutorial06.cpp in Sources */,
 				A15632C11F94BB5F00F0140F /* transcoding.c in Sources */,
 				A181BC5F1EA21756004861DA /* HBSeperateFormat.c in Sources */,
 				A131A0ED1FC900B0002E5B8E /* CSVideoReverse.cpp in Sources */,
 				A100E2981FE8F0FE00F1783C /* Quantize.cpp in Sources */,
+				A16AE0292015C6DE0021649D /* tutorial12.cpp in Sources */,
 				A11254952006575500E64489 /* tutorial01.cpp in Sources */,
 				A181BC581EA2172B004861DA /* audio_format_convert.cpp in Sources */,
 				A11254B32006683D00E64489 /* objloader.cpp in Sources */,
 				A1F7061C1F657181003A6010 /* CSMediaPiece.cpp in Sources */,
+				A16AE0812015CC6B0021649D /* tutorial17.cpp in Sources */,
 				A131A1131FC900FB002E5B8E /* CSAudioDecoder.cpp in Sources */,
 				A131A1121FC900FB002E5B8E /* audio_player.cpp in Sources */,
 				A1080E9A1F68DC6F0015A2D3 /* CSConfig.cpp in Sources */,
 				A1F4B09E1FB93192000FF69B /* CSDemo.cpp in Sources */,
+				A1143E812015B8F80038C500 /* tutorial09_AssImp.cpp in Sources */,
+				A1143E9C2015C1E10038C500 /* tutorial11.cpp in Sources */,
 				A19A67E41EB3460100DE8F11 /* simplest_ffmpeg_swscale.cpp in Sources */,
 				A100E2991FE8F0FE00F1783C /* Srv_gifCreateInterface.cpp in Sources */,
 				A15BB0EE1F42C2DA00AFE839 /* CSPacketQueue.cpp in Sources */,
@@ -17671,6 +18124,7 @@
 				A11254B82006683D00E64489 /* vboindexer.cpp in Sources */,
 				A131A0F01FC900B0002E5B8E /* CSVideoDemo.cpp in Sources */,
 				A187C75D1FE27EDB00FAF954 /* CSPictureUtil.cpp in Sources */,
+				A1143E2D2015B3370038C500 /* tutorial04.cpp in Sources */,
 				A1245A981F65FD4A00DB5D45 /* CSAStream.cpp in Sources */,
 				A1245A8B1F657F9000DB5D45 /* CSPlayer.cpp in Sources */,
 				A131A0EF1FC900B0002E5B8E /* CSVideoTool.cpp in Sources */,
@@ -17680,9 +18134,13 @@
 				A181BC5E1EA21756004861DA /* HBFilterWater.c in Sources */,
 				A19A67CD1EB3433900DE8F11 /* simplest_ffmpeg_muxer.cpp in Sources */,
 				A131A0EC1FC900B0002E5B8E /* CSVideoDecoder.cpp in Sources */,
+				A16AE0B22015D11A0021649D /* misc05_picking_custom.cpp in Sources */,
 				A131A0EE1FC900B0002E5B8E /* CSVideoScale.cpp in Sources */,
 				A19A67DA1EB3445600DE8F11 /* simplest_ffmpeg_video_filter.cpp in Sources */,
+				A16AE0962015CE720021649D /* tutorial18_particles.cpp in Sources */,
+				A16AE0572015CA4D0021649D /* tutorial15.cpp in Sources */,
 				A17F028F1FBB52F5009B03F0 /* CSVideoUtil.cpp in Sources */,
+				A1143E5B2015B7BA0038C500 /* tutorial07.cpp in Sources */,
 				A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */,
 				A10365CB1F910AFB00B9E1A4 /* HBVideoChangeBgmMusic.cpp in Sources */,
 				A19A67EA1EB3465D00DE8F11 /* simplest_ffmpeg_mem_player.cpp in Sources */,
@@ -20437,7 +20895,11 @@
 					/usr/local/Cellar/glew/2.1.0/include,
 					/usr/local/Cellar/glfw/3.2.1/include,
 					/usr/local/Cellar/glfw/3.2.1/include/GLFW,
+					/usr/local/Cellar/assimp/4.1.0/include,
 					/usr/local/Cellar/glm/0.9.8.5/include,
+					/usr/local/Cellar/anttweakbar/1.16/include,
+					/usr/local/Cellar/bullet/2.87/include/bullet,
+					/usr/local/Cellar/bullet/2.87/include,
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -20449,6 +20911,9 @@
 					"\"$(SRCROOT)/../../lib/lame/lib\"",
 					/usr/local/Cellar/glew/2.1.0/lib,
 					/usr/local/Cellar/glfw/3.2.1/lib,
+					/usr/local/Cellar/assimp/4.1.0/lib,
+					/usr/local/Cellar/anttweakbar/1.16/lib,
+					/usr/local/Cellar/bullet/2.87/lib,
 					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -20474,7 +20939,11 @@
 					/usr/local/Cellar/glew/2.1.0/include,
 					/usr/local/Cellar/glfw/3.2.1/include,
 					/usr/local/Cellar/glfw/3.2.1/include/GLFW,
+					/usr/local/Cellar/assimp/4.1.0/include,
 					/usr/local/Cellar/glm/0.9.8.5/include,
+					/usr/local/Cellar/anttweakbar/1.16/include,
+					/usr/local/Cellar/bullet/2.87/include/bullet,
+					/usr/local/Cellar/bullet/2.87/include,
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -20486,6 +20955,9 @@
 					"\"$(SRCROOT)/../../lib/lame/lib\"",
 					/usr/local/Cellar/glew/2.1.0/lib,
 					/usr/local/Cellar/glfw/3.2.1/lib,
+					/usr/local/Cellar/assimp/4.1.0/lib,
+					/usr/local/Cellar/anttweakbar/1.16/lib,
+					/usr/local/Cellar/bullet/2.87/lib,
 					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -110,7 +110,6 @@ bool loadOBJ(
 	return true;
 }
 
-
 #ifdef USE_ASSIMP // don't use this #define, it's only for me (it AssImp fails to compile on your machine, at least all the other tutorials still work)
 
 // Include AssImp
