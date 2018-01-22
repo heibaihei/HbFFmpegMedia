@@ -29,7 +29,6 @@
 		A11254B82006683D00E64489 /* vboindexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254AD2006683D00E64489 /* vboindexer.cpp */; };
 		A11254BB20066A1700E64489 /* CSGLExample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11254BA20066A1700E64489 /* CSGLExample.cpp */; };
 		A1143E28201593C10038C500 /* tutorial03.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E20201593C10038C500 /* tutorial03.cpp */; };
-		A1143E2D2015B3370038C500 /* tutorial04.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E2C2015B3360038C500 /* tutorial04.cpp */; };
 		A1143E442015B61D0038C500 /* tutorial05.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E432015B61C0038C500 /* tutorial05.cpp */; };
 		A1143E512015B71F0038C500 /* tutorial06.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E502015B71F0038C500 /* tutorial06.cpp */; };
 		A1143E5B2015B7BA0038C500 /* tutorial07.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1143E5A2015B7BA0038C500 /* tutorial07.cpp */; };
@@ -178,6 +177,7 @@
 		A19E9C711F716075000EAF8C /* decoding_encoding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16159B11F70AD05001D54EA /* decoding_encoding.cpp */; };
 		A1AE0C8B1FBDF932007D82DE /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1AE0C831FBDF932007D82DE /* libjpeg.a */; };
 		A1B258172005A1FA006101BE /* CSVideoPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1B258152005A1FA006101BE /* CSVideoPlayer.cpp */; };
+		A1B315D42016339400A7C765 /* Tutorial_04.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1B315D32016339400A7C765 /* Tutorial_04.cpp */; };
 		A1BE85571EB742F7004B839C /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC411EA21430004861DA /* libSDL2.a */; };
 		A1BE85581EB7433C004B839C /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC431EA2145E004861DA /* libavcodec.a */; };
 		A1BE85591EB74340004B839C /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC451EA21460004861DA /* libavdevice.a */; };
@@ -3030,7 +3030,6 @@
 		A1143E20201593C10038C500 /* tutorial03.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial03.cpp; sourceTree = "<group>"; };
 		A1143E2A2015B3360038C500 /* TransformVertexShader.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TransformVertexShader.vertexshader; sourceTree = "<group>"; };
 		A1143E2B2015B3360038C500 /* ColorFragmentShader.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ColorFragmentShader.fragmentshader; sourceTree = "<group>"; };
-		A1143E2C2015B3360038C500 /* tutorial04.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial04.cpp; sourceTree = "<group>"; };
 		A1143E3F2015B61C0038C500 /* TextureFragmentShader.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TextureFragmentShader.fragmentshader; sourceTree = "<group>"; };
 		A1143E402015B61C0038C500 /* TransformVertexShader.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TransformVertexShader.vertexshader; sourceTree = "<group>"; };
 		A1143E432015B61C0038C500 /* tutorial05.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial05.cpp; sourceTree = "<group>"; };
@@ -3352,6 +3351,7 @@
 		A1AE0C831FBDF932007D82DE /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg.a; path = ../../lib/libjpeg/lib/libjpeg.a; sourceTree = "<group>"; };
 		A1B258152005A1FA006101BE /* CSVideoPlayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSVideoPlayer.cpp; sourceTree = "<group>"; };
 		A1B258162005A1FA006101BE /* CSVideoPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSVideoPlayer.h; sourceTree = "<group>"; };
+		A1B315D32016339400A7C765 /* Tutorial_04.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Tutorial_04.cpp; sourceTree = "<group>"; };
 		A1BAF0141F5EF79000C3062C /* CSUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSUtil.h; path = ../../../include/CSUtil.h; sourceTree = "<group>"; };
 		A1BE85621EB743C7004B839C /* cmdutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cmdutils.c; path = "../../ffmpeg-3.2/cmdutils.c"; sourceTree = "<group>"; };
 		A1BE85631EB743C7004B839C /* cmdutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cmdutils.h; path = "../../ffmpeg-3.2/cmdutils.h"; sourceTree = "<group>"; };
@@ -9864,7 +9864,7 @@
 			children = (
 				A1143E2A2015B3360038C500 /* TransformVertexShader.vertexshader */,
 				A1143E2B2015B3360038C500 /* ColorFragmentShader.fragmentshader */,
-				A1143E2C2015B3360038C500 /* tutorial04.cpp */,
+				A1B315D32016339400A7C765 /* Tutorial_04.cpp */,
 			);
 			path = tutorial04_colored_cube;
 			sourceTree = "<group>";
@@ -18124,11 +18124,11 @@
 				A11254B82006683D00E64489 /* vboindexer.cpp in Sources */,
 				A131A0F01FC900B0002E5B8E /* CSVideoDemo.cpp in Sources */,
 				A187C75D1FE27EDB00FAF954 /* CSPictureUtil.cpp in Sources */,
-				A1143E2D2015B3370038C500 /* tutorial04.cpp in Sources */,
 				A1245A981F65FD4A00DB5D45 /* CSAStream.cpp in Sources */,
 				A1245A8B1F657F9000DB5D45 /* CSPlayer.cpp in Sources */,
 				A131A0EF1FC900B0002E5B8E /* CSVideoTool.cpp in Sources */,
 				A1FC872A1F1D9BFA004D8A63 /* CSCommon.cpp in Sources */,
+				A1B315D42016339400A7C765 /* Tutorial_04.cpp in Sources */,
 				A195CBBC1FBB0EA700F708F9 /* CSAudioEffectFactory.cpp in Sources */,
 				A15632BF1F94B96400F0140F /* AvioReading.cpp in Sources */,
 				A181BC5E1EA21756004861DA /* HBFilterWater.c in Sources */,

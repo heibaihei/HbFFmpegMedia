@@ -67,7 +67,7 @@ int main(int argc, const char * argv[]) {
 //            CSGL_Demo_Tutorial01();
 //            CSGL_Demo_Tutorial02();
 //            CSGL_Demo_Tutorial03();
-//            CSGL_Demo_Tutorial04();
+            CSGL_Demo_Tutorial04();
 //            CSGL_Demo_Tutorial05();
 //            CSGL_Demo_Tutorial06();
 //            CSGL_Demo_Tutorial07();
