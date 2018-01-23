@@ -36,6 +36,9 @@ int main(int argc, const char * argv[]) {
 //            HBPickImageFrameFromVideo();
         }
         {/** Video */
+            {/** 视频播放显示 */
+                CSVideoDemo_VideoPlayer();
+            }
             {/** 视频编码 */
 //                CSVideoDemo_VideoEncoder();
             }

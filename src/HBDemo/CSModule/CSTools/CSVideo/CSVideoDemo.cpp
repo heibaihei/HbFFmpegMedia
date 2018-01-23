@@ -28,6 +28,13 @@ int CSVideoDemo_VideoTransfor() {
     return HB_OK;
 }
 
+int CSVideoDemo_VideoPlayer() {
+    HBMedia::CSVideoPlayer * pVideoPlayer = new HBMedia::CSVideoPlayer();
+    pVideoPlayer->prepare();
+    pVideoPlayer->doShow();
+    return HB_OK;
+}
+
 int CSVideoDemo_VideoAnalysis() {
     {
         /** 视频解码，将裸数据以内存缓存队列的方式输出解码数据，内部解码线程以最大的缓冲节点数缓冲解码后的数据，外部通过获取节点的方式进行取帧操作 */

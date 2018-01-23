@@ -15,5 +15,6 @@
 #include "CSVideoEncoder.h"
 #include "CSVideoDecoder.h"
 #include "CSVideoAnalysis.h"
+#include "CSVideoPlayer.h"
 
 #endif /* CSModule_h */

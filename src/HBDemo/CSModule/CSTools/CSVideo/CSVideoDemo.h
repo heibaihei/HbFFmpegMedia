@@ -38,4 +38,9 @@ int CSVideoDemo_VideoTransfor();
  */
 int CSVideoDemo_VideoAnalysis();
 
+/**
+ *  视频播放器
+ */
+int CSVideoDemo_VideoPlayer();
+
 #endif /* CSVideo_h */
