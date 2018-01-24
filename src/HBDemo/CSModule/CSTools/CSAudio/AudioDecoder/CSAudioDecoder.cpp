@@ -231,7 +231,7 @@ void CSAudioDecoder::_flush() {
 
 CSAudioDecoder::CSAudioDecoder() {
     memset(&mState, 0x00, sizeof(mState));
-    
+    mRoleType = T_AUDIO_DECODER;
     mAudioStreamIndex = INVALID_STREAM_INDEX;
     mPInMediaFormatCtx = nullptr;
     

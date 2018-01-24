@@ -7,8 +7,23 @@
 //
 
 #include "CSMediaBase.h"
+#include "CSVideoDecoder.h"
+#include "CSVideoEncoder.h"
+#include "CSAudioEncoder.h"
+#include "CSAudioDecoder.h"
 
 namespace HBMedia {
+
+int CSMediaBase::fetchNextFrame(CSMediaBase *pProvider, int64_t clock, STREAM_TYPE type, AVFrame **pTargetFrame) {
+    if (!pProvider || !pTargetFrame)
+        return HB_ERROR;
+    
+    if (pProvider->mRoleType == T_VIDEO_DECODER) {
+        CSVideoDecoder *pVideoProvider = (CSVideoDecoder *)pProvider;
+        return pVideoProvider->receiveFrame(pTargetFrame);
+    }
+    return HB_ERROR;
+}
 
 CSMediaBase::CSMediaBase() {
     mIsNeedTransfer = false;
@@ -25,6 +40,7 @@ CSMediaBase::CSMediaBase() {
     audioParamInit(&mTargetAudioParams);
     imageParamInit(&mSrcVideoParams);
     imageParamInit(&mTargetVideoParams);
+    mRoleType = T_ROLE_UNKNOWN;
     mAbort = false;
 }
 

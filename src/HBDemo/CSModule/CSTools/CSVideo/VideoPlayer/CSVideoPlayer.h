@@ -49,6 +49,7 @@ public:
      */
     int release();
     
+    void setVideoProvider(CSMediaBase *pProvider) { mFrameProvider = pProvider; }
 protected:
     
     /**
@@ -67,6 +68,7 @@ private:
     int mWindowsWidth;
     int mWindowsHeight;
     GLFWwindow* mVideoGLFWWindow;
+    CSMediaBase* mFrameProvider;
     
 } CSVideoPlayer;
     

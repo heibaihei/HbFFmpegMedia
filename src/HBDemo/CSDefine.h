@@ -64,6 +64,16 @@ typedef struct KeyFramePts {
     int64_t videoPts;
 } KeyFramePts;
 
+typedef enum MediaRoleType {
+    T_ROLE_UNKNOWN = 0,
+    T_VIDEO_DECODER = 1,
+    T_VIDEO_ENCODER = 2,
+    T_AUDIO_DECODER = 3,
+    T_AUDIO_ENCODER = 4,
+    T_AUDIO_PLAYER = 5,
+    T_VIDEO_PLAYER = 6,
+} MediaRoleType;
+
 typedef enum ErrorCode {
     AV_STAT_ERR     = -100,
     AV_NOT_INIT     = -99,

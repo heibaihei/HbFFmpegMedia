@@ -23,6 +23,19 @@ namespace HBMedia {
         ~CSMediaBase();
 
         /**
+         *  提供外部取帧接口
+         *  @param [in] pProvider 图像帧提供者
+         *  @param [in] clock 当前外部时钟
+         *  @param [in] type  媒体类型
+         *  @param [out] pTargetFrame 得到的图像帧
+         *  @return 1 表示拿到帧
+         *          0 表示没有拿到帧，但是需要拿旧帧进行渲染
+         *          -1 表示没有拿到帧，无需渲染
+         *          -2 表示没有拿到帧，并且发生异常
+         */
+        static int fetchNextFrame(CSMediaBase *pProvider, int64_t clock, STREAM_TYPE type, AVFrame **pTargetFrame);
+        
+        /**
          *  基础初始化
          */
         int baseInitial();
@@ -117,6 +130,7 @@ namespace HBMedia {
         AudioParams      mTargetAudioParams;
         ImageParams      mTargetVideoParams;
         
+        MediaRoleType mRoleType;
         bool    mAbort;
         /** 解码器状态 */
         uint64_t mState;

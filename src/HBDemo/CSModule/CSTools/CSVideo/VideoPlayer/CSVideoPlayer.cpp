@@ -14,21 +14,21 @@ namespace HBMedia {
         mVideoGLFWWindow = nullptr;
         mWindowsWidth = 480;
         mWindowsHeight = 480;
+        mFrameProvider = nullptr;
     }
-
     
     CSVideoPlayer::~CSVideoPlayer() {
+        release();
+    }
+    
+    int CSVideoPlayer::release() {
+        mFrameProvider = nullptr;
         if (mVideoGLFWWindow) {
             glfwWindowShouldClose(mVideoGLFWWindow);
             glfwDestroyWindow(mVideoGLFWWindow);
             glfwTerminate();
             mVideoGLFWWindow = nullptr;
         }
-        
-    }
-    
-    int CSVideoPlayer::release() {
-        
         return HB_OK;
     }
     
@@ -61,6 +61,19 @@ namespace HBMedia {
     }
     
     int CSVideoPlayer::_renderFrame() {
+        int HBErr = HB_OK;
+        AVFrame *pNewFrame = av_frame_alloc();
+        if (!pNewFrame) {
+            LOGE("Video player >>> alloc new frame failed !");
+            return HB_ERROR;
+        }
+        HBErr = CSMediaBase::fetchNextFrame(mFrameProvider, 0, CS_STREAM_TYPE_VIDEO, &pNewFrame);
+        if (HBErr < 0) {
+            LOGE("Video player >>> fetch next frame failed, %d !", HBErr);
+            return HB_ERROR;
+        }
+
+        
         
         return HB_OK;
     }

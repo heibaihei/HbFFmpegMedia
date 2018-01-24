@@ -131,7 +131,7 @@ VIDEO_ENCODER_THREAD_END_LABEL:
 
 CSAudioEncoder::CSAudioEncoder() {
     memset(&mState, 0x00, sizeof(mState));
-    
+    mRoleType = T_AUDIO_ENCODER;
     mAudioStreamIndex = INVALID_STREAM_INDEX;
     
     mPAudioResampleCtx = nullptr;

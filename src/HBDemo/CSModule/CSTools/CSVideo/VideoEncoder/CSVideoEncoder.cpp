@@ -131,7 +131,7 @@ VIDEO_ENCODER_THREAD_END_LABEL:
 
 CSVideoEncoder::CSVideoEncoder() {
     memset(&mState, 0x00, sizeof(mState));
-    
+    mRoleType = T_VIDEO_ENCODER;
     mVideoStreamIndex = INVALID_STREAM_INDEX;
     
     mSrcFrameQueue = new FiFoQueue<AVFrame *>(S_MAX_BUFFER_CACHE);

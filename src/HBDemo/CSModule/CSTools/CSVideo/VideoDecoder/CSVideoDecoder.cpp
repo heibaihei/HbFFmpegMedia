@@ -209,7 +209,7 @@ int  CSVideoDecoder::_DoExport(AVFrame **pOutFrame) {
 
 CSVideoDecoder::CSVideoDecoder() {
     memset(&mState, 0x00, sizeof(mState));
-
+    mRoleType = T_VIDEO_DECODER;
     mVideoStreamIndex = INVALID_STREAM_INDEX;
     mPInMediaFormatCtx = nullptr;
 

@@ -29,7 +29,21 @@ int CSVideoDemo_VideoTransfor() {
 }
 
 int CSVideoDemo_VideoPlayer() {
+    HBMedia::CSVideoDecoder* pVideoDecoder = nullptr;
+    {   /**
+         *  开启视频解码器
+         */
+        pVideoDecoder = new HBMedia::CSVideoDecoder();
+        pVideoDecoder->setInMediaType(MD_TYPE_COMPRESS);
+        pVideoDecoder->setOutMediaType(MD_TYPE_RAW_BY_MEMORY);
+        pVideoDecoder->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/100.mp4");
+        
+        pVideoDecoder->prepare();
+        pVideoDecoder->start();
+    }
+    
     HBMedia::CSVideoPlayer * pVideoPlayer = new HBMedia::CSVideoPlayer();
+    pVideoPlayer->setVideoProvider(pVideoDecoder);
     pVideoPlayer->prepare();
     pVideoPlayer->doShow();
     return HB_OK;
@@ -41,7 +55,7 @@ int CSVideoDemo_VideoAnalysis() {
         HBMedia::CSVideoAnalysis* pVideoAnalysiser = new HBMedia::CSVideoAnalysis();
         pVideoAnalysiser->setInMediaType(MD_TYPE_COMPRESS);
         pVideoAnalysiser->setOutMediaType(MD_TYPE_RAW_BY_MEMORY);
-        pVideoAnalysiser->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/100.mp4");
+        pVideoAnalysiser->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/12541.mp4");
         
         pVideoAnalysiser->prepare();
         pVideoAnalysiser->start();
