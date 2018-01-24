@@ -7,6 +7,7 @@
 //
 
 #include "CSVideoPlayer.h"
+#include "CSImage.h"
 
 namespace HBMedia {
  
@@ -73,7 +74,14 @@ namespace HBMedia {
             return HB_ERROR;
         }
 
-        
+        CSImage *pTargetImage = new CSImage();
+        pTargetImage->initWithImageInfo(mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, GL_RGBA);
+        uint8_t *pData[4] = {0};
+        int dataLineSize[4] = {0};
+        pData[0] = (uint8_t*)(pTargetImage->getPixels());
+        dataLineSize[0] = pTargetImage->getLineSize();
+        memcpy(pData[0], pNewFrame->data[0], pNewFrame->linesize[0]);
+        pTargetImage->setUpdated(true);
         
         return HB_OK;
     }

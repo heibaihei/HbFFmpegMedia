@@ -107,6 +107,16 @@
 		A15BB0EE1F42C2DA00AFE839 /* CSPacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15BB0EC1F42C2DA00AFE839 /* CSPacketQueue.cpp */; };
 		A15CC9481FDABCB700A16610 /* CSVideoEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15CC9461FDABCB700A16610 /* CSVideoEncoder.cpp */; };
 		A162628B1FB4785E00217831 /* libyuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A162627C1FB4757700217831 /* libyuv.a */; };
+		A166731C2018D7B200FD4A44 /* CSGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16673012018D7B100FD4A44 /* CSGeometry.cpp */; };
+		A166731D2018D7B200FD4A44 /* CSMathUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16673082018D7B100FD4A44 /* CSMathUtil.cpp */; };
+		A166731E2018D7B200FD4A44 /* CSMathHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16673092018D7B100FD4A44 /* CSMathHelper.cpp */; };
+		A166731F2018D7B200FD4A44 /* CSMat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A166730D2018D7B100FD4A44 /* CSMat4.cpp */; };
+		A16673202018D7B200FD4A44 /* CSQuaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A166730E2018D7B100FD4A44 /* CSQuaternion.cpp */; };
+		A16673212018D7B200FD4A44 /* CSVec4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A166730F2018D7B100FD4A44 /* CSVec4.cpp */; };
+		A16673222018D7B200FD4A44 /* CSVec2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16673132018D7B100FD4A44 /* CSVec2.cpp */; };
+		A16673232018D7B200FD4A44 /* CSVec3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16673142018D7B100FD4A44 /* CSVec3.cpp */; };
+		A16673242018D7B200FD4A44 /* CSTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16673182018D7B200FD4A44 /* CSTypes.cpp */; };
+		A16673252018D7B200FD4A44 /* CSValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A166731B2018D7B200FD4A44 /* CSValue.cpp */; };
 		A16AE0292015C6DE0021649D /* tutorial12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE0212015C6DD0021649D /* tutorial12.cpp */; };
 		A16AE03F2015C8E40021649D /* tutorial13.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE03D2015C8E40021649D /* tutorial13.cpp */; };
 		A16AE04B2015C97F0021649D /* tutorial14.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A16AE04A2015C97F0021649D /* tutorial14.cpp */; };
@@ -2868,6 +2878,8 @@
 		A1F14AD51EA12B0600939FF3 /* zmqsend.c in Sources */ = {isa = PBXBuildFile; fileRef = A1F1408A1EA12AFE00939FF3 /* zmqsend.c */; };
 		A1F4B09E1FB93192000FF69B /* CSDemo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1F4B09C1FB93192000FF69B /* CSDemo.cpp */; };
 		A1F6019F1F66C98C00168C96 /* CSStreamFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1F6019D1F66C98C00168C96 /* CSStreamFactory.cpp */; };
+		A1F6DD9F2018A3CC00FDEF71 /* CSImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1F6DD9D2018A3CC00FDEF71 /* CSImage.cpp */; };
+		A1F6DDA92018B14100FDEF71 /* CSTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1F6DDA72018B14100FDEF71 /* CSTexture.cpp */; };
 		A1F706161F656F9F003A6010 /* CSMediaTimeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1F706141F656F9F003A6010 /* CSMediaTimeline.cpp */; };
 		A1F7061C1F657181003A6010 /* CSMediaPiece.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1F7061A1F657181003A6010 /* CSMediaPiece.cpp */; };
 		A1FC23B81F277BC800024371 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FC23B71F277BC800024371 /* libz.tbd */; };
@@ -3147,7 +3159,6 @@
 		A13B35201F6FC2CE00D3D494 /* MediaFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaFilter.h; sourceTree = "<group>"; };
 		A13B35211F6FC2CE00D3D494 /* MeiPaiGaussBlur.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MeiPaiGaussBlur.cpp; sourceTree = "<group>"; };
 		A13B35221F6FC2CE00D3D494 /* MeiPaiGaussBlur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeiPaiGaussBlur.h; sourceTree = "<group>"; };
-		A13B35241F6FC2CE00D3D494 /* MTMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTMacros.h; sourceTree = "<group>"; };
 		A13B35251F6FC2CE00D3D494 /* MTVideoTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MTVideoTools.cpp; sourceTree = "<group>"; };
 		A13B35261F6FC2CE00D3D494 /* MTVideoTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTVideoTools.h; sourceTree = "<group>"; };
 		A13B35271F6FC2CE00D3D494 /* Resampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Resampler.cpp; sourceTree = "<group>"; };
@@ -3205,6 +3216,27 @@
 		A16159C01F70AD05001D54EA /* transcode_aac.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = transcode_aac.c; path = ../../../src/HBDemo/Example/transcode_aac.c; sourceTree = "<group>"; };
 		A16159C11F70AD05001D54EA /* transcoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = transcoding.c; path = ../../../src/HBDemo/Example/transcoding.c; sourceTree = "<group>"; };
 		A162626E1FB4757700217831 /* YUV.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = YUV.xcodeproj; path = ../../thirdparty/test/libyuv/proj/ios/YUV.xcodeproj; sourceTree = "<group>"; };
+		A16672FF2018D7B100FD4A44 /* CSVec2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVec2.h; sourceTree = "<group>"; };
+		A16673002018D7B100FD4A44 /* CSMat4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMat4.h; sourceTree = "<group>"; };
+		A16673012018D7B100FD4A44 /* CSGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSGeometry.cpp; sourceTree = "<group>"; };
+		A16673062018D7B100FD4A44 /* CSMathHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMathHelper.h; sourceTree = "<group>"; };
+		A16673072018D7B100FD4A44 /* CSQuaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSQuaternion.h; sourceTree = "<group>"; };
+		A16673082018D7B100FD4A44 /* CSMathUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSMathUtil.cpp; sourceTree = "<group>"; };
+		A16673092018D7B100FD4A44 /* CSMathHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSMathHelper.cpp; sourceTree = "<group>"; };
+		A166730B2018D7B100FD4A44 /* CSVec4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVec4.h; sourceTree = "<group>"; };
+		A166730C2018D7B100FD4A44 /* CSMathDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMathDefine.h; sourceTree = "<group>"; };
+		A166730D2018D7B100FD4A44 /* CSMat4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSMat4.cpp; sourceTree = "<group>"; };
+		A166730E2018D7B100FD4A44 /* CSQuaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSQuaternion.cpp; sourceTree = "<group>"; };
+		A166730F2018D7B100FD4A44 /* CSVec4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVec4.cpp; sourceTree = "<group>"; };
+		A16673102018D7B100FD4A44 /* CSVec3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVec3.h; sourceTree = "<group>"; };
+		A16673122018D7B100FD4A44 /* CSMathUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMathUtil.h; sourceTree = "<group>"; };
+		A16673132018D7B100FD4A44 /* CSVec2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVec2.cpp; sourceTree = "<group>"; };
+		A16673142018D7B100FD4A44 /* CSVec3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVec3.cpp; sourceTree = "<group>"; };
+		A16673152018D7B100FD4A44 /* CSGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSGeometry.h; sourceTree = "<group>"; };
+		A16673182018D7B200FD4A44 /* CSTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSTypes.cpp; sourceTree = "<group>"; };
+		A16673192018D7B200FD4A44 /* CSTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSTypes.h; sourceTree = "<group>"; };
+		A166731A2018D7B200FD4A44 /* CSValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSValue.h; sourceTree = "<group>"; };
+		A166731B2018D7B200FD4A44 /* CSValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSValue.cpp; sourceTree = "<group>"; };
 		A16AE01B2015C6DD0021649D /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
 		A16AE01E2015C6DD0021649D /* uvmap.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = uvmap.DDS; sourceTree = "<group>"; };
 		A16AE01F2015C6DD0021649D /* StandardShading_WithSyntaxErrors.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = StandardShading_WithSyntaxErrors.fragmentshader; sourceTree = "<group>"; };
@@ -9579,6 +9611,10 @@
 		A1F4B09F1FB9320C000FF69B /* CSExternAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSExternAPI.h; sourceTree = "<group>"; };
 		A1F6019D1F66C98C00168C96 /* CSStreamFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSStreamFactory.cpp; sourceTree = "<group>"; };
 		A1F6019E1F66C98C00168C96 /* CSStreamFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSStreamFactory.h; sourceTree = "<group>"; };
+		A1F6DD9D2018A3CC00FDEF71 /* CSImage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSImage.cpp; sourceTree = "<group>"; };
+		A1F6DD9E2018A3CC00FDEF71 /* CSImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSImage.h; sourceTree = "<group>"; };
+		A1F6DDA72018B14100FDEF71 /* CSTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSTexture.cpp; sourceTree = "<group>"; };
+		A1F6DDA82018B14100FDEF71 /* CSTexture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSTexture.h; sourceTree = "<group>"; };
 		A1F706141F656F9F003A6010 /* CSMediaTimeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSMediaTimeline.cpp; sourceTree = "<group>"; };
 		A1F706151F656F9F003A6010 /* CSMediaTimeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMediaTimeline.h; sourceTree = "<group>"; };
 		A1F7061A1F657181003A6010 /* CSMediaPiece.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSMediaPiece.cpp; sourceTree = "<group>"; };
@@ -10149,7 +10185,6 @@
 				A13B35201F6FC2CE00D3D494 /* MediaFilter.h */,
 				A13B35211F6FC2CE00D3D494 /* MeiPaiGaussBlur.cpp */,
 				A13B35221F6FC2CE00D3D494 /* MeiPaiGaussBlur.h */,
-				A13B35241F6FC2CE00D3D494 /* MTMacros.h */,
 				A13B35251F6FC2CE00D3D494 /* MTVideoTools.cpp */,
 				A13B35261F6FC2CE00D3D494 /* MTVideoTools.h */,
 				A13B35271F6FC2CE00D3D494 /* Resampler.cpp */,
@@ -10241,6 +10276,41 @@
 				A16262801FB4757700217831 /* yuvconvert */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A16672FE2018D7B100FD4A44 /* Math */ = {
+			isa = PBXGroup;
+			children = (
+				A16672FF2018D7B100FD4A44 /* CSVec2.h */,
+				A16673002018D7B100FD4A44 /* CSMat4.h */,
+				A16673012018D7B100FD4A44 /* CSGeometry.cpp */,
+				A16673062018D7B100FD4A44 /* CSMathHelper.h */,
+				A16673072018D7B100FD4A44 /* CSQuaternion.h */,
+				A16673082018D7B100FD4A44 /* CSMathUtil.cpp */,
+				A16673092018D7B100FD4A44 /* CSMathHelper.cpp */,
+				A166730B2018D7B100FD4A44 /* CSVec4.h */,
+				A166730C2018D7B100FD4A44 /* CSMathDefine.h */,
+				A166730D2018D7B100FD4A44 /* CSMat4.cpp */,
+				A166730E2018D7B100FD4A44 /* CSQuaternion.cpp */,
+				A166730F2018D7B100FD4A44 /* CSVec4.cpp */,
+				A16673102018D7B100FD4A44 /* CSVec3.h */,
+				A16673122018D7B100FD4A44 /* CSMathUtil.h */,
+				A16673132018D7B100FD4A44 /* CSVec2.cpp */,
+				A16673142018D7B100FD4A44 /* CSVec3.cpp */,
+				A16673152018D7B100FD4A44 /* CSGeometry.h */,
+			);
+			path = Math;
+			sourceTree = "<group>";
+		};
+		A16673172018D7B200FD4A44 /* base */ = {
+			isa = PBXGroup;
+			children = (
+				A16673182018D7B200FD4A44 /* CSTypes.cpp */,
+				A16673192018D7B200FD4A44 /* CSTypes.h */,
+				A166731A2018D7B200FD4A44 /* CSValue.h */,
+				A166731B2018D7B200FD4A44 /* CSValue.cpp */,
+			);
+			path = base;
 			sourceTree = "<group>";
 		};
 		A16AE01A2015C6DD0021649D /* tutorial12_extensions */ = {
@@ -10712,8 +10782,13 @@
 		A1B2580D2005A1DB006101BE /* VideoPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				A1F6DDAD2018B41C00FDEF71 /* CSType */,
 				A1B258152005A1FA006101BE /* CSVideoPlayer.cpp */,
 				A1B258162005A1FA006101BE /* CSVideoPlayer.h */,
+				A1F6DD9D2018A3CC00FDEF71 /* CSImage.cpp */,
+				A1F6DD9E2018A3CC00FDEF71 /* CSImage.h */,
+				A1F6DDA72018B14100FDEF71 /* CSTexture.cpp */,
+				A1F6DDA82018B14100FDEF71 /* CSTexture.h */,
 			);
 			path = VideoPlayer;
 			sourceTree = "<group>";
@@ -17748,6 +17823,15 @@
 			path = tools;
 			sourceTree = "<group>";
 		};
+		A1F6DDAD2018B41C00FDEF71 /* CSType */ = {
+			isa = PBXGroup;
+			children = (
+				A16673172018D7B200FD4A44 /* base */,
+				A16672FE2018D7B100FD4A44 /* Math */,
+			);
+			path = CSType;
+			sourceTree = "<group>";
+		};
 		A1F706131F656F9F003A6010 /* CSModule */ = {
 			isa = PBXGroup;
 			children = (
@@ -18060,7 +18144,10 @@
 				A151AF2C1FBB4E89001873B4 /* CSVideoEffectFactory.cpp in Sources */,
 				A16AE0B02015D11A0021649D /* misc05_picking_BulletPhysics.cpp in Sources */,
 				A195CBC61FBB102400F708F9 /* CSAudioResamplerEffect.cpp in Sources */,
+				A166731F2018D7B200FD4A44 /* CSMat4.cpp in Sources */,
 				A1143E8F2015C14F0038C500 /* tutorial10.cpp in Sources */,
+				A166731C2018D7B200FD4A44 /* CSGeometry.cpp in Sources */,
+				A1F6DDA92018B14100FDEF71 /* CSTexture.cpp in Sources */,
 				A1F6019F1F66C98C00168C96 /* CSStreamFactory.cpp in Sources */,
 				A17202B31F69993E00662F18 /* CSAudioFifo.cpp in Sources */,
 				A11254B12006683D00E64489 /* controls.cpp in Sources */,
@@ -18070,14 +18157,17 @@
 				A16AE03F2015C8E40021649D /* tutorial13.cpp in Sources */,
 				A134260E1FFD17F200D3451B /* CSAudioRoundBuf.cpp in Sources */,
 				A181BC351EA1F682004861DA /* main.cpp in Sources */,
+				A16673202018D7B200FD4A44 /* CSQuaternion.cpp in Sources */,
 				A19A67BC1EB33DD200DE8F11 /* simplest_ffmpeg_grabdesktop.cpp in Sources */,
 				A1D1CDBC1FAB473D0027C8AE /* MTVideoTransfer.cpp in Sources */,
 				A11254B72006683D00E64489 /* text2D.cpp in Sources */,
 				A195CBC91FBB109B00F708F9 /* CSAudioShiftEffect.cpp in Sources */,
 				A1D9FD171FF5EE9B00A70B6D /* CSAudioDataCache.cpp in Sources */,
 				A131A1101FC900FB002E5B8E /* CSAudioDemo.cpp in Sources */,
+				A16673232018D7B200FD4A44 /* CSVec3.cpp in Sources */,
 				A1DED09F1FD7C094005CD4EF /* CSVideoAnalysis.cpp in Sources */,
 				A131A1241FC904D6002E5B8E /* CSMediaBase.cpp in Sources */,
+				A166731D2018D7B200FD4A44 /* CSMathUtil.cpp in Sources */,
 				A181BC721F6517F400B34FD0 /* CSThreadIPCContext.cpp in Sources */,
 				A16AE0B12015D11A0021649D /* misc05_picking_slow_easy.cpp in Sources */,
 				A1F706161F656F9F003A6010 /* CSMediaTimeline.cpp in Sources */,
@@ -18102,6 +18192,7 @@
 				A131A0ED1FC900B0002E5B8E /* CSVideoReverse.cpp in Sources */,
 				A100E2981FE8F0FE00F1783C /* Quantize.cpp in Sources */,
 				A16AE0292015C6DE0021649D /* tutorial12.cpp in Sources */,
+				A166731E2018D7B200FD4A44 /* CSMathHelper.cpp in Sources */,
 				A11254952006575500E64489 /* tutorial01.cpp in Sources */,
 				A181BC581EA2172B004861DA /* audio_format_convert.cpp in Sources */,
 				A11254B32006683D00E64489 /* objloader.cpp in Sources */,
@@ -18115,6 +18206,7 @@
 				A1143E9C2015C1E10038C500 /* tutorial11.cpp in Sources */,
 				A19A67E41EB3460100DE8F11 /* simplest_ffmpeg_swscale.cpp in Sources */,
 				A100E2991FE8F0FE00F1783C /* Srv_gifCreateInterface.cpp in Sources */,
+				A1F6DD9F2018A3CC00FDEF71 /* CSImage.cpp in Sources */,
 				A15BB0EE1F42C2DA00AFE839 /* CSPacketQueue.cpp in Sources */,
 				A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */,
 				A181BC6F1F6517BD00B34FD0 /* CSThreadContext.cpp in Sources */,
@@ -18125,6 +18217,7 @@
 				A131A0F01FC900B0002E5B8E /* CSVideoDemo.cpp in Sources */,
 				A187C75D1FE27EDB00FAF954 /* CSPictureUtil.cpp in Sources */,
 				A1245A981F65FD4A00DB5D45 /* CSAStream.cpp in Sources */,
+				A16673252018D7B200FD4A44 /* CSValue.cpp in Sources */,
 				A1245A8B1F657F9000DB5D45 /* CSPlayer.cpp in Sources */,
 				A131A0EF1FC900B0002E5B8E /* CSVideoTool.cpp in Sources */,
 				A1FC872A1F1D9BFA004D8A63 /* CSCommon.cpp in Sources */,
@@ -18137,8 +18230,11 @@
 				A16AE0B22015D11A0021649D /* misc05_picking_custom.cpp in Sources */,
 				A131A0EE1FC900B0002E5B8E /* CSVideoScale.cpp in Sources */,
 				A19A67DA1EB3445600DE8F11 /* simplest_ffmpeg_video_filter.cpp in Sources */,
+				A16673212018D7B200FD4A44 /* CSVec4.cpp in Sources */,
 				A16AE0962015CE720021649D /* tutorial18_particles.cpp in Sources */,
+				A16673242018D7B200FD4A44 /* CSTypes.cpp in Sources */,
 				A16AE0572015CA4D0021649D /* tutorial15.cpp in Sources */,
+				A16673222018D7B200FD4A44 /* CSVec2.cpp in Sources */,
 				A17F028F1FBB52F5009B03F0 /* CSVideoUtil.cpp in Sources */,
 				A1143E5B2015B7BA0038C500 /* tutorial07.cpp in Sources */,
 				A1245A921F65FD1900DB5D45 /* CSIStream.cpp in Sources */,

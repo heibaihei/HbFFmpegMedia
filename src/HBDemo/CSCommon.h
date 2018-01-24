@@ -15,6 +15,19 @@
 #include "CSPicture.h"
 #include "CSAudioDataCache.h"
 
+//#include <cassert>
+//#define CS_ASSERT(expression) assert(expression)
+//
+//#ifndef MTASSERT
+//#if MT_DEBUG || NDK_DEBUG
+//#define CS_ASSERT(cond, msg)  CS_ASSERT(cond)
+//#else
+//#define CS_ASSERT(cond, msg)
+//#endif
+//#endif
+//
+//#define GP_ASSERT(cond)   CS_ASSERT(cond, "")
+
 /**
  *  获取当前时间
  */

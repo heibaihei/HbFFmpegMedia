@@ -33,17 +33,24 @@ int CSVideoDemo_VideoPlayer() {
     {   /**
          *  开启视频解码器
          */
+        ImageParams inImageParamObj;
+        inImageParamObj.mWidth = 480;
+        inImageParamObj.mHeight = 480;
+        inImageParamObj.mPixFmt = CS_PIX_FMT_RGBA;
+        inImageParamObj.mAlign = 1;
+        
         pVideoDecoder = new HBMedia::CSVideoDecoder();
         pVideoDecoder->setInMediaType(MD_TYPE_COMPRESS);
         pVideoDecoder->setOutMediaType(MD_TYPE_RAW_BY_MEMORY);
         pVideoDecoder->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/100.mp4");
-        
+        pVideoDecoder->setOutImageMediaParams(inImageParamObj);
         pVideoDecoder->prepare();
         pVideoDecoder->start();
     }
     
     HBMedia::CSVideoPlayer * pVideoPlayer = new HBMedia::CSVideoPlayer();
     pVideoPlayer->setVideoProvider(pVideoDecoder);
+    pVideoPlayer->setInImageMediaParams(*pVideoDecoder->getOutImageMediaParams());
     pVideoPlayer->prepare();
     pVideoPlayer->doShow();
     return HB_OK;

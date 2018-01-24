@@ -49,6 +49,8 @@
 #define S_EQ(s,t)         ((s) & (t))
 #define S_NOT_EQ(s,t)     (!((s) & (t)))
 
+#define GP_ASSERT(cond) 
+
 #define CS_SWR_CH_MAX  (64)
 
 //#define SOUND_TOUCH_MODULE_EXCLUDE  1
@@ -58,6 +60,16 @@
 #define SDL_AUDIO_MIN_BUFFER_SIZE 512
 /* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
 #define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
+
+#ifndef FLT_EPSILON
+#define FLT_EPSILON     1.192092896e-07F
+#endif // FLT_EPSILON
+
+#define NS_GLX_BEGIN                     namespace glx {
+#define NS_GLX_END                       }
+
+#define USING_NS_GLX                     using namespace glx
+#define NS_GLX                           ::glx
 
 typedef struct KeyFramePts {
     int64_t audioPts;
@@ -190,7 +202,8 @@ typedef enum IMAGE_PIX_FORMAT {
     CS_PIX_FMT_NV21     = 4,
     CS_PIX_FMT_YUVJ420P = 5,
     CS_PIX_FMT_BGRA     = 6,
-    CS_PIX_FMT_RGB8     = 7,
+    CS_PIX_FMT_RGBA     = 7,
+    CS_PIX_FMT_RGB8     = 8,
 } IMAGE_PIX_FORMAT;
 
 typedef struct _ImageParams {
