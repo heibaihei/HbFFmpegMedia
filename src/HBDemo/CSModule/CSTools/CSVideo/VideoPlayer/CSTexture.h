@@ -52,8 +52,29 @@ public:
     CSTexture();
     virtual ~CSTexture();
     
-    virtual bool load(const CSImage& image, const glx::Size &out = glx::Size::ZERO);
+    bool isLoaded() const;
+    
+    virtual int getTexName() const;
+    virtual int getWidth() const;
+    virtual int getHeight() const;
+    void setWidthAndHeight(int pWidth, int pHeight);
+    
+    static void initMaxTextureSize();
+    static GLint getMaxTextureSize();
+    
+    void bind() const;
+    
+    virtual bool load(int textureID, GLenum format, int w, int h);
+    virtual bool load(const CSImage& image, const NS_GLX::Size &out = NS_GLX::Size::ZERO);
+    
+    virtual void release();
+    
 protected:
+    void unLoad();
+
+protected:
+    static const int TEXTURE_ID_INVALID = 0;
+    static GLint maxTextureSize;
     
 private:
     int    mWidth;
