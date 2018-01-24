@@ -61,16 +61,6 @@
 /* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
 #define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
 
-#ifndef FLT_EPSILON
-#define FLT_EPSILON     1.192092896e-07F
-#endif // FLT_EPSILON
-
-#define NS_GLX_BEGIN                     namespace glx {
-#define NS_GLX_END                       }
-
-#define USING_NS_GLX                     using namespace glx
-#define NS_GLX                           ::glx
-
 typedef struct KeyFramePts {
     int64_t audioPts;
     int64_t videoPts;

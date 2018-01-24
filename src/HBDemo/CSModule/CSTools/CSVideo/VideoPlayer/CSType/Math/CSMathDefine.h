@@ -18,4 +18,13 @@
 
 #define MATRIX_SIZE  (sizeof(float) * 16)
 
+#ifndef FLT_EPSILON
+#define FLT_EPSILON     1.192092896e-07F
+#endif // FLT_EPSILON
+
+#define NS_GLX_BEGIN                     namespace HBMedia::glx {
+#define NS_GLX_END                       }
+
+#define NS_GLX                           ::HBMedia::glx
+
 #endif // CSMATH_DEFINE_H

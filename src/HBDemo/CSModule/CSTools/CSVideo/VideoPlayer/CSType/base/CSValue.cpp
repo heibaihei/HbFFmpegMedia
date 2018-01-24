@@ -28,6 +28,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "CSDefine.h"
+#include "CSMathDefine.h"
 
 const ValueVector ValueVectorNull;
 const ValueMap ValueMapNull;
