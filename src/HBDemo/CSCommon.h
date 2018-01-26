@@ -7,6 +7,14 @@
 #define SAFE_DELETE_ARRAY(p)     do { if(p) { delete[] (p); (p) = nullptr; } } while(0)
 #define SAFE_FREE(p)             do { if(p) { free(p); (p) = nullptr; } } while(0)
 
+#define CHECK_GL_ERROR_DEBUG() \
+do { \
+GLenum __error = glGetError(); \
+if(__error) { \
+LOGE("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__); \
+} \
+} while (false)
+
 #include "CSDefine.h"
 #include "CSUtil.h"
 #include "CSLog.h"

@@ -239,7 +239,7 @@ public:
      * already has unit length or if the length of the vector
      * is zero, this method does nothing.
      * 
-     * @return This vector, after the normalization occurs.
+     * return This vector, after the normalization occurs.
      */
     void normalize();
 
@@ -250,7 +250,6 @@ public:
      * of the vector is zero, this method simply copies the
      * current vector into dst.
      *
-     * @param dst The destination vector.
      */
     Vec2 getNormalized() const;
 

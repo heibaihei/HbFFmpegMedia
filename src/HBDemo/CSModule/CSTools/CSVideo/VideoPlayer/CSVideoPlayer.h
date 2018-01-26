@@ -11,10 +11,6 @@
 
 #include <stdio.h>
 
-/** Include GLEW */
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #include "CSMediaBase.h"
 #include "CSThreadContext.h"
 #include "frame.h"
@@ -25,6 +21,9 @@
 
 namespace HBMedia {
 
+typedef class CSView CSView;
+typedef class CSSpriteService CSSpriteService;
+    
 typedef class CSVideoPlayer : public CSMediaBase {
 public:
     CSVideoPlayer();
@@ -50,25 +49,26 @@ public:
     int release();
     
     void setVideoProvider(CSMediaBase *pProvider) { mFrameProvider = pProvider; }
-protected:
     
-    /**
-     *  相关窗口资源的初始化
-     */
-    int _windowsInitial();
+public: /** 配置下相关 */
+    
+    
+protected:
     
     /**
      *  渲染图像接口
      */
     int _renderFrame();
     
+    int _glPrepare();
 private:
     
 private:
     int mWindowsWidth;
     int mWindowsHeight;
-    GLFWwindow* mVideoGLFWWindow;
+    CSView *mView;
     CSMediaBase* mFrameProvider;
+    CSSpriteService *mRenderService;
     
 } CSVideoPlayer;
     

@@ -48,11 +48,13 @@ int CSVideoDemo_VideoPlayer() {
         pVideoDecoder->start();
     }
     
-    HBMedia::CSVideoPlayer * pVideoPlayer = new HBMedia::CSVideoPlayer();
-    pVideoPlayer->setVideoProvider(pVideoDecoder);
-    pVideoPlayer->setInImageMediaParams(*pVideoDecoder->getOutImageMediaParams());
-    pVideoPlayer->prepare();
-    pVideoPlayer->doShow();
+    {
+        HBMedia::CSVideoPlayer * pVideoPlayer = new HBMedia::CSVideoPlayer();
+        pVideoPlayer->setVideoProvider(pVideoDecoder);
+        pVideoPlayer->setInImageMediaParams(*(pVideoDecoder->getOutImageMediaParams()));
+        pVideoPlayer->prepare();
+        pVideoPlayer->doShow();
+    }
     return HB_OK;
 }
 

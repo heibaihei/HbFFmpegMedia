@@ -7,15 +7,21 @@
 //
 
 #include "CSVideoPlayer.h"
+#include "CSMathBase.h"
 #include "CSImage.h"
+#include "CSTexture.h"
+#include "CSSprite.h"
+#include "CSSpriteService.h"
+#include "CSView.h"
 
 namespace HBMedia {
  
     CSVideoPlayer::CSVideoPlayer() {
-        mVideoGLFWWindow = nullptr;
         mWindowsWidth = 480;
         mWindowsHeight = 480;
         mFrameProvider = nullptr;
+        mRenderService = new CSSpriteService();
+        mView = new CSView();
     }
     
     CSVideoPlayer::~CSVideoPlayer() {
@@ -24,38 +30,41 @@ namespace HBMedia {
     
     int CSVideoPlayer::release() {
         mFrameProvider = nullptr;
-        if (mVideoGLFWWindow) {
-            glfwWindowShouldClose(mVideoGLFWWindow);
-            glfwDestroyWindow(mVideoGLFWWindow);
-            glfwTerminate();
-            mVideoGLFWWindow = nullptr;
-        }
+        
         return HB_OK;
     }
     
     int CSVideoPlayer::doShow() {
         
-        do {
-            glClear(GL_COLOR_BUFFER_BIT);
-            
-            _renderFrame();
-            
-            glfwSwapBuffers(mVideoGLFWWindow);
-            glfwPollEvents();
-            if (glfwGetKey(mVideoGLFWWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-                glfwSetWindowShouldClose(mVideoGLFWWindow, GLFW_TRUE);
-            }
-        }
-        while(glfwWindowShouldClose(mVideoGLFWWindow) == 0);
+//        do {
+//            glClear(GL_COLOR_BUFFER_BIT);
+//
+//            _renderFrame();
+//
+//            glfwSwapBuffers(mVideoGLFWWindow);
+//            glfwPollEvents();
+//            if (glfwGetKey(mVideoGLFWWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+//                glfwSetWindowShouldClose(mVideoGLFWWindow, GLFW_TRUE);
+//            }
+//        }
+//        while(glfwWindowShouldClose(mVideoGLFWWindow) == 0);
         
-        glfwTerminate();
+//        glfwTerminate();
         return HB_OK;
     }
     
     int CSVideoPlayer::prepare() {
     
-        if (_windowsInitial() != HB_OK) {
-            LOGE("Video player >>> windows initial failed !");
+        mView->setViewSize(mWindowsWidth, mWindowsHeight);
+        mView->setGLContextAttrs((GLContextAttrs){8, 8, 8, 8, 0, 0});
+        if (mView->prepare() != HB_OK) {
+            LOGE("Video player >>> view prepare failed !");
+            return HB_ERROR;
+        }
+        
+        mRenderService->setScreenSize(mWindowsWidth, mWindowsHeight);
+        if (mRenderService->prepare() != HB_OK) {
+            LOGE("Video player >>> render service prepare failed !");
             return HB_ERROR;
         }
         return HB_OK;
@@ -73,7 +82,9 @@ namespace HBMedia {
             LOGE("Video player >>> fetch next frame failed, %d !", HBErr);
             return HB_ERROR;
         }
-
+        CSTexture *pTargetTexture = new CSTexture();
+        CSSprite  *pTargetSprite = new CSSprite();
+        
         CSImage *pTargetImage = new CSImage();
         pTargetImage->initWithImageInfo(mSrcVideoParams.mWidth, mSrcVideoParams.mHeight, GL_RGBA);
         uint8_t *pData[4] = {0};
@@ -83,40 +94,18 @@ namespace HBMedia {
         memcpy(pData[0], pNewFrame->data[0], pNewFrame->linesize[0]);
         pTargetImage->setUpdated(true);
         
+        pTargetTexture->load(*pTargetImage);
+        
+        
+        
+        pTargetSprite->setTexture(pTargetTexture);
+        mRenderService->pushSprite(pTargetSprite);
         return HB_OK;
     }
     
-    int CSVideoPlayer::_windowsInitial() {
-        if (!glfwInit()) {
-            LOGE("Video player >>> initial glfw failed !");
-            return HB_ERROR;
-        }
-        
-        glfwWindowHint(GLFW_SAMPLES, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        
-        mVideoGLFWWindow = glfwCreateWindow(mWindowsWidth, mWindowsHeight, "CS Video Player", NULL, NULL);
-        if (mVideoGLFWWindow == NULL){
-            LOGE("Video player >>> Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
-            glfwTerminate();
-            return HB_ERROR;
-        }
-        
-        glfwMakeContextCurrent(mVideoGLFWWindow);
-        glewExperimental = GL_TRUE;
-        if (glewInit() != GLEW_OK) {
-            LOGE("Video player >>> Failed to initialize GLEW\n");
-            glfwTerminate();
-            return HB_ERROR;
-        }
-        
-        glfwSetInputMode(mVideoGLFWWindow, GLFW_STICKY_KEYS, GL_TRUE);
-        glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+    int CSVideoPlayer::_glPrepare() {
+        /** 参照： GraphicsService::start 接口的实现 */
         
         return HB_OK;
     }
-    
 }

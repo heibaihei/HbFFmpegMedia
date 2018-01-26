@@ -61,6 +61,12 @@
 /* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
 #define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
 
+#define V3F_C4F_T2F_SIZE sizeof(NS_GLX::V3F_C4F_T2F)
+
+#define Vertex3F_OFFSET offsetof(NS_GLX::V3F_C4F_T2F, vertices)
+#define Color4F_OFFSET offsetof(NS_GLX::V3F_C4F_T2F, colors)
+#define Tex2F_OFFSET offsetof(NS_GLX::V3F_C4F_T2F, texCoords)
+
 typedef struct KeyFramePts {
     int64_t audioPts;
     int64_t videoPts;

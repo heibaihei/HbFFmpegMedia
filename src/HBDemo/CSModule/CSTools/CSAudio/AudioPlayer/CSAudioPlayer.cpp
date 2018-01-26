@@ -8,7 +8,7 @@
 
 #include "CSAudioPlayer.h"
 #include <SDL_audio.h>
-
+#include <OpenGL/gl.h>
 #include "CSAudioRoundBuf.h"
 
 namespace HBMedia {
@@ -269,5 +269,5 @@ int CSAudioPlayer::_Open() {
     mAudioDataRoundBufferSize = spec.size;
     return spec.size;
 }
-    
+
 }

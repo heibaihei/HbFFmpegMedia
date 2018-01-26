@@ -34,9 +34,8 @@ bool CSTexture::load(int textureID, GLenum format, int w, int h) {
 }
 
 bool CSTexture::load(const CSImage& image, const NS_GLX::Size &out) {
-    //null pixels
-    if(image.getPixels() == NULL)
-    {
+    
+    if(image.getPixels() == NULL) {
         LOGE("Image null pixels!");
         return false;
     }
@@ -44,20 +43,20 @@ bool CSTexture::load(const CSImage& image, const NS_GLX::Size &out) {
     int imageWidth = image.getWidth();
     int imageHeight = image.getHeight();
     
-    if (imageWidth > maxTextureSize || imageHeight > maxTextureSize)
-    {
+    if ((imageWidth > maxTextureSize) || (imageHeight > maxTextureSize)) {
         LOGE("Image (%d x %d) is bigger than the supported (%d x %d)", imageWidth, imageHeight, maxTextureSize, maxTextureSize);
         return false;
     }
     
-    if(mWidth != imageWidth || mHeight != imageHeight
-       || mTextureFormat != image.getFormat() || mTextureID == TEXTURE_ID_INVALID)
+    if(mWidth != imageWidth \
+       || mHeight != imageHeight
+       || mTextureFormat != image.getFormat() \
+       || mTextureID == TEXTURE_ID_INVALID)
     {
         unLoad();
         GLuint textures[1];
         glGenTextures(1, textures);
-        if(textures[0] != 0 )
-        {
+        if(textures[0] != 0) {
             mTextureFormat = image.getFormat();
             setWidthAndHeight(imageWidth, imageHeight);
             glBindTexture(GL_TEXTURE_2D, textures[0]);
@@ -69,14 +68,12 @@ bool CSTexture::load(const CSImage& image, const NS_GLX::Size &out) {
             mTextureID = textures[0];
             return true;
         }
-        else
-        {
+        else {
             LOGE("ERROR in loadTexture!");
             return false;
         }
     }
-    else
-    {
+    else {
         bind();
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, mTextureFormat, GL_UNSIGNED_BYTE, image.getPixels());
         return true;
