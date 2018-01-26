@@ -12,11 +12,13 @@
 #include <stdio.h>
 #include <list>
 #include "CSMathBase.h"
+#include "CSFrameBuffer.h"
 #include <OpenGL/gltypes.h>
 
 namespace HBMedia {
 
 typedef class CSSprite CSSprite;
+typedef class CSTextureShader CSTextureShader;
     
 typedef class CSSpriteService {
 public:
@@ -50,9 +52,14 @@ public: /** 配置相关 对外接口 */
     void setDepthTest(bool enable);
     
 protected:
+    void _bindTextureCache();
     int  _innerGlPrepare();
-    
     void _setMVPMatrix (const Mat4& mvp);
+    
+    void setupVBO();
+    void releaseVBO();
+    void mapBuffers();
+    void _screenSizeChanged(int width, int height);
     
 private:
     /**
@@ -65,8 +72,12 @@ private:
     static const int mTextureVboSize = 8192;
     static const int mTextureVboIndex = mTextureVboSize * 6 / 4;
     
-    
+    NS_GLX::V3F_C4F_T2F mQuadVerts[mTextureVboSize];
     GLushort mQuadIndices[mTextureVboSize];
+    
+    GLuint mQuadbuffersVBO[2]; //0: vertex  1: indices
+    
+    CSTextureShader* mCommonShader;
     
     /** 存放 sprite 的集合 */
     std::list<CSSprite *> mSpritesArray;
@@ -82,6 +93,10 @@ private:
      */
     int mRenderWidth;
     int mRenderHeight;
+    
+    CSFrameBuffer mFragmentFBO;
+    CSFrameBuffer mFramebufferObject1;
+    CSFrameBuffer mFramebufferObject2;
     
     Mat4 vMat;
     Mat4 pMat;

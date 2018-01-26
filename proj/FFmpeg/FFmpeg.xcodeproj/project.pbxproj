@@ -194,6 +194,11 @@
 		A1BE5477201AD64300B99942 /* CSTextureCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1BE5475201AD64300B99942 /* CSTextureCache.cpp */; };
 		A1BE547B201AD98700B99942 /* CSTextureShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1BE5479201AD98700B99942 /* CSTextureShader.cpp */; };
 		A1BE547E201ADA8900B99942 /* CSGlUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1BE547C201ADA8900B99942 /* CSGlUtil.cpp */; };
+		A1BE5481201AFFF900B99942 /* CSFrameBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1BE547F201AFFF900B99942 /* CSFrameBuffer.cpp */; };
+		A1BE5484201B023B00B99942 /* CSProgramCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1BE5482201B023B00B99942 /* CSProgramCache.cpp */; };
+		A1BE5487201B033000B99942 /* CSProgramMaker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1BE5485201B033000B99942 /* CSProgramMaker.cpp */; };
+		A1BE548A201B03C400B99942 /* CSShaderMaker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1BE5488201B03C400B99942 /* CSShaderMaker.cpp */; };
+		A1BE548D201B063C00B99942 /* CSProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1BE548B201B063C00B99942 /* CSProgram.cpp */; };
 		A1BE85571EB742F7004B839C /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC411EA21430004861DA /* libSDL2.a */; };
 		A1BE85581EB7433C004B839C /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC431EA2145E004861DA /* libavcodec.a */; };
 		A1BE85591EB74340004B839C /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A181BC451EA21460004861DA /* libavdevice.a */; };
@@ -3404,6 +3409,16 @@
 		A1BE547A201AD98700B99942 /* CSTextureShader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSTextureShader.h; sourceTree = "<group>"; };
 		A1BE547C201ADA8900B99942 /* CSGlUtil.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSGlUtil.cpp; sourceTree = "<group>"; };
 		A1BE547D201ADA8900B99942 /* CSGlUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSGlUtil.h; sourceTree = "<group>"; };
+		A1BE547F201AFFF900B99942 /* CSFrameBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSFrameBuffer.cpp; sourceTree = "<group>"; };
+		A1BE5480201AFFF900B99942 /* CSFrameBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSFrameBuffer.h; sourceTree = "<group>"; };
+		A1BE5482201B023B00B99942 /* CSProgramCache.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSProgramCache.cpp; sourceTree = "<group>"; };
+		A1BE5483201B023B00B99942 /* CSProgramCache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSProgramCache.h; sourceTree = "<group>"; };
+		A1BE5485201B033000B99942 /* CSProgramMaker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSProgramMaker.cpp; sourceTree = "<group>"; };
+		A1BE5486201B033000B99942 /* CSProgramMaker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSProgramMaker.h; sourceTree = "<group>"; };
+		A1BE5488201B03C400B99942 /* CSShaderMaker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSShaderMaker.cpp; sourceTree = "<group>"; };
+		A1BE5489201B03C400B99942 /* CSShaderMaker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSShaderMaker.h; sourceTree = "<group>"; };
+		A1BE548B201B063C00B99942 /* CSProgram.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSProgram.cpp; sourceTree = "<group>"; };
+		A1BE548C201B063C00B99942 /* CSProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSProgram.h; sourceTree = "<group>"; };
 		A1BE85621EB743C7004B839C /* cmdutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cmdutils.c; path = "../../ffmpeg-3.2/cmdutils.c"; sourceTree = "<group>"; };
 		A1BE85631EB743C7004B839C /* cmdutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cmdutils.h; path = "../../ffmpeg-3.2/cmdutils.h"; sourceTree = "<group>"; };
 		A1BE85651EB749E1004B839C /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../lib/ffmpeg/config.h; sourceTree = "<group>"; };
@@ -10808,16 +10823,12 @@
 				A1B258162005A1FA006101BE /* CSVideoPlayer.h */,
 				A1F6DD9D2018A3CC00FDEF71 /* CSImage.cpp */,
 				A1F6DD9E2018A3CC00FDEF71 /* CSImage.h */,
-				A1F6DDA72018B14100FDEF71 /* CSTexture.cpp */,
-				A1F6DDA82018B14100FDEF71 /* CSTexture.h */,
 				A19A7FA620197041000C0F15 /* CSSprite.cpp */,
 				A19A7FA720197041000C0F15 /* CSSprite.h */,
 				A19A7FB020197544000C0F15 /* CSSpriteService.cpp */,
 				A19A7FB120197544000C0F15 /* CSSpriteService.h */,
 				A1BE546B201ABF4500B99942 /* CSView.cpp */,
 				A1BE546C201ABF4500B99942 /* CSView.h */,
-				A1BE5475201AD64300B99942 /* CSTextureCache.cpp */,
-				A1BE5476201AD64300B99942 /* CSTextureCache.h */,
 			);
 			path = VideoPlayer;
 			sourceTree = "<group>";
@@ -10825,10 +10836,24 @@
 		A1BE5478201AD97200B99942 /* CSShader */ = {
 			isa = PBXGroup;
 			children = (
+				A1F6DDA72018B14100FDEF71 /* CSTexture.cpp */,
+				A1F6DDA82018B14100FDEF71 /* CSTexture.h */,
+				A1BE5475201AD64300B99942 /* CSTextureCache.cpp */,
+				A1BE5476201AD64300B99942 /* CSTextureCache.h */,
 				A1BE5479201AD98700B99942 /* CSTextureShader.cpp */,
 				A1BE547A201AD98700B99942 /* CSTextureShader.h */,
 				A1BE547C201ADA8900B99942 /* CSGlUtil.cpp */,
 				A1BE547D201ADA8900B99942 /* CSGlUtil.h */,
+				A1BE547F201AFFF900B99942 /* CSFrameBuffer.cpp */,
+				A1BE5480201AFFF900B99942 /* CSFrameBuffer.h */,
+				A1BE5482201B023B00B99942 /* CSProgramCache.cpp */,
+				A1BE5483201B023B00B99942 /* CSProgramCache.h */,
+				A1BE5485201B033000B99942 /* CSProgramMaker.cpp */,
+				A1BE5486201B033000B99942 /* CSProgramMaker.h */,
+				A1BE5488201B03C400B99942 /* CSShaderMaker.cpp */,
+				A1BE5489201B03C400B99942 /* CSShaderMaker.h */,
+				A1BE548B201B063C00B99942 /* CSProgram.cpp */,
+				A1BE548C201B063C00B99942 /* CSProgram.h */,
 			);
 			path = CSShader;
 			sourceTree = "<group>";
@@ -18224,6 +18249,7 @@
 				A151930A1FFCD823004C5B17 /* CSAudioPlayer.cpp in Sources */,
 				A1B258172005A1FA006101BE /* CSVideoPlayer.cpp in Sources */,
 				A151AF291FBB491F001873B4 /* CSVideoCropRotateEffect.cpp in Sources */,
+				A1BE5484201B023B00B99942 /* CSProgramCache.cpp in Sources */,
 				A13E121B1F676775003FC0AC /* CSWorkContext.cpp in Sources */,
 				A1143E442015B61D0038C500 /* tutorial05.cpp in Sources */,
 				A1143E802015B8F80038C500 /* tutorial09_several_objects.cpp in Sources */,
@@ -18238,6 +18264,8 @@
 				A100E2981FE8F0FE00F1783C /* Quantize.cpp in Sources */,
 				A16AE0292015C6DE0021649D /* tutorial12.cpp in Sources */,
 				A166731E2018D7B200FD4A44 /* CSMathHelper.cpp in Sources */,
+				A1BE5487201B033000B99942 /* CSProgramMaker.cpp in Sources */,
+				A1BE548A201B03C400B99942 /* CSShaderMaker.cpp in Sources */,
 				A11254952006575500E64489 /* tutorial01.cpp in Sources */,
 				A181BC581EA2172B004861DA /* audio_format_convert.cpp in Sources */,
 				A11254B32006683D00E64489 /* objloader.cpp in Sources */,
@@ -18253,6 +18281,8 @@
 				A100E2991FE8F0FE00F1783C /* Srv_gifCreateInterface.cpp in Sources */,
 				A1F6DD9F2018A3CC00FDEF71 /* CSImage.cpp in Sources */,
 				A15BB0EE1F42C2DA00AFE839 /* CSPacketQueue.cpp in Sources */,
+				A1BE548D201B063C00B99942 /* CSProgram.cpp in Sources */,
+				A1BE5481201AFFF900B99942 /* CSFrameBuffer.cpp in Sources */,
 				A19A67BD1EB33DD200DE8F11 /* simplest_ffmpeg_readcamera.cpp in Sources */,
 				A19A7FB220197544000C0F15 /* CSSpriteService.cpp in Sources */,
 				A181BC6F1F6517BD00B34FD0 /* CSThreadContext.cpp in Sources */,

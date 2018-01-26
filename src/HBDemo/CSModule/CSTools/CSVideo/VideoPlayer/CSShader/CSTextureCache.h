@@ -21,6 +21,10 @@ namespace HBMedia {
         
         ~CSTextureCache();
         
+        static void setCurrentCache(int index);
+        
+    private:
+        static int mCurrentIndex;
     } CSTextureCache;
 }
 #endif /* CSTextureCache_h */

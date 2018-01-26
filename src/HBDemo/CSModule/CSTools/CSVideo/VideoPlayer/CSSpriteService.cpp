@@ -15,6 +15,7 @@
 #include "CSSprite.h"
 #include "CSTexture.h"
 #include "CSTextureCache.h"
+#include "CSTextureShader.h"
 
 namespace HBMedia {
 
@@ -79,7 +80,41 @@ int CSSpriteService::_innerGlPrepare() {
         mQuadIndices[i*6+5] = (GLushort) (i*4+1);
     }
     
+    mCommonShader = new CSTextureShader();
+    _bindTextureCache();
+    mCommonShader->link();
+    _screenSizeChanged(mScreenWidth, mScreenHeight);
+//     GLES20ProgramCache::loadDefaultGLPrograms();
     return HB_OK;
+}
+
+void CSSpriteService::_screenSizeChanged(int width, int height)
+{
+    _bindTextureCache();
+    
+    if (!width || !height) {
+        LOGE("Sprite service >>> Screen size change with invalid width %d, height %d !", width, height);
+        return;
+    }
+    if ((width == mScreenWidth && height == mScreenHeight)) {
+        // Nothing change
+        return;
+    }
+    
+    mScreenWidth  = width;
+    mScreenHeight = height;
+    
+    // setup fbo
+    mFramebufferObject1.setup(width, height);
+    mFramebufferObject2.setup(width, height);
+    mFragmentFBO.setup(width, height);
+    
+    glViewport(0, 0, mScreenWidth, mScreenHeight);
+    
+    Mat4::createOrthographicOffCenter(0.0f, (float)mScreenWidth, 0.0f, (float)mScreenHeight, -1.0f, 1.0f, &pMat);
+    // mvp = Projection * View * Model
+    Mat4::multiply(pMat, vMat, &mvpMat);
+    mCommonShader->setMatrix(mvpMat);
 }
 
 int CSSpriteService::prepare() {
@@ -142,6 +177,10 @@ int CSSpriteService::prepare() {
     return HB_OK;
 }
 
+void CSSpriteService::_bindTextureCache() {
+    CSTextureCache::setCurrentCache(mTextureCacheIndex);
+}
+
 void CSSpriteService::setScreenSize(int width, int height) {
     mScreenWidth = width;
     mScreenHeight = height;
@@ -149,6 +188,31 @@ void CSSpriteService::setScreenSize(int width, int height) {
 
 void CSSpriteService::_setMVPMatrix (const Mat4& mvp) {
 //    mShader->setMVPMatrix(mvp);
+}
+
+void CSSpriteService::mapBuffers()
+{
+    glBindBuffer(GL_ARRAY_BUFFER, mQuadbuffersVBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, V3F_C4F_T2F_SIZE * mTextureVboSize, mQuadVerts, GL_DYNAMIC_DRAW);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mQuadbuffersVBO[1]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mQuadIndices[0]) * mTextureVboIndex, mQuadIndices, GL_STATIC_DRAW);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    
+    CHECK_GL_ERROR_DEBUG();
+}
+
+void CSSpriteService::setupVBO()
+{
+    glGenBuffers(2, mQuadbuffersVBO);
+    mapBuffers();
+}
+
+void CSSpriteService::releaseVBO() {
+    glDeleteBuffers(2, mQuadbuffersVBO);
 }
 
 void CSSpriteService::setAlphaBlending(bool enable)
