@@ -18,6 +18,8 @@
 #include "CSTextureShader.h"
 #include "CSProgramCache.h"
 
+#include "CSMatrixShader.h"
+
 namespace HBMedia {
 
 int CSSpriteService::mTextureCachNum = 0;
@@ -53,12 +55,8 @@ void CSSpriteService::popSprite(CSSprite* pSprite) {
 }
     
 int CSSpriteService::_innerGlPrepare() {
-    /**
-     *  默认配置
-     */
     setAlphaBlending(false);
     setDepthTest(false);
-    Mat4::createLookAt(Vec3(0, 0, 1), Vec3(0, 0, 0), Vec3(0, 1, 0), &vMat);
     
     /**
      *  根据需要进行相应配置
@@ -71,6 +69,7 @@ int CSSpriteService::_innerGlPrepare() {
         return false;
     }
     
+    Mat4::createLookAt(Vec3(0, 0, 1), Vec3(0, 0, 0), Vec3(0, 1, 0), &vMat);
     for( int i=0; i < mTextureVboSize/4; i++)
     {
         mQuadIndices[i*6+0] = (GLushort) (i*4+0);
@@ -81,11 +80,21 @@ int CSSpriteService::_innerGlPrepare() {
         mQuadIndices[i*6+5] = (GLushort) (i*4+1);
     }
     
-    mCommonShader = new CSTextureShader();
     _bindTextureCache();
+    setupVBO();
+    
+    mCommonShader = new CSTextureShader();
     mCommonShader->link();
+    
+    mMatrixShader = new CSMatrixShader(false);
+    mMatrixShader->setup();
+    
     _screenSizeChanged(mScreenWidth, mScreenHeight);
      CSProgramCache::loadDefaultGLPrograms();
+    
+    mFramebufferObject.setup(mScreenWidth, mScreenHeight);
+    mBitmapFBO.setup(mScreenWidth, mScreenHeight);
+    mFilpShader.setup();
     return HB_OK;
 }
 
@@ -97,29 +106,35 @@ void CSSpriteService::_screenSizeChanged(int width, int height)
         LOGE("Sprite service >>> Screen size change with invalid width %d, height %d !", width, height);
         return;
     }
-    if ((width == mScreenWidth && height == mScreenHeight)) {
-        // Nothing change
-        return;
-    }
+    
+//    if ((width == mScreenWidth && height == mScreenHeight)) {
+//        LOGE("Sprite service >>> Screen size no change, width %d, height %d !", width, height);
+//        return;
+//    }
     
     mScreenWidth  = width;
     mScreenHeight = height;
+    mRenderWidth = width;
+    mRenderHeight = height;
     
     // setup fbo
-    mFramebufferObject1.setup(width, height);
-    mFramebufferObject2.setup(width, height);
-    mFragmentFBO.setup(width, height);
+    mFramebufferObject1.setup(mRenderWidth, mRenderHeight);
+    mFramebufferObject2.setup(mRenderWidth, mRenderHeight);
+    mFragmentFBO.setup(mRenderWidth, mRenderHeight);
     
-    glViewport(0, 0, mScreenWidth, mScreenHeight);
+    glViewport(0, 0, mRenderWidth, mRenderHeight);
     
-    Mat4::createOrthographicOffCenter(0.0f, (float)mScreenWidth, 0.0f, (float)mScreenHeight, -1.0f, 1.0f, &pMat);
+    Mat4::createOrthographicOffCenter(0.0f, (float)mRenderWidth, 0.0f, (float)mRenderHeight, -1.0f, 1.0f, &pMat);
     // mvp = Projection * View * Model
     Mat4::multiply(pMat, vMat, &mvpMat);
     mCommonShader->setMatrix(mvpMat);
 }
 
 int CSSpriteService::prepare() {
-    
+    if (mScreenWidth==0 || mScreenHeight == 0) {
+        LOGE("Sprite service >>> Prepare with invalid width:%d and height:%d", mScreenWidth, mScreenHeight);
+        return HB_ERROR;
+    }
     mRenderWidth = mScreenWidth;
     mRenderHeight = mScreenHeight;
     
@@ -173,7 +188,6 @@ int CSSpriteService::prepare() {
     // MVP = Projection * View * Model;
     mMVPMatrix = mVMatrix*mMMatrix;
     mMVPMatrix = mProjMatrix*mMVPMatrix;
-    
     _setMVPMatrix(mMVPMatrix);
     return HB_OK;
 }
@@ -188,28 +202,21 @@ void CSSpriteService::setScreenSize(int width, int height) {
 }
 
 void CSSpriteService::_setMVPMatrix (const Mat4& mvp) {
-//    mShader->setMVPMatrix(mvp);
-}
-
-void CSSpriteService::mapBuffers()
-{
-    glBindBuffer(GL_ARRAY_BUFFER, mQuadbuffersVBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, V3F_C4F_T2F_SIZE * mTextureVboSize, mQuadVerts, GL_DYNAMIC_DRAW);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mQuadbuffersVBO[1]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mQuadIndices[0]) * mTextureVboIndex, mQuadIndices, GL_STATIC_DRAW);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    
-    CHECK_GL_ERROR_DEBUG();
+    mMatrixShader->setMVPMatrix(mvp);
 }
 
 void CSSpriteService::setupVBO()
 {
     glGenBuffers(2, mQuadbuffersVBO);
-    mapBuffers();
+    
+    glBindBuffer(GL_ARRAY_BUFFER, mQuadbuffersVBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, V3F_C4F_T2F_SIZE * mTextureVboSize, mQuadVerts, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mQuadbuffersVBO[1]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mQuadIndices[0]) * mTextureVboIndex, mQuadIndices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    
+    CHECK_GL_ERROR_DEBUG();
 }
 
 void CSSpriteService::releaseVBO() {

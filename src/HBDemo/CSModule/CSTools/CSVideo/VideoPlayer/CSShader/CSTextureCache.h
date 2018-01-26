@@ -13,22 +13,22 @@
 
 namespace HBMedia {
     
-    typedef class CSTexture CSTexture;
+typedef class CSTexture CSTexture;
+typedef class CSTextureCache {
+public:
+    static const int MAX_TEXTURE_CACHE;
     
-    typedef class CSTextureCache {
-    public:
-        static const int MAX_TEXTURE_CACHE;
-        
-        CSTextureCache();
-        
-        ~CSTextureCache();
-        
-        static void setCurrentCache(int index);
-        
-        static void releaseTexture(CSTexture* texture);
-        
-    private:
-        static int mCurrentIndex;
-    } CSTextureCache;
+    CSTextureCache();
+    
+    ~CSTextureCache();
+    
+    static void setCurrentCache(int index);
+    
+    static void releaseTexture(CSTexture* texture);
+    
+private:
+    static int mCurrentIndex;
+} CSTextureCache;
+
 }
 #endif /* CSTextureCache_h */

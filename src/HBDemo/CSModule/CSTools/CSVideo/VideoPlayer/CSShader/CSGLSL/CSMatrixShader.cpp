@@ -121,5 +121,16 @@ void CSOneInputShader::draw(const int texName, const CSFramebufferObject *fbo) {
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+    
+void CSFlipVerticalShader::initVerticesData() {
+    const float VERTICES_DATA[] = {
+        // X, Y, Z, U, V
+        -1.0f,  1.0f, 0.0f, 0.0f, 0.0f, // 左上
+        -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, // 左下
+        1.0f,  1.0f, 0.0f, 1.0f, 0.0f, // 右上
+        1.0f, -1.0f, 0.0f, 1.0f, 1.0f  // 右下
+    };
+    memcpy(verticesData, VERTICES_DATA, sizeof(VERTICES_DATA));
+}
 
 }

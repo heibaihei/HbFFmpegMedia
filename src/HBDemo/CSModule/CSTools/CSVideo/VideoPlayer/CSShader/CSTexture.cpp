@@ -11,7 +11,7 @@
 
 namespace HBMedia {
 
-GLint CSTexture::maxTextureSize = 0;
+GLint CSTexture::mMaxTextureSize = 0;
 
 CSTexture::CSTexture() {
     mWidth = mHeight = 0;
@@ -43,7 +43,7 @@ bool CSTexture::load(const CSImage& image, const NS_GLX::Size &out) {
     int imageWidth = image.getWidth();
     int imageHeight = image.getHeight();
     
-    if ((imageWidth > maxTextureSize) || (imageHeight > maxTextureSize)) {
+    if ((imageWidth > mMaxTextureSize) || (imageHeight > mMaxTextureSize)) {
         LOGE("Image (%d x %d) is bigger than the supported (%d x %d)", imageWidth, imageHeight, maxTextureSize, maxTextureSize);
         return false;
     }
@@ -99,11 +99,11 @@ bool CSTexture::isLoaded() const {
 }
 
 void CSTexture::initMaxTextureSize() {
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &mMaxTextureSize);
 }
 
 GLint CSTexture::getMaxTextureSize() {
-    return maxTextureSize;
+    return mMaxTextureSize;
 }
 
 void CSTexture::release() {

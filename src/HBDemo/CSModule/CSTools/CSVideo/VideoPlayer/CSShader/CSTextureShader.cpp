@@ -25,7 +25,7 @@ CSTextureShader::CSTextureShader()
     m_useColorHandle = -1;
     m_textColorHandle = -1;
     
-    useColor = DONOT_USE_COLOR;
+    m_useColor = DONOT_USE_COLOR;
     
     m_vertexShaderCode =
     "attribute vec4 a_vPosition;        \n"
@@ -58,48 +58,45 @@ CSTextureShader::CSTextureShader()
     "}                                                       \n";
 }
 
-CSTextureShader::~CSTextureShader()
-{
-    
+CSTextureShader::~CSTextureShader() {
 }
 
 bool CSTextureShader::link()
 {
+    if (m_programId != CSGlUtils::INVALID)
+        return true;
+    
+    int m_vertexShaderId = CSGlUtils::loadShader(GL_VERTEX_SHADER, m_vertexShaderCode);
+    int m_fragmentShaderId = CSGlUtils::loadShader(GL_FRAGMENT_SHADER, m_fragmentShaderCode);
+    m_programId = CSGlUtils::createProgram(m_vertexShaderId, m_fragmentShaderId);
+    glDeleteShader(m_vertexShaderId);
+    glDeleteShader(m_fragmentShaderId);
+    
     if (m_programId == CSGlUtils::INVALID) {
-        int m_vertexShaderId = CSGlUtils::loadShader(GL_VERTEX_SHADER, m_vertexShaderCode);
-        
-        int m_fragmentShaderId = CSGlUtils::loadShader(GL_FRAGMENT_SHADER, m_fragmentShaderCode);
-        
-        m_programId = CSGlUtils::createProgram(m_vertexShaderId, m_fragmentShaderId);
-        glDeleteShader(m_vertexShaderId);
-        glDeleteShader(m_fragmentShaderId);
-        
-        if (m_programId == CSGlUtils::INVALID) {
-            return false;
-        }
-        
-        m_positionAttributeHandle   = glGetAttribLocation(m_programId, "a_vPosition");
-        m_texCoordAttributeHandle   = glGetAttribLocation(m_programId, "a_texCoord");
-        m_samplerHandle             = glGetUniformLocation(m_programId, "s_texture");
-        m_matrixHandle              = glGetUniformLocation(m_programId, "u_Matrix");
-        m_useColorHandle            = glGetUniformLocation(m_programId, "u_useColor");
-        m_textColorHandle           = glGetUniformLocation(m_programId, "u_textColor");
-        m_alphaHandle               = glGetUniformLocation(m_programId, "u_alpha");
+        LOGE("Texture shader >>> invalid program id !");
+        return false;
     }
     
+    m_positionAttributeHandle   = glGetAttribLocation(m_programId, "a_vPosition");
+    m_texCoordAttributeHandle   = glGetAttribLocation(m_programId, "a_texCoord");
+    m_samplerHandle             = glGetUniformLocation(m_programId, "s_texture");
+    m_matrixHandle              = glGetUniformLocation(m_programId, "u_Matrix");
+    m_useColorHandle            = glGetUniformLocation(m_programId, "u_useColor");
+    m_textColorHandle           = glGetUniformLocation(m_programId, "u_textColor");
+    m_alphaHandle               = glGetUniformLocation(m_programId, "u_alpha");
     return true;
 }
 
 void CSTextureShader::setMatrix(const Mat4& m) {
-    matrix = m;
+    m_matrix = m;
 }
 
 void CSTextureShader::setUseColor(bool use) {
-    useColor = use ? USE_COLOR : DONOT_USE_COLOR;
+    m_useColor = use ? USE_COLOR : DONOT_USE_COLOR;
 }
 
 void CSTextureShader::setTextColor(const Vec3& color) {
-    textColor = color;
+    m_textColor = color;
 }
 
 void CSTextureShader::setup(int texName, float alpha) const {
@@ -112,11 +109,11 @@ void CSTextureShader::setup(int texName, float alpha) const {
     // tex coords
     glVertexAttribPointer(m_texCoordAttributeHandle, 2, GL_FLOAT, GL_FALSE, V3F_C4F_T2F_SIZE, (GLvoid*) Tex2F_OFFSET);
     
-    glUniformMatrix4fv(m_matrixHandle, 1, GL_FALSE, matrix.m);
+    glUniformMatrix4fv(m_matrixHandle, 1, GL_FALSE, m_matrix.m);
     
-    glUniform1f(m_useColorHandle, useColor);
+    glUniform1f(m_useColorHandle, m_useColor);
     
-    glUniform3f(m_textColorHandle, textColor.x, textColor.y, textColor.z);
+    glUniform3f(m_textColorHandle, m_textColor.x, m_textColor.y, m_textColor.z);
     
     glUniform1f(m_alphaHandle, alpha);
     

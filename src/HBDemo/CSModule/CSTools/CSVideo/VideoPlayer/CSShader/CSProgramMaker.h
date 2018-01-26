@@ -16,7 +16,7 @@ namespace HBMedia {
 
 class CSShaderMaker;
 
-class CSProgramMaker {
+typedef class CSProgramMaker {
     
 public:
     CSProgramMaker(const std::string &vertexShaderSource, const std::string &fragmentShaderSource);
@@ -48,7 +48,7 @@ private:
      * Fragment Shader Source Code.
      */
     CSShaderMaker *mFragmentShaderMaker;
-};
+} CSProgramMaker;
 
 }
 #endif /* CSProgramMaker_h */

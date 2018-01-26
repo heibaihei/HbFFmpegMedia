@@ -19,7 +19,7 @@ namespace HBMedia {
 
 class CSProgramMaker;
 
-class CSProgram : public Ref {
+typedef class CSProgram : public Ref {
 public:
     CSProgram();
     ~CSProgram();
@@ -47,7 +47,7 @@ private:
      * Map for saving Shader program resource id Handle.
      */
     std::unordered_map<std::string, int> mHandleMap;
-};
+} CSProgram;
 
 }
 

@@ -18,28 +18,6 @@ namespace HBMedia {
 
 typedef class CSTextureShader
 {
-protected:
-    GLint            m_programId;
-    std::string        m_vertexShaderCode;
-    std::string        m_fragmentShaderCode;
-    
-    GLint        m_positionAttributeHandle;
-    GLint        m_texCoordAttributeHandle;
-    GLint        m_samplerHandle;
-    GLint        m_matrixHandle;
-    GLint        m_useColorHandle;
-    GLint        m_textColorHandle;
-    GLint        m_alphaHandle;
-    
-    Mat4 matrix;
-    
-    int useColor;
-    Vec3 textColor;
-    
-    const int USE_COLOR;
-    const int DONOT_USE_COLOR;
-    const int JUDGE_USE_COLOR;
-    
 public:
     CSTextureShader();
     ~CSTextureShader();
@@ -58,7 +36,29 @@ public:
     void setup(int texName, float alpha = 1) const;
     
     void release();
+    
+private:
+    GLint        m_programId;
+    std::string  m_vertexShaderCode;
+    std::string  m_fragmentShaderCode;
+    
+    GLint        m_positionAttributeHandle;
+    GLint        m_texCoordAttributeHandle;
+    GLint        m_samplerHandle;
+    GLint        m_matrixHandle;
+    GLint        m_useColorHandle;
+    GLint        m_textColorHandle;
+    GLint        m_alphaHandle;
+
+    Mat4         m_matrix;
+    int          m_useColor;
+    Vec3         m_textColor;
+    
+    const int    USE_COLOR;
+    const int    DONOT_USE_COLOR;
+    const int    JUDGE_USE_COLOR;
 } CSTextureShader;
 
 }
+
 #endif /* CSTextureShader_h */

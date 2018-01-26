@@ -19,7 +19,7 @@ namespace HBMedia {
     typedef class CSProgramMaker CSProgramMaker;
     typedef class CSFramebufferObject CSFramebufferObject;
     
-class CSOneInputShader : public CSShader {
+typedef class CSOneInputShader : public CSShader {
 public:
     CSOneInputShader(const std::string &vertexShaderSource = DEFAULT_VERTEX_SHADER, const std::string &fragmentShaderSource = DEFAULT_FRAGMENT_SHADER) : CSShader(vertexShaderSource, fragmentShaderSource) {}
     
@@ -29,7 +29,7 @@ public:
     
 public:
     virtual void draw(const int texName, const CSFramebufferObject *fbo);
-};
+} CSOneInputShader;
     
 typedef class CSMatrixShader : public CSOneInputShader {
     
@@ -79,6 +79,19 @@ private:
     
     const std::string& getFragmentShader(bool useAlpha);
 } CSMatrixShader;
+
+    
+typedef class CSFlipVerticalShader :public CSOneInputShader {
+public:
+    CSFlipVerticalShader() {
+        mShaderType = FLIP_SHADER;
+        initVerticesData();
+    }
+    
+    virtual ~CSFlipVerticalShader() {};
+private:
+    void initVerticesData();
+} CSFlipVerticalShader;
 
 }
 

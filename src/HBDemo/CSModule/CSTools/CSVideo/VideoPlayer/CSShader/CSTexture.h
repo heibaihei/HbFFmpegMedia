@@ -74,7 +74,7 @@ protected:
 
 protected:
     static const int TEXTURE_ID_INVALID = 0;
-    static GLint maxTextureSize;
+    static GLint mMaxTextureSize;
     
 private:
     int    mWidth;

@@ -17,7 +17,7 @@ namespace HBMedia {
 class CSProgramMaker;
 class CSProgram;
 
-class CSProgramCache {
+typedef class CSProgramCache {
 public:
     static CSProgram* createProgram(CSProgramMaker* programMaker);
     
@@ -33,7 +33,7 @@ private:
     static bool defaultLoaded;
     
     static std::unordered_map<std::string, CSProgram*> _programs;
-};
+} CSProgramCache;
     
 }
 

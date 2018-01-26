@@ -64,12 +64,15 @@ protected:
 private:
     
 private:
+    /**
+     *  视频画面宽高，即显示屏幕的宽高
+     */
     int mWindowsWidth;
     int mWindowsHeight;
+    
     CSView *mView;
     CSMediaBase* mFrameProvider;
     CSSpriteService *mRenderService;
-    
 } CSVideoPlayer;
     
 }

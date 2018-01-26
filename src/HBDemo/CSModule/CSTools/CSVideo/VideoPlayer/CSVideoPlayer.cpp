@@ -54,9 +54,9 @@ namespace HBMedia {
     }
     
     int CSVideoPlayer::prepare() {
-    
-        mView->setViewSize(mWindowsWidth, mWindowsHeight);
         mView->setGLContextAttrs((GLContextAttrs){8, 8, 8, 8, 0, 0});
+        mView->setViewSize(mWindowsWidth, mWindowsHeight);
+        
         if (mView->prepare() != HB_OK) {
             LOGE("Video player >>> view prepare failed !");
             return HB_ERROR;
@@ -67,6 +67,7 @@ namespace HBMedia {
             LOGE("Video player >>> render service prepare failed !");
             return HB_ERROR;
         }
+
         return HB_OK;
     }
     

@@ -50,15 +50,9 @@ void CSFrameBuffer::setup(const int width, const int height, const int texture) 
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, args);
     const int saveFramebuffer = args[0];
     
-    // do not need to delete fbo, just delete texture
-    //    // Delete FBO that last time created。
-    //    release();
-    
     if (mFramebufferName != CSGlUtils::INVALID) {
-        // release texture that last time created。
         releaseTexture();
     } else {
-        // Generate a Framebuffer
         glGenFramebuffers(1, (GLuint*)args);
         mFramebufferName = args[0];
     }
@@ -68,7 +62,6 @@ void CSFrameBuffer::setup(const int width, const int height, const int texture) 
     
     if (texture > 0) {
         needReleaseTexture = false;
-        
         mTexName = texture;
     } else {
         needReleaseTexture = true;
@@ -96,9 +89,8 @@ void CSFrameBuffer::setup(const int width, const int height, const int texture) 
     glClear(GL_COLOR_BUFFER_BIT);
     
     // Check all have done. And Complete without error.
-    const int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (status != GL_FRAMEBUFFER_COMPLETE) {
-        LOGE("Failed to initialize framebuffer object %d", status);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        LOGE("Failed to initialize framebuffer object !");
         release();  // release all GL resource.
     }
     

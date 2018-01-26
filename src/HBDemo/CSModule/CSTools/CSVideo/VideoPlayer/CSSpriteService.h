@@ -14,9 +14,11 @@
 #include "CSMathBase.h"
 #include "CSFrameBuffer.h"
 #include <OpenGL/gltypes.h>
+#include "CSMatrixShader.h"
 
 namespace HBMedia {
 
+typedef class CSMatrixShader CSMatrixShader;
 typedef class CSSprite CSSprite;
 typedef class CSTextureShader CSTextureShader;
     
@@ -58,7 +60,12 @@ protected:
     
     void setupVBO();
     void releaseVBO();
-    void mapBuffers();
+    
+    /**
+     *  @func _screenSizeChanged 屏幕发生改变时，重新计算内部相关参数
+     *  @param width  新的屏幕宽
+     *  @param height 新的屏幕高
+     */
     void _screenSizeChanged(int width, int height);
     
 private:
@@ -70,20 +77,21 @@ private:
     int mTextureCacheIndex;
 
     static const int mTextureVboSize = 8192;
-    static const int mTextureVboIndex = mTextureVboSize * 6 / 4;
+    static const int mTextureVboIndex = (mTextureVboSize * 6 / 4);
     
     NS_GLX::V3F_C4F_T2F mQuadVerts[mTextureVboSize];
-    GLushort mQuadIndices[mTextureVboSize];
+    GLushort mQuadIndices[mTextureVboIndex];
     
     GLuint mQuadbuffersVBO[2]; //0: vertex  1: indices
     
-    CSTextureShader* mCommonShader;
+    CSTextureShader *mCommonShader;
+    CSMatrixShader  *mMatrixShader;
     
     /** 存放 sprite 的集合 */
     std::list<CSSprite *> mSpritesArray;
     
     /**
-     *  渲染区域大小
+     *  渲染显示区域大小
      */
     int mScreenWidth;
     int mScreenHeight;
@@ -93,6 +101,14 @@ private:
      */
     int mRenderWidth;
     int mRenderHeight;
+    
+    /**
+     * FrameBuffer for cache object
+     *
+     */
+    CSFrameBuffer mFramebufferObject;
+    CSFrameBuffer mBitmapFBO;
+    CSFlipVerticalShader mFilpShader;
     
     CSFrameBuffer mFragmentFBO;
     CSFrameBuffer mFramebufferObject1;
