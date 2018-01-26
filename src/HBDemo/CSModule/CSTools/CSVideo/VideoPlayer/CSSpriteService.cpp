@@ -16,6 +16,7 @@
 #include "CSTexture.h"
 #include "CSTextureCache.h"
 #include "CSTextureShader.h"
+#include "CSProgramCache.h"
 
 namespace HBMedia {
 
@@ -84,7 +85,7 @@ int CSSpriteService::_innerGlPrepare() {
     _bindTextureCache();
     mCommonShader->link();
     _screenSizeChanged(mScreenWidth, mScreenHeight);
-//     GLES20ProgramCache::loadDefaultGLPrograms();
+     CSProgramCache::loadDefaultGLPrograms();
     return HB_OK;
 }
 

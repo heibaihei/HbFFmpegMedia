@@ -29,4 +29,28 @@ CSStringShaderMaker::CSStringShaderMaker(int shaderType, const std::string &shad
     mShaderSource = shaderSource;
 }
 
+CSShaderMaker* CSShaderMakerFactory::getShaderMaker(int shaderType, const std::string &shaderSource) {
+    return new CSStringShaderMaker(shaderType, shaderSource);
+}
+
+CSShaderMaker* CSShaderMakerFactory::getShaderMaker(int shaderType, const std::string &shaderFile, bool internal, bool encrypt) {
+//    FileHandle* file;
+//    if (internal) {
+//        file = Files::getInstance()->internal(shaderFile);
+//    } else {
+//        file = Files::getInstance()->external(shaderFile);
+//    }
+    
+    CSShaderMaker* shaderMaker;
+//    if (encrypt) {
+//        shaderMaker = new GLES20EncryptShaderMaker(shaderType, *file);
+//    } else {
+//        shaderMaker = new GLES20FileShaderMaker(shaderType, *file);
+//    }
+//
+//    delete file;
+//
+    return shaderMaker;
+}
+
 }

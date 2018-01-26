@@ -74,33 +74,6 @@ void CSProgramCache::loadDefaultGLPrograms() {
         return;
     }
     
-//    GLES20Mapy2Shader mapyShader;
-//    createProgram(mapyShader.getGLProgramMaker());
-//    
-//    GLES20MaskShader maskShader;
-//    createProgram(maskShader.getGLProgramMaker());
-//    
-//    GLES20FadeShader fadeShader;
-//    createProgram(fadeShader.getGLProgramMaker());
-//    
-//    GLES20TwoInputScreen screenShader;
-//    createProgram(screenShader.getGLProgramMaker());
-//    
-//    GLES20GaussianHValueShader hGauss9Shader;
-//    createProgram(hGauss9Shader.getGLProgramMaker());
-//    
-//    GLES20GaussianVValueShader vGauss9Shader;
-//    createProgram(hGauss9Shader.getGLProgramMaker());
-//    
-//    GLES20GaussianHValueShader hGauss15Shader(15);
-//    createProgram(hGauss15Shader.getGLProgramMaker());
-//    
-//    GLES20GaussianVValueShader vGauss15Shader(15);
-//    createProgram(vGauss15Shader.getGLProgramMaker());
-//    
-//    GLES20MixInputShader mix2Shader(2);
-//    createProgram(mix2Shader.getGLProgramMaker());
-//    
     defaultLoaded = true;
 }
 

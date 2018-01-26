@@ -13,6 +13,8 @@
 
 namespace HBMedia {
     
+    typedef class CSTexture CSTexture;
+    
     typedef class CSTextureCache {
     public:
         static const int MAX_TEXTURE_CACHE;
@@ -22,6 +24,8 @@ namespace HBMedia {
         ~CSTextureCache();
         
         static void setCurrentCache(int index);
+        
+        static void releaseTexture(CSTexture* texture);
         
     private:
         static int mCurrentIndex;

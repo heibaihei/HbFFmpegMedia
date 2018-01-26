@@ -69,5 +69,16 @@ public:
     CSStringShaderMaker(int shaderType, const std::string &shaderSource);
 } CSStringShaderMaker;
 
+
+typedef class CSShaderMakerFactory {
+public:
+    static CSShaderMaker* getShaderMaker(int shaderType, const std::string &shaderSource);
+    
+    static CSShaderMaker* getShaderMaker(int shaderType, const std::string &shaderFile, bool internal, bool encrypt);
+    
+private:
+    CSShaderMakerFactory();
+} CSShaderMakerFactory;
+
 }
 #endif /* CSShaderMaker_h */
