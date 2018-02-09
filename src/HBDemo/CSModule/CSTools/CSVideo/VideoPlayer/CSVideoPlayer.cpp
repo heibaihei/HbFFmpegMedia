@@ -106,8 +106,12 @@ namespace HBMedia {
         pTargetSprite->setTexture(pTargetTexture);
         mRenderService->pushSprite(pTargetSprite);
         
-        
-        
+        /**
+         *  更新纹理
+         */
+        mRenderService->begin();
+        mRenderService->update();
+        mRenderService->end();
         
         return HB_OK;
     }

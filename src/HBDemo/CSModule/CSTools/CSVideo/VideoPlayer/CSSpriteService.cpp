@@ -27,6 +27,8 @@ int CSSpriteService::mTextureCachNum = 0;
 CSSpriteService::CSSpriteService() {
     mScreenWidth = 0;
     mScreenHeight = 0;
+    mBDrawing = false;
+    mEnableFilpShader = true;
 }
 
 CSSpriteService::~CSSpriteService() {
@@ -55,6 +57,7 @@ void CSSpriteService::popSprite(CSSprite* pSprite) {
 }
     
 int CSSpriteService::_innerGlPrepare() {
+    mBDrawing = false;
     setAlphaBlending(false);
     setDepthTest(false);
     
@@ -219,6 +222,48 @@ void CSSpriteService::setupVBO()
     CHECK_GL_ERROR_DEBUG();
 }
 
+int CSSpriteService::begin() {
+    if (mBDrawing) {
+        LOGE("Sprite Service >>> reinto drawing !");
+        return HB_ERROR;
+    }
+    ////////////////////////////////////////////////////////////
+    // Begin to draw
+    
+    // Save old fbo.
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &mOldFramebufferObject);
+    
+    /** Active  mFramebufferObject */
+    mFramebufferObject.enable();
+    mBDrawing = true;
+    return HB_OK;
+}
+
+int CSSpriteService::update() {
+    return HB_OK;
+}
+
+int CSSpriteService::end() {
+    if (mEnableFilpShader) {
+        mBitmapFBO.enable();
+        mFilpShader.draw(mFramebufferObject.getTexName(), nullptr);
+    }
+    
+    /** clean screen */
+    glBindFramebuffer(GL_FRAMEBUFFER, mOldFramebufferObject);
+    glViewport(0, 0, mScreenWidth, mScreenHeight);
+    
+    glClearColor(mFramebufferBackgroundColor.x, mFramebufferBackgroundColor.y, mFramebufferBackgroundColor.z, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    if (!mEnableFilpShader) {
+        // Draw final result mFramebufferObject to screen. */
+        mMatrixShader->draw(mFramebufferObject.getTexName(), nullptr);
+    }
+    
+    mBDrawing = false;
+    return HB_OK;
+}
+    
 void CSSpriteService::releaseVBO() {
     glDeleteBuffers(2, mQuadbuffersVBO);
 }

@@ -42,6 +42,13 @@ public:
     void pushSprite(CSSprite* pSprite);
     void popSprite(CSSprite* pSprite);
     
+    /**
+     *  执行纹理的更新相关操作
+     */
+    int begin();
+    int update();
+    int end();
+    
 public: /** 配置相关 对外接口 */
     /**
      * enables/disables OpenGL alpha blending
@@ -69,6 +76,11 @@ protected:
     void _screenSizeChanged(int width, int height);
     
 private:
+    /**
+     *  背景颜色
+     */
+    Vec3 mFramebufferBackgroundColor;
+    
     /**
      *  For TextureCache
      *  Must less than TextureCache::MAX_CACHE
@@ -106,9 +118,15 @@ private:
      * FrameBuffer for cache object
      *
      */
+    /**
+     *  FBO for OpenGL used before.
+     *  启动当前Renderer之前生效的 FBO id 保存在此属性上。方便在结束绘制的时候还原现场
+     */
+    GLint mOldFramebufferObject;
     CSFrameBuffer mFramebufferObject;
     CSFrameBuffer mBitmapFBO;
     CSFlipVerticalShader mFilpShader;
+    bool          mEnableFilpShader;
     
     CSFrameBuffer mFragmentFBO;
     CSFrameBuffer mFramebufferObject1;
@@ -128,6 +146,8 @@ private:
     
     // 映射到屏幕上View的矩阵，用于计算指定顶点在屏幕内的坐标
     Mat4 targetScreen = Mat4::IDENTITY;
+    
+    bool mBDrawing;
 } CSSpriteService;
     
 }
