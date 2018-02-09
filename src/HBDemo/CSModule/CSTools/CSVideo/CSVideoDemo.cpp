@@ -64,7 +64,7 @@ int CSVideoDemo_VideoAnalysis() {
         HBMedia::CSVideoAnalysis* pVideoAnalysiser = new HBMedia::CSVideoAnalysis();
         pVideoAnalysiser->setInMediaType(MD_TYPE_COMPRESS);
         pVideoAnalysiser->setOutMediaType(MD_TYPE_RAW_BY_MEMORY);
-        pVideoAnalysiser->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/12541.mp4");
+        pVideoAnalysiser->setInMediaFile((char *)CS_COMMON_RESOURCE_ROOT_PATH"/video/problem.mp4");
         
         pVideoAnalysiser->prepare();
         pVideoAnalysiser->start();

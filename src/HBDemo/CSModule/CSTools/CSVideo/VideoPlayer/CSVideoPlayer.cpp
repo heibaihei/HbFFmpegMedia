@@ -6,6 +6,10 @@
 //  Copyright © 2018年 meitu. All rights reserved.
 //
 
+/** Include GLEW */
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 #include "CSVideoPlayer.h"
 #include "CSMathBase.h"
 #include "CSImage.h"
@@ -13,6 +17,8 @@
 #include "CSSprite.h"
 #include "CSSpriteService.h"
 #include "CSView.h"
+
+
 
 namespace HBMedia {
  
@@ -36,20 +42,20 @@ namespace HBMedia {
     
     int CSVideoPlayer::doShow() {
         
-//        do {
-//            glClear(GL_COLOR_BUFFER_BIT);
-//
-//            _renderFrame();
-//
-//            glfwSwapBuffers(mVideoGLFWWindow);
-//            glfwPollEvents();
-//            if (glfwGetKey(mVideoGLFWWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-//                glfwSetWindowShouldClose(mVideoGLFWWindow, GLFW_TRUE);
-//            }
-//        }
-//        while(glfwWindowShouldClose(mVideoGLFWWindow) == 0);
+        do {
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            _renderFrame();
+
+            glfwSwapBuffers(mView->getWindows());
+            glfwPollEvents();
+            if (glfwGetKey(mView->getWindows(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+                glfwSetWindowShouldClose(mView->getWindows(), GLFW_TRUE);
+            }
+        }
+        while(glfwWindowShouldClose(mView->getWindows()) == 0);
         
-//        glfwTerminate();
+        glfwTerminate();
         return HB_OK;
     }
     
@@ -97,10 +103,12 @@ namespace HBMedia {
         
         pTargetTexture->load(*pTargetImage);
         
-        
-        
         pTargetSprite->setTexture(pTargetTexture);
         mRenderService->pushSprite(pTargetSprite);
+        
+        
+        
+        
         return HB_OK;
     }
     

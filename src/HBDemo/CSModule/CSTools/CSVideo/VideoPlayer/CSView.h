@@ -36,6 +36,8 @@ namespace HBMedia {
          */
         int prepare();
         
+        GLFWwindow *getWindows() { return mVideoGLFWWindow; }
+        
     public: /** 功能性配置接口 */
         /**
          *  static method and member so that we can modify it on all platforms before create OpenGL context
