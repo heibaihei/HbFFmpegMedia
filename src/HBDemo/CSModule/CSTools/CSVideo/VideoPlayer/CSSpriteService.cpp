@@ -54,13 +54,34 @@ void CSSpriteService::pushSprite(CSSprite* pSprite) {
     if (!pSprite)
         return;
     
-    mSpritesArray.push_back(pSprite);
+    if (mSpritesArray.empty())
+        mSpritesArray.push_back(pSprite);
+    else {
+        CSSprite* pCurrent = *(mSpritesArray.rbegin());
+        int zOrder = pSprite->getZOrder();
+        if (zOrder >= pCurrent->getZOrder()) {
+            mSpritesArray.push_back(pSprite);
+        } else {
+            // last smaller than pSprite
+            std::list<CSSprite *>::iterator it = mSpritesArray.begin();
+            for (; it != mSpritesArray.end(); ++it) {
+                pCurrent = *it;
+                // insert befor bigger than pSprite
+                // so if is same, late added later
+                if (zOrder < pCurrent->getZOrder()) {
+                    break;
+                }
+            }
+            mSpritesArray.insert(it, pSprite);
+        }
+    }
 }
 
 void CSSpriteService::popSprite(CSSprite* pSprite) {
     if (!pSprite)
         return;
     
+    pSprite->_release();
     for (std::list<CSSprite *>::iterator iter = mSpritesArray.begin(); iter != mSpritesArray.end(); ++iter) {
         CSSprite* pCurrent = *iter;
         if (pCurrent == pSprite) {

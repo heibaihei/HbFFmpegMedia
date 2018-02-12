@@ -15,25 +15,12 @@
 
 namespace HBMedia {
 
+typedef class CSSpriteService CSSpriteService;
 typedef class CSShader CSShader;
 typedef class CSTexture CSTexture;
-
-/***
- *   定义枚举类型
- */
-typedef enum SpriteType {
-    UNKNOW_TRACK,
-    NORMAL_TRACK,        // 图片或者视频 没有背景
-    VIDEO_TRACK,         // 视频
-    MUSIC_TRACK,         // 音乐
-    PICTURE_TRACK,       // 图片
-    SUBTITLE_TRACK,      // 字幕
-    TEXT_TEMPLATE_TRACK, // 文字模版
-    WATERMARK_TRACK,     // 水印
-    VIDEO_MATERIAL_TRACK,// 视频素材
-} SpriteType;
     
 typedef class CSSprite {
+    friend class CSSpriteService;
 public:
     CSSprite();
     
@@ -45,6 +32,9 @@ public:
     int update();
     
 public:
+    /** 设置优先级 */
+    void setZOrder(int order) { mZOrder = order; }
+    int getZOrder() { return mZOrder; }
     
     /**
      *  Shader 相关
@@ -53,17 +43,24 @@ public:
     void setShader(CSShader* pShader);
     CSShader* getShader() const;
     
-    void setTrackType(SpriteType type);
-    const SpriteType& getTrackType() const { return mTrackType; };
+    void setTrackType(FragmentType type);
+    const FragmentType& getTrackType() const { return mTrackType; };
     /**
      *  获取当前精灵的宽高
      */
     float getWidth() const { return mWidth; };
     float getHeight() const { return mHeight; };
+    void setWidthAndHeight(float width, float height);
+    void setOrigWidthAndHeight(float width, float height);
     
-    // 0 -90 -180 -270
+    /** 0 -90 -180 -270 */
     void setOrigRotateAngle(int angle);
     int getOrigRotateAngle() const { return origRotateAngle; }
+    
+    int getRotateAngle() const { return rotateAngle; }
+    void rotateTo(float angle);
+    void rotateBy(float angle);
+    
     
     /**
      *  设置当前精灵是否可见
@@ -76,6 +73,24 @@ public:
     /** 设置外部纹理 */
     void setTexture(CSTexture* texture);
     CSTexture* getTexture() const { return mTexture; };
+    
+    void moveTo(float cX, float cY);
+    void moveBy(float dX, float dY);
+    
+    /**
+     * Scale x,y direction with the same factor to scale.
+     *
+     * @param scale The factor to scale
+     */
+    void scaleTo(float scale);
+    /**
+     * Scale sprite with different value.
+     *
+     * @param sx The factor to scale by in the x direction.
+     * @param sy The factor to scale by in the y direction.
+     */
+    void scaleTo(float sx, float sy);
+    void scaleBy(float scale);
     
     void setUseColor(bool use);
     bool needUseColor() const { return mUseColor; };
@@ -94,6 +109,20 @@ public:
     float getEndU() const { return endU; };
     float getStartV() const { return startV; };
     float getEndV() const { return endV; };
+    void setUV(float sU, float eU, float sV, float eV);
+    
+    /**
+     *  the lower left corner of the scissor box
+     *  releative center of sprite
+     *
+     */
+    void setScissorBox(const Vec2& lowerLeft, const NS_GLX::Size& box, bool enableScissor = true);
+    const Vec2& getScissorLowerLeft() const { return mScissorLowerLeft; }
+    const NS_GLX::Size& getScissorBox() const { return mScissorBox; }
+    void setAnimationScissorBox(const Vec2& lowerLeft, const NS_GLX::Size& box, bool enableScissor = true);
+    const Vec2& getFinalScissorLowerLeft() const { return mFinalScissorLowerLeft; }
+    const NS_GLX::Size& getFinalScissorBox() const { return mFinalScissorBox; }
+    bool needEnableScissor() const { return mFinalEnableScissor; }
     
 protected:
     
@@ -107,12 +136,21 @@ protected:
      */
     int _updateUV();
     
+    /**
+     *  释放资源
+     */
+    void _release();
 private:
     /**
      *  用于表示当前GraphicsSprite 是否要显示： true标识显示｜false表示隐藏
      */
     bool mVisible;
 
+    /**
+     *  值越大的，排在越前面，越上层
+     */
+    int mZOrder;
+    
     /** UV coordinate */
     float startU, endU; //x
     float startV, endV; //y
@@ -123,6 +161,8 @@ private:
     /** sprite 当前中心点以及宽高信息 */
     float mCenterX, mCenterY;
     float mWidth, mHeight;
+    /** sprite original w h */
+    float mOrigWidth, mOrigHeight;
     
     /** animation 相关动画调整 */
     float aXChange, aYChange;
@@ -148,7 +188,7 @@ private:
     bool mNeedUpdateUV;
     
     /** sprite 类型 */;
-    SpriteType mTrackType;
+    FragmentType mTrackType;
     
     /** for text draw color */
     bool mUseColor;
@@ -156,6 +196,15 @@ private:
     /** alpha for animation */
     float aAlpha;
     bool mAlphaPremultiplied;
+    
+    /** releative the center of sprite */
+    Vec2 mScissorLowerLeft;
+    NS_GLX::Size mScissorBox;
+    bool mEnableScissor;
+    /** after do ScissorAnimation */
+    Vec2 mFinalScissorLowerLeft;
+    NS_GLX::Size mFinalScissorBox;
+    bool mFinalEnableScissor;
     
     CSTexture *mTexture;
     

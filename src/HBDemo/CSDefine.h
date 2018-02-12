@@ -49,6 +49,8 @@
 #define S_EQ(s,t)         ((s) & (t))
 #define S_NOT_EQ(s,t)     (!((s) & (t)))
 
+#define CS_GLPREPARE_PRELOAD   (10)
+
 #define GP_ASSERT(cond) 
 
 #define CS_SWR_CH_MAX  (64)
@@ -147,6 +149,21 @@ typedef struct CropParam_t {
 typedef struct VideoEffectParam {
     CropParam *cropParam;
 } VideoEffectParam;
+
+/***
+ *   定义枚举类型
+ */
+typedef enum FragmentType {
+    UNKNOW_TRACK,
+    NORMAL_TRACK,        // 图片或者视频 没有背景
+    VIDEO_TRACK,         // 视频
+    MUSIC_TRACK,         // 音乐
+    PICTURE_TRACK,       // 图片
+    SUBTITLE_TRACK,      // 字幕
+    TEXT_TEMPLATE_TRACK, // 文字模版
+    WATERMARK_TRACK,     // 水印
+    VIDEO_MATERIAL_TRACK,// 视频素材
+} FragmentType;
 
 // 视频裁剪参数
 typedef struct ScaleParam_t {

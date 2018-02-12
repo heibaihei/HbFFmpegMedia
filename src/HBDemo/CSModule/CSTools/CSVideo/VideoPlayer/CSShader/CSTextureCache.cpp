@@ -31,35 +31,39 @@ void CSTextureCache::setCurrentCache(int index)
         LOGE("TextureCache maxCache is %i, index is: %i", MAX_TEXTURE_CACHE, index);
 }
 
-    void CSTextureCache::releaseTexture(CSTexture* texture)
+    /**
+     *  TODO: Remain to finished !
+     */
+void CSTextureCache::releaseTexture(CSTexture* texture)
+{
+    if(texture)
     {
-        if(texture)
+        if(texture->getRef() == 1)
         {
-            if(texture->getRef() == 1)
-            {
 #if 0
-                //Release by FileHandle
-                FileHandle* file = texture->getFileHandle();
-                if (file) {
-                    auto it = _textures[currentIndex].find(file->getFullPathForFile());
+            //Release by FileHandle
+            FileHandle* file = texture->getFileHandle();
+            if (file) {
+                auto it = _textures[currentIndex].find(file->getFullPathForFile());
+                if (it != _textures[currentIndex].end()) {
+                    _textures[currentIndex].erase(it);
+                }
+            }else{
+                //Release by FileName
+                const std::string &fileName = texture->getFileName();
+                if(!fileName.empty()){
+                    auto it = _textures[currentIndex].find(fileName);
                     if (it != _textures[currentIndex].end()) {
                         _textures[currentIndex].erase(it);
                     }
-                }else{
-                    //Release by FileName
-                    const std::string &fileName = texture->getFileName();
-                    if(!fileName.empty()){
-                        auto it = _textures[currentIndex].find(fileName);
-                        if (it != _textures[currentIndex].end()) {
-                            _textures[currentIndex].erase(it);
-                        }
-                    }
                 }
-#endif
-                texture->release();
             }
-            
-            texture->decreaseRef();
+#endif
+            texture->release();
         }
+        
+        texture->decreaseRef();
     }
+}
+
 }

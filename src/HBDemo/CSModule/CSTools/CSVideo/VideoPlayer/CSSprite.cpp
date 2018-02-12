@@ -9,6 +9,7 @@
 #include "CSSprite.h"
 #include "CSShader.h"
 #include "CSTexture.h"
+#include "CSTextureCache.h"
 
 namespace HBMedia {
     
@@ -185,6 +186,11 @@ void CSSprite::setTexture(CSTexture* texture) {
     }
 }
 
+void CSSprite::_release() {
+    CSTextureCache::releaseTexture(mTexture);
+    mTexture = NULL;
+}
+
 void CSSprite::setUseColor(bool use) {
     mUseColor = use;
 }
@@ -209,16 +215,99 @@ void CSSprite::setShader(CSShader* pShader) {
     mShader = pShader;
 }
 
+void CSSprite::moveTo(float cX, float cY) {
+    if(mCenterX != cX || mCenterY != cY) {
+        mCenterX = cX;
+        mCenterY = cY;
+        mNeedUpdatePosition = true;
+    }
+}
+
+void CSSprite::moveBy(float dX, float dY) {
+    mCenterX += dX;
+    mCenterY += dY;
+    mNeedUpdatePosition = true;
+}
+
+void CSSprite::scaleTo(float scale) {
+    scaleTo(scale, scale);
+}
+
+void CSSprite::scaleTo(float sx, float sy) {
+    setWidthAndHeight(mOrigWidth * sx, mOrigHeight * sy);
+}
+
+void CSSprite::scaleBy(float scale) {
+    setWidthAndHeight(mWidth*scale, mHeight*scale);
+}
+    
 CSShader* CSSprite::getShader() const {
     return mShader;
 }
-    
+
+void CSSprite::setWidthAndHeight(float width, float height)
+{
+    if(mWidth != width || mHeight != height) {
+        mWidth = width;
+        mHeight = height;
+        mNeedUpdatePosition = true;
+    }
+}
+
+void CSSprite::setOrigWidthAndHeight(float width, float height) {
+    mOrigWidth = width;
+    mOrigHeight = height;
+}
+
 void CSSprite::setOrigRotateAngle(int angle) {
     origRotateAngle = angle;
 }
 
-void CSSprite::setTrackType(SpriteType type) {
+void CSSprite::setTrackType(FragmentType type) {
     mTrackType = type;
+}
+    
+void CSSprite::rotateTo(float angle) {
+    if(rotateAngle != angle) {
+        rotateAngle = angle;
+        mNeedUpdatePosition = true;
+    }
+}
+
+void CSSprite::rotateBy(float angle) {
+    rotateAngle += angle;
+    mNeedUpdatePosition = true;
+}
+
+void CSSprite::setUV(float sU, float eU, float sV, float eV) {
+    if(startU != sU || endU != eU || startV != sV || endV != eV) {
+        startU = sU;
+        endU = eU;
+        startV = sV;
+        endV = eV;
+        mNeedUpdateUV = true;
+    }
+}
+    
+void CSSprite::setScissorBox(const Vec2& lowerLeft, const NS_GLX::Size& box, bool enableScissor) {
+    mScissorBox = box;
+    mScissorLowerLeft = lowerLeft;
+    this->mEnableScissor = enableScissor;
+    mFinalScissorLowerLeft = lowerLeft;
+    mFinalScissorBox = box;
+    mFinalEnableScissor = enableScissor;
+}
+
+void CSSprite::setAnimationScissorBox(const Vec2& lowerLeft, const NS_GLX::Size& box, bool enableScissor) {
+    if (enableScissor) {
+        mFinalScissorLowerLeft = lowerLeft;
+        mFinalEnableScissor = enableScissor;
+        mFinalScissorBox = box;
+    } else {
+        mFinalScissorLowerLeft = mScissorLowerLeft;
+        mFinalEnableScissor = mEnableScissor;
+        mFinalScissorBox = mScissorBox;
+    }
 }
 
 }

@@ -42,14 +42,17 @@ int CSPlayList::release() {
     return HB_OK;
 }
 
-int CSPlayList::fetchNextFrame(int64_t clock, CSSpriteService *pSpriteService) {
+int CSPlayList::fetchNextFrame(int64_t clock, CSSpriteService *pSpriteService, STREAM_TYPE eMediaType) {
     CSMediaElement* pElement = nullptr;
     std::list<CSMediaElement *>::iterator elementIterator = mTimeline.begin();
     for (; elementIterator != mTimeline.end(); elementIterator++) {
         pElement = *elementIterator;
-        
-        if (clock >= pElement->getStartPos() && clock < pElement->getDuration()) {
-            pElement->fetchNextFrame(clock, pSpriteService);
+        if (eMediaType == CS_STREAM_TYPE_VIDEO)
+        {   /** 获取视频片段信息 */
+            if ((clock >= (pElement->getStartPos() - CS_GLPREPARE_PRELOAD)) \
+                && (clock < pElement->getDuration())) {
+                pElement->fetchNextFrame(clock, pSpriteService, eMediaType);
+            }
         }
     }
     return HB_OK;

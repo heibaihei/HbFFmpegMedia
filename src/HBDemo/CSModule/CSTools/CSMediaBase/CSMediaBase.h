@@ -30,8 +30,9 @@ namespace HBMedia {
          *  @param [out] pTargetFrame 得到的图像帧
          *  @return 1 表示拿到帧
          *          0 表示没有拿到帧，但是需要拿旧帧进行渲染
-         *          -1 表示没有拿到帧，无需渲染
-         *          -2 表示没有拿到帧，并且发生异常
+         *          -1 表示没有拿到帧，无需渲染,需要重入取帧
+         *          -2 表示没有拿到帧，需要等待一段时间后再进入取帧
+         *          -3 表示没有拿到帧，并且发生异常
          */
         static int fetchNextFrame(CSMediaBase *pProvider, int64_t clock, STREAM_TYPE type, AVFrame **pTargetFrame);
         

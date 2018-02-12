@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <list>
+#include "CSDefine.h"
 
 namespace HBMedia {
 
@@ -30,7 +31,18 @@ public:
     
     int release();
     
-    int fetchNextFrame(int64_t clock, CSSpriteService *pSpriteService);
+    /**
+     *  @func fetchNextFrame 获取帧，并绘制成纹理，存储到 CSSpriteService 对象中
+     *  @param clock 当前要渲染的时钟
+     *  @param pSpriteService 绘制纹理服务
+     *  @return:
+     *     1 表示拿到帧，需要进行渲染；
+     *     0 表示没有拿到帧，但是需要拿上一帧进行渲染；
+     *     -1 表示没有拿到帧，需要重新尝试去拿帧；
+     *     -2 表示没有拿到帧，需要等待一定时间后再去拿帧；
+     *     -3 表示没有拿到帧，并且发生了异常;
+     */
+    int fetchNextFrame(int64_t clock, CSSpriteService *pSpriteService, STREAM_TYPE eMediaType);
     
 public:
     /** 设置上级对象 */
