@@ -7,7 +7,7 @@
 //
 
 #include "CSMatrixShader.h"
-#include "CSMatrixShader.h"
+#include "CSFrameBuffer.h"
 
 namespace HBMedia {
     
@@ -99,7 +99,7 @@ void CSMatrixShader::onDraw() {
  * @param texName Texture that need to be drawn
  * @param fbo Framebuffer object
  */
-void CSOneInputShader::draw(const int texName, const CSFramebufferObject *fbo) {
+void CSOneInputShader::draw(const int texName, const CSFramebuffer *fbo) {
     useProgram();
     
     glBindBuffer(GL_ARRAY_BUFFER, getVertexBufferName());

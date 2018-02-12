@@ -16,8 +16,8 @@
 
 namespace HBMedia {
 
-    typedef class CSProgramMaker CSProgramMaker;
-    typedef class CSFramebufferObject CSFramebufferObject;
+typedef class CSProgramMaker CSProgramMaker;
+typedef class CSFramebuffer CSFramebuffer;
     
 typedef class CSOneInputShader : public CSShader {
 public:
@@ -28,7 +28,7 @@ public:
     CSOneInputShader(const std::string &internalVertexShaderFile, bool vEncrypt, const std::string &internalFragmentShaderFile, bool fEncrypt) : CSShader(internalVertexShaderFile, vEncrypt, internalFragmentShaderFile, fEncrypt) {}
     
 public:
-    virtual void draw(const int texName, const CSFramebufferObject *fbo);
+    virtual void draw(const int texName, const CSFramebuffer *fbo);
 } CSOneInputShader;
     
 typedef class CSMatrixShader : public CSOneInputShader {

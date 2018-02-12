@@ -27,6 +27,7 @@ int CSSpriteService::mTextureCachNum = 0;
 CSSpriteService::CSSpriteService() {
     mScreenWidth = 0;
     mScreenHeight = 0;
+    mNumberOfQuads = 0;
     mBDrawing = false;
     mEnableFilpShader = true;
 }
@@ -240,7 +241,203 @@ int CSSpriteService::begin() {
 }
 
 int CSSpriteService::update() {
+    CSSprite *pSprite = nullptr;
+    for (std::list<CSSprite *>::iterator it = mSpritesArray.begin(); it != mSpritesArray.end(); it++) {
+        pSprite = *it;
+        if (pSprite) {
+            _drawSprite(pSprite);
+        }
+    }
+    
+    _updateSprites();
     return HB_OK;
+}
+
+int CSSpriteService::_drawSprite(CSSprite *pSprite) {
+    if (!pSprite->isVisible())
+        return HB_OK;
+        
+    pSprite->update();
+    
+    int index = mNumberOfQuads *4;
+    const NS_GLX::V3F_C4F_T2F_Quad* quads = pSprite->getQuads();
+    bool bNeedDrawBgp = _CheckNeedDrawBgp(pSprite);
+    bool bNeedDrawToFbo = _CheckNeedDrawToFBO(pSprite);
+    
+    if (bNeedDrawBgp || bNeedDrawToFbo) {
+        // 2. for sprite, in original position
+        // TODO: use screen center as sprite center?
+        float spriteCenterX = mRenderWidth / 2.0;     // pSprite->getCenterX();
+        float spriteCenterY = mRenderHeight / 2.0;    // pSprite->getCenterY();
+        float left = spriteCenterX - pSprite->getWidth() / 2.0;
+        float right = left + pSprite->getWidth();
+        float bottom = spriteCenterY - pSprite->getHeight() / 2.0;
+        float top = bottom + pSprite->getHeight();
+        // tl
+        mQuadVerts[index] = quads->tl;
+        // use original position
+        mQuadVerts[index].vertices.x = left;
+        mQuadVerts[index].vertices.y = top;
+        // reverse
+        mQuadVerts[index].vertices.y = mRenderHeight - mQuadVerts[index].vertices.y;
+        ++index;
+        // bl
+        mQuadVerts[index] = quads->bl;
+        // use original position
+        mQuadVerts[index].vertices.x = left;
+        mQuadVerts[index].vertices.y = bottom;
+        // reverse
+        mQuadVerts[index].vertices.y = mRenderHeight - mQuadVerts[index].vertices.y;
+        ++index;
+        // tr
+        mQuadVerts[index] = quads->tr;
+        // use original position
+        mQuadVerts[index].vertices.x = right;
+        mQuadVerts[index].vertices.y = top;
+        // reverse
+        mQuadVerts[index].vertices.y = mRenderHeight - mQuadVerts[index].vertices.y;
+        ++index;
+        // br
+        mQuadVerts[index] = quads->br;
+        // use original position
+        mQuadVerts[index].vertices.x = right;
+        mQuadVerts[index].vertices.y = bottom;
+        // reverse
+        mQuadVerts[index].vertices.y = mRenderHeight - mQuadVerts[index].vertices.y;
+        ++index;
+        
+        ++mNumberOfQuads;
+        
+        // 3. for final to screen, the position after move/scale
+        float scaleX = (quads->tr.vertices.x - quads->tl.vertices.x) / pSprite->getWidth();
+        float scaleY = (quads->tr.vertices.y - quads->br.vertices.y) / pSprite->getHeight();
+        float halfW = (mRenderWidth * scaleX) / 2.0;
+        float halfH = (mRenderHeight * scaleY) / 2.0;
+        float centerX = (quads->tr.vertices.x + quads->tl.vertices.x) / 2.0;
+        float centerY = (quads->tr.vertices.y + quads->br.vertices.y) / 2.0;
+        // tl
+        mQuadVerts[index].vertices.x = centerX - halfW;
+        mQuadVerts[index].vertices.y = centerY + halfH;
+        mQuadVerts[index].vertices.z = 0;
+        mQuadVerts[index].texCoords.u = 0;//startU;
+        mQuadVerts[index].texCoords.v = 0;//1;//endV;
+        ++index;
+        // bl
+        mQuadVerts[index].vertices.x = centerX - halfW;
+        mQuadVerts[index].vertices.y = centerY - halfH;
+        mQuadVerts[index].vertices.z = 0;
+        mQuadVerts[index].texCoords.u = 0;//startU;
+        mQuadVerts[index].texCoords.v = 1;//0;//startV;
+        ++index;
+        // tr
+        mQuadVerts[index].vertices.x = centerX + halfW;
+        mQuadVerts[index].vertices.y = centerY + halfH;
+        mQuadVerts[index].vertices.z = 0;
+        mQuadVerts[index].texCoords.u = 1;//endU;
+        mQuadVerts[index].texCoords.v = 0;//1;//endV;
+        ++index;
+        // br
+        mQuadVerts[index].vertices.x = centerX + halfW;
+        mQuadVerts[index].vertices.y = centerY - halfH;
+        mQuadVerts[index].vertices.z = 0;
+        mQuadVerts[index].texCoords.u = 1;//endU;
+        mQuadVerts[index].texCoords.v = 1;//0;//startV;
+        ++index;
+        
+        ++mNumberOfQuads;
+    }
+    else {
+        // just draw to screen
+        // tl
+        mQuadVerts[index] = quads->tl;
+        ++index;
+        // bl
+        mQuadVerts[index] = quads->bl;
+        ++index;
+        // tr
+        mQuadVerts[index] = quads->tr;
+        ++index;
+        // br
+        mQuadVerts[index] = quads->br;
+        ++index;
+        
+//        if (pSprite->getTrackType() == TEXT_TEMPLATE_TRACK && pSprite->hasShader()) {
+//            float totalU = pSprite->getEndU() - pSprite->getStartU();
+//            float startU = (quads->tl.texCoords.u - pSprite->getStartU()) / totalU;
+//            float endU = (quads->tr.texCoords.u - pSprite->getStartU()) / totalU;
+//            float totalV = pSprite->getEndV() - pSprite->getStartV();
+//            float startV = (1 - quads->bl.texCoords.v - pSprite->getStartV()) / totalV;
+//            float endV = (1 - quads->tl.texCoords.v - pSprite->getStartV()) / totalV;
+//
+//            // tl
+//            mQuadVerts[index-4].texCoords.u = startU;
+//            mQuadVerts[index-4].texCoords.v = endV;
+//            // bl
+//            mQuadVerts[index-3].texCoords.u = startU;
+//            mQuadVerts[index-3].texCoords.v = startV;
+//            // tr
+//            mQuadVerts[index-2].texCoords.u = endU;
+//            mQuadVerts[index-2].texCoords.v = endV;
+//            // br
+//            mQuadVerts[index-1].texCoords.u = endU;
+//            mQuadVerts[index-1].texCoords.v = startV;
+//        }
+        
+        ++mNumberOfQuads;
+    }
+    
+    return HB_OK;
+}
+
+int  CSSpriteService::_updateSprites() {
+    int indexToDraw = 0;
+    int startIndex = 0;
+    if(mNumberOfQuads <= 0) { /** no sprites, clear */
+        glClearColor(mFramebufferBackgroundColor.x, mFramebufferBackgroundColor.y, mFramebufferBackgroundColor.z, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        return HB_OK;
+    }
+    
+    /** Upload buffer to VBO
+     *  bind V3F_C4F_T2F data, and index data
+    */
+    glBindBuffer(GL_ARRAY_BUFFER, mQuadbuffersVBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, (V3F_C4F_T2F_SIZE * mNumberOfQuads * 4), mQuadVerts, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mQuadbuffersVBO[1]);
+    
+    bool drawFirstSprite = true;
+    CSSprite *pSprite = nullptr;
+    for (std::list<CSSprite *>::iterator it = mSpritesArray.begin(); it != mSpritesArray.end(); it++) {
+        pSprite = *it;
+        if (!pSprite->isVisible())
+            continue;
+        
+        bool useFirstFBO = false;
+        bool setFristShaderUV = false;
+        int textureName = pSprite->getTexture()->getTexName();
+        
+        _drawSpriteShaderToFBO1(pSprite, textureName);
+    }
+    
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    mNumberOfQuads = 0;
+    return HB_OK;
+}
+
+void CSSpriteService::_drawSpriteShaderToFBO1(const CSSprite* sprite, int& textureName) {
+    int args[1] = {0};
+    /** Save current binding status */
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, args);
+    const int saveFramebuffer = args[0];
+    
+    /** draw selected shader */
+    {
+        CSFrameBuffer* fbo = &mFramebufferObject1;
+        // 将视频的原始角度值，传到shader里面，做素材方向调整 add by zhangkang 20171108
+//        fragmentShader->setRotation(sprite->getOrigRotateAngle());
+//        texName = drawShaderToFbo(fbo, fragmentShader, texName);
+    }
 }
 
 int CSSpriteService::end() {
@@ -296,5 +493,22 @@ void CSSpriteService::setDepthTest(bool enable)
     CHECK_GL_ERROR_DEBUG();
 }
 
+bool CSSpriteService::_CheckNeedDrawBgp(CSSprite* pSprite) {
+    if (!pSprite) {
+        return true;
+    }
+    
+    if (pSprite->getWidth() < mRenderWidth \
+        || pSprite->getHeight() < mRenderHeight)
+        return true;
+        
+    return false;
 }
-
+    
+bool CSSpriteService::_CheckNeedDrawToFBO(CSSprite* pSprite) {
+    if (pSprite && (pSprite->getOrigRotateAngle() != 0))
+        return true;
+    return false;
+}
+    
+}

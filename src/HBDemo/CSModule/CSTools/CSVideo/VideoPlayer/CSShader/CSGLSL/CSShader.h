@@ -19,7 +19,7 @@ namespace HBMedia {
     typedef class Texture Texture;
     typedef class CSProgram CSProgram;
     typedef class CSProgramMaker CSProgramMaker;
-    typedef class CSFramebufferObject CSFramebufferObject;
+    typedef class CSFramebuffer CSFramebuffer;
     
 enum ShaderType {
     UNKNOW_SHADER,
@@ -124,7 +124,7 @@ public:
      * @param texName Texture that need to be drawn
      * @param fbo Framebuffer object，目标fbo
      */
-    virtual void draw(const int texName, const CSFramebufferObject *fbo) = 0;
+    virtual void draw(const int texName, const CSFramebuffer *fbo) = 0;
     
     // 判断是否包含该类型shader
     virtual bool containType(ShaderType type);

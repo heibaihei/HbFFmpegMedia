@@ -49,6 +49,8 @@ public:
     int update();
     int end();
     
+    
+    
 public: /** 配置相关 对外接口 */
     /**
      * enables/disables OpenGL alpha blending
@@ -61,12 +63,36 @@ public: /** 配置相关 对外接口 */
     void setDepthTest(bool enable);
     
 protected:
+    
+    /**
+     *  是否需要绘制背景
+     *  true 需要 | false 不需要
+     */
+    bool _CheckNeedDrawBgp(CSSprite* pSprite);
+    
+    /**
+     *  检查是否需要绘制 FBO
+     */
+    bool _CheckNeedDrawToFBO(CSSprite* pSprite);
+
+protected:
+    int  _drawSprite(CSSprite *pSprite);
+    int  _updateSprites();
+    
     void _bindTextureCache();
     int  _innerGlPrepare();
     void _setMVPMatrix (const Mat4& mvp);
     
     void setupVBO();
     void releaseVBO();
+    
+   /*
+    *  draw shader, dark corner and soft focus
+    *
+    *  @param sprite  sprite current sprite
+    *  @param textureName current textureID, output textureID
+    */
+    void _drawSpriteShaderToFBO1(const CSSprite* sprite, int& textureName);
     
     /**
      *  @func _screenSizeChanged 屏幕发生改变时，重新计算内部相关参数
@@ -95,6 +121,7 @@ private:
     GLushort mQuadIndices[mTextureVboIndex];
     
     GLuint mQuadbuffersVBO[2]; //0: vertex  1: indices
+    int    mNumberOfQuads;
     
     CSTextureShader *mCommonShader;
     CSMatrixShader  *mMatrixShader;
