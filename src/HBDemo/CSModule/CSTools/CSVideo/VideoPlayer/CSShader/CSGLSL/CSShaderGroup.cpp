@@ -174,7 +174,7 @@ void CSShaderGroup::draw(const int texName, const CSFrameBuffer *fbo) {
             glClear(GL_COLOR_BUFFER_BIT);
             // 给ShaderGroup里面的每一个shader都设置视频的旋转角度add by zhangkang 20171108
             shader->setRotation(mRotation);
-            shader->draw(prevTexName, &localFbo);
+            shader->draw(prevTexName, (const CSFramebuffer *)(&localFbo));
             prevTexName = localFbo.getTexName();
             ++i;
         } else {
@@ -194,9 +194,9 @@ void CSShaderGroup::draw(const int texName, const CSFrameBuffer *fbo) {
     if (lastShader != nullptr) {
         // 给ShaderGroup里面的最后一个shader都设置视频的旋转角度，add by zhangkang 20171108
         lastShader->setRotation(mRotation);
-        lastShader->draw(prevTexName, fbo);
+        lastShader->draw(prevTexName, (const CSFramebuffer *)fbo);
     } else {
-        defaultShader.draw(prevTexName, fbo);
+        defaultShader.draw(prevTexName, (const CSFramebuffer *)fbo);
     }
     
 }

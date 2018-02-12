@@ -17,11 +17,25 @@
 #include "CSTextureCache.h"
 #include "CSTextureShader.h"
 #include "CSProgramCache.h"
-
+#include "CSShaderGroup.h"
 #include "CSMatrixShader.h"
 
 namespace HBMedia {
+    
+int _drawShaderToFbo(CSFrameBuffer* fbo, CSShader* shader, int textureName);
 
+/** Blending enabled for textures with Alpha premultiplied. Uses {GL_ONE, GL_ONE_MINUS_SRC_ALPHA} */
+void _enableAlphaPremultipliedBlend();
+
+/** Blending enabled for textures with Alpha NON premultiplied. Uses {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA} */
+void _enableAlphaNonPremultipliedBlend();
+
+/** Blending enabled for textures with Alpha NON premultiplied, and final alpha = 1.
+ Uses {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA} */
+void _enableAlphaNonPremultipliedBlendSeparateAlphaOne();
+
+void _enableBlend(const CSSprite& sprite);
+    
 int CSSpriteService::mTextureCachNum = 0;
     
 CSSpriteService::CSSpriteService() {
@@ -405,7 +419,7 @@ int  CSSpriteService::_updateSprites() {
     glBufferData(GL_ARRAY_BUFFER, (V3F_C4F_T2F_SIZE * mNumberOfQuads * 4), mQuadVerts, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mQuadbuffersVBO[1]);
     
-    bool drawFirstSprite = true;
+    bool bDrawFirstSprite = true;
     CSSprite *pSprite = nullptr;
     for (std::list<CSSprite *>::iterator it = mSpritesArray.begin(); it != mSpritesArray.end(); it++) {
         pSprite = *it;
@@ -414,9 +428,28 @@ int  CSSpriteService::_updateSprites() {
         
         bool useFirstFBO = false;
         bool setFristShaderUV = false;
-        int textureName = pSprite->getTexture()->getTexName();
+        int  textureName = pSprite->getTexture()->getTexName();
         
         _drawSpriteShaderToFBO1(pSprite, textureName);
+        
+        mCommonShader->setUseColor(pSprite->needUseColor());
+        mCommonShader->setTextColor(pSprite->getTextColor());
+        mCommonShader->setup(textureName, pSprite->getAnimationAlpha());
+        
+        if (bDrawFirstSprite) {
+            // glClearColor before first draw
+            glClearColor(mFramebufferBackgroundColor.x, mFramebufferBackgroundColor.y, mFramebufferBackgroundColor.z, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+            bDrawFirstSprite = false;
+        }
+        
+        _enableBlend(*pSprite);
+        indexToDraw += 6;
+        glDrawElements(GL_TRIANGLES, (GLsizei) indexToDraw, GL_UNSIGNED_SHORT, (GLvoid*) (startIndex*sizeof(mQuadIndices[0])) );
+        glDisable(GL_BLEND);
+        
+        startIndex += indexToDraw;
+        indexToDraw = 0;
     }
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -435,9 +468,15 @@ void CSSpriteService::_drawSpriteShaderToFBO1(const CSSprite* sprite, int& textu
     {
         CSFrameBuffer* fbo = &mFramebufferObject1;
         // 将视频的原始角度值，传到shader里面，做素材方向调整 add by zhangkang 20171108
-//        fragmentShader->setRotation(sprite->getOrigRotateAngle());
-//        texName = drawShaderToFbo(fbo, fragmentShader, texName);
+        mFragmentShader->setRotation(sprite->getOrigRotateAngle());
+        textureName = _drawShaderToFbo(fbo, mFragmentShader, textureName);
     }
+    
+    // Rebind old status buffers
+    glBindFramebuffer(GL_FRAMEBUFFER, saveFramebuffer);
+    glViewport(0, 0, mRenderWidth, mRenderHeight);
+    glBindBuffer(GL_ARRAY_BUFFER, mQuadbuffersVBO[0]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mQuadbuffersVBO[1]);
 }
 
 int CSSpriteService::end() {
@@ -510,5 +549,43 @@ bool CSSpriteService::_CheckNeedDrawToFBO(CSSprite* pSprite) {
         return true;
     return false;
 }
+
+int _drawShaderToFbo(CSFrameBuffer* fbo, CSShader* shader, int textureName) {
+    fbo->enable();
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    shader->setup();
+    shader->setFrameSize(fbo->getWidth(), fbo->getHeight());
+    shader->draw(textureName, (const CSFramebuffer *)fbo);
     
+    return fbo->getTexName();
+}
+    
+/** Blending enabled for textures with Alpha premultiplied. Uses {GL_ONE, GL_ONE_MINUS_SRC_ALPHA} */
+void _enableAlphaPremultipliedBlend() {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+/** Blending enabled for textures with Alpha NON premultiplied. Uses {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA} */
+void _enableAlphaNonPremultipliedBlend() {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+/** Blending enabled for textures with Alpha NON premultiplied, and final alpha = 1.
+ Uses {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA} */
+void _enableAlphaNonPremultipliedBlendSeparateAlphaOne() {
+    glEnable(GL_BLEND);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void _enableBlend(const CSSprite& sprite) {
+    if (sprite.isAlphaPremultiplied()) {
+        _enableAlphaPremultipliedBlend();
+    } else {
+        _enableAlphaNonPremultipliedBlendSeparateAlphaOne();
+    }
+}
+
 }

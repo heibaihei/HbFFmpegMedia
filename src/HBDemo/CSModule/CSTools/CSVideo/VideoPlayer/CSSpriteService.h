@@ -20,6 +20,7 @@ namespace HBMedia {
 
 typedef class CSMatrixShader CSMatrixShader;
 typedef class CSSprite CSSprite;
+typedef class CSShaderGroup CSShaderGroup;
 typedef class CSTextureShader CSTextureShader;
     
 typedef class CSSpriteService {
@@ -158,6 +159,9 @@ private:
     CSFrameBuffer mFragmentFBO;
     CSFrameBuffer mFramebufferObject1;
     CSFrameBuffer mFramebufferObject2;
+    
+    /** VIDEO_TRACK and PICTURE_TRACK shader */
+    CSShaderGroup* mFragmentShader;
     
     Mat4 vMat;
     Mat4 pMat;

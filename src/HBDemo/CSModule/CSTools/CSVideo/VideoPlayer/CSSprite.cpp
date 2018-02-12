@@ -184,6 +184,22 @@ void CSSprite::setTexture(CSTexture* texture) {
         mTexture = texture;
     }
 }
+
+void CSSprite::setUseColor(bool use) {
+    mUseColor = use;
+}
+    
+void CSSprite::setTextColor(const Vec3& color) {
+    mTextureColor = color;
+}
+
+void CSSprite::setAnimationAlpha(float alpha) {
+    aAlpha = alpha;
+}
+
+void CSSprite::setAlphaPremultiplied(bool premultiplied) {
+    mAlphaPremultiplied = premultiplied;
+}
     
 bool CSSprite::hasShader() const {
     return ((mShader != NULL) || (!mAnimationShaders.empty()));

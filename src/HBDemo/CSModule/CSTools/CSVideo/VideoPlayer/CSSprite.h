@@ -77,6 +77,19 @@ public:
     void setTexture(CSTexture* texture);
     CSTexture* getTexture() const { return mTexture; };
     
+    void setUseColor(bool use);
+    bool needUseColor() const { return mUseColor; };
+    
+    void setTextColor(const Vec3& color);
+    const Vec3& getTextColor() const { return mTextureColor; };
+    
+    void setAnimationAlpha(float alpha);
+    float getAnimationAlpha() const { return aAlpha; };
+    
+    /** for png image */
+    void setAlphaPremultiplied(bool premultiplied);
+    bool isAlphaPremultiplied() const { return mAlphaPremultiplied; };
+    
     float getStartU() const { return startU; };
     float getEndU() const { return endU; };
     float getStartV() const { return startV; };
@@ -136,6 +149,13 @@ private:
     
     /** sprite 类型 */;
     SpriteType mTrackType;
+    
+    /** for text draw color */
+    bool mUseColor;
+    Vec3 mTextureColor;
+    /** alpha for animation */
+    float aAlpha;
+    bool mAlphaPremultiplied;
     
     CSTexture *mTexture;
     
