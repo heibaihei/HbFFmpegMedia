@@ -96,6 +96,8 @@
 		A13B35661F6FCCFB00D3D494 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FC23B91F277BD200024371 /* libbz2.tbd */; };
 		A13E121B1F676775003FC0AC /* CSWorkContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A13E12191F676775003FC0AC /* CSWorkContext.cpp */; };
 		A14526C42031662100B5BF26 /* CSShaderGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A14526C22031662100B5BF26 /* CSShaderGroup.cpp */; };
+		A14526CE2031804000B5BF26 /* CSPlayList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A14526CC2031804000B5BF26 /* CSPlayList.cpp */; };
+		A14526D1203180C900B5BF26 /* CSMediaElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A14526CF203180C900B5BF26 /* CSMediaElement.cpp */; };
 		A151930A1FFCD823004C5B17 /* CSAudioPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A15193081FFCD823004C5B17 /* CSAudioPlayer.cpp */; };
 		A151AF291FBB491F001873B4 /* CSVideoCropRotateEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A151AF271FBB491F001873B4 /* CSVideoCropRotateEffect.cpp */; };
 		A151AF2C1FBB4E89001873B4 /* CSVideoEffectFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A151AF2A1FBB4E89001873B4 /* CSVideoEffectFactory.cpp */; };
@@ -3193,6 +3195,10 @@
 		A13E121A1F676775003FC0AC /* CSWorkContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSWorkContext.h; sourceTree = "<group>"; };
 		A14526C22031662100B5BF26 /* CSShaderGroup.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSShaderGroup.cpp; sourceTree = "<group>"; };
 		A14526C32031662100B5BF26 /* CSShaderGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSShaderGroup.h; sourceTree = "<group>"; };
+		A14526CC2031804000B5BF26 /* CSPlayList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSPlayList.cpp; sourceTree = "<group>"; };
+		A14526CD2031804000B5BF26 /* CSPlayList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSPlayList.h; sourceTree = "<group>"; };
+		A14526CF203180C900B5BF26 /* CSMediaElement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSMediaElement.cpp; sourceTree = "<group>"; };
+		A14526D0203180C900B5BF26 /* CSMediaElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSMediaElement.h; sourceTree = "<group>"; };
 		A15193081FFCD823004C5B17 /* CSAudioPlayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSAudioPlayer.cpp; sourceTree = "<group>"; };
 		A15193091FFCD823004C5B17 /* CSAudioPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSAudioPlayer.h; sourceTree = "<group>"; };
 		A151AF1F1FBB4800001873B4 /* CSVideoBaseEffect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSVideoBaseEffect.h; sourceTree = "<group>"; };
@@ -10838,6 +10844,10 @@
 				A19A7FB120197544000C0F15 /* CSSpriteService.h */,
 				A1BE546B201ABF4500B99942 /* CSView.cpp */,
 				A1BE546C201ABF4500B99942 /* CSView.h */,
+				A14526CC2031804000B5BF26 /* CSPlayList.cpp */,
+				A14526CD2031804000B5BF26 /* CSPlayList.h */,
+				A14526CF203180C900B5BF26 /* CSMediaElement.cpp */,
+				A14526D0203180C900B5BF26 /* CSMediaElement.h */,
 			);
 			path = VideoPlayer;
 			sourceTree = "<group>";
@@ -18247,6 +18257,7 @@
 				A19A67EB1EB3465D00DE8F11 /* simplest_ffmpeg_mem_transcoder.cpp in Sources */,
 				A15632BA1F94B07200F0140F /* FilteringVideo.cpp in Sources */,
 				A16AE03F2015C8E40021649D /* tutorial13.cpp in Sources */,
+				A14526CE2031804000B5BF26 /* CSPlayList.cpp in Sources */,
 				A134260E1FFD17F200D3451B /* CSAudioRoundBuf.cpp in Sources */,
 				A181BC351EA1F682004861DA /* main.cpp in Sources */,
 				A14526C42031662100B5BF26 /* CSShaderGroup.cpp in Sources */,
@@ -18286,6 +18297,7 @@
 				A1143E512015B71F0038C500 /* tutorial06.cpp in Sources */,
 				A15632C11F94BB5F00F0140F /* transcoding.c in Sources */,
 				A181BC5F1EA21756004861DA /* HBSeperateFormat.c in Sources */,
+				A14526D1203180C900B5BF26 /* CSMediaElement.cpp in Sources */,
 				A131A0ED1FC900B0002E5B8E /* CSVideoReverse.cpp in Sources */,
 				A100E2981FE8F0FE00F1783C /* Quantize.cpp in Sources */,
 				A16AE0292015C6DE0021649D /* tutorial12.cpp in Sources */,

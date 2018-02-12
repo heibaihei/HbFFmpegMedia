@@ -50,8 +50,8 @@ int CSVideoDemo_VideoPlayer() {
     
     {
         HBMedia::CSVideoPlayer * pVideoPlayer = new HBMedia::CSVideoPlayer();
-        pVideoPlayer->setVideoProvider(pVideoDecoder);
-        pVideoPlayer->setInImageMediaParams(*(pVideoDecoder->getOutImageMediaParams()));
+//        pVideoPlayer->setVideoProvider(pVideoDecoder);
+//        pVideoPlayer->setInImageMediaParams(*(pVideoDecoder->getOutImageMediaParams()));
         pVideoPlayer->prepare();
         pVideoPlayer->doShow();
     }

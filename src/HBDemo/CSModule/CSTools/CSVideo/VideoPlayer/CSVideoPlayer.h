@@ -23,18 +23,22 @@ namespace HBMedia {
 
 typedef class CSView CSView;
 typedef class CSSpriteService CSSpriteService;
+typedef class CSPlayList CSPlayList;
     
 typedef class CSVideoPlayer : public CSMediaBase {
 public:
     CSVideoPlayer();
     ~CSVideoPlayer();
     
-    virtual int start() { return HB_OK; }
     /**
      *  必须主线程调用这个接口
      *  完成相关 gl 资源的准备工作
      */
     int prepare();
+    
+    virtual int start();
+    
+    virtual int stop();
     
     /**
      *  必须主线程调用
@@ -48,9 +52,15 @@ public:
      */
     int release();
     
-    void setVideoProvider(CSMediaBase *pProvider) { mFrameProvider = pProvider; }
+//    void setVideoProvider(CSMediaBase *pProvider) { mFrameProvider = pProvider; }
+    
+    /**
+     *  配置视频播放列表
+     */
+    int setPlayList(CSPlayList *pPlayList);
     
 public: /** 配置下相关 */
+    
     
     
 protected:
@@ -73,6 +83,8 @@ private:
     CSView *mView;
     CSMediaBase* mFrameProvider;
     CSSpriteService *mRenderService;
+    CSPlayList*  mPlayList;
+    
 } CSVideoPlayer;
     
 }
